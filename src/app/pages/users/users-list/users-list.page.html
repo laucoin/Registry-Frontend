@@ -36,7 +36,7 @@
     <ng-template appTemplate="element" let-user>
         <sgdf-list-item data-testid="user-row" [attr.data-id]="user.id" [disabled]="!user.visible">
             <sgdf-avatar slot="start" variant="primary" aria-hidden="true" [initials]="initials(user)"/>
-            <span class="block truncate" [attr.title]="fullName(user)">{{ fullName(user) }}</span>
+            <span appEllipsis>{{ fullName(user) }}</span>
             <span slot="description" class="flex flex-wrap items-center gap-x-2">
                 <span class="truncate">{{ user.email }}</span>
                 <sgdf-copy-button data-testid="users-list-copy-email-copy" [value]="user.email" [label]="'users.actions.copy-email' | transloco: { element: user }"/>

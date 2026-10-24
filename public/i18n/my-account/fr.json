@@ -2,7 +2,7 @@
   "eyebrow": "Paramètres",
   "selected": "sélectionné",
   "title": "Mon compte",
-  "subtitle": "Consultez vos informations et réglez la langue et le thème de l’application.",
+  "subtitle": "Consulte tes informations et règle la langue et le thème de l’application.",
   "info": {
     "title": "Informations du compte",
     "name": "Nom complet",
@@ -26,7 +26,7 @@
     "dark": "Sombre",
     "system": "Système",
     "choose": "Choisir le thème",
-    "hint": "« Système » suit le réglage de votre appareil."
+    "hint": "« Système » suit le réglage de ton appareil."
   },
   "refresh": {
     "title": "Actualisation des données",

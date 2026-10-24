@@ -8,6 +8,7 @@ import {
     MovementInformationModel,
     reasonFieldsOf,
 } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-form.shared'
+import { MovementPrefillModel } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-prefill.model'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { FormModelHelper } from '@shared/helpers/form/form-model.helper'
 import { RegistrySchemas } from '@shared/helpers/form/registry.schemas'
@@ -59,6 +60,19 @@ export function withGuestType (model: GuestMovementFormModel, type: string): Gue
     const information: MovementInformationModel = { ...model.information, type }
     const guests: MovementGuestModel[] = isArrival( information ) ? (model.content.guests.length ? model.content.guests : [ emptyGuest() ]) : []
     return { information, content: { ...model.content, reason: null, guests } }
+}
+
+export function withGuestPrefill (model: GuestMovementFormModel, prefill: MovementPrefillModel): GuestMovementFormModel {
+    const information: MovementInformationModel = { ...model.information, type: prefill.type }
+    const arrival: boolean = isArrival( information )
+    return {
+        information,
+        content: {
+            reason: arrival && prefill.reason ? FormModelHelper.copy( prefill.reason ) : null,
+            participants: arrival ? [] : FormModelHelper.copyItems( prefill.content ),
+            guests: arrival ? prefill.content.map( (content: MovementContentModel): MovementGuestModel => emptyGuest( content.participant ) ) : [],
+        },
+    }
 }
 
 export function toGuestMovementFormModel (movement: MovementModel): GuestMovementFormModel {

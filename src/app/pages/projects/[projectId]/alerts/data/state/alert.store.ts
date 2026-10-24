@@ -75,7 +75,7 @@ export const AlertStore = signalStore(
         ),
         updateAlertsPageSearchParams: paramsUpdater( store, 'alerts' ),
         fetchAlertCommunicationsPage: pageFetcher( store, 'communications', (request: AlertCommunicationsPageRequest, params: CommunicationPageParamsModel) =>
-            api.findAlertCommunications( request.projectId, request.id, request.page, request.size, params ), errors ),
+            api.findAlertCommunications( request.projectId, request.id, request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
         updateAlertCommunicationsPageSearchParams: paramsUpdater( store, 'communications' ),
     }) ),
     withHooks( {

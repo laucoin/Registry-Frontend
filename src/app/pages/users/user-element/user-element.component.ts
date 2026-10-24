@@ -7,7 +7,6 @@ import { UserFacade } from '@pages/users/data/state/user.facade'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { VisibilityNamePipe } from '@shared/helpers/pipe/visibility.pipe'
 import { StateHelper } from '@shared/helpers/state/state.helper'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { UserAuthorityEnum } from '@shared/models/enumeration/user-authority.enum'
 import { MenuEntryModel } from '@shared/models/model/menu-entry.model'
@@ -71,7 +70,7 @@ export class UserElementComponent extends GenericElementComponent {
 			label: 'users.actions.update-role',
 			icon: 'pi pi-user-edit',
 			disabled: !this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_U),
-			visible: this.actionIsEnable(ElementActionEnum.USER_UPDATE) && !this.isCurrentUser(),
+			visible: !this.isCurrentUser(),
 			command: (): void => {
 				this.router.navigateByUrl(
 					RegistryRouteEnum.USERS_EDITION.replace(':userId', this.user().id),
@@ -85,7 +84,7 @@ export class UserElementComponent extends GenericElementComponent {
 			label: 'users.actions.disable',
 			icon: 'pi pi-ban',
 			disabled: !this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_U),
-			visible: this.actionIsEnable(ElementActionEnum.USER_BLOCK) && this.user().visible && !this.isCurrentUser(),
+			visible: this.user().visible && !this.isCurrentUser(),
 			command: this.confirmThen(
 				'users.actions.confirmations.disable',
 				'pi pi-exclamation-triangle',
@@ -101,7 +100,7 @@ export class UserElementComponent extends GenericElementComponent {
 			label: 'users.actions.enable',
 			icon: 'pi pi-replay',
 			disabled: !this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_U),
-			visible: this.actionIsEnable(ElementActionEnum.USER_UNBLOCK) && !this.user().visible && !this.isCurrentUser(),
+			visible: !this.user().visible && !this.isCurrentUser(),
 			command: this.confirmThen(
 				'users.actions.confirmations.enable',
 				'pi pi-info-circle',
@@ -117,7 +116,7 @@ export class UserElementComponent extends GenericElementComponent {
 			label: 'users.actions.export',
 			icon: 'pi pi-download',
 			disabled: !this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_R),
-			visible: this.actionIsEnable(ElementActionEnum.USER_EXPORT),
+			visible: true,
 			command: (): void => this.facade.exportUser(this.user()),
 		}
 	}
@@ -127,7 +126,7 @@ export class UserElementComponent extends GenericElementComponent {
 			label: 'users.actions.delete',
 			icon: 'pi pi-trash',
 			disabled: !this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_D),
-			visible: this.actionIsEnable(ElementActionEnum.USER_DELETE) && !this.isCurrentUser(),
+			visible: !this.isCurrentUser(),
 			command: this.confirmThen(
 				'users.actions.confirmations.delete',
 				'pi pi-exclamation-circle',

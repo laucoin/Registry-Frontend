@@ -81,7 +81,7 @@ export const ProjectStore = signalStore(
                 },
             }) )
         },
-        resetProject: (): void => patchState( store, { project: defaultProject } ),
+        resetProject: (): void => patchState( store, { project: defaultProject, createdProjectId: undefined } ),
         setCreatedProjectId: (id: string | undefined): void => patchState( store, { createdProjectId: id } ),
     }) ),
 )

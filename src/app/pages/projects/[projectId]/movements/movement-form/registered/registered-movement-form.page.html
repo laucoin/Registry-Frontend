@@ -13,7 +13,7 @@
     </sgdf-stepper>
 
     @if (activeTab() === 1) {
-        <form data-testid="registered-movement-form-information-form" class="mt-[1rem]" (submit)="$event.preventDefault(); nextFromInformation()">
+        <form novalidate data-testid="registered-movement-form-information-form" class="mt-[1rem]" (submit)="$event.preventDefault(); nextFromInformation()">
             <sgdf-card>
                 <div class="grid gap-[0.75rem] md:grid-cols-2">
                     <sgdf-date-time-picker data-testid="registered-movement-form-date-time-picker" appSgdfField with-time required
@@ -38,14 +38,16 @@
                 <sgdf-button data-testid="registered-movement-form-information-cancel-button" variant="neutral" appearance="text" (click)="navigateToRedirectUri()">
                     {{ 'global.actions.cancel' | transloco }}
                 </sgdf-button>
-                <sgdf-button data-testid="registered-movement-form-information-next-submit" variant="primary" appearance="outlined" submit [attr.label]="'global.actions.next' | transloco">
-                    {{ uiFacade.tinyScreen() ? '' : ('global.actions.next' | transloco) }}
-                    <sgdf-icon slot="suffix" name="arrow-right" library="solid"/>
+                <sgdf-button data-testid="registered-movement-form-information-next-submit" variant="primary" appearance="outlined" submit>
+                    {{ 'global.actions.next' | transloco }}
+                    @if (!uiFacade.tinyScreen()) {
+                        <sgdf-icon slot="suffix" name="arrow-right" library="solid"/>
+                    }
                 </sgdf-button>
             </div>
         </form>
     } @else if (activeTab() === 2) {
-        <form data-testid="registered-movement-form-content-form" class="mt-[1rem]" (submit)="$event.preventDefault(); nextFromContent()">
+        <form novalidate data-testid="registered-movement-form-content-form" class="mt-[1rem]" (submit)="$event.preventDefault(); nextFromContent()">
             <sgdf-card>
                 <div class="flex flex-col gap-[0.75rem]">
                     @if (reasonRequired()) {
@@ -66,20 +68,20 @@
                     }
                     <div>
                         <h3 class="m-0 text-base font-semibold">{{ 'movements.form.content.registered' | pluralTranslation: model().content.participants | transloco }}</h3>
-                        <app-select-elements-field data-testid="registered-movement-form-participants-field" [formField]="form.content.participants"
+                        <app-select-elements-field data-testid="registered-movement-form-participants-field" [formField]="form.content.participants" [appFieldError]="form.content.participants" translationPrefix="movements.form.error.participantContent"
                                                    [label]="'movements.form.content.registered.search' | transloco"
                                                    [suggestions]="suggestions()"
                                                    [expand]="contentOfChoice"
                                                    [identify]="identifyContent"
                                                    [groupOf]="groupOfContent"
                                                    [groupLabel]="groupLabel"
+                                                   [ungroupedLabel]="'movements.form.content.registered.individual' | transloco"
                                                    [warningOf]="participantWarning"
                                                    [selectItemBuilder]="contentLabel"
                                                    [selectionLabel]="'movements.form.content.registered.selected' | pluralTranslation: model().content.participants | transloco"
                                                    [emptyMessage]="'movements.form.content.registered.empty-search' | transloco"
                                                    [emptySelectionMessage]="'movements.form.content.registered.empty' | transloco"
                                                    (handleSearch)="handleParticipantsAndGroupsSearch($event)"/>
-                        <app-field-error data-testid="registered-movement-form-participant-content-error" [field]="form.content.participants" translationPrefix="movements.form.error.participantContent"/>
                     </div>
                 </div>
             </sgdf-card>
@@ -90,17 +92,21 @@
                 </sgdf-button>
                 <sgdf-button data-testid="registered-movement-form-content-next-submit" variant="primary" submit [loading]="saving()">
                     @if (vehicleStep()) {
-                        {{ uiFacade.tinyScreen() ? '' : ('global.actions.next' | transloco) }}
-                        <sgdf-icon slot="suffix" name="arrow-right" library="solid"/>
+                        {{ 'global.actions.next' | transloco }}
+                        @if (!uiFacade.tinyScreen()) {
+                            <sgdf-icon slot="suffix" name="arrow-right" library="solid"/>
+                        }
                     } @else {
-                        <sgdf-icon slot="prefix" [name]="movement() ? 'pen-to-square' : 'plus'" library="solid"/>
+                        @if (!uiFacade.tinyScreen()) {
+                            <sgdf-icon slot="prefix" [name]="movement() ? 'pen-to-square' : 'plus'" library="solid"/>
+                        }
                         {{ movement() | formButton | transloco }}
                     }
                 </sgdf-button>
             </div>
         </form>
     } @else {
-        <form data-testid="registered-movement-form-vehicles-form" class="mt-[1rem]" (submit)="$event.preventDefault(); submit()">
+        <form novalidate data-testid="registered-movement-form-vehicles-form" class="mt-[1rem]" (submit)="$event.preventDefault(); submit()">
             <sgdf-card>
                 <div class="flex flex-col gap-[0.75rem]">
                     <sgdf-select data-testid="registered-movement-form-vehicle-select" with-search without-filter

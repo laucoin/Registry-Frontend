@@ -10,6 +10,7 @@ import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pi
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
 import { ElementActionsComponent } from '@shared/ui/common/element-actions/element-actions.component'
+import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 
 const INITIALS_LENGTH: number = 2
 
@@ -22,7 +23,7 @@ type TagVariant = 'success' | 'warning' | 'neutral'
  */
 @Component({
     selector: 'app-vehicle-row',
-    imports: [TranslocoPipe, CustomDateFormatPipe, ElementActionsComponent],
+    imports: [EllipsisDirective, TranslocoPipe, CustomDateFormatPipe, ElementActionsComponent],
     providers: [VehicleActions],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     host: { class: 'contents' },

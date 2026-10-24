@@ -20,7 +20,7 @@ describe('MovementCommunicationsListComponent', () => {
     beforeEach(() => {
         firstPageReload = new Subject<unknown>()
         currentPageReload = new Subject<unknown>()
-        facade = { fetchMovementCommunicationsPage: vi.fn(), movementCommunicationsPage: vi.fn(() => ({ page: 2, size: 10, content: [ { lastEdition: { user: { id: 'u1', firstName: 'Ada' } } }, { lastEdition: { user: { id: 'u2', firstName: 'Bo' } } } ] })) }
+        facade = { fetchMovementCommunicationsPage: vi.fn(), reloadMovementCommunications: vi.fn(), loadOlderMovementCommunications: vi.fn(), movementCommunicationsPageLoading: vi.fn(() => false), movementCommunicationsPageSilentLoading: vi.fn(() => false), movementCommunicationsPage: vi.fn(() => ({ page: 2, size: 10, content: [ { lastEdition: { user: { id: 'u1', firstName: 'Ada' } } }, { lastEdition: { user: { id: 'u2', firstName: 'Bo' } } } ] })) }
         TestBed.configureTestingModule({
             providers: [
                 { provide: UiFacade, useValue: {} },
@@ -49,7 +49,7 @@ describe('MovementCommunicationsListComponent', () => {
         firstPageReload.next(undefined)
 
         // Assert
-        expect(facade['fetchMovementCommunicationsPage']).toHaveBeenCalledWith(expectedId, undefined, undefined)
+        expect(facade['reloadMovementCommunications']).toHaveBeenCalledWith(expectedId)
     })
 
     it('reloads the page already shown when a communication changes', () => {
@@ -60,7 +60,30 @@ describe('MovementCommunicationsListComponent', () => {
         currentPageReload.next(undefined)
 
         // Assert
-        expect(facade['fetchMovementCommunicationsPage']).toHaveBeenCalledWith(expectedId, 2, 10)
+        expect(facade['reloadMovementCommunications']).toHaveBeenCalledWith(expectedId)
+    })
+
+    it('loads the older communications when the top of the conversation is reached', () => {
+        // Arrange
+        const list: { loadOlder: () => void } = component as never
+
+        // Act
+        list.loadOlder()
+
+        // Assert
+        expect(facade['loadOlderMovementCommunications']).toHaveBeenCalledWith('x1')
+    })
+
+    it('waits for the running load before asking for older communications', () => {
+        // Arrange
+        facade['movementCommunicationsPageLoading'].mockReturnValue(true)
+        const list: { loadOlder: () => void } = component as never
+
+        // Act
+        list.loadOlder()
+
+        // Assert
+        expect(facade['loadOlderMovementCommunications']).not.toHaveBeenCalled()
     })
 
     it('stops reloading once the list is destroyed', () => {
@@ -71,7 +94,7 @@ describe('MovementCommunicationsListComponent', () => {
         firstPageReload.next(undefined)
 
         // Assert
-        expect(facade['fetchMovementCommunicationsPage']).not.toHaveBeenCalled()
+        expect(facade['reloadMovementCommunications']).not.toHaveBeenCalled()
     })
 
     it('gives the author of the previous and of the next message to group a conversation', () => {
@@ -83,8 +106,8 @@ describe('MovementCommunicationsListComponent', () => {
         const next: string | undefined = list.getNextAuthorId(0)
 
         // Assert
-        expect(previous).toBe('u1')
-        expect(next).toBe('u2')
+        expect(previous).toBe('u2')
+        expect(next).toBe('u1')
     })
 
     it('loads the first batch of communications when it opens', () => {

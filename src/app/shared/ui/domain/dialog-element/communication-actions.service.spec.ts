@@ -2,11 +2,9 @@ import { signal, WritableSignal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { RegistryConfig } from '@core/config/registry.config'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
 import { ElementConfirmationService } from '@shared/helpers/facade/element-confirmation.service'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { ElementActionModel } from '@shared/models/model/element-action.model'
 import { CommunicationModel } from '@shared/models/model/communication.model'
 import { CommunicationActions } from '@shared/ui/domain/dialog-element/communication-actions.service'
@@ -24,7 +22,6 @@ describe('CommunicationActions', () => {
         actions.actionsFor(element).find((action: ElementActionModel): boolean => action.id === id)!
 
     beforeEach(() => {
-        RegistryConfig.config = { enabledActions: Object.values(ElementActionEnum) } as never
         authorities = signal(['p1_REGISTRY_PROJECT_COMMUNICATION_U', 'p1_REGISTRY_PROJECT_COMMUNICATION_D'])
         facade = { disableCommunication: vi.fn(() => of(undefined)), enableCommunication: vi.fn(() => of(undefined)), deleteCommunication: vi.fn(() => of(undefined)), fetchCommunication: vi.fn() }
         confirm = vi.fn()
@@ -99,17 +96,6 @@ describe('CommunicationActions', () => {
         expect(edit.disabled).toBe(false)
         expect(hide.disabled).toBe(false)
         expect(remove.disabled).toBe(true)
-    })
-
-    it('offers no command when the configuration enables none', () => {
-        // Arrange
-        RegistryConfig.config = { enabledActions: [] } as never
-
-        // Act
-        const shown: ElementActionModel[] = actions.actionsFor(VISIBLE)
-
-        // Assert
-        expect(shown).toEqual([])
     })
 
     it('loads the communication in the form when the user edits it', () => {

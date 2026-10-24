@@ -4,7 +4,6 @@ import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { UserFacade } from '@pages/users/data/state/user.facade'
 import { ElementActionsBase, ElementActionSpec } from '@shared/helpers/facade/element-actions.base'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { UserAuthorityEnum } from '@shared/models/enumeration/user-authority.enum'
 import { UserModel } from '@shared/models/model/user.model'
@@ -35,7 +34,6 @@ export class UserActions extends ElementActionsBase<UserModel> {
         return {
             id: 'update-role',
             icon: 'user-pen',
-            enabledAction: ElementActionEnum.USER_UPDATE,
             shown: others,
             allowed: this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_U),
             run: (): void => {
@@ -48,7 +46,6 @@ export class UserActions extends ElementActionsBase<UserModel> {
         return {
             id: 'disable',
             icon: 'ban',
-            enabledAction: ElementActionEnum.USER_BLOCK,
             shown: others && user.visible,
             allowed: this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_U),
             confirmation: { severity: SeverityEnum.WARNING, icon: 'pi pi-exclamation-triangle', accept: (): void => this.facade.blockUser(user.id) },
@@ -59,7 +56,6 @@ export class UserActions extends ElementActionsBase<UserModel> {
         return {
             id: 'enable',
             icon: 'rotate-right',
-            enabledAction: ElementActionEnum.USER_UNBLOCK,
             shown: others && !user.visible,
             allowed: this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_U),
             confirmation: { severity: SeverityEnum.INFO, icon: 'pi pi-info-circle', accept: (): void => this.facade.unblockUser(user.id) },
@@ -70,7 +66,6 @@ export class UserActions extends ElementActionsBase<UserModel> {
         return {
             id: 'delete',
             icon: 'trash',
-            enabledAction: ElementActionEnum.USER_DELETE,
             shown: others,
             allowed: this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_D),
             confirmation: { severity: SeverityEnum.DANGER, icon: 'pi pi-exclamation-circle', accept: (): void => this.facade.deleteUser(user) },

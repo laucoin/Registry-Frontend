@@ -1,9 +1,7 @@
 import { inject } from '@angular/core'
 import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper'
-import { RegistryConfig } from '@core/config/registry.config'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { ElementConfirmationService } from '@shared/helpers/facade/element-confirmation.service'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { ElementActionModel } from '@shared/models/model/element-action.model'
@@ -12,10 +10,9 @@ import { Observable } from 'rxjs'
 export interface ElementActionSpec {
     id: string
     icon: string
-    enabledAction: ElementActionEnum
     shown: boolean
     allowed: boolean
-    confirmation?: { severity: SeverityEnum, icon: string, accept: () => void, translationKey?: string }
+    confirmation?: { severity: SeverityEnum, icon: string, accept: () => void, translationKey?: string, typed?: boolean }
     run?: () => void
 }
 
@@ -37,7 +34,7 @@ export abstract class ElementActionsBase<T, C = void> {
 
     public actionsFor(element: T, context?: C): ElementActionModel[] {
         return this.specsFor(element, context)
-            .filter((spec: ElementActionSpec): boolean => spec.shown && this.isEnabled(spec.enabledAction))
+            .filter((spec: ElementActionSpec): boolean => spec.shown)
             .map((spec: ElementActionSpec): ElementActionModel => this.toAction(element, spec))
     }
 
@@ -76,10 +73,7 @@ export abstract class ElementActionsBase<T, C = void> {
             confirmation.severity,
             confirmation.icon,
             confirmation.accept,
+            confirmation.typed,
         )
-    }
-
-    private isEnabled(action: ElementActionEnum): boolean {
-        return RegistryConfig.config.enabledActions.includes(action)
     }
 }

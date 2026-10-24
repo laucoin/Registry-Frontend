@@ -114,7 +114,7 @@
     "weak": "Faible",
     "medium": "Moyen",
     "strong": "Fort",
-    "passwordPrompt": "Entrez un mot de passe",
+    "passwordPrompt": "Entre un mot de passe",
     "emptyFilterMessage": "Aucun résultat trouvé",
     "searchMessage": "{0} résultats disponibles",
     "selectionMessage": "{0} éléments sélectionnés",
@@ -173,6 +173,9 @@
     }
   },
   "global": {
+    "confirmation": {
+      "type-to-confirm": "Pour confirmer, tape « {{phrase}} »"
+    },
     "selection": {
       "added": "{{name}} ajouté",
       "removed": "{{name}} retiré",
@@ -199,7 +202,7 @@
       "title": "🚀 Bienvenue sur Registry !",
       "introduction": "Je suis ravi de t’accueillir ici. Ce site a été conçu pour t’aider à gérer facilement les entrées et sorties de tes participants à un accueil collectif de mineurs.",
       "option": "Pour chacun des projets, tu peux créer des profils d’accès pour donner l'accès à ton projet à d'autres utilisateurs, gérer leurs mouvements, suivre leurs activités et bien d'autres options.",
-      "invitations": "Tu retrouveras tes invitations à des projets en cliquant sur ton nom en haut à droit de l'écran. tu peux accepter ou refuser ces invitations. Si tu acceptes, tu pourras utiliser le profil d'accès associé à l'invitation pour accéder au projet.",
+      "invitations": "Tu retrouveras tes invitations à des projets en cliquant sur ton nom en haut à droite de l'écran. Tu peux accepter ou refuser ces invitations. Si tu acceptes, tu pourras utiliser le profil d'accès associé à l'invitation pour accéder au projet.",
       "conclusion": "Bonne utilisation !",
       "begin": "C'est parti ! Pour commencer, si tu veux créer ton propre projet, tu peux le faire en cliquant sur le bouton “Créer un projet” ci-dessous. Si tu veux rejoindre un projet existant, tu peux le faire en cliquant sur le bouton ci-dessous.",
       "create-project": "Créer mon premier projet"
@@ -293,6 +296,10 @@
       "startup": {
         "title": "🛠️ Application indisponible"
       },
+      "sign-in-refused": {
+        "title": "🔐 Reconnexion nécessaire",
+        "message": "La connexion n’a pas pu aboutir (code d’autorisation expiré ou déjà utilisé) : tu as été redirigé vers la page de connexion."
+      },
       "auth-callback": {
         "title": "🔐 Connexion impossible",
         "message": "Le fournisseur d’identité n’a pas renvoyé de code d’autorisation. Réessayes de te connecter."
@@ -307,7 +314,7 @@
       },
       "OFFLINE": {
         "title": "📡 Hors-ligne",
-        "message": "Ta connexion est peut-être faible 🐢, rapproches de la box. Si tu es en 4G, rapproches toi d’une fenêtre. Si tu es en 3G, rapproches toi d’un autre siècle."
+        "message": "Ta connexion est peut-être faible 🐢, rapproche-toi de la box. Si tu es en 4G, rapproche-toi d’une fenêtre. Si tu es en 3G, rapproche-toi d’un autre siècle."
       },
       "ONLINE": {
         "title": "⚡️ Connexion rétablie",
@@ -327,13 +334,13 @@
       },
       "THEME_SAVE_FAILED": {
         "title": "Thème non enregistré",
-        "message": "Le thème est appliqué sur cet appareil uniquement. Impossible de l'enregistrer sur votre compte : {{reason}}"
+        "message": "Le thème est appliqué sur cet appareil uniquement. Impossible de l'enregistrer sur ton compte : {{reason}}"
       }
     },
     "error": {
       "eyebrow": "Pas très pratique 😩",
       "title": "L'application est momentanément inaccessible",
-      "description": "Une erreur empêche l'application de fonctionner. Vous pouvez réessayer ; si le problème persiste, contactez le support.",
+      "description": "Une erreur empêche l'application de fonctionner. Tu peux réessayer ; si le problème persiste, contacte le support.",
       "cause": "Cause de l'erreur",
       "retry": "Réessayer"
     },
@@ -346,7 +353,7 @@
     "list": {
       "eyebrow": "Espace applicatif",
       "title": "Utilisateurs",
-      "subtitle": "Les comptes sont créés par le fournisseur d’identité : il n’est pas possible d’ajouter un utilisateur ici. Vous pouvez bloquer un accès ou supprimer définitivement un compte."
+      "subtitle": "Les comptes sont créés par le fournisseur d’identité : il n’est pas possible d’ajouter un utilisateur ici. Tu peux bloquer un accès ou supprimer définitivement un compte."
     },
     "search-and-filter": {
       "text": "Prénom, nom, email",
@@ -423,7 +430,7 @@
     "list": {
       "eyebrow": "Espace applicatif",
       "title": "Mes projets",
-      "subtitle": "Retrouvez, rejoignez et gérez les projets auxquels vous avez accès.",
+      "subtitle": "Retrouve, rejoins et gère les projets auxquels tu as accès.",
       "permanent": "Projet permanent (pas de fin prévue)"
     },
     "hidden-notice": {
@@ -470,7 +477,7 @@
       "invitation": {
         "created": {
           "title": "Le projet “{{name}}” est déjà créé",
-          "message": "Il n’est plus possible de revenir en arrière : le projet existe dès maintenant. Invitez des utilisateurs à le rejoindre ou passez cette étape, vous pourrez toujours les inviter plus tard depuis la configuration du projet."
+          "message": "Il n’est plus possible de revenir en arrière : le projet existe dès maintenant. Invite des utilisateurs à le rejoindre ou passe cette étape, tu pourras toujours les inviter plus tard depuis la configuration du projet."
         },
         "skip": "Passer cette étape"
       },
@@ -490,9 +497,7 @@
           "dateRequiredForTime": "Le projet commence à une certaine heure ok ! Mais quel jour ? 📆"
         },
         "end-datetime": {
-          "dateRequiredForTime": "Le projet termine à une certaine heure ok ! Mais quel jour ? 📆"
-        },
-        "date-range": {
+          "dateRequiredForTime": "Le projet termine à une certaine heure ok ! Mais quel jour ? 📆",
           "beginDateBeforeEndDate": "Ton projet finit avant d’avoir commencé ! Ça c’est de l’ambition."
         }
       },
@@ -522,11 +527,16 @@
         },
         "delete": {
           "title": "Supprimer le projet",
+          "phrase": "supprimer le projet",
           "message": "Attention ! Tu vas définitivement supprimer le projet “{{element.name}}” ainsi que tous les éléments qui lui sont liés (profils, mouvements, participants, etc.). La suppression du projet peut prendre un certain temps en fonction de sa taille. Tu peux continuer à utiliser l’application, mais il est préférable de ne pas quitter cette page avant que la suppression soit terminée."
         }
       }
     },
     "notifications": {
+      "NOT_FOUND": {
+        "title": "🕵️‍♀️ Projet introuvable",
+        "message": "Ce projet est introuvable."
+      },
       "create-support": {
         "title": "+ Profil support créé",
         "message": "Le profil support a été créé pour le projet, il est disponible jusqu’à {{end}}."
@@ -566,7 +576,7 @@
       "invitations": {
         "eyebrow": "Mon espace",
         "title": "Mes invitations",
-        "subtitle": "Les invitations à rejoindre un projet : acceptez-les ou refusez-les."
+        "subtitle": "Les invitations à rejoindre un projet : accepte-les ou refuse-les."
       },
       "project": {
         "title": "Utilisateurs membres",
@@ -626,9 +636,7 @@
           "dateRequiredForTime": "L’accès au projet commence à une certaine heure ok ! Mais quel jour ? 📆"
         },
         "end-datetime": {
-          "dateRequiredForTime": "L’accès au projet termine à une certaine heure ok ! Mais quel jour ? 📆"
-        },
-        "date-range": {
+          "dateRequiredForTime": "L’accès au projet termine à une certaine heure ok ! Mais quel jour ? 📆",
           "beginDateBeforeEndDate": "L’accès au projet finit avant d’avoir commencé ! Ça c’est de l’ambition."
         }
       }
@@ -667,6 +675,11 @@
         "delete": {
           "title": "Supprimer le profil",
           "message": "Attention ! Tu vas supprimer un profil pour le projet “{{element.project.name}}”. {{element.user.firstName}} {{element.user.lastName}} ne pourra plus l’utiliser."
+        },
+        "delete-own": {
+          "title": "Supprimer mon profil",
+          "phrase": "supprimer mon profil",
+          "message": "Attention ! Tu vas supprimer ton propre profil : tu perdras ton accès à ce projet et il faudra qu’on t’invite à nouveau pour le retrouver. Cette action est définitive."
         }
       }
     },
@@ -734,6 +747,11 @@
       }
     }
   },
+  "projectEyebrow": {
+    "dashboard": "Tableau de bord",
+    "monitoring": "Suivi",
+    "configuration": "Configuration"
+  },
   "movements": {
     "list": {
       "title": "Mouvements",
@@ -758,7 +776,14 @@
         "subtitle": "Détail des communications avec {{movement}}"
       },
       "no-message": "Aucun message",
-      "see-communication": "Détail des communications"
+      "see-communication": "Détail des communications",
+      "last": "Dernière communication",
+      "days": "{{count}} j",
+      "since-last": "Dernière communication il y a {{elapsed}}"
+    },
+    "reverse": {
+      "IN": "Faire sortir",
+      "OUT": "Faire rentrer"
     },
     "content-layer-title": {
       "one": "Participant",
@@ -791,7 +816,8 @@
       "type": "Type",
       "reason": {
         "name": "Motif",
-        "empty-search": "Aucune raison trouvée"
+        "empty-search": "Aucune raison trouvée",
+        "definitive-departure": "Sortie définitive"
       },
       "warning": {
         "participant": {
@@ -818,6 +844,7 @@
           "one": "Participant",
           "few": "Participants",
           "group": "Groupe “{{name}}”",
+          "individual": "Ajouté individuellement",
           "selected": {
             "one": "Personne sélectionnée",
             "few": "Personnes sélectionnées"
@@ -881,31 +908,11 @@
     },
     "actions": {
       "communications": "Communications",
-      "reverse": {
-        "IN": "Faire sortir",
-        "OUT": "Faire entrer"
-      },
       "edit": "Modifier",
       "disable": "Masquer",
       "enable": "Démasquer",
       "delete": "Supprimer",
       "confirmations": {
-        "reverse": {
-          "IN": {
-            "title": "Faire sortir",
-            "message": {
-              "one": "Attention ! Tu vas faire sortir un participant. Il sera considéré comme sorti à partir de maintenant.",
-              "few": "Attention ! Tu vas faire sortir {{size}} participants. Ils seront considérés comme sortis à partir de maintenant."
-            }
-          },
-          "OUT": {
-            "title": "Faire Entrer",
-            "message": {
-              "one": "Attention ! Tu vas faire entrer un participant. Il sera considéré comme présent à partir de maintenant.",
-              "few": "Attention ! Tu vas faire entrer {{size}} participants. Ils seront considérés comme présents à partir de maintenant."
-            }
-          }
-        },
         "disable": {
           "title": "Masquer le mouvement",
           "message": "Attention ! Tu vas masquer le mouvement. Tant qu’il est masqué, c’est comme s'il n’avait jamais eu lieu."
@@ -1060,9 +1067,7 @@
         "end-datetime": {
           "minDate": "Une personne ne peut pas arriver avant le début du projet ({{min}}).",
           "maxDate": "Une personne ne peut pas partir après la fin du projet ({{max}}).",
-          "dateRequiredForTime": "Cette personne termine à une certaine heure ok ! Mais quel jour ? 📆"
-        },
-        "date-range": {
+          "dateRequiredForTime": "Cette personne termine à une certaine heure ok ! Mais quel jour ? 📆",
           "beginDateBeforeEndDate": "Cette personne part avant d’être arrivé ! Ça c’est de l’ambition."
         }
       },
@@ -1194,9 +1199,7 @@
         "end-datetime": {
           "minDate": "Un groupe ne peut pas arriver avant le début du projet ({{min}}).",
           "maxDate": "Un groupe ne peut pas partir après la fin du projet ({{max}}).",
-          "dateRequiredForTime": "Ce groupe termine à une certaine heure ok ! Mais quel jour ? 📆"
-        },
-        "date-range": {
+          "dateRequiredForTime": "Ce groupe termine à une certaine heure ok ! Mais quel jour ? 📆",
           "beginDateBeforeEndDate": "Ce groupe part avant d’être arrivé ! Ça c’est de l’ambition."
         },
         "members": {
@@ -1342,9 +1345,7 @@
         "end-datetime": {
           "minDate": "Le véhicule ne peut pas arriver avant le début du projet ({{min}}).",
           "maxDate": "Le véhicule ne peut pas partir après la fin du projet ({{max}}).",
-          "dateRequiredForTime": "Ce véhicule part à une certaine heure ok ! Mais quel jour ? 📆"
-        },
-        "date-range": {
+          "dateRequiredForTime": "Ce véhicule part à une certaine heure ok ! Mais quel jour ? 📆",
           "beginDateBeforeEndDate": "Ce véhicule part avant d’être arrivé ! Ça c’est de l’ambition."
         }
       },
@@ -1462,7 +1463,7 @@
         "allowed-participants": {
           "min": "On va se faire chier à {{actual}}, il faut au moins {{min}} participant(s) pour une activité.",
           "rangeMin": "Tu vas rire mais ici, c’est comme partout ailleurs, le minimum doit être inférieur ou égal au maximum.",
-          "max": "“Vous voyez ce que ça fait déjà {{actual}} Larmina ?” Et bien c’est trop ! Le max c’est {{max}} après c’est relou à gérer.",
+          "max": "“Tu vois ce que ça fait déjà {{actual}} Larmina ?” Et bien c’est trop ! Le max c’est {{max}} après c’est relou à gérer.",
           "rangeBothDefined": "Tu ne peux pas saisir que le minimum ou le maximum."
         },
         "begin-datetime": {
@@ -1473,9 +1474,7 @@
         "end-datetime": {
           "minDate": "L’activité ne peut pas être disponible avant le début du projet ({{min}}).",
           "maxDate": "L’activité ne peut pas être disponible après la fin du projet ({{max}}).",
-          "dateRequiredForTime": "Cette activité n’est plus disponible à une certaine heure ok ! Mais quel jour ? 📆"
-        },
-        "date-range": {
+          "dateRequiredForTime": "Cette activité n’est plus disponible à une certaine heure ok ! Mais quel jour ? 📆",
           "beginDateBeforeEndDate": "Cette activité n’est plus disponible avant de l’être ! Ça c’est de l’ambition."
         }
       },
@@ -1536,7 +1535,6 @@
     }
   },
   "communications": {
-    "limited-feature": "Pour le moment l'affichage des communications est limité à un certain nombre. Merci de patienter pendant que nous travaillons à améliorer cette fonctionnalité.",
     "no-author": "Auteur inconnu ou supprimé",
     "visible": {
       "true": "Visible",
@@ -1559,7 +1557,8 @@
       "datetime": "Date & Heure",
       "message": "Message",
       "hint": {
-        "message": "Merci de ne pas mettre de données à caractère personnel dans ce message (ex : nom, prénom, numéro de téléphone, etc.)."
+        "message": "Merci de ne pas mettre de données à caractère personnel dans ce message (ex : nom, prénom, numéro de téléphone, etc.).",
+        "shortcut": "{{keys}} pour envoyer."
       },
       "actions": {
         "add-movement": "Lier une activité",
@@ -1638,19 +1637,13 @@
     "search-and-filter": {
       "text": "Projet",
       "datetime": "Date & Heure"
-    },
-    "notifications": {
-      "NO_SELECTED_PROFILE": {
-        "title": "Aucun profil sélectionné",
-        "message": "Sélectionnes un profil lié à un projet pour effectuer cette action."
-      }
     }
   },
   "alerts": {
     "untitled": "Alerte sans titre",
     "list": {
       "title": "Alertes",
-      "subtitle": "Les alertes du projet : suivez celles en cours, ajoutez des communications, résolvez-les ou annulez-les."
+      "subtitle": "Les alertes du projet : suis celles en cours, ajoute des communications, résous-les ou annule-les."
     },
     "search-and-filter": {
       "text": "Titre",

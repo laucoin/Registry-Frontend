@@ -4,7 +4,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { provideRouter } from '@angular/router'
 import { TranslocoTestingModule } from '@jsverse/transloco'
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
-import { RegistryConfig } from '@core/config/registry.config'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UserProfileFacade } from '@core/registry/state/user-profile.facade'
 import { ProjectProfileActions } from '@pages/projects/[projectId]/configuration/profiles/project-profile-row/project-profile-actions.service'
@@ -67,7 +66,6 @@ describe('ProjectProfileRowComponent', () => {
     }
 
     beforeEach(async () => {
-        RegistryConfig.config = { enabledActions: [] } as never
         manageAcceptance = vi.fn()
         toggleProjectFavorite = vi.fn()
         TestBed.configureTestingModule({

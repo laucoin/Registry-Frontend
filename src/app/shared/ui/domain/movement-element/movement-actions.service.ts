@@ -3,7 +3,6 @@ import { Router } from '@angular/router'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import { ElementActionsBase, ElementActionSpec } from '@shared/helpers/facade/element-actions.base'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
@@ -29,7 +28,6 @@ export class MovementActions extends ElementActionsBase<MovementModel> {
         return {
             id: 'edit',
             icon: 'pen-to-square',
-            enabledAction: ElementActionEnum.MOVEMENT_UPDATE,
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_U),
             run: (): void => this.navigateToEdition(movement),
@@ -40,7 +38,6 @@ export class MovementActions extends ElementActionsBase<MovementModel> {
         return {
             id: 'disable',
             icon: 'eye-slash',
-            enabledAction: ElementActionEnum.MOVEMENT_DISABLE,
             shown: movement.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_U),
             confirmation: { severity: SeverityEnum.WARNING, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.disableMovement(movement.id)) },
@@ -51,9 +48,8 @@ export class MovementActions extends ElementActionsBase<MovementModel> {
         return {
             id: 'enable',
             icon: 'rotate-right',
-            enabledAction: ElementActionEnum.MOVEMENT_ENABLE,
             shown: !movement.visible,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_U),
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_D),
             confirmation: { severity: SeverityEnum.INFO, icon: 'pi pi-info-circle', accept: (): void => this.run(this.facade.enableMovement(movement.id)) },
         }
     }
@@ -62,7 +58,6 @@ export class MovementActions extends ElementActionsBase<MovementModel> {
         return {
             id: 'delete',
             icon: 'trash',
-            enabledAction: ElementActionEnum.MOVEMENT_DELETE,
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_D),
             confirmation: { severity: SeverityEnum.DANGER, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.deleteMovement(movement)) },

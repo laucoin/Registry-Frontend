@@ -21,7 +21,7 @@
         @for (group of page.content; track group.id) {
             <sgdf-accordion-item [expanded]="onlyGroup()" (sgdf-after-expand)="opened(group)">
                 <span slot="title" class="flex flex-wrap items-center gap-2">
-                    {{ group.name }}
+                    <span appEllipsis class="max-w-full">{{ group.name }}</span>
                     <sgdf-tag variant="neutral" size="small" appearance="soft">
                         {{ 'projectHome.groupStatus.onSite' | pluralTranslation: group.onSiteMembersCount ?? 0 | transloco: { count: group.onSiteMembersCount ?? 0 } }}
                     </sgdf-tag>

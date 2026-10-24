@@ -3,12 +3,10 @@ import { TestBed } from '@angular/core/testing'
 import { Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { RegistryConfig } from '@core/config/registry.config'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { UserFacade } from '@pages/users/data/state/user.facade'
 import { UserActions } from '@pages/users/users-list/user-actions.service'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { ElementActionModel } from '@shared/models/model/element-action.model'
 import { UserModel } from '@shared/models/model/user.model'
@@ -25,7 +23,6 @@ describe('UserActions', () => {
     let navigateByUrl: Mock<(url: string) => Promise<boolean>>
 
     beforeEach(() => {
-        RegistryConfig.config = { enabledActions: Object.values(ElementActionEnum) } as never
         authorities = signal(['REGISTRY_USER_U', 'REGISTRY_USER_D'])
         currentUserId = signal('u1')
         facade = { blockUser: vi.fn(), unblockUser: vi.fn(), deleteUser: vi.fn() }
@@ -79,17 +76,6 @@ describe('UserActions', () => {
 
         // Assert
         expect(shown).toEqual([])
-    })
-
-    it('leaves out the actions that are not enabled in the configuration', () => {
-        // Arrange
-        RegistryConfig.config = { enabledActions: [ElementActionEnum.USER_BLOCK] } as never
-
-        // Act
-        const ids: string[] = actions.actionsFor(ACTIVE).map((action: ElementActionModel): string => action.id)
-
-        // Assert
-        expect(ids).toEqual(['disable'])
     })
 
     it('disables the commands the signed-in user has no authority for', () => {

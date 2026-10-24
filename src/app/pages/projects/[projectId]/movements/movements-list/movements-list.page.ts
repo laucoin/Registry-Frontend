@@ -1,4 +1,5 @@
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, signal, Signal, WritableSignal } from '@angular/core'
+import { IfProjectAuthorityDirective } from '@shared/directives/if-project-authority.directive'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import { RouterLink } from '@angular/router'
 import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper'
@@ -18,7 +19,6 @@ import {
     toMovementsListSearchModel,
     toMovementsListSearchParams,
 } from '@pages/projects/[projectId]/movements/movements-list/movements-list.search'
-import { ProjectEyebrowDirective } from '@shared/directives/project-eyebrow.directive'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
@@ -36,7 +36,7 @@ import { MovementElementComponent } from '@shared/ui/domain/movement-element/mov
 @Component({
     selector: 'app-movements-list',
     imports: [
-        ProjectEyebrowDirective,
+        IfProjectAuthorityDirective,
         ListComponent,
         MovementElementComponent,
         RegistryTemplateDirective,
@@ -50,6 +50,8 @@ import { MovementElementComponent } from '@shared/ui/domain/movement-element/mov
     templateUrl: './movements-list.page.html',
 })
 export class MovementsListPage {
+    protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_D
+
     protected readonly facade: MovementFacade = inject(MovementFacade)
     private readonly sessionFacade: SessionFacade = inject(SessionFacade)
 

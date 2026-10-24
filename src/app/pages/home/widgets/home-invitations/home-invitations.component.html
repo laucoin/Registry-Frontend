@@ -36,7 +36,7 @@
                 <sgdf-table-cell>
                     <div class="flex flex-wrap items-center justify-between gap-3">
                         <div class="min-w-0">
-                            <strong class="block truncate" [attr.title]="invitation.project?.name">{{ invitation.project?.name }}</strong>
+                            <strong appEllipsis>{{ invitation.project?.name }}</strong>
                             <small class="opacity-80">{{ 'home.invitations.invitedAs' | transloco: { role: invitation.role.label } }}</small>
                         </div>
                         <span class="flex gap-2">

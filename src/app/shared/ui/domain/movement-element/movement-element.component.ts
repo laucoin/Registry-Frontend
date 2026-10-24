@@ -1,5 +1,3 @@
-import { notifyOnError } from '@shared/helpers/rx.helper'
-import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
 import { KeyValuePipe, NgTemplateOutlet, TitleCasePipe, UpperCasePipe } from '@angular/common'
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal, model, ModelSignal, Signal } from '@angular/core'
 import { TranslocoPipe } from '@jsverse/transloco'
@@ -12,10 +10,6 @@ import '@sgdf/ui/icon'
 import '@sgdf/ui/list-item'
 import '@sgdf/ui/skeleton'
 import '@sgdf/ui/tag'
-import { MovementContentDto } from '@pages/projects/[projectId]/movements/data/dto/movement-content.dto'
-import { GuestMovementDto } from '@pages/projects/[projectId]/movements/data/dto/guest-movement.dto'
-import { MovementDto } from '@pages/projects/[projectId]/movements/data/dto/movement.dto'
-import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import {
     MovementCommunicationsListComponent,
 } from '@shared/ui/domain/movement-communications-list/movement-communications-list.component'
@@ -26,12 +20,12 @@ import { MovementHelper } from '@shared/helpers/movement.helper'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { TruncatePipe } from '@shared/helpers/pipe/truncate.pipe'
+import { ClockService } from '@shared/helpers/clock.service'
+import { DateHelper } from '@shared/helpers/date.helper'
 import { VehicleHelper } from '@shared/helpers/vehicle.helper'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { MovementTypeEnum } from '@shared/models/enumeration/movement-type.enum'
-import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
-import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
+import { MovementPrefillService } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-prefill.service'
 import { MovementActions } from '@shared/ui/domain/movement-element/movement-actions.service'
 import { ElementActionModel } from '@shared/models/model/element-action.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
@@ -39,11 +33,12 @@ import { MovementContentModel } from '@shared/models/model/movement-content.mode
 import { MovementModel } from '@shared/models/model/movement.model'
 import { GenericElementComponent } from '@shared/ui/base/generic-element.component'
 import { ElementActionsComponent } from '@shared/ui/common/element-actions/element-actions.component'
+import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 
 /**
  * Purpose: List item presenting one movement with its actions; used as an attribute of `sgdf-list-item`.
- * Scope: Renders the details, the action menu, the reversal and the layers listing the people and the communications of the movement.
- * Limits: Receives the element as an input and calls the facade for commands; it holds no list state.
+ * Scope: Renders the details, the action menu and the layers listing the people and the communications of the movement.
+ * Limits: Receives the element as an input; its commands run through the action menu and it holds no list state.
  */
 @Component({
     selector: 'sgdf-list-item[appMovementElement], app-movement-element',
@@ -51,6 +46,7 @@ import { ElementActionsComponent } from '@shared/ui/common/element-actions/eleme
     host: { '[disabled]': '!movement().visible' },
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     imports: [
+        EllipsisDirective,
         ElementActionsComponent,
         TranslocoPipe,
         NgTemplateOutlet,
@@ -66,9 +62,9 @@ import { ElementActionsComponent } from '@shared/ui/common/element-actions/eleme
     templateUrl: './movement-element.component.html',
 })
 export class MovementElementComponent extends GenericElementComponent {
-    protected readonly facade: MovementFacade = inject(MovementFacade)
     private readonly actionsService: MovementActions = inject(MovementActions)
-    protected readonly pluralTranslation: PluralTranslationPipe = inject(PluralTranslationPipe)
+    private readonly clock: ClockService = inject(ClockService)
+    protected readonly prefillService: MovementPrefillService = inject(MovementPrefillService)
 
     protected readonly VehicleHelper: typeof VehicleHelper = VehicleHelper
     protected readonly MovementTypeEnum: typeof MovementTypeEnum = MovementTypeEnum
@@ -78,25 +74,10 @@ export class MovementElementComponent extends GenericElementComponent {
 
     public readonly actionMenuVisible: InputSignal<boolean> = input(true)
     public readonly movement: InputSignal<MovementModel> = input.required()
-    public readonly reversible: InputSignal<boolean> = input(false)
     public readonly communicable: InputSignal<boolean> = input(false)
     public readonly vehicleId: InputSignal<string | undefined> = input()
 
     protected readonly actions: Signal<ElementActionModel[]> = computed((): ElementActionModel[] => this.actionsService.actionsFor(this.movement()))
-
-    protected readonly reversibleAuthorized: Signal<boolean> = computed((): boolean =>
-        this.reversible()
-        && this.actionIsEnable(ElementActionEnum.MOVEMENT_REVERSE)
-        && this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_C),
-    )
-
-    protected readonly reversedIcon: Signal<string> = computed((): string =>
-        this.movement().type.value === MovementTypeEnum.IN ? 'pi pi-arrow-up' : 'pi pi-arrow-down',
-    )
-
-    protected readonly reversedIconName: Signal<string> = computed((): string =>
-        this.movement().type.value === MovementTypeEnum.IN ? 'arrow-up' : 'arrow-down',
-    )
 
     protected readonly typeIconName: Signal<string> = computed((): string =>
         this.movement().type.value === MovementTypeEnum.OUT ? 'arrow-up' : 'arrow-down',
@@ -107,6 +88,20 @@ export class MovementElementComponent extends GenericElementComponent {
     protected readonly communication: Signal<boolean> = computed((): boolean =>
         this.communicable() && this.hasCommunicationOption(),
     )
+
+    private readonly lastCommunication: Signal<Date | undefined> = computed((): Date | undefined =>
+        this.communication() ? this.movement().lastCommunicationDateTime : undefined,
+    )
+
+    protected readonly daysSinceLastCommunication: Signal<number> = computed((): number => {
+        const last: Date | undefined = this.lastCommunication()
+        return last ? DateHelper.elapsedDays(last, this.clock.now()) : 0
+    })
+
+    protected readonly sinceLastCommunication: Signal<string | undefined> = computed((): string | undefined => {
+        const last: Date | undefined = this.lastCommunication()
+        return last ? DateHelper.formatElapsed(last, this.clock.now()) : undefined
+    })
 
     protected readonly typeAndReason: Signal<string> = computed((): string => {
         let text: string = this.movement().type.label ?? ''
@@ -138,23 +133,8 @@ export class MovementElementComponent extends GenericElementComponent {
         return participant ? `${participant.firstName} ${participant.lastName?.toUpperCase()}` : ''
     })
 
-    protected confirmMovementReversion(content: MovementContentModel[]): void {
-        const translationKey: string = `movements.actions.confirmations.reverse.${this.movement().type.value}`
-        this.uiFacade.confirm(
-            this.buildCustomConfirmation(
-                `${translationKey}.title`,
-                this.pluralTranslation.transform(`${translationKey}.message`, content.length),
-                this.reversedIcon(),
-                this.movement(),
-                SeverityEnum.SUCCESS,
-                (): void => this.reverseMovement(content),
-            ),
-        )
-    }
-
-    protected reverseOne(content: MovementContentModel): void {
-        this.participantsLayerOpened.set(false)
-        this.confirmMovementReversion([content])
+    protected reverse(contents?: MovementContentModel[]): void {
+        this.prefillService.openReverse(this.movement(), contents)
     }
 
     protected closeParticipants(event: Event): void {
@@ -166,38 +146,6 @@ export class MovementElementComponent extends GenericElementComponent {
     protected closeCommunications(event: Event): void {
         if (EventHelper.isFromHost(event)) {
             this.communicationsLayerOpened.set(false)
-        }
-    }
-
-    protected reverseMovement(content: MovementContentModel[]): void {
-        const type: string = this.movement().type.value === MovementTypeEnum.IN ? MovementTypeEnum.OUT : MovementTypeEnum.IN
-        this.run((this.movement().contentType === ParticipantTypeEnum.GUEST
-                  ? this.facade.createGuestMovement(this.reverseGuestMovement(type, content))
-                  : this.facade.createRegisteredMovement(this.reverseRegisteredMovement(type, content))
-        ).pipe(notifyOnError(this.uiFacade)))
-    }
-
-    private reverseRegisteredMovement(type: string, content: MovementContentModel[]): MovementDto {
-        return {
-            dateTime: new Date(),
-            type,
-            reason: undefined,
-            activityId: undefined,
-            content: content.map((c: MovementContentModel): MovementContentDto => ({
-                poolName: c.poolName,
-                participantId: c.participant?.id,
-                vehicleId: c.vehicle?.id,
-            })),
-        }
-    }
-
-    private reverseGuestMovement(type: string, content: MovementContentModel[]): GuestMovementDto {
-        return {
-            dateTime: new Date(),
-            type,
-            reason: undefined,
-            content: content.map((c: MovementContentModel): { participantId: string } => ({ participantId: c.participant?.id })),
-            guests: [],
         }
     }
 }

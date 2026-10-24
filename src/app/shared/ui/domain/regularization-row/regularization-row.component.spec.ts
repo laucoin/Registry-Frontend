@@ -1,3 +1,5 @@
+import { signal } from '@angular/core';
+import { MovementPrefillService } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-prefill.service';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { MockBuilder } from 'ng-mocks';
@@ -18,6 +20,7 @@ function participant(withEnd: boolean): ParticipantModel {
 
 describe('RegularizationRowComponent', () => {
 	let fixture: ComponentFixture<RegularizationRowComponent>;
+	const openRegularization = vi.fn();
 
 	async function render(value: ParticipantModel): Promise<string> {
 		fixture.componentRef.setInput('participant', value);
@@ -29,7 +32,9 @@ describe('RegularizationRowComponent', () => {
 		await MockBuilder(RegularizationRowComponent)
 			.mock(TranslocoPipe, (key: string): string => key)
 			.mock(CustomDateFormatPipe, (): string => '16 juillet')
-			.mock(IntervalPipe, (): string => '2 jours');
+			.mock(IntervalPipe, (): string => '2 jours')
+			.mock(MovementPrefillService, { canCreate: signal(true), openRegularization });
+		openRegularization.mockClear();
 		fixture = TestBed.createComponent(RegularizationRowComponent);
 	});
 
@@ -56,5 +61,17 @@ describe('RegularizationRowComponent', () => {
 		// Assert
 		expect(text).not.toContain('projectHome.participantRegularization.plannedEnd');
 		expect(text).toContain('projectHome.participantRegularization.presentSince');
+	});
+
+	it('should open the movement form prefilled with the participant when clicked', async () => {
+		// Arrange
+		const value: ParticipantModel = participant(true);
+		await render(value);
+
+		// Act
+		fixture.nativeElement.click();
+
+		// Assert
+		expect(openRegularization).toHaveBeenCalledWith(value);
 	});
 });

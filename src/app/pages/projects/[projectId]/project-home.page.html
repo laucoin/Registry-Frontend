@@ -1,8 +1,24 @@
-<sgdf-page-title [eyebrow]="'projectHome.eyebrow' | transloco" [lede]="'projectHome.subtitle' | transloco">
+<sgdf-page-title [attr.title]="project()?.name" [eyebrow]="'projectHome.eyebrow' | transloco" [lede]="'projectHome.subtitle' | transloco">
     {{ project()?.name }}
+    @if (canCreateMovement()) {
+        <sgdf-button data-testid="project-home-registered-movement-button" slot="actions" variant="primary" [routerLink]="registeredMovementRoute()">
+            <sgdf-icon slot="prefix" name="plus" library="solid"/>
+            {{ 'projectHome.quickActions.registeredMovement' | transloco }}
+        </sgdf-button>
+        <sgdf-button data-testid="project-home-guest-movement-button" slot="actions" variant="neutral" appearance="outlined" [routerLink]="guestMovementRoute()">
+            <sgdf-icon slot="prefix" name="plus" library="solid"/>
+            {{ 'projectHome.quickActions.guestMovement' | transloco }}
+        </sgdf-button>
+    }
+    @if (canCreateAlert()) {
+        <sgdf-button data-testid="project-home-alert-button" slot="actions" variant="neutral" appearance="outlined" (click)="creatingAlert.set(true)">
+            <sgdf-icon slot="prefix" name="triangle-exclamation" library="solid"/>
+            {{ 'projectHome.quickActions.alert' | transloco }}
+        </sgdf-button>
+    }
 </sgdf-page-title>
 
-<section class="grid grid-cols-1 gap-(--spacing--block) lg:grid-cols-12">
+<section class="grid grid-cols-1 items-start gap-(--spacing--block) lg:grid-cols-12">
     <app-project-participant-overview [class]="hasVehicleOption() ? 'lg:col-span-5 block' : 'lg:col-span-6 block'"/>
     @if (hasVehicleOption()) {
         <app-project-vehicle-overview class="lg:col-span-3 block"/>
@@ -23,3 +39,16 @@
         <div class="lg:col-span-12 block min-h-48"></div>
     }
 </section>
+
+@if (canCreateAlert()) {
+    <sgdf-drawer data-testid="project-home-alert-drawer" light-dismiss
+                 [open]="creatingAlert()"
+                 [class.drawer-sheet]="uiFacade.tinyScreen()"
+                 [placement]="uiFacade.tinyScreen() ? 'bottom' : 'right'"
+                 [title]="'projectHome.quickActions.alert' | transloco"
+                 (sgdf-hide)="closeAlertDrawer($event)">
+        @if (creatingAlert()) {
+            <app-communication-form data-testid="project-home-alert-form" [startWithNewAlert]="true" (saved)="creatingAlert.set(false)"/>
+        }
+    </sgdf-drawer>
+}

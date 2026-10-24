@@ -147,7 +147,7 @@ describe( 'mappers', () => {
         const dto: MovementResponseDto = {
             id: 'm1', visible: true, creation: HISTORY, lastEdition: HISTORY,
             dateTime: WHEN, type: { label: 'In', value: 'IN' as never }, reason: { label: 'Arrival', value: 'r1', kind: 'REASON' },
-            activity: { label: 'Hike', value: activity }, contentType: 'REGISTERED' as never,
+            lastCommunicationDateTime: WHEN, activity: { label: 'Hike', value: activity }, contentType: 'REGISTERED' as never,
             content: [ { poolName: 'car 1', participant: PARTICIPANT, vehicle: undefined } ],
         }
 
@@ -158,6 +158,7 @@ describe( 'mappers', () => {
         expect( model.content[ 0 ].participant.firstName ).toBe( 'A' )
         expect( model.content[ 0 ].vehicle ).toBeUndefined()
         expect( model.reason?.kind ).toBe( 'REASON' )
+        expect( model.lastCommunicationDateTime ).toBe( WHEN )
         expect( model.activity?.value.name ).toBe( 'Hike' )
         expect( model.activity?.label ).toBe( 'Hike' )
     } )
@@ -166,7 +167,7 @@ describe( 'mappers', () => {
         // Arrange
         const movement: MovementResponseDto = {
             id: 'm1', visible: true, creation: HISTORY, lastEdition: HISTORY, dateTime: WHEN,
-            type: { label: 'In', value: 'IN' as never }, reason: undefined, activity: undefined, contentType: 'GUEST' as never, content: [],
+            type: { label: 'In', value: 'IN' as never }, reason: undefined, lastCommunicationDateTime: undefined, activity: undefined, contentType: 'GUEST' as never, content: [],
         }
         const communication: CommunicationResponseDto = {
             id: 'c1', visible: true, creation: HISTORY, lastEdition: HISTORY, dateTime: WHEN, message: 'hello', movement, alert: undefined,

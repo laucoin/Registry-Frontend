@@ -8,7 +8,7 @@
         <sgdf-icon slot="icon" [name]="row().icon" library="solid"/>
     </sgdf-avatar>
 </span>
-<span class="block truncate" [attr.title]="row().title">{{ row().title }}</span>
+<span appEllipsis>{{ row().title }}</span>
 @if (row().subtitle || row().overdue) {
     <span slot="description" class="flex flex-col">
         @if (row().subtitle) {

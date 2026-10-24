@@ -18,6 +18,18 @@ const YEAR_MS: number = 12 * MONTH_MS
  * Limits: Works on the local clock for display and on UTC for transport; it does not format for the user.
  */
 export class DateHelper {
+    public static elapsedDays (from: Date | string, now: number): number {
+        return Math.floor( Math.max( 0, now - new Date( from ).getTime() ) / DAY_MS )
+    }
+
+    public static formatElapsed (from: Date | string, now: number): string {
+        const totalSeconds: number = Math.max( 0, Math.floor( (now - new Date( from ).getTime()) / SECOND_MS ) )
+        const hours: number = Math.floor( totalSeconds / 3600 )
+        const minutes: number = Math.floor( (totalSeconds % 3600) / 60 )
+        const seconds: number = totalSeconds % 60
+        return [ hours, minutes, seconds ].map( (unit: number): string => StringHelper.formatDigits( unit, 2 ) ).join( ':' )
+    }
+
     public static getDate (date: Date): string {
         const toFormat: Date = new Date( date )
         return `${toFormat.getFullYear()}-${StringHelper.formatDigits(

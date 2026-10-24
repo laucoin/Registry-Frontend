@@ -5,7 +5,7 @@ import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 
 /**
  * Purpose: Asks the user to confirm a command on a list element.
- * Scope: Builds the confirmation from the `<prefix>.title` and `<prefix>.message` translations of the element and hands it to the UI.
+ * Scope: Builds the confirmation from the `<prefix>.title` and `<prefix>.message` translations of the element and hands it to the UI; a typed confirmation also carries the `<prefix>.phrase` the user has to type.
  * Limits: Does not run the command itself; the accept callback does.
  */
 @Injectable({ providedIn: 'root' })
@@ -13,13 +13,14 @@ export class ElementConfirmationService {
     private readonly uiFacade: UiFacade = inject(UiFacade)
     private readonly translateService: TranslocoService = inject(TranslocoService)
 
-    public confirm(prefix: string, element: unknown, severity: SeverityEnum, icon: string, accept: () => void): void {
+    public confirm(prefix: string, element: unknown, severity: SeverityEnum, icon: string, accept: () => void, typed: boolean = false): void {
         this.uiFacade.confirm({
             header: this.translateService.translate(`${prefix}.title`, { element: element }),
             message: this.translateService.translate(`${prefix}.message`, { element: element }),
             icon: icon,
             acceptSeverity: severity,
             accept: accept,
+            ...(typed && { phrase: this.translateService.translate(`${prefix}.phrase`, { element: element }) }),
         })
     }
 }

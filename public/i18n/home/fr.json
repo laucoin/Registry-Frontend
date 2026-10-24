@@ -1,7 +1,7 @@
 {
   "eyebrow": "Espace applicatif",
   "greeting": "Bonjour {{name}}",
-  "subtitle": "Retrouvez vos projets, vos invitations et les éléments qui demandent votre attention.",
+  "subtitle": "Retrouve tes projets, tes invitations et les éléments qui demandent ton attention.",
   "create": "Créer un projet",
   "favorites": {
     "title": "Mes projets favoris",
@@ -10,7 +10,7 @@
       "few": "{{count}} favoris"
     },
     "seeAll": "Voir tous les projets",
-    "empty": "Aucun projet favori pour le moment. Marquez un projet comme favori depuis la liste des projets.",
+    "empty": "Aucun projet favori pour le moment. Marque un projet comme favori depuis la liste des projets.",
     "participants": {
       "one": "{{count}} participant",
       "few": "{{count}} participants"
@@ -55,6 +55,7 @@
     "users": "Utilisateurs",
     "account": "Mon compte",
     "projects": "Mes projets",
-    "help": "Centre d'aide"
+    "help": "Documentation",
+    "support": "Support"
   }
 }

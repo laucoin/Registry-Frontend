@@ -11,6 +11,7 @@ import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco'
 import { CONFIGURATION_TILES } from '@pages/projects/[projectId]/configuration/data/configuration-tiles.definitions'
 import { ConfigurationTileModel } from '@pages/projects/[projectId]/configuration/data/model/configuration-tile.model'
 import { ProjectInformationComponent } from '@shared/ui/domain/project-information/project-information.component'
+import { ProjectDangerZoneComponent } from '@shared/ui/domain/project-danger-zone/project-danger-zone.component'
 import { ProjectModel } from '@shared/models/model/project.model'
 
 /**
@@ -22,7 +23,7 @@ import { ProjectModel } from '@shared/models/model/project.model'
 	selector: 'app-configuration',
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	providers: [provideTranslocoScope('project-configuration')],
-	imports: [RouterLink, TranslocoPipe, ProjectInformationComponent],
+	imports: [RouterLink, TranslocoPipe, ProjectInformationComponent, ProjectDangerZoneComponent],
 	templateUrl: './configuration.page.html',
 })
 export class ConfigurationPage {

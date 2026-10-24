@@ -6,4 +6,5 @@ export interface ConfirmationModel {
     icon: string
     acceptSeverity: SeverityEnum
     accept: () => void
+    phrase?: string
 }

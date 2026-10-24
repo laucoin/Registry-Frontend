@@ -1,4 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common'
+import { IfProjectAuthorityDirective } from '@shared/directives/if-project-authority.directive'
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, signal, Signal, WritableSignal } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import { RouterLink, RouterOutlet } from '@angular/router'
@@ -20,7 +21,6 @@ import {
     toActivitiesListSearchModel,
     toActivitiesListSearchParams,
 } from '@pages/projects/[projectId]/configuration/activities/activities-list/activities-list.search'
-import { ProjectEyebrowDirective } from '@shared/directives/project-eyebrow.directive'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
@@ -38,7 +38,7 @@ import { ListComponent } from '@shared/ui/common/list/list.component'
 @Component({
     selector: 'app-activities-list',
     imports: [
-        ProjectEyebrowDirective,
+        IfProjectAuthorityDirective,
         ListComponent,
         ActivityRowComponent,
         RegistryTemplateDirective,
@@ -54,6 +54,8 @@ import { ListComponent } from '@shared/ui/common/list/list.component'
     templateUrl: './activities-list.page.html',
 })
 export class ActivitiesListPage {
+    protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_D
+
     protected readonly facade: ActivityFacade = inject(ActivityFacade)
     private readonly sessionFacade: SessionFacade = inject(SessionFacade)
 

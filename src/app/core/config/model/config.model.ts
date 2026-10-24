@@ -1,4 +1,3 @@
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 
 export interface ConfigModel {
 	defaultLanguage: string
@@ -17,7 +16,6 @@ export interface ConfigModel {
 			issuesUrl?: string
 		}
 	}
-	enabledActions: ElementActionEnum[]
 	notification: {
 		duration: {
 			info: number | undefined

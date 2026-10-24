@@ -306,6 +306,18 @@ describe( 'SessionFacade', () => {
             expect( setGlobalError ).toHaveBeenCalledWith( FAILURE )
             expect( navigateByUrl ).not.toHaveBeenCalled()
         } )
+
+        it( 'explains the redirection to the login page when the authorization code is refused', () => {
+            // Arrange
+            fetchToken.mockReturnValue( failing( { ...FAILURE, status: 401 } as ErrorModel ) )
+
+            // Act
+            facade.fetchToken( 'code' )
+
+            // Assert
+            expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'global.notifications.sign-in-refused.title', detail: 'global.notifications.sign-in-refused.message' } ) )
+            expect( setGlobalError ).not.toHaveBeenCalled()
+        } )
     } )
 
     describe( 'refreshToken', () => {

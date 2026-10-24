@@ -3,7 +3,6 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, Pipe, PipeTransform, signal, Writabl
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { TranslocoTestingModule } from '@jsverse/transloco'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { RegistryConfig } from '@core/config/registry.config'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { ActivityActions } from '@pages/projects/[projectId]/configuration/activities/activity-row/activity-actions.service'
 import { ActivityRowComponent } from '@pages/projects/[projectId]/configuration/activities/activity-row/activity-row.component'
@@ -43,7 +42,6 @@ describe('ActivityRowComponent', () => {
     }
 
     beforeEach(async () => {
-        RegistryConfig.config = { enabledActions: [] } as never
         TestBed.configureTestingModule({
             imports: [TranslocoTestingModule.forRoot({ langs: { fr: {} }, translocoConfig: { defaultLang: 'fr' } })],
         })

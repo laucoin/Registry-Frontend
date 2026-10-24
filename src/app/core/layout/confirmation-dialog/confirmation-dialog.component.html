@@ -2,11 +2,17 @@
              [variant]="variant()"
              [title]="pending()?.header ?? ''"
              (sgdf-hide)="cancel($event)">
-    <p class="m-0 text-left">{{ pending()?.message }}</p>
+    <p class="m-0 text-left wrap-anywhere">{{ pending()?.message }}</p>
+    @if (pending()?.phrase; as phrase) {
+        <sgdf-input data-testid="confirmation-dialog-phrase-input" class="mt-[0.75rem] w-full"
+                    [label]="'global.confirmation.type-to-confirm' | transloco: { phrase: phrase }"
+                    [value]="typed()"
+                    (input)="onInput($event)"/>
+    }
     <sgdf-button data-testid="confirmation-dialog-cancel-button" slot="footer" variant="neutral" appearance="text" (click)="cancel()">
         {{ 'global.actions.cancel' | transloco }}
     </sgdf-button>
-    <sgdf-button data-testid="confirmation-dialog-confirm-button" slot="footer" [variant]="variant()" (click)="confirm()">
+    <sgdf-button data-testid="confirmation-dialog-confirm-button" slot="footer" [variant]="variant()" [disabled]="!phraseTyped()" (click)="confirm()">
         {{ 'global.actions.confirm' | transloco }}
     </sgdf-button>
 </sgdf-dialog>

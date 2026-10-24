@@ -28,7 +28,7 @@ const SHORTCUTS: readonly QuickAccess[] = [
 
 /**
  * Purpose: Offers shortcuts to the main areas of the application on the home page.
- * Scope: Shows the shortcuts the signed-in user is allowed to use, as a grid of buttons, plus the help center when the configuration gives a documentation url.
+ * Scope: Shows the shortcuts the signed-in user is allowed to use, as a grid of buttons, plus the documentation and support links when the configuration gives their url.
  * Limits: Reads the session only; the routes and their guards still decide access.
  */
 @Component({
@@ -43,14 +43,21 @@ export class HomeQuickAccessComponent {
 
 	private readonly documentationUrl: string | undefined = RegistryConfig.config.application.support.documentationUrl
 
+	private readonly issuesUrl: string | undefined = RegistryConfig.config.application.support.issuesUrl
+
 	protected readonly shortcuts: Signal<QuickAccess[]> = computed((): QuickAccess[] =>
-		this.withHelp().filter((shortcut: QuickAccess): boolean =>
+		this.withExternalLinks().filter((shortcut: QuickAccess): boolean =>
 			shortcut.authority === undefined || CurrentUserHelper.hasUserAuthority(this.sessionFacade.currentUser(), shortcut.authority)),
 	)
 
-	private withHelp(): readonly QuickAccess[] {
-		return this.documentationUrl
-			? [...SHORTCUTS, { label: 'home.quickAccess.help', icon: 'circle-question', url: this.documentationUrl, external: true }]
-			: SHORTCUTS
+	private withExternalLinks(): readonly QuickAccess[] {
+		const links: QuickAccess[] = []
+		if (this.documentationUrl) {
+			links.push({ label: 'home.quickAccess.help', icon: 'circle-question', url: this.documentationUrl, external: true })
+		}
+		if (this.issuesUrl) {
+			links.push({ label: 'home.quickAccess.support', icon: 'life-ring', url: this.issuesUrl, external: true })
+		}
+		return [...SHORTCUTS, ...links]
 	}
 }

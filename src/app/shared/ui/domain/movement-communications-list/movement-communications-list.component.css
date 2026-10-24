@@ -4,7 +4,3 @@
   flex-direction: column;
   padding-block-end: var(--sgdf-spacing-medium);
 }
-
-.limited {
-  color: var(--sgdf-color-text-light);
-}

@@ -2,7 +2,7 @@
           [loading]="loading()"
           [error]="error()"
           [title]="'groups.form.title' | formTitle: group() | transloco: { name: group()?.name }">
-    <form data-testid="group-form-submit-form" (submit)="$event.preventDefault(); submit()">
+    <form novalidate data-testid="group-form-submit-form" (submit)="$event.preventDefault(); submit()">
         <sgdf-card>
             <div class="flex flex-col gap-[0.75rem]">
                 <sgdf-input data-testid="group-form-name-input" appSgdfField required
@@ -22,13 +22,10 @@
                                            [formField]="form.endDateTime"
                                            [appFieldError]="form.endDateTime" translationPrefix="groups.form.error.end-datetime"/>
                 </div>
-                @if (form.beginDateTime().valid() && form.endDateTime().valid()) {
-                    <app-field-error data-testid="group-form-date-range-error" [field]="form" translationPrefix="groups.form.error.date-range"/>
-                }
                 <sgdf-divider/>
                 <div>
                     <h3 class="m-0 text-base font-semibold">{{ 'groups.form.members' | pluralTranslation: model().participants | transloco }}</h3>
-                    <app-select-elements-field data-testid="group-form-participants-field" [formField]="form.participants"
+                    <app-select-elements-field data-testid="group-form-participants-field" [formField]="form.participants" [appFieldError]="form.participants" translationPrefix="groups.form.error.members"
                                                [label]="'groups.form.members.search' | transloco"
                                                [suggestions]="facade.searchedParticipantsMetadata()"
                                                [selectItemBuilder]="ParticipantHelper.toSelectItem"
@@ -36,7 +33,6 @@
                                                [emptyMessage]="'groups.form.members.empty' | transloco"
                                                [emptySelectionMessage]="'groups.form.members.empty-search' | transloco"
                                                (handleSearch)="handleSearch($event.query)"/>
-                    <app-field-error data-testid="group-form-members-error" [field]="form.participants" translationPrefix="groups.form.error.members"/>
                 </div>
             </div>
         </sgdf-card>

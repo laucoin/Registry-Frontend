@@ -148,6 +148,17 @@ export class MovementFacade extends GenericProjectElementFacade {
         this.store.fetchMovementCommunicationsPage( { projectId: this.selectedProjectId(), id: id, page: index, size: size } )
     }
 
+    public loadOlderMovementCommunications (id: string): void {
+        const shown: PageModel<CommunicationModel> | undefined = this.movementCommunicationsPage()
+        if (shown?.hasNext) {
+            this.store.fetchMovementCommunicationsPage( { projectId: this.selectedProjectId(), id: id, page: shown.page + 1, size: shown.size } )
+        }
+    }
+
+    public reloadMovementCommunications (id: string): void {
+        this.store.fetchMovementCommunicationsPage( { projectId: this.selectedProjectId(), id: id, ...CumulativePageHelper.reloadRequest( this.movementCommunicationsPage() ) } )
+    }
+
     public inputMovementCommunicationsPageSearchParameters (
         q: string | undefined,
         isVisible: boolean | undefined,

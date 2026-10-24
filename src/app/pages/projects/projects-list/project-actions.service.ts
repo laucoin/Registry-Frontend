@@ -2,14 +2,12 @@ import { DestroyRef, inject, Injectable } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Router } from '@angular/router'
 import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper'
-import { RegistryConfig } from '@core/config/registry.config'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UserProfileFacade } from '@core/registry/state/user-profile.facade'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { ProjectFacade } from '@pages/projects/data/state/project/project.facade'
 import { ElementConfirmationService } from '@shared/helpers/facade/element-confirmation.service'
 import { ElementActionModel } from '@shared/models/model/element-action.model'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { UserAuthorityEnum } from '@shared/models/enumeration/user-authority.enum'
@@ -20,7 +18,6 @@ interface ProjectActionSpec {
 	id: string
 	icon: string
 	authority: ProjectAuthorityEnum
-	enabledAction: ElementActionEnum
 	shown: boolean
 	confirmation?: { severity: SeverityEnum, icon: string, accept: () => void }
 	run?: () => void
@@ -41,7 +38,7 @@ export class ProjectActions {
 	private readonly destroyRef: DestroyRef = inject(DestroyRef)
 
 	public actionsFor(project: ProjectModel): ElementActionModel[] {
-		return this.specsFor(project).filter((spec: ProjectActionSpec): boolean => spec.shown && this.isEnabled(spec.enabledAction)).map(
+		return this.specsFor(project).filter((spec: ProjectActionSpec): boolean => spec.shown).map(
 			(spec: ProjectActionSpec): ElementActionModel => this.toAction(project, spec),
 		)
 	}
@@ -52,7 +49,6 @@ export class ProjectActions {
 
 	public canCreateSupport(project: ProjectModel): boolean {
 		return !this.hasAnyProjectAuthority(project)
-			&& this.isEnabled(ElementActionEnum.PROJECT_CREATE_SUPPORT_PROFILE)
 			&& CurrentUserHelper.hasUserAuthority(this.sessionFacade.currentUser(), UserAuthorityEnum.REGISTRY_PROFILE_C)
 	}
 
@@ -74,7 +70,6 @@ export class ProjectActions {
 			id: 'edit',
 			icon: 'pen-to-square',
 			authority: ProjectAuthorityEnum.REGISTRY_PROJECT_U,
-			enabledAction: ElementActionEnum.PROJECT_UPDATE,
 			shown: true,
 			run: (): void => this.edit(project),
 		}
@@ -85,7 +80,6 @@ export class ProjectActions {
 			id: 'disable',
 			icon: 'eye-slash',
 			authority: ProjectAuthorityEnum.REGISTRY_PROJECT_U,
-			enabledAction: ElementActionEnum.PROJECT_DISABLE,
 			shown: project.visible,
 			confirmation: {
 				severity: SeverityEnum.WARNING,
@@ -99,8 +93,7 @@ export class ProjectActions {
 		return {
 			id: 'enable',
 			icon: 'rotate-right',
-			authority: ProjectAuthorityEnum.REGISTRY_PROJECT_U,
-			enabledAction: ElementActionEnum.PROJECT_ENABLE,
+			authority: ProjectAuthorityEnum.REGISTRY_PROJECT_D,
 			shown: !project.visible,
 			confirmation: {
 				severity: SeverityEnum.INFO,
@@ -115,7 +108,6 @@ export class ProjectActions {
 			id: 'delete',
 			icon: 'trash',
 			authority: ProjectAuthorityEnum.REGISTRY_PROJECT_D,
-			enabledAction: ElementActionEnum.PROJECT_DELETE,
 			shown: true,
 			confirmation: {
 				severity: SeverityEnum.DANGER,
@@ -152,10 +144,6 @@ export class ProjectActions {
 			tap((): void => this.join(project)),
 			takeUntilDestroyed(this.destroyRef),
 		).subscribe()
-	}
-
-	private isEnabled(action: ElementActionEnum): boolean {
-		return RegistryConfig.config.enabledActions.includes(action)
 	}
 
 	private hasAnyProjectAuthority(project: ProjectModel): boolean {

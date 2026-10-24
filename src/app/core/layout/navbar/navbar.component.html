@@ -1,4 +1,4 @@
-<sgdf-navbar torn [label]="'navbar.label.main' | transloco" [attr.subnav-label]="'navbar.label.project' | transloco">
+<sgdf-navbar [torn]="!uiFacade.tinyScreen()" [label]="'navbar.label.main' | transloco" [attr.subnav-label]="'navbar.label.project' | transloco">
     <a data-testid="navbar-home-link" slot="brand" [routerLink]="RegistryRouteEnum.HOME"
        [attr.aria-label]="application.name"
        class="flex items-center gap-3 no-underline!">

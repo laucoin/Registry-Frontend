@@ -32,7 +32,4 @@
                                [formField]="form.endDateTime"
                                [appFieldError]="form.endDateTime" translationPrefix="project-profiles.form.error.end-datetime"/>
     </div>
-    @if (form.beginDateTime().valid() && form.endDateTime().valid()) {
-        <app-field-error data-testid="project-profile-edition-form-date-range-error" [field]="form" translationPrefix="project-profiles.form.error.date-range"/>
-    }
 </app-form-dialog>

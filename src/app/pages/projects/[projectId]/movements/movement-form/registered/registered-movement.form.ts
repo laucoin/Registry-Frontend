@@ -8,6 +8,7 @@ import {
     MovementInformationModel,
     reasonFieldsOf,
 } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-form.shared'
+import { MovementPrefillModel } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-prefill.model'
 import { FormModelHelper } from '@shared/helpers/form/form-model.helper'
 import { RegistrySchemas } from '@shared/helpers/form/registry.schemas'
 import { ParticipantHelper } from '@shared/helpers/participant.helper'
@@ -40,6 +41,17 @@ export function emptyRegisteredMovementFormModel (now: Date): RegisteredMovement
         information: { dateTime: now, type: '' },
         content: { reason: null, participants: [] },
         vehicles: [],
+    }
+}
+
+export function withRegisteredPrefill (model: RegisteredMovementFormModel, prefill: MovementPrefillModel): RegisteredMovementFormModel {
+    return {
+        ...model,
+        information: { ...model.information, type: prefill.type },
+        content: {
+            reason: prefill.type === MovementTypeEnum.OUT && prefill.reason ? FormModelHelper.copy( prefill.reason ) : null,
+            participants: FormModelHelper.copyItems( prefill.content ),
+        },
     }
 }
 

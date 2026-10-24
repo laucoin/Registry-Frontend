@@ -4,12 +4,10 @@ import { Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
 import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { RegistryConfig } from '@core/config/registry.config'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { VehicleFacade } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.facade'
 import { VehicleActions } from '@pages/projects/[projectId]/configuration/vehicles/vehicle-row/vehicle-actions.service'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { ElementActionModel } from '@shared/models/model/element-action.model'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
@@ -25,7 +23,6 @@ describe('VehicleActions', () => {
     let navigateByUrl: Mock<(url: string) => Promise<boolean>>
 
     beforeEach(() => {
-        RegistryConfig.config = { enabledActions: Object.values(ElementActionEnum) } as never
         authorities = signal(['p1_REGISTRY_PROJECT_VEHICLE_U', 'p1_REGISTRY_PROJECT_VEHICLE_D', 'p1_REGISTRY_PROJECT_VEHICLE_HISTORY_R'])
         facade = { disableVehicle: vi.fn(() => of(undefined)), enableVehicle: vi.fn(() => of(undefined)), deleteVehicle: vi.fn(() => of(undefined)) }
         confirm = vi.fn()
@@ -71,17 +68,6 @@ describe('VehicleActions', () => {
 
         // Assert
         expect(shown).toEqual(['movements-history', 'edit', 'enable', 'delete'])
-    })
-
-    it('leaves out the commands that are not enabled in the configuration', () => {
-        // Arrange
-        RegistryConfig.config = { enabledActions: [ElementActionEnum.VEHICLE_UPDATE] } as never
-
-        // Act
-        const shown: string[] = ids(VISIBLE)
-
-        // Assert
-        expect(shown).toEqual(['edit'])
     })
 
     it('disables the commands the user has no authority for', () => {

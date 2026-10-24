@@ -19,7 +19,7 @@ interface GuardContext {
 
 /**
  * Purpose: Selects the project of the `:projectId` route parameter for the routes below it.
- * Scope: Checks the user has an authority on the project, loads its profile and warns before redirecting to the projects list.
+ * Scope: Checks the user has an authority on the project and loads it, and answers "project not found" before redirecting to the projects list when it does not exist, when the user has no right on it or when it cannot be loaded: the message never tells which.
  * Limits: A usability aid only; the backend re-checks access, and the deactivate guard only clears the selection.
  */
 export const projectContextGuard: CanActivateFn = (route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> => {
@@ -48,7 +48,7 @@ function resolveAccess (context: GuardContext, currentUser: CurrentUserModel, pr
 }
 
 function redirectToProjects (context: GuardContext): UrlTree {
-    if (!context.uiFacade.globalError()) notifyNoProfile( context.uiFacade )
+    if (!context.uiFacade.globalError()) notifyProjectNotFound( context.uiFacade )
     return context.router.parseUrl( RegistryRouteEnum.PROJECTS )
 }
 
@@ -61,13 +61,13 @@ function hasProjectAccess(currentUser: CurrentUserModel, projectId: string): boo
     return currentUser.authorities.some( (authority: string): boolean => authority.startsWith( `${projectId}_` ) )
 }
 
-function notifyNoProfile(uiFacade: UiFacade): void {
+function notifyProjectNotFound(uiFacade: UiFacade): void {
     uiFacade.notify( {
-        severity: SeverityEnum.WARNING,
-        summary: 'preferences.notifications.NO_SELECTED_PROFILE.title',
-        detail: 'preferences.notifications.NO_SELECTED_PROFILE.message',
+        severity: SeverityEnum.ERROR,
+        summary: 'projects.notifications.NOT_FOUND.title',
+        detail: 'projects.notifications.NOT_FOUND.message',
         closable: true,
-        icon: 'pi pi-sort-alt-slash',
-        life: RegistryConfig.config.notification.duration.warn,
+        icon: 'pi pi-search',
+        life: RegistryConfig.config.notification.duration.error,
     } )
 }

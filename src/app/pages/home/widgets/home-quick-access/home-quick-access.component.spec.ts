@@ -11,8 +11,8 @@ import { HomeQuickAccessComponent } from './home-quick-access.component'
 describe('HomeQuickAccessComponent', () => {
 	let fixture: ComponentFixture<HomeQuickAccessComponent>
 
-	async function render(canReadUsers: boolean, documentationUrl?: string): Promise<void> {
-		RegistryConfig.config = { application: { support: { documentationUrl } } } as ConfigModel
+	async function render(canReadUsers: boolean, documentationUrl?: string, issuesUrl?: string): Promise<void> {
+		RegistryConfig.config = { application: { support: { documentationUrl, issuesUrl } } } as ConfigModel
 		vi.spyOn(CurrentUserHelper, 'hasUserAuthority').mockReturnValue(canReadUsers)
 		fixture = TestBed.createComponent(HomeQuickAccessComponent)
 		await fixture.whenStable()
@@ -28,10 +28,10 @@ describe('HomeQuickAccessComponent', () => {
 		// Arrange
 
 		// Act
-		await render(true, 'https://doc.test')
+		await render(true, 'https://doc.test', 'https://issues.test')
 
 		// Assert
-		expect(fixture.nativeElement.querySelectorAll('sgdf-button').length).toBe(4)
+		expect(fixture.nativeElement.querySelectorAll('sgdf-button').length).toBe(5)
 	})
 
 	it('should open the documentation from the configuration in a new tab', async () => {
@@ -46,7 +46,29 @@ describe('HomeQuickAccessComponent', () => {
 		expect(help.getAttribute('ng-reflect-href') ?? (help as unknown as { href: string }).href).toBe('https://doc.test')
 	})
 
-	it('should hide the help center when no documentation url is configured', async () => {
+	it('should open the support link from the configuration in a new tab', async () => {
+		// Arrange
+
+		// Act
+		await render(false, undefined, 'https://issues.test')
+		const support: HTMLElement = fixture.nativeElement.querySelector('sgdf-button[target="_blank"]')
+
+		// Assert
+		expect(support.textContent).toContain('home.quickAccess.support')
+		expect(support.getAttribute('ng-reflect-href') ?? (support as unknown as { href: string }).href).toBe('https://issues.test')
+	})
+
+	it('should hide the support link when no issues url is configured', async () => {
+		// Arrange
+
+		// Act
+		await render(true, 'https://doc.test')
+
+		// Assert
+		expect(fixture.nativeElement.textContent).not.toContain('home.quickAccess.support')
+	})
+
+	it('should hide the documentation link when no documentation url is configured', async () => {
 		// Arrange
 
 		// Act

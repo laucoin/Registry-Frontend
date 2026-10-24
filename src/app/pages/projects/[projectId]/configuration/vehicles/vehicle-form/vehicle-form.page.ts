@@ -35,7 +35,6 @@ import { ETagHelper } from '@shared/helpers/etag.helper'
     selector: 'app-vehicle-form',
     imports: [
         FormDialogComponent,
-        FieldErrorComponent,
         TranslocoPipe,
         FormField,
         SgdfFieldDirective,

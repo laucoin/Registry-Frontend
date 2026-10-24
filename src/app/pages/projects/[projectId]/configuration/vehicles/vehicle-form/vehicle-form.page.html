@@ -39,7 +39,4 @@
                                [formField]="form.endDateTime"
                                [appFieldError]="form.endDateTime" translationPrefix="vehicles.form.error.end-datetime"/>
     </div>
-    @if (form.beginDateTime().valid() && form.endDateTime().valid()) {
-        <app-field-error data-testid="vehicle-form-date-range-error" [field]="form" translationPrefix="vehicles.form.error.date-range"/>
-    }
 </app-form-dialog>

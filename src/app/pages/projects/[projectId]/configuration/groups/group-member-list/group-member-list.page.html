@@ -1,5 +1,4 @@
-<sgdf-page-title appProjectEyebrow
-                 [lede]="'groups.members-page.subtitle' | transloco">
+<sgdf-page-title [eyebrow]="'projectEyebrow.configuration' | transloco" [lede]="'groups.members-page.subtitle' | transloco">
     @if (group(); as current) {
         {{ current.name }}
     } @else {
@@ -41,7 +40,7 @@
                     <sgdf-option [value]="item.value ?? ''">{{ item.label }}</sgdf-option>
                 }
             </sgdf-select>
-            <sgdf-select data-testid="group-member-list-is-visible-select" appSgdfField [label]="'participants.search-and-filter.visibility' | transloco"
+            <sgdf-select *appIfProjectAuthority="hiddenAuthority" data-testid="group-member-list-is-visible-select" appSgdfField [label]="'participants.search-and-filter.visibility' | transloco"
                          [formField]="form.isVisible">
                 @for (item of participantFacade.visibilitiesMetadata(); track item.label) {
                     <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
@@ -66,10 +65,10 @@
              [placement]="uiFacade.tinyScreen() ? 'bottom' : 'right'"
              [title]="'groups.actions.add-members' | transloco"
              (sgdf-hide)="closeLayer($event, addMembersFormLayerOpened)">
-    <form data-testid="group-member-list-add-members-form" class="flex flex-col gap-[0.75rem]" (submit)="$event.preventDefault(); addMembers()">
+    <form novalidate data-testid="group-member-list-add-members-form" class="flex flex-col gap-[0.75rem]" (submit)="$event.preventDefault(); addMembers()">
         <div>
             <h3 class="m-0 text-base font-semibold">{{ 'groups.form.members' | pluralTranslation: addMembersModel().participants | transloco }}</h3>
-            <app-select-elements-field data-testid="group-member-list-participants-field" [formField]="addMembersForm.participants"
+            <app-select-elements-field data-testid="group-member-list-participants-field" [formField]="addMembersForm.participants" [appFieldError]="addMembersForm.participants" translationPrefix="groups.form.error.add-members"
                                        [label]="'groups.form.members.search' | transloco"
                                        [suggestions]="facade.searchedParticipantsMetadata()"
                                        [selectItemBuilder]="ParticipantHelper.toSelectItem"
@@ -77,7 +76,6 @@
                                        [emptyMessage]="'groups.form.members.empty' | transloco"
                                        [emptySelectionMessage]="'groups.form.members.empty-search' | transloco"
                                        (handleSearch)="handleSearch($event.query)"/>
-            <app-field-error data-testid="group-member-list-add-members-error" [field]="addMembersForm.participants" translationPrefix="groups.form.error.add-members"/>
         </div>
         <app-form-actions data-testid="group-member-list-actions" submitLabel="groups.actions.add" submitIcon="user-plus"
                           (cancelled)="addMembersFormLayerOpened.set(false)"/>

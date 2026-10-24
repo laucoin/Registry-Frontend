@@ -48,6 +48,8 @@ export class UserFormPage extends BaseFormComponent {
     public constructor () {
         super()
 
+        this.destroyRef.onDestroy( (): void => this.facade.resetUser() )
+
         this.loadData()
 
         this.handleLoadedElement()

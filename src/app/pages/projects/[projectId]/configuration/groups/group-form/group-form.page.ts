@@ -12,7 +12,6 @@ import {
 } from '@pages/projects/[projectId]/configuration/groups/group-form/group.form'
 import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
 import { FormComponent } from '@shared/ui/common/form/form.component'
-import { FieldErrorComponent } from '@shared/ui/common/field-error/field-error.component'
 import {TranslocoPipe} from '@jsverse/transloco'
 import '@sgdf/ui/card'
 import '@sgdf/ui/date-time-picker'
@@ -44,7 +43,6 @@ import { ETagHelper } from '@shared/helpers/etag.helper'
     imports: [
         FormComponent,
         FormActionsComponent,
-        FieldErrorComponent,
         FieldErrorDirective,
         SgdfFieldDirective,
         TranslocoPipe,

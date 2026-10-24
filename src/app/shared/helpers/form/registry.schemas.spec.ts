@@ -133,7 +133,9 @@ describe( 'RegistrySchemas', () => {
         }
 
         // Act
-        const errors: object[] = errorsOf( model, RegistrySchemas.beginDateBeforeEndDate )
+        const tree: FieldTree<typeof model> = TestBed.runInInjectionContext( () => form( signal( model ), (path: SchemaPathTree<typeof model>): void =>
+            RegistrySchemas.beginDateBeforeEndDate( path.beginDateTime, path.endDateTime ) ) )
+        const errors: object[] = tree.endDateTime().errors().map( (error: ValidationError.WithFieldTree): object => ({ ...error, fieldTree: undefined }) )
 
         // Assert
         expect( errors ).toEqual( expected )

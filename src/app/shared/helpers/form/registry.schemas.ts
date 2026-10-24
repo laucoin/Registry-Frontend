@@ -56,6 +56,8 @@ export class RegistrySchemas {
     }
 
     public static requiredList<T> (path: SchemaPath<T[]>, when: (ctx: FieldContext<T[]>) => boolean = (): boolean => true): void {
+        // Angular's `required` never fails on an empty array; it only marks the field as required for the control.
+        required( path, { when } )
         validate( path, (ctx: FieldContext<T[]>): RegistryError | null =>
             ctx.value().length === 0 && when( ctx ) ? registryError( 'required' ) : null )
     }
@@ -127,9 +129,10 @@ export class RegistrySchemas {
         } )
     }
 
-    public static beginDateBeforeEndDate<T extends DateRangeValue> (path: SchemaPath<T>): void {
-        validate( path, (ctx: FieldContext<T>): RegistryError | null => {
-            const { beginDateTime, endDateTime }: DateRangeValue = ctx.value()
+    public static beginDateBeforeEndDate (begin: SchemaPath<CustomDatetimeModel | null>, end: SchemaPath<CustomDatetimeModel | null>): void {
+        validate( end, (ctx: FieldContext<CustomDatetimeModel | null>): RegistryError | null => {
+            const beginDateTime: CustomDatetimeModel | null = ctx.valueOf( begin )
+            const endDateTime: CustomDatetimeModel | null = ctx.value()
             const bothDefined: boolean = GenericHelper.nonNull( beginDateTime ) && GenericHelper.nonNull( endDateTime )
             return bothDefined && DateHelper.isAfterOrEqual( beginDateTime ?? undefined, endDateTime ?? undefined )
                    ? registryError( 'beginDateBeforeEndDate' )

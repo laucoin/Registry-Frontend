@@ -52,3 +52,35 @@ sgdf-dialog.dialog-fullscreen::part(dialog) {
     max-height: 100dvh;
     border-radius: 0;
 }
+
+sgdf-dialog::part(footer) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+/* Texts that overflow end with an ellipsis; the elements of the app use the appEllipsis directive for their own texts */
+sgdf-page-title::part(base) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+}
+
+sgdf-page-title::part(heading) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+sgdf-list-item::part(title),
+sgdf-option::part(label) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 576px) {
+    sgdf-page-title::part(base) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

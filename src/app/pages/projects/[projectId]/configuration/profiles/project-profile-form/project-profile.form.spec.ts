@@ -60,7 +60,7 @@ describe( 'project profile form', () => {
         const tree: FieldTree<ProjectProfileFormModel> = TestBed.runInInjectionContext( () => createProjectProfileForm( model ) )
 
         // Act
-        const kinds: string[][] = [ kindsOf( tree.role() ), kindsOf( tree() ) ]
+        const kinds: string[][] = [ kindsOf( tree.role() ), kindsOf( tree.endDateTime() ) ]
 
         // Assert
         expect( kinds ).toEqual( [ [ 'required' ], [ 'beginDateBeforeEndDate' ] ] )

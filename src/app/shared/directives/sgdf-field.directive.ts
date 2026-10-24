@@ -21,7 +21,7 @@ const LOCAL_DATE_TIME: RegExp = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?$/
 @Directive({
     selector: '[appSgdfField]',
     providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef((): typeof SgdfFieldDirective => SgdfFieldDirective), multi: true }],
-    host: { '(input)': 'emit()', '(change)': 'emit()', '(focusout)': 'onTouched()' },
+    host: { '(input)': 'emit()', '(change)': 'emit()', '(focusout)': 'touchOnLeave($event)' },
 })
 export class SgdfFieldDirective implements ControlValueAccessor {
     private readonly element: SgdfFieldElement = inject<ElementRef<SgdfFieldElement>>(ElementRef).nativeElement
@@ -54,6 +54,12 @@ export class SgdfFieldDirective implements ControlValueAccessor {
 
     protected emit(): void {
         this.onChange(this.read())
+    }
+
+    protected touchOnLeave(event: FocusEvent): void {
+        const next: Node | null = event.relatedTarget as Node | null
+        if (next !== null && this.element.contains(next)) return
+        this.onTouched()
     }
 
     private read(): SgdfFieldValue {

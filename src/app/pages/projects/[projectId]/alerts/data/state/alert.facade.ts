@@ -130,6 +130,17 @@ export class AlertFacade extends GenericProjectElementFacade {
         this.store.fetchAlertCommunicationsPage( { projectId: this.selectedProjectId(), id: id, page: index, size: size } )
     }
 
+    public loadOlderAlertCommunications (id: string): void {
+        const shown: PageModel<CommunicationModel> | undefined = this.alertCommunicationsPage()
+        if (shown?.hasNext) {
+            this.store.fetchAlertCommunicationsPage( { projectId: this.selectedProjectId(), id: id, page: shown.page + 1, size: shown.size } )
+        }
+    }
+
+    public reloadAlertCommunications (id: string): void {
+        this.store.fetchAlertCommunicationsPage( { projectId: this.selectedProjectId(), id: id, ...CumulativePageHelper.reloadRequest( this.alertCommunicationsPage() ) } )
+    }
+
     public inputCommunicationsPageSearchParameters (
         q: string | undefined,
         isVisible: boolean | undefined,

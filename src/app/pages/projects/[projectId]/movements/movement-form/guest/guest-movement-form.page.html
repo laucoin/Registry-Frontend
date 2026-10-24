@@ -10,7 +10,7 @@
     </sgdf-stepper>
 
     @if (activeTab() === 1) {
-        <form data-testid="guest-movement-form-information-form" class="mt-[1rem]" (submit)="$event.preventDefault(); nextFromInformation()">
+        <form novalidate data-testid="guest-movement-form-information-form" class="mt-[1rem]" (submit)="$event.preventDefault(); nextFromInformation()">
             <sgdf-card>
                 <div class="grid gap-[0.75rem] md:grid-cols-2">
                     <sgdf-date-time-picker data-testid="guest-movement-form-date-time-picker" appSgdfField with-time required
@@ -35,14 +35,16 @@
                 <sgdf-button data-testid="guest-movement-form-information-cancel-button" variant="neutral" appearance="text" (click)="navigateToRedirectUri()">
                     {{ 'global.actions.cancel' | transloco }}
                 </sgdf-button>
-                <sgdf-button data-testid="guest-movement-form-information-next-submit" variant="primary" appearance="outlined" submit [attr.label]="'global.actions.next' | transloco">
-                    {{ uiFacade.tinyScreen() ? '' : ('global.actions.next' | transloco) }}
-                    <sgdf-icon slot="suffix" name="arrow-right" library="solid"/>
+                <sgdf-button data-testid="guest-movement-form-information-next-submit" variant="primary" appearance="outlined" submit>
+                    {{ 'global.actions.next' | transloco }}
+                    @if (!uiFacade.tinyScreen()) {
+                        <sgdf-icon slot="suffix" name="arrow-right" library="solid"/>
+                    }
                 </sgdf-button>
             </div>
         </form>
     } @else {
-        <form data-testid="guest-movement-form-content-form" class="mt-[1rem]" (submit)="$event.preventDefault(); submit()">
+        <form novalidate data-testid="guest-movement-form-content-form" class="mt-[1rem]" (submit)="$event.preventDefault(); submit()">
             <sgdf-card>
                 <div class="flex flex-col gap-[0.75rem]">
                     @if (arrival()) {
@@ -99,7 +101,7 @@
                         <app-field-error data-testid="guest-movement-form-guest-content-error" [field]="form.content.guests" translationPrefix="movements.form.error.guestContent"/>
                     } @else {
                         <h3 class="m-0 text-base font-semibold">{{ 'movements.form.content.registered' | pluralTranslation: model().content.participants | transloco }}</h3>
-                        <app-select-elements-field data-testid="guest-movement-form-participants-field" [formField]="form.content.participants"
+                        <app-select-elements-field data-testid="guest-movement-form-participants-field" [formField]="form.content.participants" [appFieldError]="form.content.participants" translationPrefix="movements.form.error.participantContent"
                                                    [label]="'movements.form.content.registered.search' | transloco"
                                                    [suggestions]="suggestions()"
                                                    [expand]="contentOfChoice"
@@ -109,7 +111,6 @@
                                                    [emptyMessage]="'movements.form.content.registered.empty-search' | transloco"
                                                    [emptySelectionMessage]="'movements.form.content.registered.empty' | transloco"
                                                    (handleSearch)="handleGuestsSearch($event)"/>
-                        <app-field-error data-testid="guest-movement-form-participant-content-error" [field]="form.content.participants" translationPrefix="movements.form.error.participantContent"/>
                     }
                 </div>
             </sgdf-card>

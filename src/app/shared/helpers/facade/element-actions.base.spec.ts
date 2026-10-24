@@ -1,10 +1,8 @@
 import { TestBed } from '@angular/core/testing'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { RegistryConfig } from '@core/config/registry.config'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { ElementActionsBase, ElementActionSpec } from '@shared/helpers/facade/element-actions.base'
 import { ElementConfirmationService } from '@shared/helpers/facade/element-confirmation.service'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { ElementActionModel } from '@shared/models/model/element-action.model'
 
@@ -15,9 +13,9 @@ class FakeActions extends ElementActionsBase<{ id: string }> {
 
     protected specsFor(): ElementActionSpec[] {
         return [
-            { id: 'open', icon: 'folder', enabledAction: ElementActionEnum.GROUP_CONSULT_MEMBERS, shown: true, allowed: false, run: this.command },
-            { id: 'remove', icon: 'trash', enabledAction: ElementActionEnum.GROUP_DELETE, shown: true, allowed: true, confirmation: { severity: SeverityEnum.DANGER, icon: 'x', accept: this.command } },
-            { id: 'hidden', icon: 'eye', enabledAction: ElementActionEnum.GROUP_UPDATE, shown: false, allowed: true, run: this.command },
+            { id: 'open', icon: 'folder', shown: true, allowed: false, run: this.command },
+            { id: 'remove', icon: 'trash', shown: true, allowed: true, confirmation: { severity: SeverityEnum.DANGER, icon: 'x', accept: this.command } },
+            { id: 'hidden', icon: 'eye', shown: false, allowed: true, run: this.command },
         ]
     }
 }
@@ -27,7 +25,6 @@ describe('ElementActionsBase', () => {
     let confirm: ReturnType<typeof vi.fn>
 
     beforeEach(() => {
-        RegistryConfig.config = { enabledActions: [ElementActionEnum.GROUP_CONSULT_MEMBERS, ElementActionEnum.GROUP_DELETE] } as never
         confirm = vi.fn()
         TestBed.configureTestingModule({ providers: [FakeActions, { provide: ElementConfirmationService, useValue: { confirm } }, { provide: SessionFacade, useValue: {} }] })
         actions = TestBed.inject(FakeActions)
@@ -65,7 +62,7 @@ describe('ElementActionsBase', () => {
         remove.run()
 
         // Assert
-        expect(confirm).toHaveBeenCalledWith('fake.actions.confirmations.remove', element, SeverityEnum.DANGER, 'x', actions.command)
+        expect(confirm).toHaveBeenCalledWith('fake.actions.confirmations.remove', element, SeverityEnum.DANGER, 'x', actions.command, undefined)
         expect(actions.command).not.toHaveBeenCalled()
     })
 
@@ -82,22 +79,11 @@ describe('ElementActionsBase', () => {
         expect(menu).toEqual(['remove'])
     })
 
-    it('has no primary action when the configuration disables it', () => {
-        // Arrange
-        RegistryConfig.config = { enabledActions: [ElementActionEnum.GROUP_DELETE] } as never
-
-        // Act
-        const primary: ElementActionModel | undefined = actions.primaryFor({ id: 'e1' })
-
-        // Assert
-        expect(primary).toBeUndefined()
-    })
-
     it('uses the translation key of the action for its confirmation when it has one', () => {
         // Arrange
         class KeyedActions extends FakeActions {
             protected override specsFor(): ElementActionSpec[] {
-                return [{ id: 'remove', icon: 'trash', enabledAction: ElementActionEnum.GROUP_DELETE, shown: true, allowed: true, confirmation: { severity: SeverityEnum.INFO, icon: 'x', accept: this.command, translationKey: 'status.DONE' } }]
+                return [{ id: 'remove', icon: 'trash', shown: true, allowed: true, confirmation: { severity: SeverityEnum.INFO, icon: 'x', accept: this.command, translationKey: 'status.DONE' } }]
             }
         }
         const keyed: KeyedActions = TestBed.runInInjectionContext((): KeyedActions => new KeyedActions())
@@ -107,5 +93,21 @@ describe('ElementActionsBase', () => {
 
         // Assert
         expect(confirm.mock.calls[0][0]).toBe('fake.actions.confirmations.status.DONE')
+    })
+
+    it('asks for a typed confirmation when the action says so', () => {
+        // Arrange
+        class TypedActions extends FakeActions {
+            protected override specsFor(): ElementActionSpec[] {
+                return [{ id: 'remove', icon: 'trash', shown: true, allowed: true, confirmation: { severity: SeverityEnum.DANGER, icon: 'x', accept: this.command, typed: true } }]
+            }
+        }
+        const typed: TypedActions = TestBed.runInInjectionContext((): TypedActions => new TypedActions())
+
+        // Act
+        typed.actionsFor({ id: 'e1' })[0].run()
+
+        // Assert
+        expect(confirm.mock.calls[0][5]).toBe(true)
     })
 })

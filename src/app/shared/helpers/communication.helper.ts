@@ -18,6 +18,10 @@ export class CommunicationHelper {
         }
     }
 
+    public static chronological (communications: CommunicationModel[] | undefined): CommunicationModel[] {
+        return [ ...(communications ?? []) ].reverse()
+    }
+
     public static previousAuthorId (communications: CommunicationModel[] | undefined, index: number): string | undefined {
         const previous: CommunicationModel | undefined = index > 0 ? communications?.[ index - 1 ] : undefined
         return previous ? CommunicationHelper.getAuthorId( previous ) : undefined

@@ -48,7 +48,7 @@ function profileRules (path: SchemaPathTree<ProjectProfileFormModel>): void {
     required( path.role )
     RegistrySchemas.dateRequiredForTime( path.beginDateTime )
     RegistrySchemas.dateRequiredForTime( path.endDateTime )
-    RegistrySchemas.beginDateBeforeEndDate( path )
+    RegistrySchemas.beginDateBeforeEndDate( path.beginDateTime, path.endDateTime )
 }
 
 export function createProjectProfileForm (model: WritableSignal<ProjectProfileFormModel>): FieldTree<ProjectProfileFormModel> {

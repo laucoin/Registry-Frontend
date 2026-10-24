@@ -43,7 +43,6 @@ export class RegistryConfig {
 		defaultLanguage: 'fr',
 		languages: ['fr'],
 		application: { name: 'Registry', organization: '', creator: { name: '', email: '', website: '' }, support: {} },
-		enabledActions: [],
 		notification: { duration: { info: undefined, success: undefined, warn: undefined, error: undefined, secondary: undefined, contrast: undefined } },
 	}
 	private static readonly FALLBACK_ENVIRONMENT: EnvironmentModel = {

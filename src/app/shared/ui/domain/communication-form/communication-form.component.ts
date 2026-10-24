@@ -1,3 +1,4 @@
+import { FieldErrorDirective } from '@shared/directives/field-error.directive'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import {
     Component,
@@ -6,6 +7,8 @@ import {
     inject,
     input,
     InputSignal,
+    output,
+    OutputEmitterRef,
     OnInit,
     Signal,
     signal,
@@ -73,6 +76,7 @@ enum AlertModulableFieldEnum {
 @Component( {
     selector: 'app-communication-form',
     imports: [
+        FieldErrorDirective,
         FormErrorComponent,
         FieldErrorComponent,
         TranslocoPipe,
@@ -109,6 +113,8 @@ export class CommunicationFormComponent extends BaseFormComponent implements OnI
     protected readonly AlertModulableFieldEnum: typeof AlertModulableFieldEnum = AlertModulableFieldEnum
 
     public readonly initialAlert: InputSignal<AlertModel | undefined> = input<AlertModel | undefined>()
+    public readonly startWithNewAlert: InputSignal<boolean> = input<boolean>( false )
+    public readonly saved: OutputEmitterRef<void> = output<void>()
     public readonly initialMovement: InputSignal<MovementModel | undefined> = input<MovementModel | undefined>(
         undefined )
 
@@ -166,6 +172,7 @@ export class CommunicationFormComponent extends BaseFormComponent implements OnI
     private applyInitialLinks (): void {
         const alert: AlertModel | undefined = this.initialAlert()
         const movement: MovementModel | undefined = this.initialMovement()
+        if (this.startWithNewAlert() && !alert && this.hasAlertOption()) this.alertSelectorMode.set( AlertModulableFieldEnum.NEW )
         this.model.update( (current: CommunicationFormModel): CommunicationFormModel => ({
             ...current,
             alert: alert ? FormModelHelper.copy( AlertHelper.toSelectItem( alert, this.classicDatePipe ) ) : current.alert,
@@ -206,6 +213,15 @@ export class CommunicationFormComponent extends BaseFormComponent implements OnI
         this.applyInitialLinks()
     }
 
+    protected readonly shortcutLabel: string = /Mac|iPhone|iPad/.test( navigator.platform || navigator.userAgent ) ? '⌘ + Entrée' : 'Ctrl + Entrée'
+
+    protected submitOnShortcut (event: KeyboardEvent): void {
+        if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+            event.preventDefault()
+            this.submit()
+        }
+    }
+
     protected submit (): void {
         if (this.saving()) return
 
@@ -227,14 +243,14 @@ export class CommunicationFormComponent extends BaseFormComponent implements OnI
             (this.facade.communication()
              ? this.facade.updateCommunication( this.facade.communication()!.id, dto, ETagHelper.ifMatch( this.facade.communication() ) )
              : this.facade.createCommunication( dto )
-            ).pipe( tap( (): void => this.resetForm() ) ),
+            ).pipe( tap( (): void => { this.resetForm(); this.saved.emit() } ) ),
             false,
         )
     }
 
     private submitAlert (): void {
         const dto: AlertDto = toNewAlertDto( this.model(), this.facade.communication() )
-        this.save( this.alertFacade.createAlert( dto ).pipe( tap( (): void => this.resetForm() ) ), false )
+        this.save( this.alertFacade.createAlert( dto ).pipe( tap( (): void => { this.resetForm(); this.saved.emit() } ) ), false )
     }
 
     protected handleMovementSearch (searched: { query: string }): void {

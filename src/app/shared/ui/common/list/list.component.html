@@ -14,7 +14,7 @@
 
     @if (getTemplate('search'); as search) {
         <sgdf-accordion data-testid="list-accordion" appearance="soft" mode="single-collapsible">
-            <sgdf-accordion-item>
+            <sgdf-accordion-item [expanded]="searchExpanded()">
                 <span slot="title" class="flex flex-wrap items-center gap-2">
                     {{ 'global.actions.search-and-filter' | transloco }}
                     @if (activeFilters() > 0) {

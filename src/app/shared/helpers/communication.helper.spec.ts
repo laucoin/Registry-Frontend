@@ -77,4 +77,17 @@ describe( 'CommunicationHelper', () => {
         expect( beyondBounds ).toBeUndefined()
         expect( unidentifiedNeighbour ).toBeUndefined()
     } )
+
+    it( 'lists the communications from the oldest to the latest without altering the page', () => {
+        // Arrange
+        const page: CommunicationModel[] = [ { id: 'new' } as CommunicationModel, { id: 'old' } as CommunicationModel ]
+
+        // Act
+        const ordered: CommunicationModel[] = CommunicationHelper.chronological( page )
+
+        // Assert
+        expect( ordered.map( (c: CommunicationModel): string => c.id ) ).toEqual( [ 'old', 'new' ] )
+        expect( page[ 0 ].id ).toBe( 'new' )
+        expect( CommunicationHelper.chronological( undefined ) ).toEqual( [] )
+    } )
 } )

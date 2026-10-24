@@ -4,12 +4,10 @@ import { Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
 import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { RegistryConfig } from '@core/config/registry.config'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/data/state/group.facade'
 import { GroupActions } from '@pages/projects/[projectId]/configuration/groups/group-row/group-actions.service'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { ElementActionModel } from '@shared/models/model/element-action.model'
 import { GroupModel } from '@shared/models/model/group.model'
@@ -25,7 +23,6 @@ describe('GroupActions', () => {
     let navigateByUrl: Mock<(url: string) => Promise<boolean>>
 
     beforeEach(() => {
-        RegistryConfig.config = { enabledActions: Object.values(ElementActionEnum) } as never
         authorities = signal(['p1_REGISTRY_PROJECT_GROUP_U', 'p1_REGISTRY_PROJECT_GROUP_D', 'p1_REGISTRY_PROJECT_GROUP_R'])
         facade = { disableGroup: vi.fn(() => of(undefined)), enableGroup: vi.fn(() => of(undefined)), deleteGroup: vi.fn(() => of(undefined)) }
         confirm = vi.fn()
@@ -71,17 +68,6 @@ describe('GroupActions', () => {
 
         // Assert
         expect(shown).toEqual(['members', 'edit', 'enable', 'delete'])
-    })
-
-    it('leaves out the commands that are not enabled in the configuration', () => {
-        // Arrange
-        RegistryConfig.config = { enabledActions: [ElementActionEnum.GROUP_UPDATE] } as never
-
-        // Act
-        const shown: string[] = ids(VISIBLE)
-
-        // Assert
-        expect(shown).toEqual(['edit'])
     })
 
     it('disables the commands the user has no authority for', () => {

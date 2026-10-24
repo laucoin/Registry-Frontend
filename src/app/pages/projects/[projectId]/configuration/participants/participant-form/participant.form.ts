@@ -82,6 +82,6 @@ export function createParticipantForm (model: WritableSignal<ParticipantFormMode
         RegistrySchemas.notInTheFuture( path.birthday )
         RegistrySchemas.projectDateTime( path.beginDateTime, context )
         RegistrySchemas.projectDateTime( path.endDateTime, context )
-        RegistrySchemas.beginDateBeforeEndDate( path )
+        RegistrySchemas.beginDateBeforeEndDate( path.beginDateTime, path.endDateTime )
     } )
 }

@@ -11,7 +11,6 @@ import { FieldErrorDirective } from '@shared/directives/field-error.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { UserHelper } from '@shared/helpers/user.helper'
-import { FieldErrorComponent } from '@shared/ui/common/field-error/field-error.component'
 import { SelectElementsFieldComponent } from '@shared/ui/common/select-elements-field/select-elements-field.component'
 
 /**
@@ -24,7 +23,6 @@ import { SelectElementsFieldComponent } from '@shared/ui/common/select-elements-
     imports: [
         TranslocoPipe,
         FormField,
-        FieldErrorComponent,
         FieldErrorDirective,
         SgdfFieldDirective,
         SelectElementsFieldComponent,

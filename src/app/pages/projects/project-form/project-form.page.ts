@@ -45,7 +45,6 @@ import '@sgdf/ui/switch'
 import { FieldErrorDirective } from '@shared/directives/field-error.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
-import { FieldErrorComponent } from '@shared/ui/common/field-error/field-error.component'
 import { ProjectOptionIconPipe } from '@shared/helpers/pipe/project-option-icon.pipe'
 import { FormButtonPipe } from '@shared/helpers/pipe/form-button.pipe'
 import { FormTitlePipe } from '@shared/helpers/pipe/form-title.pipe'
@@ -64,7 +63,6 @@ import { SectionErrorComponent } from '@shared/ui/common/section-error/section-e
         TranslocoPipe,
         PluralTranslationPipe,
         FormField,
-        FieldErrorComponent,
         FieldErrorDirective,
         SgdfFieldDirective,
         ProjectOptionIconPipe,
@@ -99,6 +97,8 @@ export class ProjectFormPage extends BaseFormComponent {
 
     public constructor () {
         super()
+
+        this.destroyRef.onDestroy( (): void => this.facade.resetProject() )
 
         this.loadData()
 

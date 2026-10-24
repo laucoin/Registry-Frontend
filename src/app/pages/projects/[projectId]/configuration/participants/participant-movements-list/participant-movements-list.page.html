@@ -1,5 +1,4 @@
-<sgdf-page-title appProjectEyebrow
-                 [lede]="'movements.history-page.subtitle' | transloco">
+<sgdf-page-title [eyebrow]="'projectEyebrow.configuration' | transloco" [lede]="'movements.history-page.subtitle' | transloco">
     @if (entity()) {
         {{ title() }}
     } @else {
@@ -31,7 +30,7 @@
                     <sgdf-option [value]="item.value ?? ''">{{ item.label }}</sgdf-option>
                 }
             </sgdf-select>
-            <sgdf-select data-testid="participant-movements-list-is-visible-select" appSgdfField [label]="'movements.search-and-filter.visibility' | transloco"
+            <sgdf-select *appIfProjectAuthority="hiddenAuthority" data-testid="participant-movements-list-is-visible-select" appSgdfField [label]="'movements.search-and-filter.visibility' | transloco"
                          [formField]="form.isVisible">
                 @for (item of movementFacade.visibilitiesMetadata(); track item.label) {
                     <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>

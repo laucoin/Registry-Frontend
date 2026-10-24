@@ -37,4 +37,15 @@ describe( 'ElementConfirmationService', () => {
             accept,
         } )
     } )
+
+    it('adds the phrase to type when the confirmation is a typed one', () => {
+        // Arrange
+        const accept: () => void = vi.fn()
+
+        // Act
+        service.confirm( 'users.actions.confirmations.delete', { name: 'Ada' }, SeverityEnum.DANGER, 'pi pi-trash', accept, true )
+
+        // Assert
+        expect( confirm.mock.calls[0][0].phrase ).toBe( 'users.actions.confirmations.delete.phrase:Ada' )
+    } )
 } )

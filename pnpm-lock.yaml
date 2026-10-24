@@ -202,8 +202,8 @@ importers:
         specifier: ^22.0.1
         version: 22.0.1(@angular/core@22.2.1(@angular/compiler@22.2.1)(rxjs@7.8.2))(rxjs@7.8.2)
       '@sgdf/ui':
-        specifier: file:/Users/laucoin/Documents/Development/Personal/sgdf-ui-local/sgdf-ui-local-21.tgz
-        version: file:../../sgdf-ui-local/sgdf-ui-local-21.tgz(@awesome.me/webawesome@3.14.0(@floating-ui/utils@0.2.12))
+        specifier: 1.4.0
+        version: 1.4.0(@awesome.me/webawesome@3.14.0(@floating-ui/utils@0.2.12))
       primeicons:
         specifier: ^8.0.2
         version: 8.0.2
@@ -1723,9 +1723,8 @@ packages:
     resolution: {integrity: sha512-JxpXKpxdmQcRsJbriWJOhB7HeVTzz9CEsPNw6fQ0LOuPFnvtyUIXLxyFbKv/LfoFUz8wFADCtNU5sjowME5Mvg==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
 
-  '@sgdf/ui@file:../../sgdf-ui-local/sgdf-ui-local-21.tgz':
-    resolution: {integrity: sha512-CfM1oumz1TattQUovN7EIkC1/SBfgmRMf52GBLp8UUem3I5Jft8hiydhsrJgfTRieFJikt46eq0znEz8Yq1r+w==, tarball: file:../../sgdf-ui-local/sgdf-ui-local-21.tgz}
-    version: 1.3.0
+  '@sgdf/ui@1.4.0':
+    resolution: {integrity: sha1-p8IMNiIxo8ZSmminNtreN7mgRTY=, tarball: https://gitlab.com/api/v4/projects/85654219/packages/npm/@sgdf/ui/-/@sgdf/ui-1.4.0.tgz}
     peerDependencies:
       '@awesome.me/webawesome': ~3.14.0
 
@@ -4583,7 +4582,7 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@sgdf/ui@file:../../sgdf-ui-local/sgdf-ui-local-21.tgz(@awesome.me/webawesome@3.14.0(@floating-ui/utils@0.2.12))':
+  '@sgdf/ui@1.4.0(@awesome.me/webawesome@3.14.0(@floating-ui/utils@0.2.12))':
     dependencies:
       '@awesome.me/webawesome': 3.14.0(@floating-ui/utils@0.2.12)
       lit: 3.3.3

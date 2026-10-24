@@ -3,7 +3,6 @@ import { Router } from '@angular/router'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { ActivityFacade } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
 import { ElementActionsBase, ElementActionSpec } from '@shared/helpers/facade/element-actions.base'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { ActivityModel } from '@shared/models/model/activity.model'
@@ -35,7 +34,6 @@ export class ActivityActions extends ElementActionsBase<ActivityModel> {
         return {
             id: 'movements-history',
             icon: 'clock-rotate-left',
-            enabledAction: ElementActionEnum.ACTIVITY_CONSULT_MOVEMENTS,
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_HISTORY_R),
             run: (): void => this.navigate(RegistryRouteEnum.PROJECTS_CONFIGURATION_ACTIVITIES_MOVEMENTS, activity),
@@ -46,7 +44,6 @@ export class ActivityActions extends ElementActionsBase<ActivityModel> {
         return {
             id: 'edit',
             icon: 'pen-to-square',
-            enabledAction: ElementActionEnum.ACTIVITY_UPDATE,
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_U),
             run: (): void => this.navigate(RegistryRouteEnum.PROJECTS_CONFIGURATION_ACTIVITIES_EDITION, activity),
@@ -57,7 +54,6 @@ export class ActivityActions extends ElementActionsBase<ActivityModel> {
         return {
             id: 'disable',
             icon: 'eye-slash',
-            enabledAction: ElementActionEnum.ACTIVITY_DISABLE,
             shown: activity.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_U),
             confirmation: { severity: SeverityEnum.WARNING, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.disableActivity(activity.id)) },
@@ -68,9 +64,8 @@ export class ActivityActions extends ElementActionsBase<ActivityModel> {
         return {
             id: 'enable',
             icon: 'rotate-right',
-            enabledAction: ElementActionEnum.ACTIVITY_ENABLE,
             shown: !activity.visible,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_U),
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_D),
             confirmation: { severity: SeverityEnum.INFO, icon: 'pi pi-info-circle', accept: (): void => this.run(this.facade.enableActivity(activity.id)) },
         }
     }
@@ -79,7 +74,6 @@ export class ActivityActions extends ElementActionsBase<ActivityModel> {
         return {
             id: 'delete',
             icon: 'trash',
-            enabledAction: ElementActionEnum.ACTIVITY_DELETE,
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_D),
             confirmation: { severity: SeverityEnum.DANGER, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.deleteActivity(activity)) },

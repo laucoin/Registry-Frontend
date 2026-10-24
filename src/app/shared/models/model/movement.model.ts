@@ -10,6 +10,7 @@ export interface MovementModel extends GenericModel {
     dateTime: Date
     type: SelectOptionModel<MovementTypeEnum>
     reason: MovementReasonModel | undefined
+    lastCommunicationDateTime: Date | undefined
     activity: SelectOptionModel<ActivityModel> | undefined
     contentType: ParticipantTypeEnum
     content: MovementContentModel[]

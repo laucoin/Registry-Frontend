@@ -1,5 +1,7 @@
 import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
 import { computed, inject, Injectable, Signal } from '@angular/core'
+import { Router } from '@angular/router'
+import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { finalize, Observable, switchMap, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
@@ -30,6 +32,7 @@ export class ProjectFacade extends GenericFacade {
     private readonly api: ProjectApi = inject( ProjectApi )
     private readonly uiFacade: UiFacade = inject( UiFacade )
     private readonly sessionFacade: SessionFacade = inject( SessionFacade )
+    private readonly router: Router = inject( Router )
 
     public readonly metadataErrors: Signal<Record<string, NotificationModel | undefined>> = SectionErrorsHelper.metadata( this.store.sectionErrors )
 
@@ -211,6 +214,11 @@ export class ProjectFacade extends GenericFacade {
 
         if (refreshUser) {
             this.sessionFacade.fetchCurrentUser()
+        }
+
+        if (this.sessionFacade.currentProjectId() === project.id) {
+            if (command === 'delete' || command === 'disable') this.router.navigateByUrl( RegistryRouteEnum.PROJECTS ).catch( console.error )
+            else if (command === 'enable') this.sessionFacade.refreshCurrentProject()
         }
 
         this.store.fetchProjectsPage( CumulativePageHelper.reloadRequest( this.projectsPage() ) )

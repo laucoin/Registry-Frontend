@@ -15,6 +15,7 @@ import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enu
 import { isProjectProfile, ListedProfileModel, profileProjectId } from '@shared/models/model/listed-profile.model'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 import { ElementActionsComponent } from '@shared/ui/common/element-actions/element-actions.component'
+import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 
 const INITIALS_LENGTH: number = 2
 
@@ -27,7 +28,7 @@ type TagVariant = 'success' | 'info' | 'warning' | 'danger'
  */
 @Component({
     selector: 'app-project-profile-row',
-    imports: [TranslocoPipe, CustomDateFormatPipe, ElementActionsComponent, FavoriteToggleComponent],
+    imports: [EllipsisDirective, TranslocoPipe, CustomDateFormatPipe, ElementActionsComponent, FavoriteToggleComponent],
     providers: [ProjectProfileActions],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     host: { hidden: '' },

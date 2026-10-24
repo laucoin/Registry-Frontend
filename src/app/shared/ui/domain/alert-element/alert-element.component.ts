@@ -35,6 +35,7 @@ import { StringHelper } from '@shared/helpers/string.helper'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { IntervalPipe } from '@shared/helpers/pipe/interval.pipe'
 import { BrowserService } from '@core/browser/browser.service'
+import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 
 // TODO: remove with the PrimeNG carousel card once the dashboard moves to @sgdf/ui
 const CARD_ICONS: Record<string, string> = {
@@ -65,6 +66,7 @@ const INVISIBLE_CHARACTERS: RegExp = /[\u200B-\u200D\u2060\uFEFF]/g
     host: { '[disabled]': '!alert().visible' },
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     imports: [
+        EllipsisDirective,
         ElementActionsComponent,
         ElementCardComponent,
         SeverityCircleComponent,

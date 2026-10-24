@@ -1,10 +1,7 @@
 <ng-template #row let-activity>
     <sgdf-list-item data-testid="activity-row" [attr.data-id]="activity.id" [disabled]="!activity.visible">
         <sgdf-avatar slot="start" variant="primary" shape="rounded" aria-hidden="true" [initials]="initials(activity)"/>
-        <span class="block truncate" [attr.title]="title(activity)">{{ title(activity) }}</span>
-        @if (!activity.visible) {
-            <span class="sr-only">({{ 'activities.visible.false' | transloco }})</span>
-        }
+        <span appEllipsis>{{ title(activity) }}</span>
         <span slot="description" class="flex flex-wrap items-center gap-x-3">
             @if (activity.duration; as duration) {
                 <span class="inline-flex items-center gap-1">
@@ -27,6 +24,9 @@
             }
         </span>
         <span slot="end" class="flex flex-wrap items-center gap-2">
+            @if (!activity.visible) {
+                <sgdf-tag appearance="outlined" variant="neutral" pill>{{ 'activities.visible.false' | transloco }}</sgdf-tag>
+            }
             @if (activity.status; as status) {
                 <sgdf-tag appearance="soft" pill [variant]="statusVariant(activity)">{{ status.label }}</sgdf-tag>
             }

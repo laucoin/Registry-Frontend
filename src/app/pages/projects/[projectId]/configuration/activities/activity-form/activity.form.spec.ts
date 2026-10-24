@@ -99,7 +99,7 @@ describe( 'activity form', () => {
         const tree: FieldTree<ActivityFormModel> = build( { ...VALID, beginDateTime: AUGUST, endDateTime: JUNE } )
 
         // Act
-        const kinds: string[] = kindsOf( tree() )
+        const kinds: string[] = kindsOf( tree.endDateTime() )
 
         // Assert
         expect( kinds ).toEqual( [ 'beginDateBeforeEndDate' ] )

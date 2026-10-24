@@ -5,7 +5,6 @@ import { TranslocoService } from '@jsverse/transloco'
 import { MenuEntryModel } from '@shared/models/model/menu-entry.model'
 import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { RegistryConfig } from '@core/config/registry.config'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { UserProfileFacade } from '@core/registry/state/user-profile.facade'
@@ -15,7 +14,6 @@ import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.p
 import { IntervalPipe } from '@shared/helpers/pipe/interval.pipe'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { GenericElementComponent } from '@shared/ui/base/generic-element.component'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 
 interface ElementCase {
     name: string
@@ -69,7 +67,6 @@ describe( 'element action menus', () => {
     }
 
     beforeEach( () => {
-        RegistryConfig.config = { enabledActions: Object.values( ElementActionEnum ) } as never
     } )
 
     it.each( CASES )( 'lists the $name actions in a stable order', (item: ElementCase) => {

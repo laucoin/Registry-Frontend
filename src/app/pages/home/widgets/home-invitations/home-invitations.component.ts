@@ -16,6 +16,7 @@ import { PageModel } from '@shared/models/model/page.model'
 import { UserInvitationModel } from '@shared/models/model/user-invitation.model'
 import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
 import { injectAutoRefresh } from '@shared/helpers/refresh/inject-auto-refresh'
+import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 
 const PAGE_SIZE: number = 3
 
@@ -28,7 +29,7 @@ const PAGE_SIZE: number = 3
 	selector: 'app-home-invitations',
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	providers: [provideTranslocoScope('home')],
-	imports: [TranslocoPipe, PluralTranslationPipe, RouterLink, SectionErrorComponent],
+	imports: [EllipsisDirective, TranslocoPipe, PluralTranslationPipe, RouterLink, SectionErrorComponent],
 	templateUrl: './home-invitations.component.html',
 })
 export class HomeInvitationsComponent implements OnInit {

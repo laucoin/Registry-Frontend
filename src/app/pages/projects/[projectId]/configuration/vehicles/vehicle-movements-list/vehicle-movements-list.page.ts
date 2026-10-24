@@ -1,4 +1,6 @@
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { IfProjectAuthorityDirective } from '@shared/directives/if-project-authority.directive'
+import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, signal, Signal, WritableSignal, DestroyRef } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import { ActivatedRoute, ParamMap } from '@angular/router'
@@ -19,7 +21,6 @@ import {
     toVehicleMovementsListSearchParams,
 } from '@pages/projects/[projectId]/configuration/vehicles/vehicle-movements-list/vehicle-movements-list.search'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
-import { ProjectEyebrowDirective } from '@shared/directives/project-eyebrow.directive'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
@@ -38,7 +39,7 @@ import { MovementElementComponent } from '@shared/ui/domain/movement-element/mov
 @Component({
     selector: 'app-vehicle-movements-list',
     imports: [
-        ProjectEyebrowDirective,
+        IfProjectAuthorityDirective,
         ListComponent,
         MovementElementComponent,
         RegistryTemplateDirective,
@@ -51,6 +52,8 @@ import { MovementElementComponent } from '@shared/ui/domain/movement-element/mov
     templateUrl: './vehicle-movements-list.page.html',
 })
 export class VehicleMovementsListPage {
+    protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_D
+
     private readonly destroyRef: DestroyRef = inject( DestroyRef )
     protected readonly facade: VehicleFacade = inject(VehicleFacade)
     protected readonly movementFacade: MovementFacade = inject(MovementFacade)

@@ -1,10 +1,7 @@
 <ng-template #row let-vehicle>
     <sgdf-list-item data-testid="vehicle-row" [attr.data-id]="vehicle.id" [disabled]="!vehicle.visible">
         <sgdf-avatar slot="start" variant="primary" shape="rounded" aria-hidden="true" [initials]="initials(vehicle)"/>
-        <span class="block truncate" [attr.title]="title(vehicle)">{{ title(vehicle) }}</span>
-        @if (!vehicle.visible) {
-            <span class="sr-only">({{ 'vehicles.visible.false' | transloco }})</span>
-        }
+        <span appEllipsis>{{ title(vehicle) }}</span>
         <span slot="description" class="flex flex-wrap items-center gap-x-3">
             <span>{{ vehicle.brand }} {{ vehicle.model }}</span>
             @if (vehicle.startAvailability || vehicle.endAvailability) {
@@ -16,6 +13,9 @@
             }
         </span>
         <span slot="end" class="flex flex-wrap items-center gap-2">
+            @if (!vehicle.visible) {
+                <sgdf-tag appearance="outlined" variant="neutral" pill>{{ 'vehicles.visible.false' | transloco }}</sgdf-tag>
+            }
             <sgdf-tag appearance="soft" pill [variant]="statusVariant(vehicle)">{{ vehicle.status.label }}</sgdf-tag>
             @if (actions.primaryFor(vehicle); as primary) {
                 <sgdf-button data-testid="vehicle-row-button" size="small" appearance="outlined" variant="primary"

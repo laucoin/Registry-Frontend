@@ -12,7 +12,7 @@
       "body": [
         "Deux catégories de données sont traitées dans l'Application, avec deux responsables distincts :",
         "Pour les données de ton Compte (identifiant {{ organizationName }}, e-mail, prénom, nom), le responsable de traitement est l'Éditeur : {{ creatorName }}, contact <a href=\"mailto:{{ creatorEmail }}\">{{ creatorEmail }}</a>.",
-        "Pour les données des Participants que toi, ou un autre Utilisateur, saisissez dans un Projet, le responsable de traitement est le Responsable de ce Projet — c'est-à-dire l'Utilisateur qui a créé ou administre le Projet concerné. L'Éditeur n'agit dans ce cas qu'en tant que sous-traitant technique, au sens de l'article 28 du RGPD : il héberge et fait fonctionner l'outil, sans décider lui-même des finalités de ce traitement."
+        "Pour les données des Participants que tu saisis, ou qu'un autre Utilisateur saisit, dans un Projet, le responsable de traitement est le Responsable de ce Projet — c'est-à-dire l'Utilisateur qui a créé ou administre le Projet concerné. L'Éditeur n'agit dans ce cas qu'en tant que sous-traitant technique, au sens de l'article 28 du RGPD : il héberge et fait fonctionner l'outil, sans décider lui-même des finalités de ce traitement."
       ]
     },
     "dataCollected": {

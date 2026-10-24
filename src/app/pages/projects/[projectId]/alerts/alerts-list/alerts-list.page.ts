@@ -1,4 +1,6 @@
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, signal, Signal, WritableSignal } from '@angular/core'
+import { IfProjectAuthorityDirective } from '@shared/directives/if-project-authority.directive'
+import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import { TranslocoPipe } from '@jsverse/transloco'
 import '@sgdf/ui/button'
@@ -15,7 +17,6 @@ import {
     toAlertsListSearchModel,
     toAlertsListSearchParams,
 } from '@pages/projects/[projectId]/alerts/alerts-list/alerts-list.search'
-import { ProjectEyebrowDirective } from '@shared/directives/project-eyebrow.directive'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
@@ -32,7 +33,7 @@ import { AlertElementComponent } from '@shared/ui/domain/alert-element/alert-ele
 @Component({
     selector: 'app-alerts-list',
     imports: [
-        ProjectEyebrowDirective,
+        IfProjectAuthorityDirective,
         ListComponent,
         AlertElementComponent,
         RegistryTemplateDirective,
@@ -45,6 +46,8 @@ import { AlertElementComponent } from '@shared/ui/domain/alert-element/alert-ele
     templateUrl: './alerts-list.page.html',
 })
 export class AlertsListPage {
+    protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_D
+
     protected readonly facade: AlertFacade = inject(AlertFacade)
 
     protected readonly activeFilters: Signal<number> = computed((): number => [

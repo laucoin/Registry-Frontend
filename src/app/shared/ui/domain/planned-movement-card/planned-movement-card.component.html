@@ -31,7 +31,7 @@
             } @else if (total() !== undefined) {
                 <sgdf-list appearance="text" [label]="titleKey() | transloco">
                     @for (row of rows(); track row.key) {
-                        <sgdf-list-item>
+                        <sgdf-list-item data-testid="planned-movement-card-row" [class.cursor-pointer]="clickable()" (click)="open(row.movement)">
                             <sgdf-avatar slot="start" aria-hidden="true" [variant]="rowVariant()">
                                 <sgdf-icon slot="icon" [name]="rowIcon()" library="solid"/>
                             </sgdf-avatar>

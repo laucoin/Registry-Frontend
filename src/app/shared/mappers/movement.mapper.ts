@@ -17,6 +17,7 @@ export class MovementMapper {
             dateTime: dto.dateTime,
             type: dto.type,
             reason: dto.reason ? MovementReasonMapper.toModel( dto.reason ) : undefined,
+            lastCommunicationDateTime: dto.lastCommunicationDateTime,
             activity: dto.activity ? { ...dto.activity, value: ActivityMapper.toModel( dto.activity.value ) } : undefined,
             contentType: dto.contentType,
             content: dto.content.map( MovementContentMapper.toModel ),

@@ -4,13 +4,11 @@ import { Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
 import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { RegistryConfig } from '@core/config/registry.config'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/data/state/group.facade'
 import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import { ParticipantActions } from '@pages/projects/[projectId]/configuration/participants/participant-row/participant-actions.service'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { ElementActionModel } from '@shared/models/model/element-action.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
@@ -27,7 +25,6 @@ describe('ParticipantActions', () => {
     let navigateByUrl: Mock<(url: string) => Promise<boolean>>
 
     beforeEach(() => {
-        RegistryConfig.config = { enabledActions: Object.values(ElementActionEnum) } as never
         authorities = signal(['p1_REGISTRY_PROJECT_PARTICIPANT_U', 'p1_REGISTRY_PROJECT_PARTICIPANT_D', 'p1_REGISTRY_PROJECT_PARTICIPANT_HISTORY_R'])
         facade = { disableParticipant: vi.fn(() => of(undefined)), enableParticipant: vi.fn(() => of(undefined)), deleteParticipant: vi.fn(() => of(undefined)), exportParticipant: vi.fn(() => of(undefined)) }
         groupFacade = { removeMemberFromGroup: vi.fn(() => of(undefined)) }
@@ -75,17 +72,6 @@ describe('ParticipantActions', () => {
 
         // Assert
         expect(shown).toEqual(['movements-history', 'edit', 'enable', 'export'])
-    })
-
-    it('leaves out the commands that are not enabled in the configuration', () => {
-        // Arrange
-        RegistryConfig.config = { enabledActions: [ElementActionEnum.PARTICIPANT_UPDATE] } as never
-
-        // Act
-        const shown: string[] = ids(VISIBLE)
-
-        // Assert
-        expect(shown).toEqual(['edit'])
     })
 
     it('disables the export for a user who is neither an administrator nor the linked user', () => {

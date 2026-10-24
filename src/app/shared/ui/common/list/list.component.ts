@@ -4,6 +4,7 @@ import {
 	computed,
 	contentChildren,
 	CUSTOM_ELEMENTS_SCHEMA,
+	inject,
 	input,
 	InputSignal,
 	output,
@@ -11,6 +12,7 @@ import {
 	Signal,
 	TemplateRef,
 } from '@angular/core'
+import { UiFacade } from '@core/registry/state/ui.facade'
 import { TranslocoPipe } from '@jsverse/transloco'
 import '@sgdf/ui/accordion'
 import '@sgdf/ui/accordion-item'
@@ -46,6 +48,7 @@ const SKELETON_ROWS: number = 6
 })
 export class ListComponent<T extends GenericModel> {
 	private readonly templates: Signal<readonly RegistryTemplateDirective[]> = contentChildren(RegistryTemplateDirective)
+	private readonly uiFacade: UiFacade = inject(UiFacade)
 
 	public readonly elementPage: InputSignal<PageModel<T> | undefined> = input.required()
 	public readonly loading: InputSignal<boolean> = input.required()
@@ -60,6 +63,7 @@ export class ListComponent<T extends GenericModel> {
 
 	protected readonly skeletonRows: readonly number[] = Array.from({ length: SKELETON_ROWS }, (_: unknown, index: number): number => index)
 
+	protected readonly searchExpanded: Signal<boolean> = computed((): boolean => !this.uiFacade.tinyScreen())
 	protected readonly size: Signal<number> = computed((): number => this.elementPage()?.size ?? DEFAULT_PAGE_SIZE)
 	protected readonly hasMore: Signal<boolean> = computed((): boolean => CumulativePageHelper.hasMore(this.elementPage()))
 	protected readonly isEmpty: Signal<boolean> = computed((): boolean => this.elementPage()?.content.length === 0 && !this.loading())

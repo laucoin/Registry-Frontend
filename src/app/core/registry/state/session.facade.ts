@@ -1,4 +1,5 @@
 import { computed, inject, Injectable, Signal } from '@angular/core'
+import { HttpStatusCode } from '@angular/common/http'
 import { Router } from '@angular/router'
 import {
     catchError,
@@ -149,7 +150,7 @@ export class SessionFacade {
             mergeMap((): Observable<CurrentUserModel> => this.securityApi.fetchCurrentUser()),
             tap((currentUser: CurrentUserModel): void => this.onCurrentUser(currentUser)),
             tap((): void => this.navigateAfterSignIn()),
-            catchError((error: ErrorModel): Observable<never> => this.globalError$(error)),
+            catchError((error: ErrorModel): Observable<never> => this.signInFailed$(error)),
         ).subscribe()
     }
 
@@ -302,6 +303,18 @@ export class SessionFacade {
             undefined,
             { reason: error.message },
         ))
+    }
+
+    // A refused authorization code (expired or already used) sends the user back to the login page: say why.
+    private signInFailed$(error: ErrorModel): Observable<never> {
+        if (error.status !== HttpStatusCode.Unauthorized) return this.globalError$(error)
+        this.uiFacade.notify(StateHelper.buildNotificationMessage(
+            SeverityEnum.WARNING,
+            'global.notifications.sign-in-refused.title',
+            'global.notifications.sign-in-refused.message',
+            'pi pi-sign-in',
+        ))
+        return EMPTY
     }
 
     private reportError$(error: ErrorModel): Observable<never> {

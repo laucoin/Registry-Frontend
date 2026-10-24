@@ -2,6 +2,11 @@
   "eyebrow": "Tableau de bord",
   "subtitle": "Vue opérationnelle du projet",
   "communicate": "Communiquer",
+  "quickActions": {
+    "registeredMovement": "Mouvement d'un inscrit",
+    "guestMovement": "Mouvement d'un invité",
+    "alert": "Nouvelle alerte"
+  },
   "participantOverview": {
     "title": "Participants",
     "total": "{{count}} au total",

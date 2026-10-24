@@ -4,13 +4,11 @@ import { Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
 import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { RegistryConfig } from '@core/config/registry.config'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { UserProfileFacade } from '@core/registry/state/user-profile.facade'
 import { ProjectProfileFacade } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.facade'
 import { ProjectProfileActions } from '@pages/projects/[projectId]/configuration/profiles/project-profile-row/project-profile-actions.service'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { ElementActionModel } from '@shared/models/model/element-action.model'
@@ -30,11 +28,10 @@ describe('ProjectProfileActions', () => {
     let selectedProject: WritableSignal<{ id: string }>
     let facade: Record<string, Mock>
     let userProfileFacade: { manageProjectInvitationAcceptance: Mock }
-    let confirm: Mock<(confirmation: { accept: () => void, acceptSeverity: SeverityEnum }) => void>
+    let confirm: Mock<(confirmation: { accept: () => void, acceptSeverity: SeverityEnum, header: string, phrase?: string }) => void>
     let navigateByUrl: Mock<(url: string) => Promise<boolean>>
 
     beforeEach(() => {
-        RegistryConfig.config = { enabledActions: Object.values(ElementActionEnum) } as never
         authorities = signal(['p1_REGISTRY_PROJECT_PROFILE_U', 'p1_REGISTRY_PROJECT_PROFILE_D'])
         selectedProject = signal({ id: 'p1' })
         facade = { blockProjectProfile: vi.fn(() => of(undefined)), unblockProjectProfile: vi.fn(() => of(undefined)), deleteProjectProfile: vi.fn(() => of(undefined)) }
@@ -140,6 +137,30 @@ describe('ProjectProfileActions', () => {
         expect(beforeAccept).toBe(0)
         expect(confirm.mock.calls[0][0].acceptSeverity).toBe(severity)
         expect(facade[call]).toHaveBeenCalledWith(profile)
+    })
+
+    it('asks for a typed confirmation, worded for the user, before deleting an own profile', () => {
+        // Arrange
+        const action: ElementActionModel = find(OWN, 'delete')
+
+        // Act
+        action.run()
+
+        // Assert
+        expect(confirm.mock.calls[0][0].header).toBe('project-profiles.actions.confirmations.delete-own.title')
+        expect(confirm.mock.calls[0][0].phrase).toBe('project-profiles.actions.confirmations.delete-own.phrase')
+    })
+
+    it('keeps the plain confirmation to delete the profile of someone else', () => {
+        // Arrange
+        const action: ElementActionModel = find(OTHER, 'delete')
+
+        // Act
+        action.run()
+
+        // Assert
+        expect(confirm.mock.calls[0][0].header).toBe('project-profiles.actions.confirmations.delete.title')
+        expect(confirm.mock.calls[0][0].phrase).toBeUndefined()
     })
 
     it.each([

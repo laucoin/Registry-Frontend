@@ -58,7 +58,7 @@ export function createProjectForm (model: WritableSignal<ProjectFormModel>): Fie
         RegistrySchemas.requiredText( path.name, 150 )
         RegistrySchemas.dateRequiredForTime( path.beginDateTime )
         RegistrySchemas.dateRequiredForTime( path.endDateTime )
-        RegistrySchemas.beginDateBeforeEndDate( path )
+        RegistrySchemas.beginDateBeforeEndDate( path.beginDateTime, path.endDateTime )
     } )
 }
 

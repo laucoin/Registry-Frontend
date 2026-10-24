@@ -11,6 +11,9 @@ interface DialogApi {
 	variant: () => string
 	confirm: () => void
 	cancel: (event?: Event) => void
+	onInput: (event: Event) => void
+	phraseTyped: () => boolean
+	typed: () => string
 }
 
 describe('ConfirmationDialogComponent', () => {
@@ -99,6 +102,53 @@ describe('ConfirmationDialogComponent', () => {
 		// Assert
 		expect(accept).not.toHaveBeenCalled()
 		expect(dialog.pending()).toBeUndefined()
+	})
+
+	const typing = (value: string): Event => ({ target: { value } }) as unknown as Event
+
+	it('needs no phrase to confirm a plain confirmation', () => {
+		// Arrange
+		const dialog: DialogApi = create()
+
+		// Act
+		requests.next(request(SeverityEnum.DANGER))
+
+		// Assert
+		expect(dialog.phraseTyped()).toBe(true)
+	})
+
+	it('refuses to confirm a typed confirmation until its phrase is typed, whatever the case', () => {
+		// Arrange
+		const dialog: DialogApi = create()
+		requests.next({ ...request(SeverityEnum.DANGER), phrase: 'delete mine' })
+
+		// Act
+		dialog.confirm()
+		const before: boolean = dialog.phraseTyped()
+		dialog.onInput(typing('  Delete Mine '))
+		dialog.confirm()
+
+		// Assert
+		expect(before).toBe(false)
+		expect(accept).toHaveBeenCalledTimes(1)
+		expect(dialog.pending()).toBeUndefined()
+	})
+
+	it('forgets what was typed when the confirmation is replaced or closed', () => {
+		// Arrange
+		const dialog: DialogApi = create()
+		requests.next({ ...request(SeverityEnum.DANGER), phrase: 'delete mine' })
+		dialog.onInput(typing('delete'))
+
+		// Act
+		requests.next({ ...request(SeverityEnum.DANGER), phrase: 'delete mine' })
+		const afterReplace: string = dialog.typed()
+		dialog.onInput(typing('delete'))
+		dialog.cancel()
+
+		// Assert
+		expect(afterReplace).toBe('')
+		expect(dialog.typed()).toBe('')
 	})
 
 	it('ignores a hide event raised by an element nested in the dialog', () => {

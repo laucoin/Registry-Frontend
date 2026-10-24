@@ -6,6 +6,7 @@ import { RegistryConfig } from "@core/config/registry.config";
 import { MenuItemModel } from '@core/layout/data/model/menu-item.model'
 import { MenuService } from '@core/layout/data/service/menu.service'
 import { SessionFacade } from '@core/registry/state/session.facade'
+import { UiFacade } from '@core/registry/state/ui.facade'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { TranslocoPipe } from '@jsverse/transloco'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
@@ -33,6 +34,7 @@ import '@sgdf/ui/navbar'
 export class NavbarComponent {
 	private readonly menuService: MenuService = inject(MenuService)
 	private readonly sessionFacade: SessionFacade = inject(SessionFacade)
+	protected readonly uiFacade: UiFacade = inject(UiFacade)
 
 	protected readonly RegistryRouteEnum: typeof RegistryRouteEnum = RegistryRouteEnum
 	protected readonly application: ConfigModel['application'] = RegistryConfig.config.application;

@@ -1,4 +1,4 @@
-<sgdf-footer torn variant="primary">
+<sgdf-footer [torn]="!uiFacade.tinyScreen()" variant="primary">
     <span slot="brand" class="flex items-center gap-3">
         <sgdf-avatar aria-hidden="true" [initials]="application.name.at(0)" shape="rounded"/>
         <span class="flex flex-col">

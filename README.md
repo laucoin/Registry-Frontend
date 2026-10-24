@@ -86,7 +86,6 @@ corepack enable pnpm
                 "dark": "img/SGDF/small-logo.svg"
             }
         },
-        "enabledActions": [ "<element-action.enum.ts>" ],
         "notification": {
             "duration": {
                 "info": 5000,

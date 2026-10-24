@@ -1,3 +1,5 @@
+import { signal } from '@angular/core';
+import { MovementPrefillService } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-prefill.service';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { MockBuilder, ngMocks } from 'ng-mocks';
@@ -16,6 +18,7 @@ function movement(overrides: Partial<PlannedMovementModel> = {}): PlannedMovemen
 }
 
 describe('PlannedMovementCardComponent', () => {
+	const openPlanned = vi.fn();
 	let fixture: ComponentFixture<PlannedMovementCardComponent>;
 
 	async function render(movements: PlannedMovementModel[] | undefined, options: { loading?: boolean, error?: NotificationModel } = {}): Promise<void> {
@@ -35,7 +38,9 @@ describe('PlannedMovementCardComponent', () => {
 		await MockBuilder(PlannedMovementCardComponent)
 			.mock(TranslocoPipe, (key: string): string => key)
 			.mock(PluralTranslationPipe, (key: string): string => key)
-			.mock(CustomDateFormatPipe, (): string => '10:32');
+			.mock(CustomDateFormatPipe, (): string => '10:32')
+			.mock(MovementPrefillService, { canCreate: signal(true), openPlanned });
+		openPlanned.mockClear();
 	});
 
 	it('should list the planned movements with their total and their time', async () => {
@@ -141,5 +146,17 @@ describe('PlannedMovementCardComponent', () => {
 
 		// Assert
 		expect(model.participants[0]?.id).toBe(participant);
+	});
+
+	it('should open the movement form prefilled with the movement of the clicked row', async () => {
+		// Arrange
+		const movements: PlannedMovementModel[] = [movement(), movement({ poolName: 'Owls' })];
+		await render(movements);
+
+		// Act
+		fixture.nativeElement.querySelectorAll('sgdf-list-item')[1].click();
+
+		// Assert
+		expect(openPlanned).toHaveBeenCalledWith(movements[1]);
 	});
 });

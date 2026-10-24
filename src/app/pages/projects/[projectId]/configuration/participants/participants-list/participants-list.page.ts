@@ -1,4 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common'
+import { IfProjectAuthorityDirective } from '@shared/directives/if-project-authority.directive'
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, signal, Signal, WritableSignal } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import { RouterLink } from '@angular/router'
@@ -19,7 +20,6 @@ import {
     toParticipantsListSearchModel,
     toParticipantsListSearchParams,
 } from '@pages/projects/[projectId]/configuration/participants/participants-list/participants-list.search'
-import { ProjectEyebrowDirective } from '@shared/directives/project-eyebrow.directive'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
@@ -37,7 +37,7 @@ import { ListComponent } from '@shared/ui/common/list/list.component'
 @Component({
     selector: 'app-participants-list',
     imports: [
-        ProjectEyebrowDirective,
+        IfProjectAuthorityDirective,
         ListComponent,
         ParticipantRowComponent,
         RegistryTemplateDirective,
@@ -52,6 +52,8 @@ import { ListComponent } from '@shared/ui/common/list/list.component'
     templateUrl: './participants-list.page.html',
 })
 export class ParticipantsListPage {
+    protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_D
+
     protected readonly facade: ParticipantFacade = inject(ParticipantFacade)
     private readonly sessionFacade: SessionFacade = inject(SessionFacade)
 

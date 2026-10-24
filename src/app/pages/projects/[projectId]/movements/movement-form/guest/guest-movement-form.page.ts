@@ -29,8 +29,11 @@ import {
     MovementGuestModel,
     toGuestMovementDto,
     toGuestMovementFormModel,
+    withGuestPrefill,
     withGuestType,
 } from '@pages/projects/[projectId]/movements/movement-form/guest/guest-movement.form'
+import { MovementPrefillService } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-prefill.service'
+import { MovementPrefillModel } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-prefill.model'
 import { FieldErrorDirective } from '@shared/directives/field-error.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { ETagHelper } from '@shared/helpers/etag.helper'
@@ -81,6 +84,7 @@ import { SelectElementsFieldComponent } from '@shared/ui/common/select-elements-
 } )
 export class GuestMovementFormPage extends BaseFormComponent {
     protected readonly facade: MovementFacade = inject( MovementFacade )
+    private readonly prefillService: MovementPrefillService = inject( MovementPrefillService )
 
     protected readonly now: Date = new Date()
     protected readonly movement: WritableSignal<MovementModel | undefined> = signal( undefined )
@@ -136,6 +140,14 @@ export class GuestMovementFormPage extends BaseFormComponent {
     private applyMovement (movement: MovementModel | undefined): void {
         this.contextProject.set( this.sessionFacade.selectedProject() )
         if (movement) this.model.set( toGuestMovementFormModel( movement ) )
+        else this.applyPrefill()
+    }
+
+    private applyPrefill (): void {
+        const prefill: MovementPrefillModel | undefined = this.prefillService.read()
+        if (!prefill) return
+        this.model.update( (current: GuestMovementFormModel): GuestMovementFormModel => withGuestPrefill( current, prefill ) )
+        this.goTo( 2 )
     }
 
     protected handleTypeChange (event: Event): void {

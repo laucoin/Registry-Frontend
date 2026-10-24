@@ -10,6 +10,7 @@ export interface MovementResponseDto extends GenericResponseDto {
     dateTime: Date
     type: SelectOptionModel<MovementTypeEnum>
     reason: MovementReasonResponseDto | undefined
+    lastCommunicationDateTime: Date | undefined
     activity: SelectOptionModel<ActivityResponseDto> | undefined
     contentType: ParticipantTypeEnum
     content: MovementContentResponseDto[]

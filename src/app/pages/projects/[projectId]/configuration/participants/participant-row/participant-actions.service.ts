@@ -5,7 +5,6 @@ import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/da
 import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import { ElementActionsBase, ElementActionSpec } from '@shared/helpers/facade/element-actions.base'
 import { GenericHelper } from '@shared/helpers/generic.helper'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { ParticipantModel } from '@shared/models/model/participant.model'
@@ -40,7 +39,6 @@ export class ParticipantActions extends ElementActionsBase<ParticipantModel, str
         return {
             id: 'movements-history',
             icon: 'clock-rotate-left',
-            enabledAction: ElementActionEnum.PARTICIPANT_CONSULT_MOVEMENTS,
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_HISTORY_R),
             run: (): void => this.navigate(RegistryRouteEnum.PROJECTS_CONFIGURATION_PARTICIPANTS_MOVEMENTS, participant),
@@ -51,7 +49,6 @@ export class ParticipantActions extends ElementActionsBase<ParticipantModel, str
         return {
             id: 'edit',
             icon: 'pen-to-square',
-            enabledAction: ElementActionEnum.PARTICIPANT_UPDATE,
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U),
             run: (): void => this.navigate(RegistryRouteEnum.PROJECTS_CONFIGURATION_PARTICIPANTS_EDITION, participant),
@@ -62,7 +59,6 @@ export class ParticipantActions extends ElementActionsBase<ParticipantModel, str
         return {
             id: 'disable',
             icon: 'eye-slash',
-            enabledAction: ElementActionEnum.PARTICIPANT_DISABLE,
             shown: participant.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U),
             confirmation: { severity: SeverityEnum.WARNING, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.disableParticipant(participant.id)) },
@@ -73,9 +69,8 @@ export class ParticipantActions extends ElementActionsBase<ParticipantModel, str
         return {
             id: 'enable',
             icon: 'rotate-right',
-            enabledAction: ElementActionEnum.PARTICIPANT_ENABLE,
             shown: !participant.visible,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U),
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_D),
             confirmation: { severity: SeverityEnum.INFO, icon: 'pi pi-info-circle', accept: (): void => this.run(this.facade.enableParticipant(participant.id)) },
         }
     }
@@ -84,7 +79,6 @@ export class ParticipantActions extends ElementActionsBase<ParticipantModel, str
         return {
             id: 'remove-member',
             icon: 'user-minus',
-            enabledAction: ElementActionEnum.PARTICIPANT_REMOVE_FROM_GROUP,
             shown: GenericHelper.nonNull(groupId),
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U),
             confirmation: { severity: SeverityEnum.WARNING, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.groupFacade!.removeMemberFromGroup(groupId!, participant)) },
@@ -95,7 +89,6 @@ export class ParticipantActions extends ElementActionsBase<ParticipantModel, str
         return {
             id: 'export',
             icon: 'file-export',
-            enabledAction: ElementActionEnum.PARTICIPANT_EXPORT,
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_EXPORT) || this.isLinkedToCurrentUser(participant),
             run: (): void => this.run(this.facade.exportParticipant(participant)),
@@ -110,7 +103,6 @@ export class ParticipantActions extends ElementActionsBase<ParticipantModel, str
         return {
             id: 'delete',
             icon: 'trash',
-            enabledAction: ElementActionEnum.PARTICIPANT_DELETE,
             shown: participant.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_D),
             confirmation: { severity: SeverityEnum.DANGER, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.deleteParticipant(participant)) },

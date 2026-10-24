@@ -2,18 +2,15 @@ import { Signal, signal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
-import { of, throwError } from 'rxjs'
+import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { RegistryConfig } from '@core/config/registry.config'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { IntervalPipe } from '@shared/helpers/pipe/interval.pipe'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { MovementActions } from '@shared/ui/domain/movement-element/movement-actions.service'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { ElementActionModel } from '@shared/models/model/element-action.model'
 import { MovementElementComponent } from '@shared/ui/domain/movement-element/movement-element.component'
 
@@ -63,7 +60,6 @@ describe( 'MovementElementComponent', () => {
     }
 
     beforeEach( () => {
-        RegistryConfig.config = { enabledActions: Object.values( ElementActionEnum ) } as never
     } )
 
     it( 'lists the actions of a visible element in a stable order', () => {
@@ -190,33 +186,5 @@ describe( 'MovementElementComponent', () => {
 
         // Assert
         expect( count ).toBe( 0 )
-    } )
-
-    it.each( [
-        [ 'REGISTERED', 'createRegisteredMovement', 'createGuestMovement' ],
-        [ 'GUEST', 'createGuestMovement', 'createRegisteredMovement' ],
-    ] )( 'reverses a %s movement through %s', (contentType: string, used: string, unused: string) => {
-        // Arrange
-        const component: MovementElementComponent = create( { ...ELEMENT, contentType, type: { value: 'IN' } } )
-        const content: object[] = [ { participant: { id: 'pa1' }, vehicle: undefined, poolName: undefined } ]
-
-        // Act
-        ;(component as unknown as { reverseMovement: (content: object[]) => void }).reverseMovement( content )
-
-        // Assert
-        expect( facade[ used ] ).toHaveBeenCalledWith( expect.objectContaining( { type: 'OUT' } ) )
-        expect( facade[ unused ] ).not.toHaveBeenCalled()
-    } )
-
-    it( 'notifies the user when the reversed movement cannot be created', () => {
-        // Arrange
-        const component: MovementElementComponent = create( { ...ELEMENT, contentType: 'GUEST', type: { value: 'IN' } } )
-        facade[ 'createGuestMovement' ].mockReturnValue( throwError( (): ErrorModel => ErrorModel.of( 'Refused', 'Not allowed' ) ) )
-
-        // Act
-        ;(component as unknown as { reverseMovement: (content: object[]) => void }).reverseMovement( [] )
-
-        // Assert
-        expect( TestBed.inject( UiFacade ).notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Refused', detail: 'Not allowed' } ) )
     } )
 } )

@@ -6,9 +6,6 @@
         <app-section-error data-testid="communication-form-search-error" [error]="failure" [retryable]="false"/>
     }
     <app-form-error data-testid="communication-form-submit-error" [error]='error()' />
-    <app-field-error data-testid="communication-form-movement-error" [field]='form.movement' translationPrefix='communications.form.error.movement' />
-    <app-field-error data-testid="communication-form-alert-title-error" [field]='form.newAlertTitle' translationPrefix='alerts.form.error.title' />
-    <app-field-error data-testid="communication-form-message-error" [field]="form.message" translationPrefix="communications.form.error.message"/>
     <app-field-error data-testid="communication-form-link-error" [field]="form" translationPrefix="communications.form.error.link"/>
     @if (movementSelectorVisible() || GenericHelper.nonNull(alertSelectorMode())) {
         <sgdf-divider/>
@@ -23,6 +20,7 @@
                                      [label]="'communications.form.movement.title' | transloco"
                                      [placeholder]="'communications.form.placeholder.movement' | transloco: { date: now | dateFormat: 'datetime' }"
                                      [attr.no-results-label]="'communications.form.movement.empty-search' | transloco"
+                                     [appFieldError]="form.movement" translationPrefix="communications.form.error.movement"
                                      [value]="selectedMovementKey()"
                                      (sgdf-search)="handleMovementSearch($any($event).detail)"
                                      (change)="selectMovement($any($event.target).value)"
@@ -67,6 +65,7 @@
                                [label]="'alerts.form.title' | transloco"
                                [placeholder]="'alerts.form.placeholder.title' | transloco"
                                [formField]="form.newAlertTitle"
+                               [appFieldError]="form.newAlertTitle" translationPrefix="alerts.form.error.title"
                                (keydown.enter)="submit()"/>
                     </div>
                     <sgdf-icon-button data-testid="communication-form-remove-alert-title-button" name="xmark" library="solid" variant="danger" [label]="'communications.form.actions.remove-alert' | transloco" (click)="removeAlertField()"/>
@@ -94,11 +93,13 @@
         <sgdf-textarea data-testid="communication-form-message-textarea" appSgdfField rows="1" resize="auto" without-label
                        [label]="('communications.form.message' | transloco) + '. ' + ('communications.form.hint.message' | transloco)"
                        [placeholder]="'communications.form.message' | transloco"
-                       [formField]="form.message"/>
+                       [formField]="form.message"
+                       [appFieldError]="form.message" translationPrefix="communications.form.error.message"
+                       (keydown)="submitOnShortcut($any($event))"/>
         <sgdf-icon-button data-testid="communication-form-submit-button" variant="primary" library="solid" [disabled]="saving()"
                           [name]="GenericHelper.nonNull(facade.communication()) ? 'check' : 'paper-plane'"
                           [label]="(GenericHelper.nonNull(facade.communication()) ? 'global.actions.edit' : 'global.actions.create') | transloco"
                           (click)="submit()"/>
     </div>
-    <small class="hint" aria-hidden="true">{{ 'communications.form.hint.message' | transloco }}</small>
+    <small class="hint" aria-hidden="true">{{ 'communications.form.hint.message' | transloco }} {{ 'communications.form.hint.shortcut' | transloco: { keys: shortcutLabel } }}</small>
 </div>

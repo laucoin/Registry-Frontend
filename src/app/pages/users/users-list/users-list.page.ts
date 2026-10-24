@@ -26,6 +26,7 @@ import { PageEventModel } from '@shared/models/model/page-event.model'
 import { UserModel } from '@shared/models/model/user.model'
 import { ElementActionsComponent } from '@shared/ui/common/element-actions/element-actions.component'
 import { ListComponent } from '@shared/ui/common/list/list.component'
+import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 
 const INITIALS_LENGTH: number = 2
 
@@ -37,6 +38,7 @@ const INITIALS_LENGTH: number = 2
 @Component({
     selector: 'app-users-list',
     imports: [
+        EllipsisDirective,
         ListComponent,
         RegistryTemplateDirective,
         SgdfFieldDirective,

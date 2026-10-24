@@ -1,7 +1,6 @@
 import { inject, Injectable } from '@angular/core'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
 import { ElementActionsBase, ElementActionSpec } from '@shared/helpers/facade/element-actions.base'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { CommunicationModel } from '@shared/models/model/communication.model'
@@ -25,7 +24,6 @@ export class CommunicationActions extends ElementActionsBase<CommunicationModel>
         return {
             id: 'edit',
             icon: 'pen-to-square',
-            enabledAction: ElementActionEnum.COMMUNICATION_UPDATE,
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_U),
             run: (): void => this.facade.fetchCommunication(communication.id),
@@ -36,7 +34,6 @@ export class CommunicationActions extends ElementActionsBase<CommunicationModel>
         return {
             id: 'disable',
             icon: 'eye-slash',
-            enabledAction: ElementActionEnum.COMMUNICATION_DISABLE,
             shown: communication.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_U),
             confirmation: { severity: SeverityEnum.WARNING, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.disableCommunication(communication.id)) },
@@ -47,9 +44,8 @@ export class CommunicationActions extends ElementActionsBase<CommunicationModel>
         return {
             id: 'enable',
             icon: 'rotate-right',
-            enabledAction: ElementActionEnum.COMMUNICATION_ENABLE,
             shown: !communication.visible,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_U),
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_D),
             confirmation: { severity: SeverityEnum.INFO, icon: 'pi pi-info-circle', accept: (): void => this.run(this.facade.enableCommunication(communication.id)) },
         }
     }
@@ -58,7 +54,6 @@ export class CommunicationActions extends ElementActionsBase<CommunicationModel>
         return {
             id: 'delete',
             icon: 'trash',
-            enabledAction: ElementActionEnum.COMMUNICATION_DELETE,
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_D),
             confirmation: { severity: SeverityEnum.DANGER, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.deleteCommunication(communication)) },

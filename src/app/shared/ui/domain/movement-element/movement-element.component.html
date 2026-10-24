@@ -2,10 +2,7 @@
              [variant]="movement().type.value === MovementTypeEnum.OUT ? 'warning' : 'success'">
     <sgdf-icon slot="icon" [name]="typeIconName()" library="solid"/>
 </sgdf-avatar>
-<span class="block truncate" [attr.title]="typeAndReason()">{{ typeAndReason() }}</span>
-@if (!movement().visible) {
-    <span class="sr-only">({{ 'movements.visible.false' | transloco }})</span>
-}
+<span appEllipsis>{{ typeAndReason() }}</span>
 <span slot="description" class="flex flex-wrap items-center gap-x-3">
     <span class="inline-flex items-center gap-1">
         <sgdf-icon name="clock" library="regular"/>
@@ -31,6 +28,18 @@
             </sgdf-button>
         }
     }
+    @if (sinceLastCommunication(); as elapsed) {
+        <sgdf-tag data-testid="movement-element-since-communication" size="small" appearance="soft" pill variant="info"
+                  [attr.title]="'movements.communication.since-last' | transloco: { elapsed: daysSinceLastCommunication() > 0 ? ('movements.communication.days' | transloco: { count: daysSinceLastCommunication() }) : elapsed }">
+            <sgdf-icon slot="prefix" name="comments" library="regular"/>
+            {{ 'movements.communication.last' | transloco }} :
+            @if (daysSinceLastCommunication() > 0) {
+                {{ 'movements.communication.days' | transloco: { count: daysSinceLastCommunication() } }}
+            } @else {
+                {{ elapsed }}
+            }
+        </sgdf-tag>
+    }
     @if (vehiclesCount() > 0) {
         <span class="inline-flex items-center gap-1">
             <sgdf-icon name="car" library="solid"/>
@@ -39,12 +48,13 @@
     }
 </span>
 <span slot="end" class="flex flex-wrap items-center gap-2">
-    @if (reversibleAuthorized() && total() > 0) {
-        <sgdf-button data-testid="movement-element-reverse-all-button" size="small" variant="info" appearance="outlined"
-                     (click)="confirmMovementReversion(movement().content)">
-            <sgdf-icon slot="prefix" [name]="reversedIconName()" library="solid"/>
-            {{ ('movements.actions.reverse.' + movement().type.value) | transloco }}
-            <span class="sr-only">({{ typeAndReason() }})</span>
+    @if (!movement().visible) {
+        <sgdf-tag appearance="outlined" variant="neutral" pill>{{ 'movements.visible.false' | transloco }}</sgdf-tag>
+    }
+    @if (prefillService.canCreate() && total() > 0) {
+        <sgdf-button data-testid="movement-element-reverse-button" size="small" variant="primary" appearance="outlined" (click)="reverse()">
+            <sgdf-icon slot="prefix" [name]="movement().type.value === MovementTypeEnum.OUT ? 'arrow-down' : 'arrow-up'" library="solid"/>
+            {{ 'movements.reverse.' + movement().type.value | transloco }}
         </sgdf-button>
     }
     @if (communication()) {
@@ -67,12 +77,10 @@
                 @if (content.vehicle) {
                     <sgdf-tag slot="description" appearance="outlined" pill>{{ VehicleHelper.toSelectItem(content.vehicle).label }}</sgdf-tag>
                 }
-                @if (reversibleAuthorized()) {
-                    <sgdf-button data-testid="movement-element-reverse-one-button" slot="end" size="small" variant="info" appearance="outlined"
-                                 (click)="reverseOne(content)">
-                        <sgdf-icon slot="prefix" [name]="reversedIconName()" library="solid"/>
-                        {{ ('movements.actions.reverse.' + movement().type.value) | transloco }}
-                        <span class="sr-only">({{ (content.participant.firstName | titlecase) + ' ' + (content.participant.lastName | uppercase) }})</span>
+                @if (prefillService.canCreate()) {
+                    <sgdf-button data-testid="movement-element-participant-reverse-button" slot="end" size="small" variant="primary" appearance="outlined" (click)="reverse([content])">
+                        <sgdf-icon slot="prefix" [name]="movement().type.value === MovementTypeEnum.OUT ? 'arrow-down' : 'arrow-up'" library="solid"/>
+                        {{ 'movements.reverse.' + movement().type.value | transloco }}
                     </sgdf-button>
                 }
             </sgdf-list-item>

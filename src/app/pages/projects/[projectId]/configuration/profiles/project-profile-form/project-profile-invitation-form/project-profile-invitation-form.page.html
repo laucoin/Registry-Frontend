@@ -1,6 +1,6 @@
 <app-form data-testid="project-profile-invitation-form-create-page" [form]="form" [loading]="loading()" [error]="error()"
           [title]="'project-profiles.form.title.create' | transloco : { name: sessionFacade.selectedProject()?.name }">
-    <form data-testid="project-profile-invitation-form-submit-form" (submit)="$event.preventDefault(); submit()">
+    <form novalidate data-testid="project-profile-invitation-form-submit-form" (submit)="$event.preventDefault(); submit()">
         <sgdf-card>
             <app-project-profile-invitation-fields [fields]="form"/>
         </sgdf-card>

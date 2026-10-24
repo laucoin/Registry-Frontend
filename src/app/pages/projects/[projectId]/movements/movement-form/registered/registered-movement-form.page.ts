@@ -30,8 +30,11 @@ import {
     RegisteredMovementFormModel,
     toRegisteredMovementDto,
     toRegisteredMovementFormModel,
+    withRegisteredPrefill,
     withRegisteredType,
 } from '@pages/projects/[projectId]/movements/movement-form/registered/registered-movement.form'
+import { MovementPrefillService } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-prefill.service'
+import { MovementPrefillModel } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-prefill.model'
 import { FieldErrorDirective } from '@shared/directives/field-error.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { ETagHelper } from '@shared/helpers/etag.helper'
@@ -58,7 +61,6 @@ import { ProjectModel } from '@shared/models/model/project.model'
 import { SelectOptionGroupModel, SelectOptionModel } from '@shared/models/model/select-option.model'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
 import { BaseFormComponent } from '@shared/ui/base/base-form.component'
-import { FieldErrorComponent } from '@shared/ui/common/field-error/field-error.component'
 import { FormComponent } from '@shared/ui/common/form/form.component'
 import { SelectElementsFieldComponent } from '@shared/ui/common/select-elements-field/select-elements-field.component'
 
@@ -72,7 +74,6 @@ import { SelectElementsFieldComponent } from '@shared/ui/common/select-elements-
     imports: [
         FormComponent,
         FormField,
-        FieldErrorComponent,
         FieldErrorDirective,
         SgdfFieldDirective,
         SelectElementsFieldComponent,
@@ -87,6 +88,7 @@ import { SelectElementsFieldComponent } from '@shared/ui/common/select-elements-
 } )
 export class RegisteredMovementFormPage extends BaseFormComponent {
     protected readonly facade: MovementFacade = inject( MovementFacade )
+    private readonly prefillService: MovementPrefillService = inject( MovementPrefillService )
 
     protected readonly VehicleHelper: typeof VehicleHelper = VehicleHelper
 
@@ -130,7 +132,7 @@ export class RegisteredMovementFormPage extends BaseFormComponent {
     protected readonly groupLabel: (name: string) => string =
         (name: string): string => this.translateService.translate( 'movements.form.content.registered.group', { name } )
     protected readonly participantWarning: (content: MovementContentModel) => string | undefined = (content: MovementContentModel): string | undefined =>
-        this.warningOf( 'participant', content.participant.status.value )
+        this.warningOf( 'participant', content.participant.status?.value )
 
     public constructor () {
         super()
@@ -158,6 +160,14 @@ export class RegisteredMovementFormPage extends BaseFormComponent {
     private applyMovement (movement: MovementModel | undefined): void {
         this.contextProject.set( this.sessionFacade.selectedProject() )
         if (movement) this.model.set( toRegisteredMovementFormModel( movement ) )
+        else this.applyPrefill()
+    }
+
+    private applyPrefill (): void {
+        const prefill: MovementPrefillModel | undefined = this.prefillService.read()
+        if (!prefill) return
+        this.model.update( (current: RegisteredMovementFormModel): RegisteredMovementFormModel => withRegisteredPrefill( current, prefill ) )
+        this.goTo( 2 )
     }
 
     protected handleTypeChange (event: Event): void {
@@ -201,8 +211,8 @@ export class RegisteredMovementFormPage extends BaseFormComponent {
         return this.warningOf( 'vehicle', vehicle.status.value )
     }
 
-    private warningOf (kind: 'participant' | 'vehicle', status: PresenceStatusEnum): string | undefined {
-        return this.interpretedMovementType().includes( status ) ? this.translateService.translate( `movements.form.warning.${ kind }.${ status }` ) : undefined
+    private warningOf (kind: 'participant' | 'vehicle', status: PresenceStatusEnum | undefined): string | undefined {
+        return status !== undefined && this.interpretedMovementType().includes( status ) ? this.translateService.translate( `movements.form.warning.${ kind }.${ status }` ) : undefined
     }
 
     private addVehicle (vehicle: VehicleModel): void {

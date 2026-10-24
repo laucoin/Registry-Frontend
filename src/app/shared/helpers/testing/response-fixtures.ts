@@ -56,7 +56,7 @@ export const ACTIVITY_DTO: ActivityResponseDto = {
 
 export const MOVEMENT_DTO: MovementResponseDto = {
     ...GENERIC, id: 'm1', dateTime: WHEN, type: { label: 'In', value: 'IN' as never },
-    reason: { label: 'Arrival', value: 'r1', kind: 'REASON' }, activity: undefined, contentType: 'REGISTERED' as never,
+    reason: { label: 'Arrival', value: 'r1', kind: 'REASON' }, lastCommunicationDateTime: undefined, activity: undefined, contentType: 'REGISTERED' as never,
     content: [ { poolName: 'car 1', participant: PARTICIPANT_DTO, vehicle: VEHICLE_DTO } ],
 }
 

@@ -143,7 +143,7 @@ export const MovementStore = signalStore(
             after: contentsRequester( store.fetchMovementsContents ),
         } ),
         fetchMovementCommunicationsPage: pageFetcher( store, 'movementCommunications', (request: MovementCommunicationsPageRequest, params: CommunicationPageParamsModel) =>
-            api.findMovementCommunications( request.projectId, request.id, request.page, request.size, params ), errors ),
+            api.findMovementCommunications( request.projectId, request.id, request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
         searchReasonsAndActivities: metadataFetcher<MovementStoreModel, 'searchedReasonsAndActivities', SearchReasonsAndActivitiesRequest, MovementReasonModel[]>(
             store, 'searchedReasonsAndActivities', (request: SearchReasonsAndActivitiesRequest) =>
                 api.searchReasonsAndActivities( request.projectId, request.q, request.type, request.contentType ),

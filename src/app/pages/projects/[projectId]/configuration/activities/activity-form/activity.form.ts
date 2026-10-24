@@ -53,6 +53,6 @@ export function createActivityForm (model: WritableSignal<ActivityFormModel>, co
         allowedParticipantsRules( path.allowedParticipants )
         RegistrySchemas.projectDateTime( path.beginDateTime, context )
         RegistrySchemas.projectDateTime( path.endDateTime, context )
-        RegistrySchemas.beginDateBeforeEndDate( path )
+        RegistrySchemas.beginDateBeforeEndDate( path.beginDateTime, path.endDateTime )
     } )
 }

@@ -32,7 +32,6 @@ import { ETagHelper } from '@shared/helpers/etag.helper'
     imports: [
         TranslocoPipe,
         FormField,
-        FieldErrorComponent,
         UserElementComponent,
         FormDialogComponent,
         SgdfFieldDirective,

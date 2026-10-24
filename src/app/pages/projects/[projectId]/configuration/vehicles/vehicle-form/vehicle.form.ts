@@ -40,6 +40,6 @@ export function createVehicleForm (model: WritableSignal<VehicleFormModel>, cont
         RegistrySchemas.requiredText( path.model, 150 )
         RegistrySchemas.projectDateTime( path.beginDateTime, context )
         RegistrySchemas.projectDateTime( path.endDateTime, context )
-        RegistrySchemas.beginDateBeforeEndDate( path )
+        RegistrySchemas.beginDateBeforeEndDate( path.beginDateTime, path.endDateTime )
     } )
 }

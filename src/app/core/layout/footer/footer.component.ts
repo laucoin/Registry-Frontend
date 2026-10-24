@@ -1,7 +1,8 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { ConfigModel } from "@core/config/model/config.model";
 import { RegistryConfig } from "@core/config/registry.config";
+import { UiFacade } from '@core/registry/state/ui.facade'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { RouteHelper } from '@shared/helpers/route.helper'
 import { TranslocoPipe } from "@jsverse/transloco";
@@ -24,6 +25,7 @@ import '@sgdf/ui/footer'
 	]
 })
 export class FooterComponent {
+	protected readonly uiFacade: UiFacade = inject(UiFacade);
 	protected readonly creationYear: number = 2021;
 	protected readonly currentYear: number = new Date().getFullYear();
 	protected readonly privacyRoute: string = RouteHelper.absolute(RegistryRouteEnum.PRIVACY);

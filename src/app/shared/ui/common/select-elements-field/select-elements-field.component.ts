@@ -27,6 +27,9 @@ import { BaseModel } from '@shared/models/model/base.model'
 import { BrowserService } from '@core/browser/browser.service'
 import { EventHelper } from '@shared/helpers/event.helper'
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco'
+import { FieldErrorHelper } from '@shared/helpers/form/field-error.helper'
+import { FieldErrorState } from '@shared/helpers/form/field-state.helper'
+import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 
 const identities: WeakMap<object, string> = new WeakMap<object, string>()
 
@@ -45,6 +48,7 @@ function identityOf (element: unknown): string {
 @Component( {
     selector: 'app-select-elements-field',
     imports: [
+        EllipsisDirective,
         NgTemplateOutlet,
         TranslocoPipe,
     ],
@@ -64,6 +68,9 @@ export class SelectElementsFieldComponent<T extends object, S extends BaseModel 
     public readonly invalid: InputSignal<boolean> = input( false )
     public readonly touched: InputSignal<boolean> = input( false )
     public readonly dirty: InputSignal<boolean> = input( false )
+    public readonly required: InputSignal<boolean> = input( false )
+    public readonly appFieldError: InputSignal<(() => FieldErrorState) | undefined> = input<(() => FieldErrorState) | undefined>()
+    public readonly translationPrefix: InputSignal<string | undefined> = input<string | undefined>()
     public readonly touch: OutputEmitterRef<void> = output<void>()
 
     public readonly suggestions: InputSignal<SelectOptionModel<S>[]> = input<SelectOptionModel<S>[]>( [] )
@@ -73,6 +80,7 @@ export class SelectElementsFieldComponent<T extends object, S extends BaseModel 
     public readonly groupOf: InputSignal<(element: T) => string | undefined> = input<(element: T) => string | undefined>( (): undefined => undefined )
     public readonly warningOf: InputSignal<(element: T) => string | undefined> = input<(element: T) => string | undefined>( (): undefined => undefined )
     public readonly groupLabel: InputSignal<(name: string) => string> = input( (name: string): string => name )
+    public readonly ungroupedLabel: InputSignal<string | undefined> = input<string | undefined>()
     public readonly label: InputSignal<string | undefined> = input()
     public readonly hint: InputSignal<string | undefined> = input()
     public readonly loading: InputSignal<boolean> = input( false )
@@ -84,6 +92,12 @@ export class SelectElementsFieldComponent<T extends object, S extends BaseModel 
     public handleSearch: OutputEmitterRef<{ query: string }> = output<{ query: string }>()
 
     protected readonly ungrouped: Signal<T[]> = computed( (): T[] => this.value().filter( (element: T): boolean => this.groupOf()( element ) === undefined ) )
+    protected readonly errorText: Signal<string> = computed( (): string => {
+        const field: (() => FieldErrorState) | undefined = this.appFieldError()
+        const prefix: string | undefined = this.translationPrefix()
+        if (!field || !prefix) return ''
+        return FieldErrorHelper.text( field, prefix, {}, (key: string, params: object): string => this.transloco.translate( key, params ) ) ?? ''
+    } )
     protected readonly groups: Signal<{ name: string, elements: T[] }[]> = computed( (): { name: string, elements: T[] }[] => this.groupElements() )
 
     protected handleChoice ( event: Event ): void {
@@ -115,13 +129,17 @@ export class SelectElementsFieldComponent<T extends object, S extends BaseModel 
         const removed: T | undefined = this.value().find( (element: T): boolean => this.identify()( element ) === elementId )
         this.onInputChange( this.value().filter( (element: T): boolean => this.identify()( element ) !== elementId ) )
         if (removed) this.announce( 'removed', removed )
-        this.host.nativeElement.querySelector<HTMLElement>( 'sgdf-select' )?.focus()
+        this.focusSearch()
     }
 
     protected handleGroupRemoving ( name: string ): void {
         this.onInputChange( this.value().filter( (element: T): boolean => this.groupOf()( element ) !== name ) )
         this.announcement.set( this.transloco.translate( 'global.selection.removed', { name: this.groupLabel()( name ) } ) )
-        this.host.nativeElement.querySelector<HTMLElement>( 'sgdf-select' )?.focus()
+        this.focusSearch()
+    }
+
+    private focusSearch (): void {
+        this.host.nativeElement.querySelector<HTMLElement>( 'sgdf-select' )?.focus( { preventScroll: true } )
     }
 
     private groupElements (): { name: string, elements: T[] }[] {

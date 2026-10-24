@@ -2,12 +2,10 @@ import { signal, WritableSignal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { RegistryConfig } from '@core/config/registry.config'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
 import { ElementConfirmationService } from '@shared/helpers/facade/element-confirmation.service'
 import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { ElementActionModel } from '@shared/models/model/element-action.model'
 import { AlertActions } from '@shared/ui/domain/alert-element/alert-actions.service'
@@ -26,7 +24,6 @@ describe('AlertActions', () => {
     const ids = (alert: AlertModel): string[] => actions.actionsFor(alert).map((action: ElementActionModel): string => action.id)
 
     beforeEach(() => {
-        RegistryConfig.config = { enabledActions: Object.values(ElementActionEnum) } as never
         confirm = vi.fn()
         updateAlertStatus = vi.fn(() => of(undefined))
         disableAlert = vi.fn(() => of(undefined))
@@ -133,14 +130,4 @@ describe('AlertActions', () => {
         expect(remove.disabled).toBe(true)
     })
 
-    it('offers no command when the configuration enables none', () => {
-        // Arrange
-        RegistryConfig.config = { enabledActions: [] } as never
-
-        // Act
-        const shown: string[] = ids(alertOf(AlertStatusEnum.IN_PROGRESS))
-
-        // Assert
-        expect(shown).toEqual([])
-    })
 })

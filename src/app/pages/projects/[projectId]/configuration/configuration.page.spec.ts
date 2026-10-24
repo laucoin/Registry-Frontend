@@ -3,6 +3,8 @@ import { TestBed } from '@angular/core/testing'
 import { provideRouter } from '@angular/router'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { TranslocoTestingModule } from '@jsverse/transloco'
+import { ProjectFacade } from '@pages/projects/data/state/project/project.facade'
+import { ElementConfirmationService } from '@shared/helpers/facade/element-confirmation.service'
 import { ConfigurationPage } from '@pages/projects/[projectId]/configuration/configuration.page'
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
@@ -37,6 +39,8 @@ describe('ConfigurationPage', () => {
 			providers: [
 				provideRouter([]),
 				DatePipe,
+				{ provide: ProjectFacade, useValue: {} },
+				{ provide: ElementConfirmationService, useValue: {} },
 				{
 					provide: SessionFacade,
 					useValue: { currentUser, selectedProject, currentProjectId: signal('p1') },

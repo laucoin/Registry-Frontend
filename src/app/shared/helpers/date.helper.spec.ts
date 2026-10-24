@@ -8,6 +8,44 @@ const EARLY: CustomDatetimeModel = { date: '2026-01-05', time: '08:00:00' }
 const LATE: CustomDatetimeModel = { date: '2026-03-10', time: '18:30:00' }
 
 describe( 'DateHelper', () => {
+    describe( 'elapsedDays', () => {
+        it( 'counts only complete days', () => {
+            // Arrange
+            const from: Date = new Date( '2026-01-05T10:00:00Z' )
+
+            // Act
+            const days: number = DateHelper.elapsedDays( from, from.getTime() + (2 * 24 + 23) * 3600 * 1000 )
+
+            // Assert
+            expect( days ).toBe( 2 )
+        } )
+    } )
+
+    describe( 'formatElapsed', () => {
+        it( 'formats the time since a date as hours, minutes and seconds', () => {
+            // Arrange
+            const from: Date = new Date( '2026-01-05T10:00:00Z' )
+            const now: number = from.getTime() + (3600 + 125) * 1000
+
+            // Act
+            const elapsed: string = DateHelper.formatElapsed( from, now )
+
+            // Assert
+            expect( elapsed ).toBe( '01:02:05' )
+        } )
+
+        it( 'never goes below zero when the date is in the future', () => {
+            // Arrange
+            const from: Date = new Date( '2026-01-05T10:00:00Z' )
+
+            // Act
+            const elapsed: string = DateHelper.formatElapsed( from, from.getTime() - 5000 )
+
+            // Assert
+            expect( elapsed ).toBe( '00:00:00' )
+        } )
+    } )
+
     describe( 'formatting and parsing', () => {
         it( 'formats a date as year-month-day with two-digit parts', () => {
             // Arrange

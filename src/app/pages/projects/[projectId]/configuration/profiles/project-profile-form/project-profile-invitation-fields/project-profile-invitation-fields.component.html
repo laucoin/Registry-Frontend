@@ -25,13 +25,10 @@
                                [formField]="fields().endDateTime"
                                [appFieldError]="fields().endDateTime" translationPrefix="project-profiles.form.error.end-datetime"/>
     </div>
-    @if (fields().beginDateTime().valid() && fields().endDateTime().valid()) {
-        <app-field-error data-testid="project-profile-invitation-fields-date-range-error" [field]="fields()" translationPrefix="project-profiles.form.error.date-range"/>
-    }
     <sgdf-divider/>
     <div>
         <h3 class="m-0 text-base font-semibold">{{ 'project-profiles.form.users' | pluralTranslation: fields().users().value() | transloco }}</h3>
-        <app-select-elements-field data-testid="project-profile-invitation-fields-users-field" [formField]="fields().users"
+        <app-select-elements-field data-testid="project-profile-invitation-fields-users-field" [formField]="fields().users" [appFieldError]="fields().users" translationPrefix="project-profiles.form.error.users"
                                    [label]="'project-profiles.form.users.search' | transloco"
                                    [selectionLabel]="'project-profiles.form.users.selected' | pluralTranslation: fields().users().value().length | transloco"
                                    [emptyMessage]="'project-profiles.form.users.empty' | transloco"
@@ -39,6 +36,5 @@
                                    [suggestions]="facade.searchedUsersMetadata()"
                                    [selectItemBuilder]="UserHelper.toSelectItem"
                                    (handleSearch)="handleSearch($event)"/>
-        <app-field-error data-testid="project-profile-invitation-fields-users-error" [field]="fields().users" translationPrefix="project-profiles.form.error.users"/>
     </div>
 </div>

@@ -2,6 +2,8 @@
              [label]="label()"
              [hint]="hint()"
              [disabled]="disabled()"
+             [required]="required() && value().length === 0"
+             [attr.error]="errorText()"
              [loading]="loading()"
              [placeholder]="placeholder()"
              [attr.no-results-label]="emptyMessage()"
@@ -15,6 +17,9 @@
 @if (selectionLabel()) {
     <div class="mt-[0.75rem] text-sm font-semibold" aria-hidden="true">{{ selectionLabel() }}</div>
 }
+@if (ungroupedLabel() && groups().length > 0 && ungrouped().length > 0) {
+    <div class="mt-[0.75rem] text-sm font-semibold">{{ ungroupedLabel() }}</div>
+}
 <sgdf-list class="mt-[0.25rem] block" [attr.label]="selectionLabel()">
     @for (element of ungrouped(); track identify()(element)) {
         <ng-container [ngTemplateOutlet]="item" [ngTemplateOutletContext]="{ $implicit: element }"/>
@@ -25,8 +30,8 @@
     }
 </sgdf-list>
 @for (group of groups(); track group.name) {
-    <div class="mt-[0.75rem] flex items-center justify-between text-sm font-semibold">
-        {{ groupLabel()(group.name) }}
+    <div class="mt-[0.75rem] flex items-center justify-between gap-2 text-sm font-semibold">
+        <span appEllipsis>{{ groupLabel()(group.name) }}</span>
         <sgdf-icon-button data-testid="select-elements-field-group-removing-button" name="xmark" library="solid"
                           [attr.label]="'global.actions.remove-named' | transloco : { name: groupLabel()(group.name) }"
                           [disabled]="disabled()"
@@ -39,12 +44,12 @@
     </sgdf-list>
 }
 <ng-template #item let-element>
-    <sgdf-list-item [attr.data-value]="identify()(element)">
-        {{ selectItemBuilder()(element).label }}
+    <sgdf-list-item size="small" hoverable [attr.data-value]="identify()(element)">
+        <span appEllipsis>{{ selectItemBuilder()(element).label }}</span>
         @if (warningOf()(element); as warning) {
             <sgdf-tag slot="end" variant="warning">{{ warning }}</sgdf-tag>
         }
-        <sgdf-icon-button data-testid="select-elements-field-element-removing-button" slot="end" name="xmark" library="solid"
+        <sgdf-icon-button data-testid="select-elements-field-element-removing-button" slot="end" size="small" name="xmark" library="solid"
                           [attr.label]="'global.actions.remove-named' | transloco : { name: selectItemBuilder()(element).label }"
                           [disabled]="disabled()"
                           (click)="handleElementRemoving(identify()(element))"/>

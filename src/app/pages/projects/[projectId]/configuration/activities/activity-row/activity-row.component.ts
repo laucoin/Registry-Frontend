@@ -10,6 +10,7 @@ import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pi
 import { AvailabilityStatusEnum } from '@shared/models/enumeration/availability-status.enum'
 import { ActivityModel } from '@shared/models/model/activity.model'
 import { ElementActionsComponent } from '@shared/ui/common/element-actions/element-actions.component'
+import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 
 const INITIALS_LENGTH: number = 2
 
@@ -22,7 +23,7 @@ type TagVariant = 'success' | 'info'
  */
 @Component({
     selector: 'app-activity-row',
-    imports: [TranslocoPipe, CustomDateFormatPipe, ElementActionsComponent],
+    imports: [EllipsisDirective, TranslocoPipe, CustomDateFormatPipe, ElementActionsComponent],
     providers: [ActivityActions],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     host: { class: 'contents' },

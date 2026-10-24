@@ -11,6 +11,7 @@ import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.p
 import { AvailabilityStatusEnum } from '@shared/models/enumeration/availability-status.enum'
 import { GroupModel } from '@shared/models/model/group.model'
 import { ElementActionsComponent } from '@shared/ui/common/element-actions/element-actions.component'
+import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 
 const INITIALS_LENGTH: number = 2
 
@@ -21,7 +22,7 @@ const INITIALS_LENGTH: number = 2
  */
 @Component({
     selector: 'app-group-row',
-    imports: [TranslocoPipe, CustomDateFormatPipe, PluralTranslationPipe, ElementActionsComponent],
+    imports: [EllipsisDirective, TranslocoPipe, CustomDateFormatPipe, PluralTranslationPipe, ElementActionsComponent],
     providers: [GroupActions],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     host: { class: 'contents' },

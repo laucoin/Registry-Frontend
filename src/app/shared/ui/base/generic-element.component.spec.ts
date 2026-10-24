@@ -5,12 +5,9 @@ import { TranslocoService } from '@jsverse/transloco'
 import { ConfirmationModel } from '@shared/models/model/confirmation.model'
 import { Observable, Subject } from 'rxjs'
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
-import { ConfigModel } from '@core/config/model/config.model'
-import { RegistryConfig } from '@core/config/registry.config'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { autoMock } from '@shared/helpers/testing/auto-mock'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
@@ -36,10 +33,6 @@ class TestElement extends GenericElementComponent {
         return this.hasAuthority( authority )
     }
 
-    public enabled (action: ElementActionEnum): boolean {
-        return this.actionIsEnable( action )
-    }
-
     public confirmation (accept: () => void): ConfirmationModel {
         return this.buildConfirmation( 'groups.confirm', 'pi pi-info', { name: 'Wolves' }, SeverityEnum.DANGER, accept )
     }
@@ -55,7 +48,6 @@ describe( 'GenericElementComponent', () => {
 
     beforeEach( () => {
         confirm = vi.fn()
-        RegistryConfig.config = { enabledActions: [ firstAction() ] } as unknown as ConfigModel
         TestBed.configureTestingModule( {
             providers: [
                 {
@@ -110,18 +102,6 @@ describe( 'GenericElementComponent', () => {
         expect( results ).toEqual( [ true, false ] )
     } )
 
-    it( 'only enables the actions listed in the configuration', () => {
-        // Arrange
-        const enabled: ElementActionEnum = firstAction()
-        const other: ElementActionEnum = Object.values( ElementActionEnum ).find( (value: ElementActionEnum): boolean => value !== enabled )!
-
-        // Act
-        const results: boolean[] = [ element.enabled( enabled ), element.enabled( other ) ]
-
-        // Assert
-        expect( results ).toEqual( [ true, false ] )
-    } )
-
     it( 'builds a confirmation with translated texts, the severity of the accept button', () => {
         // Arrange
         const accept: () => void = vi.fn()
@@ -152,7 +132,3 @@ describe( 'GenericElementComponent', () => {
         expect( accept ).toHaveBeenCalledTimes( 1 )
     } )
 } )
-
-function firstAction (): ElementActionEnum {
-    return Object.values( ElementActionEnum )[ 0 ]
-}

@@ -13,6 +13,7 @@ import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.p
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { ElementActionsComponent } from '@shared/ui/common/element-actions/element-actions.component'
+import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 
 const INITIALS_LENGTH: number = 2
 
@@ -25,7 +26,7 @@ type TagVariant = 'success' | 'warning' | 'neutral'
  */
 @Component({
     selector: 'app-participant-row',
-    imports: [TranslocoPipe, CustomDateFormatPipe, PluralTranslationPipe, ElementActionsComponent],
+    imports: [EllipsisDirective, TranslocoPipe, CustomDateFormatPipe, PluralTranslationPipe, ElementActionsComponent],
     providers: [ParticipantActions],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     host: { class: 'contents' },

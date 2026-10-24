@@ -170,6 +170,18 @@ describe( 'RegisteredMovementFormPage', () => {
             expect( [ warned, vehicle, fine ] ).toEqual( [ 'movements.form.warning.participant.IN', 'movements.form.warning.vehicle.IN', undefined ] )
         } )
 
+        it( 'does not warn about a participant whose status is unknown, as in a movement being edited', () => {
+            // Arrange
+            const page: PageApi = create()
+            page.handleTypeChange( choice( MovementTypeEnum.IN ) )
+
+            // Act
+            const warning: string | undefined = page.participantWarning( { participant: {} } as never )
+
+            // Assert
+            expect( warning ).toBeUndefined()
+        } )
+
         it( 'names a group with its translation', () => {
             // Arrange
             const page: PageApi = create()

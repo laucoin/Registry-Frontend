@@ -1,5 +1,4 @@
-<sgdf-page-title appProjectEyebrow
-                 [lede]="'participants.list.subtitle' | transloco">
+<sgdf-page-title [eyebrow]="'projectEyebrow.configuration' | transloco" [lede]="'participants.list.subtitle' | transloco">
     {{ 'participants.list.title' | transloco }}
     @if (canCreate()) {
         <sgdf-button data-testid="participants-list-create-button" slot="actions" variant="primary" [routerLink]="createRoute">
@@ -31,7 +30,7 @@
                     <sgdf-option [value]="item.value ?? ''">{{ item.label }}</sgdf-option>
                 }
             </sgdf-select>
-            <sgdf-select data-testid="participants-list-is-visible-select" appSgdfField [label]="'participants.search-and-filter.visibility' | transloco"
+            <sgdf-select *appIfProjectAuthority="hiddenAuthority" data-testid="participants-list-is-visible-select" appSgdfField [label]="'participants.search-and-filter.visibility' | transloco"
                          [formField]="form.isVisible">
                 @for (item of facade.visibilitiesMetadata(); track item.label) {
                     <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>

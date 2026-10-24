@@ -68,7 +68,7 @@ describe( 'group form', () => {
         const reversed: FieldTree<GroupFormModel> = build( { ...VALID, beginDateTime: AUGUST, endDateTime: JUNE } )
 
         // Act
-        const results: unknown[] = [ valid().valid(), kindsOf( reversed() ) ]
+        const results: unknown[] = [ valid().valid(), kindsOf( reversed.endDateTime() ) ]
 
         // Assert
         expect( results ).toEqual( [ true, [ 'beginDateBeforeEndDate' ] ] )

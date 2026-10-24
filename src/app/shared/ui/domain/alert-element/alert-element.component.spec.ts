@@ -4,7 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
 import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { RegistryConfig } from '@core/config/registry.config'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
@@ -12,7 +11,6 @@ import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { IntervalPipe } from '@shared/helpers/pipe/interval.pipe'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { AlertActions } from '@shared/ui/domain/alert-element/alert-actions.service'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { ElementActionModel } from '@shared/models/model/element-action.model'
 import { AlertElementComponent } from '@shared/ui/domain/alert-element/alert-element.component'
 
@@ -62,7 +60,6 @@ describe( 'AlertElementComponent', () => {
     }
 
     beforeEach( () => {
-        RegistryConfig.config = { enabledActions: Object.values( ElementActionEnum ) } as never
     } )
 
     it( 'lists the actions of a visible element in a stable order', () => {

@@ -6,6 +6,7 @@ import '@sgdf/ui/tag'
 import { Component, CUSTOM_ELEMENTS_SCHEMA, input, InputSignal, output, OutputEmitterRef } from '@angular/core'
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
 import { MonitoringRowModel } from '@shared/models/model/monitoring-row.model'
+import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 
 /**
  * Purpose: List item presenting the presence status of a participant or a vehicle; used as an attribute of `sgdf-list-item`.
@@ -14,7 +15,7 @@ import { MonitoringRowModel } from '@shared/models/model/monitoring-row.model'
  */
 @Component({
 	selector: 'sgdf-list-item[appMonitoringRow], app-monitoring-row',
-	imports: [TranslocoPipe],
+	imports: [EllipsisDirective, TranslocoPipe],
 	providers: [provideTranslocoScope('project-home')],
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	templateUrl: './monitoring-row.component.html',

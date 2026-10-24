@@ -39,7 +39,7 @@
     @if (titleBlank()) {
         <span class="block truncate italic" style="color: var(--sgdf-color-text-light)">{{ 'alerts.untitled' | transloco }}</span>
     } @else {
-        <span class="block truncate" [attr.title]="alert().title">{{ alert().title | titlecase }}</span>
+        <span appEllipsis>{{ alert().title | titlecase }}</span>
     }
     @if (!alert().visible) {
         <span class="sr-only">({{ 'alerts.visible.false' | transloco }})</span>

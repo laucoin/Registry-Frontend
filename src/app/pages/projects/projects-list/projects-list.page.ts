@@ -1,4 +1,5 @@
 import { FavoriteToggleComponent } from '@shared/ui/common/favorite-toggle/favorite-toggle.component'
+import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, signal, Signal, WritableSignal } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import { RouterLink } from '@angular/router'
@@ -37,6 +38,7 @@ import { ElementActionsComponent } from '@shared/ui/common/element-actions/eleme
 import { InfoComponent } from '@shared/ui/common/info/info.component'
 import { ListComponent } from '@shared/ui/common/list/list.component'
 import { injectAutoRefresh } from '@shared/helpers/refresh/inject-auto-refresh'
+import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 
 const INITIALS_LENGTH: number = 2
 
@@ -48,6 +50,7 @@ const INITIALS_LENGTH: number = 2
 @Component({
     selector: 'app-projects-list',
     imports: [
+        EllipsisDirective,
         ListComponent,
         RegistryTemplateDirective,
         SgdfFieldDirective,
@@ -79,6 +82,9 @@ export class ProjectsListPage {
     protected readonly canCreate: Signal<boolean> = this.canWith(UserAuthorityEnum.REGISTRY_PROJECT_C)
 
     protected readonly canReadAll: Signal<boolean> = this.canWith(UserAuthorityEnum.REGISTRY_PROJECT_R)
+
+    protected readonly canSeeHidden: Signal<boolean> = computed((): boolean => this.sessionFacade.currentUser()?.authorities
+        .some((authority: string): boolean => authority.endsWith(`_${ProjectAuthorityEnum.REGISTRY_PROJECT_D}`)) ?? false)
 
     protected readonly activeFilters: Signal<number> = computed((): number => [
         StringHelper.isNotNullNorBlank(this.facade.projectsPageQueryParam()),

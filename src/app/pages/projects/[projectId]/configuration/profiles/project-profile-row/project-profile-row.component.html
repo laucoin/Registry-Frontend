@@ -8,7 +8,7 @@
                 <app-favorite-toggle data-testid="project-profile-row-toggle" [favorite]="isFavorite(profile)" [name]="title(profile)"
                                      (toggled)="toggleFavorite(profile)"/>
             }
-            <span class="block truncate" [attr.title]="title(profile)">{{ title(profile) }}</span>
+            <span appEllipsis>{{ title(profile) }}</span>
         </span>
         <span slot="description" class="flex flex-wrap items-center gap-x-3">
             @if (profile.startAccess || profile.endAccess) {

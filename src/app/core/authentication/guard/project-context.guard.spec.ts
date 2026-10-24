@@ -32,7 +32,7 @@ describe( 'projectContextGuard', () => {
 
     beforeEach( () => {
         provideTestConfig()
-        RegistryConfig.config.notification.duration.warn = 8000
+        RegistryConfig.config.notification.duration.error = 15000
         selectedProject = signal<ProjectModel | undefined>( undefined )
         currentUser$ = new Subject<CurrentUserModel>()
         setCurrentProject = vi.fn( () => {
@@ -63,7 +63,7 @@ describe( 'projectContextGuard', () => {
         expect( setCurrentProject ).toHaveBeenCalledWith( 'p1' )
     } )
 
-    it( 'redirects to the projects list with a warning when the user has no authority on the project', async () => {
+    it( 'redirects to the projects list with a project-not-found error when the user has no authority on the project', async () => {
         // Arrange
         const result: Promise<boolean | UrlTree> = firstValueFrom( run( 'p1' ) )
 
@@ -73,7 +73,7 @@ describe( 'projectContextGuard', () => {
         // Assert
         expect( await result ).toBe( PROJECTS_TREE )
         expect( setCurrentProject ).not.toHaveBeenCalled()
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { severity: SeverityEnum.WARNING, life: 8000 } ) )
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { severity: SeverityEnum.ERROR, summary: 'projects.notifications.NOT_FOUND.title', life: 15000 } ) )
     } )
 
     it( 'does not confuse a project id that is a prefix of another one', async () => {
@@ -99,7 +99,7 @@ describe( 'projectContextGuard', () => {
         expect( notify ).toHaveBeenCalledTimes( 1 )
     } )
 
-    it( 'redirects when the profile of the project could not be loaded', async () => {
+    it( 'answers project not found when the project could not be loaded', async () => {
         // Arrange
         setCurrentProject.mockReturnValue( of( undefined ) )
         const result: Promise<boolean | UrlTree> = firstValueFrom( run( 'p1' ) )
@@ -109,9 +109,10 @@ describe( 'projectContextGuard', () => {
 
         // Assert
         expect( await result ).toBe( PROJECTS_TREE )
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'projects.notifications.NOT_FOUND.title' } ) )
     } )
 
-    it( 'does not warn about a missing profile when a global error is already shown', async () => {
+    it( 'does not answer project not found when a global error is already shown', async () => {
         // Arrange
         globalError.mockReturnValue( { summary: 'boom' } )
         setCurrentProject.mockReturnValue( of( undefined ) )

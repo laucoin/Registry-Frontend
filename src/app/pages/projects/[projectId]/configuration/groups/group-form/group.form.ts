@@ -37,7 +37,7 @@ export function createGroupForm (model: WritableSignal<GroupFormModel>, context:
         RegistrySchemas.requiredText( path.name, 150 )
         RegistrySchemas.projectDateTime( path.beginDateTime, context )
         RegistrySchemas.projectDateTime( path.endDateTime, context )
-        RegistrySchemas.beginDateBeforeEndDate( path )
+        RegistrySchemas.beginDateBeforeEndDate( path.beginDateTime, path.endDateTime )
         RegistrySchemas.requiredList( path.participants )
     } )
 }

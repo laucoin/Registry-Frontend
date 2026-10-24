@@ -21,6 +21,7 @@ import { ParticipantModel } from '@shared/models/model/participant.model'
 import { LoadMoreComponent } from '@shared/ui/common/load-more/load-more.component'
 import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
 import { MonitoringRowComponent } from '@shared/ui/domain/monitoring-row/monitoring-row.component'
+import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 
 const DEFAULT_PAGE_SIZE: number = 20;
 const MEMBERS_PAGE_SIZE: number = 20;
@@ -45,7 +46,7 @@ export interface GroupMembersRequestModel {
  */
 @Component({
 	selector: 'app-group-status-list',
-	imports: [TranslocoPipe, PluralTranslationPipe, SectionErrorComponent, MonitoringRowComponent, LoadMoreComponent],
+	imports: [EllipsisDirective, TranslocoPipe, PluralTranslationPipe, SectionErrorComponent, MonitoringRowComponent, LoadMoreComponent],
 	providers: [provideTranslocoScope('project-home')],
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	templateUrl: './group-status-list.component.html',

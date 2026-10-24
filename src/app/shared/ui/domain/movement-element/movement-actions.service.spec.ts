@@ -3,11 +3,9 @@ import { TestBed } from '@angular/core/testing'
 import { Router } from '@angular/router'
 import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { RegistryConfig } from '@core/config/registry.config'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import { ElementConfirmationService } from '@shared/helpers/facade/element-confirmation.service'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { ElementActionModel } from '@shared/models/model/element-action.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { MovementActions } from '@shared/ui/domain/movement-element/movement-actions.service'
@@ -26,7 +24,6 @@ describe('MovementActions', () => {
         actions.actionsFor(element).find((action: ElementActionModel): boolean => action.id === id)!
 
     beforeEach(() => {
-        RegistryConfig.config = { enabledActions: Object.values(ElementActionEnum) } as never
         authorities = signal(['p1_REGISTRY_PROJECT_MOVEMENT_U', 'p1_REGISTRY_PROJECT_MOVEMENT_D'])
         facade = { disableMovement: vi.fn(() => of(undefined)), enableMovement: vi.fn(() => of(undefined)), deleteMovement: vi.fn(() => of(undefined)) }
         confirm = vi.fn()
@@ -103,17 +100,6 @@ describe('MovementActions', () => {
         expect(edit.disabled).toBe(false)
         expect(hide.disabled).toBe(false)
         expect(remove.disabled).toBe(true)
-    })
-
-    it('offers no command when the configuration enables none', () => {
-        // Arrange
-        RegistryConfig.config = { enabledActions: [] } as never
-
-        // Act
-        const shown: ElementActionModel[] = actions.actionsFor(VISIBLE)
-
-        // Assert
-        expect(shown).toEqual([])
     })
 
     it('opens the edition route of the movement in the selected project', () => {

@@ -1,4 +1,5 @@
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { IfProjectAuthorityDirective } from '@shared/directives/if-project-authority.directive'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import { createSearchForm } from '@shared/helpers/form/search.form'
 import { GroupMemberListSearchModel, toGroupMemberListSearchModel, toGroupMemberListSearchParams } from './group-member-list.search'
@@ -31,7 +32,6 @@ import '@sgdf/ui/option'
 import '@sgdf/ui/page-title'
 import '@sgdf/ui/select'
 import '@sgdf/ui/skeleton'
-import { ProjectEyebrowDirective } from '@shared/directives/project-eyebrow.directive'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import {TranslocoPipe} from '@jsverse/transloco'
 import {
@@ -41,7 +41,6 @@ import { Observable, switchMap, tap } from 'rxjs'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { EventHelper } from '@shared/helpers/event.helper'
 import { FormActionsComponent } from '@shared/ui/common/form-actions/form-actions.component'
-import { FieldErrorComponent } from '@shared/ui/common/field-error/field-error.component'
 import { ParticipantHelper } from '@shared/helpers/participant.helper'
 import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
@@ -55,7 +54,7 @@ import { ParticipantFormComponent } from '@pages/projects/[projectId]/configurat
 @Component( {
     selector: 'app-group-member-list',
     imports: [
-        ProjectEyebrowDirective,
+        IfProjectAuthorityDirective,
         ListComponent,
         ParticipantRowComponent,
         RegistryTemplateDirective,
@@ -65,7 +64,6 @@ import { ParticipantFormComponent } from '@pages/projects/[projectId]/configurat
         FormField,
         TranslocoPipe,
         SelectElementsFieldComponent,
-        FieldErrorComponent,
         FormActionsComponent,
         PluralTranslationPipe,
         ParticipantFormComponent,
@@ -74,6 +72,8 @@ import { ParticipantFormComponent } from '@pages/projects/[projectId]/configurat
     templateUrl: './group-member-list.page.html',
 } )
 export class GroupMemberListPage {
+    protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_D
+
     private readonly destroyRef: DestroyRef = inject( DestroyRef )
     protected readonly facade: GroupFacade = inject( GroupFacade )
     protected readonly participantFacade: ParticipantFacade = inject( ParticipantFacade )

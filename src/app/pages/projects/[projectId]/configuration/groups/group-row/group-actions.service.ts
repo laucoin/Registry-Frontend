@@ -3,7 +3,6 @@ import { Router } from '@angular/router'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/data/state/group.facade'
 import { ElementActionsBase, ElementActionSpec } from '@shared/helpers/facade/element-actions.base'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { GroupModel } from '@shared/models/model/group.model'
@@ -35,7 +34,6 @@ export class GroupActions extends ElementActionsBase<GroupModel> {
         return {
             id: 'members',
             icon: 'users',
-            enabledAction: ElementActionEnum.GROUP_CONSULT_MEMBERS,
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_R),
             run: (): void => this.navigate(RegistryRouteEnum.PROJECTS_CONFIGURATION_GROUPS_MEMBERS, group),
@@ -46,7 +44,6 @@ export class GroupActions extends ElementActionsBase<GroupModel> {
         return {
             id: 'edit',
             icon: 'pen-to-square',
-            enabledAction: ElementActionEnum.GROUP_UPDATE,
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U),
             run: (): void => this.navigate(RegistryRouteEnum.PROJECTS_CONFIGURATION_GROUPS_EDITION, group),
@@ -57,7 +54,6 @@ export class GroupActions extends ElementActionsBase<GroupModel> {
         return {
             id: 'disable',
             icon: 'eye-slash',
-            enabledAction: ElementActionEnum.GROUP_DISABLE,
             shown: group.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U),
             confirmation: { severity: SeverityEnum.WARNING, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.disableGroup(group.id)) },
@@ -68,9 +64,8 @@ export class GroupActions extends ElementActionsBase<GroupModel> {
         return {
             id: 'enable',
             icon: 'rotate-right',
-            enabledAction: ElementActionEnum.GROUP_ENABLE,
             shown: !group.visible,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U),
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_D),
             confirmation: { severity: SeverityEnum.INFO, icon: 'pi pi-info-circle', accept: (): void => this.run(this.facade.enableGroup(group.id)) },
         }
     }
@@ -79,7 +74,6 @@ export class GroupActions extends ElementActionsBase<GroupModel> {
         return {
             id: 'delete',
             icon: 'trash',
-            enabledAction: ElementActionEnum.GROUP_DELETE,
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_D),
             confirmation: { severity: SeverityEnum.DANGER, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.deleteGroup(group)) },

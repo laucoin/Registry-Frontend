@@ -4,12 +4,10 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
 import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { RegistryConfig } from '@core/config/registry.config'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
 import { CommunicationActions } from '@shared/ui/domain/dialog-element/communication-actions.service'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { ElementActionModel } from '@shared/models/model/element-action.model'
 import { DialogElementComponent } from '@shared/ui/domain/dialog-element/dialog-element.component'
 
@@ -50,7 +48,6 @@ describe( 'DialogElementComponent', () => {
     }
 
     beforeEach( () => {
-        RegistryConfig.config = { enabledActions: Object.values( ElementActionEnum ) } as never
     } )
 
     it( 'lists the actions of a visible element in a stable order', () => {
@@ -123,15 +120,4 @@ describe( 'DialogElementComponent', () => {
         expect( disabled.every( Boolean ) ).toBe( true )
     } )
 
-    it( 'offers no action when the configuration enables none', () => {
-        // Arrange
-        RegistryConfig.config = { enabledActions: [] } as never
-        const component: DialogElementComponent = create( ELEMENT )
-
-        // Act
-        const ids: string[] = labelsOf( component )
-
-        // Assert
-        expect( ids ).toEqual( [] )
-    } )
 } )

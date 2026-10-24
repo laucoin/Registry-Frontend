@@ -21,7 +21,6 @@ import {
     toParticipantsListSearchParams,
 } from '@pages/projects/[projectId]/configuration/participants/participants-list/participants-list.search'
 import { GroupStatusFacade } from '@pages/projects/[projectId]/participants/data/state/group-status.facade'
-import { ProjectEyebrowDirective } from '@shared/directives/project-eyebrow.directive'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
@@ -56,7 +55,6 @@ const STATUS_PARAM: string = 'status'
         TranslocoPipe,
         PluralTranslationPipe,
         FormField,
-        ProjectEyebrowDirective,
         RegistryTemplateDirective,
         SgdfFieldDirective,
         ListComponent,
