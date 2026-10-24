@@ -28,7 +28,7 @@
     "welcome": {
       "title": "🚀 Bienvenue sur Registry !",
       "introduction": "Je suis ravi de t’accueillir ici. Ce site a été conçu pour t’aider à gérer facilement les entrées et sorties de tes participants à un accueil collectif de mineurs.",
-      "option": "Pour chacun des projets, tu peux créer des profils d’accès pour donner l'accès à ton projet à d'autres utilisateurs, gérer leurs mouvements, suivre leurs activités et bien d'autres options.",
+      "option": "Pour chacun des projets, tu peux créer des profils d’accès pour donner l'accès à ton projet à d'autres utilisateurs, gérer leurs entrées/sorties, suivre leurs activités et bien d'autres options.",
       "invitations": "Tu retrouveras tes invitations à des projets en cliquant sur ton nom en haut à droite de l'écran. Tu peux accepter ou refuser ces invitations. Si tu acceptes, tu pourras utiliser le profil d'accès associé à l'invitation pour accéder au projet.",
       "conclusion": "Bonne utilisation !",
       "begin": "C'est parti ! Pour commencer, si tu veux créer ton propre projet, tu peux le faire en cliquant sur le bouton “Créer un projet” ci-dessous. Si tu veux rejoindre un projet existant, tu peux le faire en cliquant sur le bouton ci-dessous.",
@@ -153,7 +153,7 @@
       },
       "NO_USER_ID": {
         "title": "🕵️‍♂️ Aucun utilisateur",
-        "message": "Aucun utilisateur n’a été trouvé. Tu dois te connecter pour utiliser l’application."
+        "message": "Aucun utilisateur n’a été trouvée. Tu dois te connecter pour utiliser l’application."
       },
       "NO_SELECTED_PROJECT": {
         "title": "🕵️‍♂️ Aucun projet sélectionné",
@@ -242,7 +242,7 @@
       },
       "EMPTY": {
         "title": "🕵️‍♀️ Aucun utilisateur",
-        "message": "Aucun utilisateur n’a été trouvé."
+        "message": "Aucun utilisateur n’a été trouvée."
       }
     },
     "last-login": {
@@ -344,16 +344,16 @@
         },
         "disable": {
           "title": "Masquer le projet",
-          "message": "Attention ! Tu vas masquer le projet “{{element.name}}”. Tant qu’il est masqué, il ne sera plus possible d’y créer des profils, mouvements, participants, etc."
+          "message": "Attention ! Tu vas masquer le projet “{{element.name}}”. Tant qu’il est masqué, il ne sera plus possible d’y créer des profils, entrées/sorties, participants, etc."
         },
         "enable": {
           "title": "Afficher à nouveau le projet",
-          "message": "Attention ! Tu vas à nouveau rendre le projet “{{element.name}}” visible. Il sera de nouveau possible d’y créer des profils, mouvements, participant, etc."
+          "message": "Attention ! Tu vas à nouveau rendre le projet “{{element.name}}” visible. Il sera de nouveau possible d’y créer des profils, entrées/sorties, participant, etc."
         },
         "delete": {
           "title": "Supprimer le projet",
           "phrase": "supprimer le projet",
-          "message": "Attention ! Tu vas définitivement supprimer le projet “{{element.name}}” ainsi que tous les éléments qui lui sont liés (profils, mouvements, participants, etc.). La suppression du projet peut prendre un certain temps en fonction de sa taille. Tu peux continuer à utiliser l’application, mais il est préférable de ne pas quitter cette page avant que la suppression soit terminée."
+          "message": "Attention ! Tu vas définitivement supprimer le projet “{{element.name}}” ainsi que tous les éléments qui lui sont liés (profils, entrées/sorties, participants, etc.). La suppression du projet peut prendre un certain temps en fonction de sa taille. Tu peux continuer à utiliser l’application, mais il est préférable de ne pas quitter cette page avant que la suppression soit terminée."
         }
       }
     },
@@ -388,7 +388,7 @@
       },
       "EMPTY": {
         "title": "🕵️‍♀️ Aucun projet",
-        "message": "Aucun projet n’a été trouvé."
+        "message": "Aucun projet n’a été trouvée."
       }
     },
     "favorite": {
@@ -564,7 +564,7 @@
       },
       "EMPTY": {
         "title": "🕵️‍♀️ Aucun profil",
-        "message": "Aucun profil n’a été trouvé."
+        "message": "Aucun profil n’a été trouvée."
       },
       "EMPTY-INVITATION": {
         "title": "🕵️‍♀️ Aucune invitation",
@@ -579,15 +579,15 @@
   },
   "movements": {
     "list": {
-      "title": "Mouvements",
-      "subtitle": "Tous les mouvements du projet, avec ou sans activité rattachée.",
+      "title": "Entrées/sorties",
+      "subtitle": "Toutes les entrées/sorties du projet, avec ou sans activité rattachée.",
       "create": {
         "registered": "Participants inscrits",
         "guest": "Invités"
       }
     },
     "history-page": {
-      "subtitle": "Les mouvements du projet qui concernent cet élément."
+      "subtitle": "Les entrées/sorties du projet qui concernent cet élément."
     },
     "search-and-filter": {
       "start-datetime": "Après le",
@@ -625,7 +625,7 @@
     "form": {
       "title": {
         "create": {
-          "none": "Créer un mouvement",
+          "none": "Créer une entrée/sortie",
           "IN": "Créer une entrée",
           "OUT": "Créer une sortie"
         },
@@ -699,7 +699,7 @@
       },
       "driver": {
         "title": "Responsable du véhicule et ses infractions",
-        "empty": "Aucun conducteur potentiel dans le mouvement",
+        "empty": "Aucun conducteur potentiel dans l'entrée/sortie",
         "empty-search": "Aucun véhicule trouvé"
       },
       "placeholder": {
@@ -709,22 +709,22 @@
       },
       "error": {
         "datetime": {
-          "required": "L’horodatage du mouvement doivent être définies. Sinon, comment savoir quand ça se passe ?",
-          "minDate": "L’horodatage du mouvement est plus tôt que la fin du projet ({{min}}). Restons dans les clous !",
-          "maxDate": "L’horodatage du mouvement est plus tard que la fin du projet ({{max}}). Restons dans les clous !"
+          "required": "L’horodatage de l'entrée/sortie doit être défini. Sinon, comment savoir quand ça se passe ?",
+          "minDate": "L’horodatage de l'entrée/sortie est plus tôt que la fin du projet ({{min}}). Restons dans les clous !",
+          "maxDate": "L’horodatage de l'entrée/sortie est plus tard que la fin du projet ({{max}}). Restons dans les clous !"
         },
         "type": {
-          "required": "Le type de mouvement doit être défini. Sinon je risque d’avoir du mal à te dire s’il s’agit d’une entrée ou d’une sortie la prochaine fois que tu me demandes."
+          "required": "Le type d'entrée/sortie doit être défini. Sinon je risque d’avoir du mal à te dire s’il s’agit d’une entrée ou d’une sortie la prochaine fois que tu me demandes."
         },
         "reason": {
-          "required": "Pas de raison de mouvement ? Ça va être compliqué de savoir pourquoi tu fais ça.",
-          "incompatibleReason": "La raison “{{reason}}” n’est pas compatible avec le type de mouvement sélectionné. Choisis une autre raison ou un autre type de mouvement."
+          "required": "Pas de raison d'entrée/sortie ? Ça va être compliqué de savoir pourquoi tu fais ça.",
+          "incompatibleReason": "La raison “{{reason}}” n’est pas compatible avec le type d'entrée/sortie sélectionné. Choisis une autre raison ou un autre type d'entrée/sortie."
         },
         "participantContent": {
-          "required": "Impossible de créer ce mouvement sans participant. Reviens avec une équipe !"
+          "required": "Impossible de créer cette entrée/sortie sans participant. Reviens avec une équipe !"
         },
         "guestContent": {
-          "required": "Impossible de créer ce mouvement sans invité. Reviens avec une équipe !"
+          "required": "Impossible de créer cette entrée/sortie sans invité. Reviens avec une équipe !"
         },
         "driver": {
           "required": "Un véhicule sans responsable ? Désolé, les voitures complètement autonomes ce n'est pas encore ici."
@@ -739,16 +739,16 @@
       "delete": "Supprimer",
       "confirmations": {
         "disable": {
-          "title": "Masquer le mouvement",
-          "message": "Attention ! Tu vas masquer le mouvement. Tant qu’il est masqué, c’est comme s'il n’avait jamais eu lieu."
+          "title": "Masquer l'entrée/sortie",
+          "message": "Attention ! Tu vas masquer l'entrée/sortie. Tant qu’elle est masquée, c’est comme si elle n’avait jamais eu lieu."
         },
         "enable": {
-          "title": "Afficher à nouveau le mouvement",
-          "message": "Attention ! Tu vas à nouveau rendre le mouvement visible. Il sera de nouveau considéré dans l’historique."
+          "title": "Afficher à nouveau l'entrée/sortie",
+          "message": "Attention ! Tu vas à nouveau rendre l'entrée/sortie visible. Elle sera de nouveau considérée dans l’historique."
         },
         "delete": {
-          "title": "Supprimer le mouvement",
-          "message": "Attention ! Tu vas définitivement supprimer le mouvement. Il ne sera plus récupérable ni tracé."
+          "title": "Supprimer l'entrée/sortie",
+          "message": "Attention ! Tu vas définitivement supprimer l'entrée/sortie. Elle ne sera plus récupérable ni tracée."
         }
       }
     },
@@ -810,8 +810,8 @@
         }
       },
       "EMPTY": {
-        "title": "🕵️‍♀️ Aucun mouvement",
-        "message": "Aucun mouvement n’a été trouvé."
+        "title": "🕵️‍♀️ Aucune entrée/sortie",
+        "message": "Aucune entrée/sortie n’a été trouvée."
       }
     },
     "vehicles-count": {
@@ -822,7 +822,7 @@
   "participants": {
     "list": {
       "title": "Participants",
-      "subtitle": "Les inscrits et les invités du projet. Un participant sans mouvement depuis 12 mois peut être supprimé définitivement ; sinon il reste consultable et peut être masqué."
+      "subtitle": "Les inscrits et les invités du projet. Un participant sans entrée/sortie depuis 12 mois peut être supprimé définitivement ; sinon il reste consultable et peut être masqué."
     },
     "search-and-filter": {
       "text": "Prénom, nom, email",
@@ -908,7 +908,7 @@
       }
     },
     "actions": {
-      "movements-history": "Historique des mouvements",
+      "movements-history": "Historique des entrées/sorties",
       "remove-member": "Retirer du groupe",
       "edit": "Modifier",
       "disable": "Masquer",
@@ -930,7 +930,7 @@
         },
         "delete": {
           "title": "Supprimer la personne",
-          "message": "Attention ! Tu vas définitivement supprimer “{{element.firstName}} {{element.lastName}}”. Cette suppression est possible uniquement si aucun mouvement lui est associé."
+          "message": "Attention ! Tu vas définitivement supprimer “{{element.firstName}} {{element.lastName}}”. Cette suppression est possible uniquement si aucune entrée/sortie ne lui est associée."
         }
       }
     },
@@ -957,7 +957,7 @@
       },
       "EMPTY": {
         "title": "🕵️‍♀️ Aucun participant",
-        "message": "Aucun participant n’a été trouvé."
+        "message": "Aucun participant n’a été trouvée."
       }
     }
   },
@@ -1058,7 +1058,7 @@
         },
         "delete": {
           "title": "Supprimer le groupe",
-          "message": "Attention ! Tu vas définitivement supprimer le groupe “{{element.name}}”. Elle sera donc définitivement dissociée des mouvements et autres éléments."
+          "message": "Attention ! Tu vas définitivement supprimer le groupe “{{element.name}}”. Elle sera donc définitivement dissociée des entrées/sorties et autres éléments."
         }
       }
     },
@@ -1109,7 +1109,7 @@
       },
       "EMPTY": {
         "title": "🕵️‍♀️ Aucun groupe",
-        "message": "Aucun groupe n’a été trouvé."
+        "message": "Aucun groupe n’a été trouvée."
       }
     }
   },
@@ -1197,7 +1197,7 @@
         },
         "delete": {
           "title": "Supprimer le véhicule",
-          "message": "Attention ! Tu vas définitivement supprimer le véhicule “{{element.brand}} {{element.model}} ({{element.licensePlate}})”. Cette suppression est possible uniquement si aucun mouvement lui est associé."
+          "message": "Attention ! Tu vas définitivement supprimer le véhicule “{{element.brand}} {{element.model}} ({{element.licensePlate}})”. Cette suppression est possible uniquement si aucune entrée/sortie ne lui est associée."
         }
       }
     },
@@ -1224,14 +1224,14 @@
       },
       "EMPTY": {
         "title": "🕵️‍♀️ Aucun véhicule",
-        "message": "Aucun véhicule n’a été trouvé."
+        "message": "Aucun véhicule n’a été trouvée."
       }
     }
   },
   "activities": {
     "list": {
       "title": "Activités",
-      "subtitle": "Le programme du projet et les cadres de mouvements."
+      "subtitle": "Le programme du projet et les cadres d'entrées/sorties."
     },
     "search-and-filter": {
       "text": "Nom",
@@ -1312,7 +1312,7 @@
       }
     },
     "actions": {
-      "movements-history": "Historique des mouvements",
+      "movements-history": "Historique des entrées/sorties",
       "edit": "Modifier",
       "disable": "Masquer",
       "enable": "Démasquer",
@@ -1328,7 +1328,7 @@
         },
         "delete": {
           "title": "Supprimer l’activité",
-          "message": "Attention ! Tu vas définitivement supprimer l’activité “{{element.name}}”. Elle sera donc définitivement dissociée des mouvements et autres éléments."
+          "message": "Attention ! Tu vas définitivement supprimer l’activité “{{element.name}}”. Elle sera donc définitivement dissociée des entrées/sorties et autres éléments."
         }
       }
     },
@@ -1389,7 +1389,7 @@
         "add-movement": "Lier une activité",
         "add-alert": "Créer une alerte",
         "link-alert": "Lier une alerte",
-        "remove-movement": "Retirer le mouvement lié",
+        "remove-movement": "Retirer l'entrée/sortie liée",
         "remove-alert": "Retirer l’alerte liée",
         "add-to-message": "Ajouter un élément à la communication"
       },
@@ -1399,7 +1399,7 @@
         },
         "datetime": {
           "required": "L’horodatage de la communication doit être défini. Sinon, comment savoir quand ça se passe ?",
-          "minDate": "L’horodatage de la communication est plus tôt que le mouvement auquel elle est liée ({{min}}). Restons dans les clous !",
+          "minDate": "L’horodatage de la communication est plus tôt que l'entrée/sortie à laquelle elle est liée ({{min}}). Restons dans les clous !",
           "maxDate": "L’horodatage de la communication est plus tard que la fin du projet ({{max}}). Restons dans les clous !"
         },
         "message": {
@@ -1434,7 +1434,7 @@
         },
         "delete": {
           "title": "Supprimer la communication",
-          "message": "Attention ! Tu vas définitivement supprimer la communication. Elle sera donc définitivement dissociée des mouvements et autres éléments."
+          "message": "Attention ! Tu vas définitivement supprimer la communication. Elle sera donc définitivement dissociée des entrées/sorties et autres éléments."
         }
       }
     },
@@ -1581,7 +1581,7 @@
     },
     "project": {
       "home": "Accueil",
-      "movements": "Mouvements",
+      "movements": "Entrées/sorties",
       "alerts": "Alertes",
       "configuration": "Configuration"
     },
@@ -1629,11 +1629,11 @@
     "participantsMonitoring": "Suivi des participants",
     "vehiclesMonitoring": "Suivi des véhicules",
     "movements": {
-      "list": "Mouvements",
-      "createRegistered": "Nouveau mouvement de participant",
-      "editRegistered": "Modifier le mouvement de participant",
-      "createGuest": "Nouveau mouvement d'invité",
-      "editGuest": "Modifier le mouvement d'invité"
+      "list": "Entrées/sorties",
+      "createRegistered": "Nouvelle entrée/sortie de participant",
+      "editRegistered": "Modifier l'entrée/sortie de participant",
+      "createGuest": "Nouvelle entrée/sortie d'invité",
+      "editGuest": "Modifier l'entrée/sortie d'invité"
     },
     "configuration": "Configuration du projet",
     "profiles": {
@@ -1645,7 +1645,7 @@
       "list": "Participants",
       "create": "Nouveau participant",
       "edit": "Modifier le participant",
-      "movements": "Mouvements du participant"
+      "movements": "Entrées/sorties du participant"
     },
     "groups": {
       "list": "Groupes",
@@ -1657,13 +1657,13 @@
       "list": "Véhicules",
       "create": "Nouveau véhicule",
       "edit": "Modifier le véhicule",
-      "movements": "Mouvements du véhicule"
+      "movements": "Entrées/sorties du véhicule"
     },
     "activities": {
       "list": "Activités",
       "create": "Nouvelle activité",
       "edit": "Modifier l'activité",
-      "movements": "Mouvements de l'activité"
+      "movements": "Entrées/sorties de l'activité"
     },
     "users": {
       "list": "Utilisateurs",

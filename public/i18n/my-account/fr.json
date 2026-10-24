@@ -35,7 +35,7 @@
     "normal": "Normale",
     "fast": "Rapide",
     "choose": "Choisir la fréquence d’actualisation",
-    "hint": "Fréquence à laquelle les informations affichées (alertes, mouvements, présences…) sont rechargées automatiquement, sans quitter la page. Seules les données visibles à l’écran sont actualisées. Même désactivée, les données du jour (arrivées, départs, anniversaires) sont renouvelées à minuit."
+    "hint": "Fréquence à laquelle les informations affichées (alertes, entrées/sorties, présences…) sont rechargées automatiquement, sans quitter la page. Seules les données visibles à l’écran sont actualisées. Même désactivée, les données du jour (arrivées, départs, anniversaires) sont renouvelées à minuit."
   },
   "personalData": {
     "title": "Mes données personnelles",
@@ -43,7 +43,7 @@
     "learnMore": "En savoir plus sur l’usage de tes données",
     "extract": {
       "title": "Obtenir un extrait de mes données",
-      "description": "Tu recevras par courriel une archive contenant l’ensemble des données liées à ton compte : profil, accès aux projets, présences, mouvements et communications.",
+      "description": "Tu recevras par courriel une archive contenant l’ensemble des données liées à ton compte : profil, accès aux projets, présences, entrées/sorties et communications.",
       "action": "Télécharger mes données"
     },
     "delete": {

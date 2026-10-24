@@ -3,8 +3,8 @@
   "subtitle": "Vue opérationnelle du projet",
   "communicate": "Communiquer",
   "quickActions": {
-    "registeredMovement": "Mouvement d'un inscrit",
-    "guestMovement": "Mouvement d'un invité",
+    "registeredMovement": "Entrée/sortie d'un inscrit",
+    "guestMovement": "Entrée/sortie d'un invité",
     "alert": "Nouvelle alerte"
   },
   "participantOverview": {
@@ -87,19 +87,19 @@
   },
   "operationalMonitoring": {
     "title": "Suivi opérationnel",
-    "titleMovementsOnly": "Mouvements en cours",
+    "titleMovementsOnly": "Entrées/sorties en cours",
     "tabs": {
       "activities": "Activités en cours",
-      "otherMovements": "Autres mouvements en cours"
+      "otherMovements": "Autres entrées/sorties en cours"
     },
     "empty": {
       "activities": {
         "title": "Aucune activité en cours",
-        "message": "Aucun mouvement lié à une activité n'est en cours."
+        "message": "Aucune entrée/sortie liée à une activité n'est en cours."
       },
       "otherMovements": {
-        "title": "Aucun autre mouvement en cours",
-        "message": "Aucun mouvement sans activité n'est en cours."
+        "title": "Aucune autre entrée/sortie en cours",
+        "message": "Aucune entrée/sortie sans activité n'est en cours."
       }
     }
   },
