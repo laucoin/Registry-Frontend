@@ -153,18 +153,20 @@ Lancer `ng generate component component-name` pour générer un nouveau composan
 #### Autres scripts
 
 ```shell script
-pnpm lint   # eslint (angular-eslint)
+pnpm lint            # eslint (angular-eslint)
+pnpm test            # tests unitaires (Vitest), en mode watch
+pnpm test:coverage   # tests unitaires en un passage, avec couverture et seuils de angular.json
 ```
 
-> Il n'y a pas encore de suite de tests automatisés — `pnpm lint` et `pnpm build` sont les seules vérifications que
-> le [workflow Pull Request](.github/workflows/pull-request.yml) exécute aujourd'hui.
+> `pnpm lint`, `pnpm test:coverage` et `pnpm build` sont les vérifications que le
+> [workflow Pull Request](.github/workflows/pull-request.yml) exécute ; elles doivent aussi passer avant chaque commit.
 
 #### Pour aller plus loin
 
 - [Documentation](https://angular.dev) d'Angular
 - [Référence](https://angular.dev/tools/cli) d'Angular CLI
 - [Documentation](https://www.typescriptlang.org/docs/) de TypeScript
-- [Documentation](https://www.ngxs.io/) de NGXS
+- [Documentation](https://ngrx.io/guide/signals) de NgRx Signals
 - [Documentation](https://jsverse.gitbook.io/transloco) de Transloco
 
 ## Contribuer 💻
@@ -177,7 +179,7 @@ ATTENTION :
 
 Les workflows GitHub Actions constituent la barrière de revue — une pull request doit être verte avant d'être fusionnée :
 
-- **Pull Request** ([pull-request.yml](.github/workflows/pull-request.yml)) — exécute `pnpm lint` et `pnpm build`, puis
+- **Pull Request** ([pull-request.yml](.github/workflows/pull-request.yml)) — exécute `pnpm lint`, `pnpm test:coverage` et `pnpm build`, puis
   publie une image taguée par branche pour la revue.
 - **Dependency Review** ([dependency-review.yml](.github/workflows/dependency-review.yml)) — bloque une pull request qui
   introduit des dépendances vulnérables.
