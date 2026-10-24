@@ -22,6 +22,7 @@ describe( 'ParticipantFacade', () => {
     let updateParticipantById: Mock<ParticipantApi['updateParticipantById']>
     let deleteParticipantById: Mock<ParticipantApi['deleteParticipantById']>
     let exportParticipantById: Mock<ParticipantApi['exportParticipantById']>
+    let api: Record<string, Mock>
     let downloadJson: Mock<BrowserService['downloadJson']>
     let notify: Mock<(message: unknown) => void>
 
@@ -32,13 +33,14 @@ describe( 'ParticipantFacade', () => {
         updateParticipantById = vi.fn()
         deleteParticipantById = vi.fn()
         exportParticipantById = vi.fn()
+        api = { findParticipantById: vi.fn(), disableParticipantById: vi.fn(), enableParticipantById: vi.fn(), searchUsers: vi.fn( () => of( [] ) ), searchGroups: vi.fn( () => of( [] ) ) }
         downloadJson = vi.spyOn( BrowserService.prototype, 'downloadJson' ).mockReset().mockImplementation( (): void => undefined )
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 ParticipantFacade,
                 ParticipantStore,
-                { provide: ParticipantApi, useValue: { findParticipants, createParticipant, updateParticipantById, deleteParticipantById, exportParticipantById } },
+                { provide: ParticipantApi, useValue: { findParticipants, createParticipant, updateParticipantById, deleteParticipantById, exportParticipantById, ...api } },
                 { provide: MovementApi, useValue: { findMovementsContents: vi.fn( () => of( [] ) ) } },
                 { provide: MetadataApi, useValue: { getPresencesStatus: vi.fn( () => of( [] ) ) } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ) } },
@@ -153,5 +155,94 @@ describe( 'ParticipantFacade', () => {
 
         // Assert
         expect( finder ).toHaveBeenCalledWith( 'p1', 'e1', 0, expect.any( Number ), expect.anything() )
+    } )
+
+    it( 'fetches a participant of the selected project', () => {
+        // Arrange
+        api[ 'findParticipantById' ].mockReturnValue( of( { id: 'pa1' } as ParticipantModel ) )
+        let received: ParticipantModel | undefined
+
+        // Act
+        facade.fetchParticipant( 'pa1' ).subscribe( (it: ParticipantModel): void => { received = it } )
+
+        // Assert
+        expect( api[ 'findParticipantById' ] ).toHaveBeenCalledWith( 'p1', 'pa1' )
+        expect( received?.id ).toBe( 'pa1' )
+    } )
+
+    it( 'notifies a failed participant fetch', () => {
+        // Arrange
+        api[ 'findParticipantById' ].mockReturnValue( failing( ERROR_500 ) )
+
+        // Act
+        facade.fetchParticipant( 'pa1' ).subscribe( { error: (): void => undefined } )
+
+        // Assert
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
+    } )
+
+    it.each( [ 'disable', 'enable' ] as const )( 'announces the participant %s on the current-page reload channel', (command: 'disable' | 'enable') => {
+        // Arrange
+        const participant: ParticipantModel = { id: 'pa1', firstName: 'Ada', lastName: 'Lovelace' } as ParticipantModel
+        api[ `${ command }ParticipantById` ].mockReturnValue( of( participant ) )
+        const reloaded: Mock = vi.fn()
+        facade.handleParticipantCurrentPageReload().subscribe( reloaded )
+
+        // Act
+        ;( command === 'disable' ? facade.disableParticipant( 'pa1' ) : facade.enableParticipant( 'pa1' ) ).subscribe()
+
+        // Assert
+        expect( reloaded ).toHaveBeenCalledTimes( 1 )
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: `participants.notifications.${ command }.title` } ) )
+    } )
+
+    it( 'notifies a failed export and downloads nothing', () => {
+        // Arrange
+        exportParticipantById.mockReturnValue( failing( ERROR_500 ) )
+
+        // Act
+        facade.exportParticipant( { id: 'pa1' } as ParticipantModel ).subscribe( { error: (): void => undefined } )
+
+        // Assert
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
+        expect( downloadJson ).not.toHaveBeenCalled()
+    } )
+
+    it( 'searches users and groups for the selected project', () => {
+        // Arrange
+        const query: string = 'ada'
+
+        // Act
+        facade.searchUsers( query )
+        facade.searchGroups( query )
+
+        // Assert
+        expect( api[ 'searchUsers' ] ).toHaveBeenCalledWith( 'p1', 'ada' )
+        expect( api[ 'searchGroups' ] ).toHaveBeenCalledWith( 'p1', 'ada' )
+    } )
+
+    it( 'restarts the movements from the first page when their search changed', () => {
+        // Arrange
+        const finder: Mock = vi.fn( () => of( pageOf<never>( [], 1 ) ) )
+        ;(TestBed.inject( ParticipantApi ) as unknown as Record<string, Mock>)[ 'findParticipantMovements' ] = finder
+        facade.inputMovementsPageSearchParameters( 'IN', new Date( '2026-01-01T00:00:00.000Z' ), undefined, true )
+
+        // Act
+        facade.fetchParticipantMovementsPage( 'pa1', 4, 10 )
+
+        // Assert
+        expect( finder ).toHaveBeenCalledWith( 'p1', 'pa1', 0, 10, expect.anything() )
+        expect( facade.participantMovementsPageTypeParam() ).toBe( 'IN' )
+    } )
+
+    it( 'keeps the movements search when the same values are input again', () => {
+        // Arrange
+        facade.inputMovementsPageSearchParameters( 'IN', undefined, undefined, undefined )
+
+        // Act
+        facade.inputMovementsPageSearchParameters( 'IN', undefined, undefined, undefined )
+
+        // Assert
+        expect( facade.participantMovementsPageTypeParam() ).toBe( 'IN' )
     } )
 } )

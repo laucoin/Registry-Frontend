@@ -3,9 +3,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
 import { of } from 'rxjs'
-import { describe, expect, it, Mock, vi } from 'vitest'
+import { describe, expect, it, Mock, MockInstance, vi } from 'vitest'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
+import { MovementPrefillService } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-prefill.service'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { IntervalPipe } from '@shared/helpers/pipe/interval.pipe'
@@ -183,5 +184,92 @@ describe( 'MovementElementComponent', () => {
 
         // Assert
         expect( count ).toBe( 0 )
+    } )
+
+    function read<T> (component: MovementElementComponent, name: string): T {
+        return ( component as unknown as Record<string, () => T> )[ name ]()
+    }
+
+    it.each( [ [ 'OUT', 'arrow-up' ], [ 'IN', 'arrow-down' ] ] )( 'shows the %s movement with the %s icon', (value: string, icon: string) => {
+        // Arrange
+        const component: MovementElementComponent = create( { ...ELEMENT, type: { value, label: 'Type' } } )
+
+        // Act
+        const iconName: string = read( component, 'typeIconName' )
+
+        // Assert
+        expect( iconName ).toBe( icon )
+    } )
+
+    it( 'appends the reason to the type when the movement has one', () => {
+        // Arrange
+        const component: MovementElementComponent = create( { ...ELEMENT, type: { value: 'IN', label: 'Arrival' }, reason: { label: 'Camp' } } )
+
+        // Act
+        const text: string = read( component, 'typeAndReason' )
+
+        // Assert
+        expect( text ).toBe( 'Arrival - Camp' )
+    } )
+
+    it( 'shows only the type when the movement has no reason', () => {
+        // Arrange
+        const component: MovementElementComponent = create( { ...ELEMENT, type: { value: 'IN', label: 'Arrival' }, reason: undefined } )
+
+        // Act
+        const text: string = read( component, 'typeAndReason' )
+
+        // Assert
+        expect( text ).toBe( 'Arrival' )
+    } )
+
+    it( 'finds the driver of the shown vehicle and writes the family name in capitals', () => {
+        // Arrange
+        const content: object[] = [ { vehicle: { id: 'v1' }, participant: { firstName: 'Ada', lastName: 'Lovelace' } }, { vehicle: { id: 'v2' }, participant: { firstName: 'Bob', lastName: 'Martin' } } ]
+        const component: MovementElementComponent = create( { ...ELEMENT, content } )
+        fixture.componentRef.setInput( 'vehicleId', 'v1' )
+
+        // Act
+        const name: string = read( component, 'driverName' )
+
+        // Assert
+        expect( name ).toBe( 'Ada LOVELACE' )
+        expect( read<number>( component, 'total' ) ).toBe( 2 )
+    } )
+
+    it( 'has no driver name when no vehicle is shown', () => {
+        // Arrange
+        const component: MovementElementComponent = create( { ...ELEMENT, content: [ { vehicle: { id: 'v1' }, participant: { firstName: 'Ada', lastName: 'Lovelace' } } ] } )
+
+        // Act
+        const name: string = read( component, 'driverName' )
+
+        // Assert
+        expect( name ).toBe( '' )
+    } )
+
+    it( 'asks the prefill service for the reverse movement of the shown one', () => {
+        // Arrange
+        const component: MovementElementComponent = create( ELEMENT )
+        const openReverse: MockInstance = vi.spyOn( ( component as unknown as { prefillService: MovementPrefillService } ).prefillService, 'openReverse' ).mockImplementation( (): void => undefined )
+
+        // Act
+        ;( component as unknown as { reverse: (contents?: unknown[]) => void } ).reverse( [] )
+
+        // Assert
+        expect( openReverse ).toHaveBeenCalledWith( ELEMENT, [] )
+    } )
+
+    it( 'has no communication data when the movement is not communicable', () => {
+        // Arrange
+        const component: MovementElementComponent = create( { ...ELEMENT, lastCommunicationDateTime: new Date() } )
+
+        // Act
+        const communication: boolean = read( component, 'communication' )
+
+        // Assert
+        expect( communication ).toBe( false )
+        expect( read<number>( component, 'daysSinceLastCommunication' ) ).toBe( 0 )
+        expect( read<string | undefined>( component, 'sinceLastCommunication' ) ).toBeUndefined()
     } )
 } )

@@ -1,5 +1,5 @@
 import { signal } from '@angular/core'
-import { TestBed } from '@angular/core/testing'
+import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
 import { of } from 'rxjs'
@@ -16,6 +16,7 @@ const ELEMENT: object = { id: 'e1', visible: true, title: 'x', status: { value: 
 describe( 'DialogElementComponent', () => {
     let confirm: Mock<(confirmation: { accept: () => void }) => void>
     let facade: Record<string, Mock>
+    let fixture: ComponentFixture<DialogElementComponent>
 
     function create (element: object, authorities: string[] = [ 'p1_REGISTRY_PROJECT_COMMUNICATION_U', 'p1_REGISTRY_PROJECT_COMMUNICATION_D' ]): DialogElementComponent {
         confirm = vi.fn()
@@ -33,7 +34,7 @@ describe( 'DialogElementComponent', () => {
             ],
         } )
         TestBed.overrideComponent( DialogElementComponent, { set: { template: '', imports: [], providers: [ CommunicationActions ], styleUrl: undefined, styleUrls: [] } } )
-        const fixture: ReturnType<typeof TestBed.createComponent<DialogElementComponent>> = TestBed.createComponent( DialogElementComponent )
+        fixture = TestBed.createComponent( DialogElementComponent )
         fixture.componentRef.setInput( 'communication', element )
         return fixture.componentInstance
     }
@@ -117,4 +118,79 @@ describe( 'DialogElementComponent', () => {
         expect( disabled.every( Boolean ) ).toBe( true )
     } )
 
+    function read<T> (component: DialogElementComponent, name: string): T {
+        return ( component as unknown as Record<string, () => T> )[ name ]()
+    }
+
+    const EDITOR: object = { id: 'u1', firstName: 'Ada', lastName: 'Lovelace' }
+
+    it( 'names the author of a message by the last editor', () => {
+        // Arrange
+        const component: DialogElementComponent = create( { ...ELEMENT, lastEdition: { user: EDITOR } } )
+
+        // Act
+        const name: string = read( component, 'authorName' )
+
+        // Assert
+        expect( name ).toBe( 'Ada Lovelace' )
+        expect( read( component, 'authorIsCurrentUser' ) ).toBe( true )
+    } )
+
+    it( 'names the author of a message sent by a movement by its reason', () => {
+        // Arrange
+        const component: DialogElementComponent = create( { ...ELEMENT, movement: { id: 'm1', reason: { label: 'Arrival' } }, lastEdition: { user: EDITOR } } )
+
+        // Act
+        const name: string = read( component, 'authorName' )
+
+        // Assert
+        expect( name ).toBe( 'Arrival' )
+        expect( read( component, 'authorIsCurrentUser' ) ).toBe( false )
+    } )
+
+    it( 'falls back to the unknown author label', () => {
+        // Arrange
+        const component: DialogElementComponent = create( ELEMENT )
+
+        // Act
+        const name: string = read( component, 'authorName' )
+
+        // Assert
+        expect( name ).toBe( 'communications.no-author' )
+    } )
+
+    it.each( [ [ 'u1', false ], [ 'u2', true ], [ undefined, true ] ] )( 'treats a message after the author %s as a first message: %s', (previous: string | undefined, expected: boolean) => {
+        // Arrange
+        const component: DialogElementComponent = create( { ...ELEMENT, lastEdition: { user: EDITOR } } )
+        fixture.componentRef.setInput( 'previousAuthorId', previous )
+
+        // Act
+        const first: boolean = read( component, 'firstAuthorMessage' )
+
+        // Assert
+        expect( first ).toBe( expected )
+    } )
+
+    it( 'flags a communication edited after its creation as updated', () => {
+        // Arrange
+        const component: DialogElementComponent = create( { ...ELEMENT, creation: { dateTime: new Date( '2026-01-01' ) }, lastEdition: { dateTime: new Date( '2026-01-02' ), user: EDITOR } } )
+
+        // Act
+        const updated: boolean = read( component, 'updated' )
+
+        // Assert
+        expect( updated ).toBe( true )
+    } )
+
+    it( 'tells a blank alert title from a written one', () => {
+        // Arrange
+        const blank: DialogElementComponent = create( { ...ELEMENT, alert: { title: ' ', status: { value: 'IN_PROGRESS' } } } )
+
+        // Act
+        const isBlank: boolean = read( blank, 'alertTitleBlank' )
+
+        // Assert
+        expect( isBlank ).toBe( true )
+        expect( read( blank, 'alertVariant' ) ).toBe( 'warning' )
+    } )
 } )

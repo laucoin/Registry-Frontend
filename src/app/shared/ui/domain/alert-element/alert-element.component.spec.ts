@@ -135,4 +135,48 @@ describe( 'AlertElementComponent', () => {
         // Assert
         expect( internals[ 'communicationsLayerOpened' ]() ).toBe( true )
     } )
+
+    function read<T> (component: AlertElementComponent, name: string): T {
+        return ( component as unknown as Record<string, () => T> )[ name ]()
+    }
+
+    it.each( [ '', '   ', '\u200B\uFEFF' ] )( 'treats the title %j as blank and falls back to the untitled label', (title: string) => {
+        // Arrange
+        const component: AlertElementComponent = create( { ...ELEMENT, title } )
+
+        // Act
+        const blank: boolean = read( component, 'titleBlank' )
+
+        // Assert
+        expect( blank ).toBe( true )
+        expect( read( component, 'accessibleTitle' ) ).toBe( 'alerts.untitled' )
+    } )
+
+    it( 'keeps a written title as the accessible title', () => {
+        // Arrange
+        const component: AlertElementComponent = create( { ...ELEMENT, title: 'Fire' } )
+
+        // Act
+        const title: string = read( component, 'accessibleTitle' )
+
+        // Assert
+        expect( read( component, 'titleBlank' ) ).toBe( false )
+        expect( title ).toBe( 'Fire' )
+    } )
+
+    it.each( [
+        [ 'IN_PROGRESS', 'triangle-exclamation', 'warning', true ],
+        [ 'CANCELED', 'xmark', 'neutral', false ],
+        [ 'RESOLVED', 'circle-check', 'success', false ],
+    ] )( 'shows the %s status with its icon and variant', (value: string, icon: string, variant: string, inProgress: boolean) => {
+        // Arrange
+        const component: AlertElementComponent = create( { ...ELEMENT, status: { value, label: 'Status' } } )
+
+        // Act
+        const shown: string[] = [ read( component, 'statusIconName' ), read( component, 'statusVariant' ), read( component, 'statusLabel' ) ]
+
+        // Assert
+        expect( shown ).toEqual( [ icon, variant, 'Status' ] )
+        expect( read( component, 'isInProgress' ) ).toBe( inProgress )
+    } )
 } )

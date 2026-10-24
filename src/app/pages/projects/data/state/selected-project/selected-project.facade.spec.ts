@@ -100,4 +100,66 @@ describe( 'SelectedProjectFacade', () => {
         expect( facade.currentAlertsPage() ).toBeDefined()
     } )
 
+    it.each( [
+        [ 'fetchParticipantsBirthdays', 'findParticipantsBirthdays' ],
+        [ 'refreshParticipantsBirthdays', 'findParticipantsBirthdays' ],
+        [ 'fetchPlannedArrivals', 'findPlannedArrivals' ],
+        [ 'refreshPlannedArrivals', 'findPlannedArrivals' ],
+        [ 'fetchPlannedDepartures', 'findPlannedDepartures' ],
+        [ 'refreshPlannedDepartures', 'findPlannedDepartures' ],
+        [ 'refreshParticipantsStatus', 'findParticipantsStatus' ],
+        [ 'refreshVehiclesStatus', 'findVehiclesStatus' ],
+    ] as const )( 'calls %s with the selected project', (method: keyof SelectedProjectFacade, api: string) => {
+        // Arrange
+        const spies: Record<string, Mock> = { findParticipantsBirthdays, findPlannedArrivals, findPlannedDepartures, findParticipantsStatus, findVehiclesStatus }
+
+        // Act
+        ;( facade[ method ] as () => void )()
+
+        // Assert
+        expect( spies[ api ] ).toHaveBeenCalledWith( 'p1' )
+    } )
+
+    it.each( [ 'fetchOverdueParticipantsPage', 'fetchOverdueParticipantsListPage' ] as const )( 'asks %s for the page of the selected project', (method: 'fetchOverdueParticipantsPage' | 'fetchOverdueParticipantsListPage') => {
+        // Arrange
+        const findParticipants: Mock = TestBed.inject( ParticipantApi ).findParticipants as Mock
+
+        // Act
+        facade[ method ]( 1, 5 )
+
+        // Assert
+        expect( findParticipants ).toHaveBeenCalledWith( 'p1', 1, 5, expect.anything() )
+    } )
+
+    it( 'refreshes every shown batch of the current alerts and overdue participants in one request', () => {
+        // Arrange
+        const findParticipants: Mock = TestBed.inject( ParticipantApi ).findParticipants as Mock
+        facade.fetchCurrentAlertsPage( 0, 5 )
+        facade.fetchOverdueParticipantsPage( 0, 5 )
+        findAlerts.mockClear()
+        findParticipants.mockClear()
+
+        // Act
+        facade.refreshCurrentAlertsPage()
+        facade.refreshOverdueParticipantsPage()
+
+        // Assert
+        expect( findAlerts ).toHaveBeenCalledWith( 'p1', 0, expect.any( Number ), expect.anything() )
+        expect( findParticipants ).toHaveBeenCalledWith( 'p1', 0, expect.any( Number ), expect.anything() )
+    } )
+
+    it( 'refreshes each current movements page with its own activity filter', () => {
+        // Arrange
+        facade.fetchCurrentMovementsPageWithActivity( 0, 5 )
+        facade.fetchCurrentMovementsPageWithoutActivity( 0, 5 )
+        findMovements.mockClear()
+
+        // Act
+        facade.refreshCurrentMovementsPageWithActivity()
+        facade.refreshCurrentMovementsPageWithoutActivity()
+
+        // Assert
+        expect( findMovements ).toHaveBeenNthCalledWith( 1, 'p1', 0, expect.any( Number ), expect.objectContaining( { hasActivity: true } ) )
+        expect( findMovements ).toHaveBeenNthCalledWith( 2, 'p1', 0, expect.any( Number ), expect.objectContaining( { hasActivity: false } ) )
+    } )
 } )

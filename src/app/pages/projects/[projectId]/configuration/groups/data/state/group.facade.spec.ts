@@ -1,4 +1,4 @@
-import { pageOf } from '@shared/helpers/testing/test-fixtures'
+import { ERROR_500, failing, pageOf } from '@shared/helpers/testing/test-fixtures'
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { TranslocoService } from '@jsverse/transloco'
@@ -29,6 +29,7 @@ describe( 'GroupFacade', () => {
     let removeMemberFromGroupById: Mock<GroupApi['removeMemberFromGroupById']>
     let notify: Mock<(message: unknown) => void>
     let commandEvents: CommandEventService
+    let api: Record<string, Mock>
 
     beforeEach( () => {
         RegistryConfig.config = { notification: { duration: { info: 1, success: 1, warn: 1, error: 1, secondary: 1, contrast: 1 } } } as ConfigModel
@@ -37,11 +38,12 @@ describe( 'GroupFacade', () => {
         addMembersToGroupById = vi.fn()
         removeMemberFromGroupById = vi.fn( () => of( undefined ) )
         notify = vi.fn()
+        api = { findGroupById: vi.fn(), updateGroupById: vi.fn(), disableGroupById: vi.fn(), enableGroupById: vi.fn(), deleteGroupById: vi.fn(), searchParticipants: vi.fn( () => of( [] ) ) }
         TestBed.configureTestingModule( {
             providers: [
                 GroupFacade,
                 GroupStore,
-                { provide: GroupApi, useValue: { findGroups, createGroup, addMembersToGroupById, removeMemberFromGroupById, findGroupMembersByGroupId: vi.fn( () => of( EMPTY_PAGE ) ) } },
+                { provide: GroupApi, useValue: { findGroups, createGroup, addMembersToGroupById, removeMemberFromGroupById, findGroupMembersByGroupId: vi.fn( () => of( EMPTY_PAGE ) ), ...api } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ) } },
                 { provide: UiFacade, useValue: { notify } },
                 { provide: PluralTranslationPipe, useValue: { transform: (key: string, count: number): string => `${key}:${count}` } },
@@ -175,5 +177,126 @@ describe( 'GroupFacade', () => {
 
         // Assert
         expect( finder ).toHaveBeenCalledWith( 'p1', 'e1', 0, expect.any( Number ), expect.anything() )
+    } )
+
+    it( 'fetches a group of the selected project', () => {
+        // Arrange
+        api[ 'findGroupById' ].mockReturnValue( of( { id: 'g1' } as GroupModel ) )
+        let received: GroupModel | undefined
+
+        // Act
+        facade.fetchGroup( 'g1' ).subscribe( (it: GroupModel): void => { received = it } )
+
+        // Assert
+        expect( api[ 'findGroupById' ] ).toHaveBeenCalledWith( 'p1', 'g1' )
+        expect( received?.id ).toBe( 'g1' )
+    } )
+
+    it( 'notifies a failed group fetch', () => {
+        // Arrange
+        api[ 'findGroupById' ].mockReturnValue( failing( ERROR_500 ) )
+
+        // Act
+        facade.fetchGroup( 'g1' ).subscribe( { error: (): void => undefined } )
+
+        // Assert
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
+    } )
+
+    it( 'sends the version of the group on update and notifies the edition', () => {
+        // Arrange
+        api[ 'updateGroupById' ].mockReturnValue( of( { id: 'g1', name: 'Wolves' } as GroupModel ) )
+
+        // Act
+        facade.updateGroup( 'g1', {} as never, 'etag-1' ).subscribe()
+
+        // Assert
+        expect( api[ 'updateGroupById' ] ).toHaveBeenCalledWith( 'p1', 'g1', {}, 'etag-1' )
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'groups.notifications.edit.title' } ) )
+    } )
+
+    it.each( [ 'disable', 'enable' ] as const )( 'notifies and refreshes the page after the group is %sd', (command: 'disable' | 'enable') => {
+        // Arrange
+        api[ `${ command }GroupById` ].mockReturnValue( of( { id: 'g1', name: 'Wolves' } as GroupModel ) )
+        findGroups.mockClear()
+
+        // Act
+        ;( command === 'disable' ? facade.disableGroup( 'g1' ) : facade.enableGroup( 'g1' ) ).subscribe()
+
+        // Assert
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: `groups.notifications.${ command }.title` } ) )
+        expect( findGroups ).toHaveBeenCalledTimes( 1 )
+    } )
+
+    it( 'notifies and refreshes the page after the group is deleted', () => {
+        // Arrange
+        api[ 'deleteGroupById' ].mockReturnValue( of( undefined ) )
+        findGroups.mockClear()
+
+        // Act
+        facade.deleteGroup( { id: 'g1', name: 'Wolves' } as GroupModel ).subscribe()
+
+        // Assert
+        expect( api[ 'deleteGroupById' ] ).toHaveBeenCalledWith( undefined, 'g1' )
+        expect( findGroups ).toHaveBeenCalledTimes( 1 )
+    } )
+
+    it( 'does not refresh the page when a deletion fails', () => {
+        // Arrange
+        api[ 'deleteGroupById' ].mockReturnValue( failing( ERROR_500 ) )
+        findGroups.mockClear()
+
+        // Act
+        facade.deleteGroup( { id: 'g1' } as GroupModel ).subscribe( { error: (): void => undefined } )
+
+        // Assert
+        expect( findGroups ).not.toHaveBeenCalled()
+    } )
+
+    it( 'searches the participants to add to a group', () => {
+        // Arrange
+        const query: string = 'ada'
+
+        // Act
+        facade.searchParticipants( query )
+
+        // Assert
+        expect( api[ 'searchParticipants' ] ).toHaveBeenCalledWith( 'p1', 'ada' )
+    } )
+
+    it( 'announces the members change to the listeners', () => {
+        // Arrange
+        const changed: Mock = vi.fn()
+        facade.handleGroupMembersChange().subscribe( changed )
+        removeMemberFromGroupById.mockReturnValue( of( undefined ) )
+
+        // Act
+        facade.removeMemberFromGroup( 'g1', { id: 'pa1' } as ParticipantModel ).subscribe()
+
+        // Assert
+        expect( changed ).toHaveBeenCalledTimes( 1 )
+    } )
+
+    it( 'stores the members search when it changed', () => {
+        // Arrange
+        const search: Parameters<typeof facade.inputMembersPageSearchParameters> = [ 'ada', 'IN', true ]
+
+        // Act
+        facade.inputMembersPageSearchParameters( ...search )
+
+        // Assert
+        expect( facade.groupMembersPageQueryParam() ).toBe( 'ada' )
+        expect( facade.groupMembersPageStatusParam() ).toBe( 'IN' )
+    } )
+
+    it( 'keeps the groups search when the same values are input again', () => {
+        // Arrange
+        facade.inputPageSearchParameters( 'wolves', undefined, true, undefined )
+
+        // Act
+        facade.inputPageSearchParameters( 'wolves', undefined, true, undefined )
+
+        // Assert
+        expect( facade.groupsPageQueryParam() ).toBe( 'wolves' )
     } )
 } )
