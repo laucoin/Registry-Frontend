@@ -8,7 +8,7 @@ export const PREFERENCE_COOKIE_MAX_AGE_SECONDS: number = 60 * 60 * 24 * 365
 
 /**
  * Purpose: Point d'accès unique aux globaux du navigateur dont dépend l'application.
- * Scope: Enveloppe location, viewport, scroll, visibilité de la page, intersection d'éléments, schéma de couleurs, cookies, attributs de l'élément racine, lien canonical et recherche d'éléments.
+ * Scope: Enveloppe location, historique, plateforme, viewport, scroll, visibilité de la page, intersection d'éléments, schéma de couleurs, cookies, attributs de l'élément racine, lien canonical et recherche d'éléments.
  * Limits: Ne détient aucun état et n'applique aucune logique applicative ; ne gère pas le stockage (voir les helpers de stockage).
  */
 @Injectable( { providedIn: 'root' } )
@@ -47,6 +47,14 @@ export class BrowserService {
         return navigator.languages
     }
 
+    public get isApplePlatform (): boolean {
+        return /Mac|iPhone|iPad/.test( navigator.userAgent )
+    }
+
+    public get historyState (): unknown {
+        return history.state
+    }
+
     public get systemTheme (): ThemeEnum {
         return this.lightSchemeQuery?.matches === false ? ThemeEnum.DARK : ThemeEnum.LIGHT
     }
@@ -70,6 +78,16 @@ export class BrowserService {
         }
         const observer: IntersectionObserver = new IntersectionObserver(
             (entries: IntersectionObserverEntry[]): void => listener( entries[ entries.length - 1 ].isIntersecting ),
+        )
+        observer.observe( element )
+        return (): void => observer.disconnect()
+    }
+
+    public watchIntersection (element: Element, listener: (intersecting: boolean) => void, rootMargin?: string): () => void {
+        if (typeof IntersectionObserver !== 'function') return (): void => undefined
+        const observer: IntersectionObserver = new IntersectionObserver(
+            (entries: IntersectionObserverEntry[]): void => listener( entries.some( (it: IntersectionObserverEntry): boolean => it.isIntersecting ) ),
+            { rootMargin: rootMargin },
         )
         observer.observe( element )
         return (): void => observer.disconnect()

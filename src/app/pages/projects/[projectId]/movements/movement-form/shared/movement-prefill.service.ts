@@ -1,5 +1,6 @@
 import { computed, inject, Injectable, Signal } from '@angular/core'
 import { Router } from '@angular/router'
+import { BrowserService } from '@core/browser/browser.service'
 import { TranslocoService } from '@jsverse/transloco'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper'
@@ -25,6 +26,7 @@ const STATE_KEY: string = 'movementPrefill'
 @Injectable( { providedIn: 'root' } )
 export class MovementPrefillService {
     private readonly router: Router = inject( Router )
+    private readonly browser: BrowserService = inject( BrowserService )
     private readonly sessionFacade: SessionFacade = inject( SessionFacade )
     private readonly translateService: TranslocoService = inject( TranslocoService )
 
@@ -68,7 +70,7 @@ export class MovementPrefillService {
     }
 
     public read (): MovementPrefillModel | undefined {
-        const prefill: MovementPrefillModel | undefined = (history.state as Record<string, MovementPrefillModel> | null)?.[STATE_KEY]
+        const prefill: MovementPrefillModel | undefined = (this.browser.historyState as Record<string, MovementPrefillModel> | null)?.[STATE_KEY]
         return prefill?.type ? prefill : undefined
     }
 
@@ -76,6 +78,6 @@ export class MovementPrefillService {
         if (!this.canCreate()) return
         const route: MovementRoutesEnum = contentType === ParticipantTypeEnum.GUEST ? MovementRoutesEnum.CREATE_GUEST : MovementRoutesEnum.CREATE_REGISTERED
         const url: string = `/${ RegistryRouteEnum.PROJECTS_MOVEMENTS.replace( ':projectId', this.sessionFacade.currentProjectId()! ) }/${ route }`
-        this.router.navigateByUrl( url, { state: { [STATE_KEY]: prefill } } ).catch( console.error )
+        this.router.navigateByUrl( url, { state: { [STATE_KEY]: prefill } } ).catch( (): void => undefined )
     }
 }

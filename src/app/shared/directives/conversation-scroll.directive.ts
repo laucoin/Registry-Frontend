@@ -1,4 +1,5 @@
-import { DestroyRef, Directive, effect, ElementRef, inject, input, InputSignal, output, OutputEmitterRef, untracked } from '@angular/core'
+import { DestroyRef, Directive, effect, ElementRef, inject, input, InputSignal, output, OutputEmitterRef, Renderer2, untracked } from '@angular/core'
+import { BrowserService } from '@core/browser/browser.service'
 import { CommunicationModel } from '@shared/models/model/communication.model'
 
 /**
@@ -11,8 +12,10 @@ import { CommunicationModel } from '@shared/models/model/communication.model'
 })
 export class ConversationScrollDirective {
     private readonly host: HTMLElement = inject( ElementRef<HTMLElement> ).nativeElement
-    private readonly sentinel: HTMLElement = document.createElement( 'div' )
-    private observer: IntersectionObserver | undefined
+    private readonly renderer: Renderer2 = inject( Renderer2 )
+    private readonly browser: BrowserService = inject( BrowserService )
+    private readonly sentinel: HTMLElement = this.renderer.createElement( 'div' )
+    private stopWatching: () => void = (): void => undefined
     private ready: boolean = false
     private newestId: string | undefined
     private firstId: string | undefined
@@ -22,19 +25,10 @@ export class ConversationScrollDirective {
     public readonly loadOlder: OutputEmitterRef<void> = output()
 
     public constructor () {
-        this.sentinel.setAttribute( 'aria-hidden', 'true' )
+        this.renderer.setAttribute( this.sentinel, 'aria-hidden', 'true' )
         this.host.prepend( this.sentinel )
-
-        if (typeof IntersectionObserver !== 'undefined') {
-            this.observer = new IntersectionObserver( (entries: IntersectionObserverEntry[]): void => {
-                if (this.ready && entries.some( (entry: IntersectionObserverEntry): boolean => entry.isIntersecting )) {
-                    this.anchor = this.firstMessage()
-                    this.loadOlder.emit()
-                }
-            } )
-            this.observer.observe( this.sentinel )
-        }
-        inject( DestroyRef ).onDestroy( (): void => this.observer?.disconnect() )
+        this.watchSentinel()
+        inject( DestroyRef ).onDestroy( (): void => this.stopWatching() )
 
         effect( (): void => {
             const items: CommunicationModel[] = this.communications()
@@ -59,10 +53,20 @@ export class ConversationScrollDirective {
             if (items.length > 0) {
                 this.ready = true
                 // Observer à nouveau signale l'état courant, donc une liste trop courte pour défiler charge quand même les messages plus anciens.
-                this.observer?.unobserve( this.sentinel )
-                this.observer?.observe( this.sentinel )
+                this.stopWatching()
+                this.watchSentinel()
             }
         } )
+    }
+
+    private watchSentinel (): void {
+        this.stopWatching = this.browser.watchIntersection( this.sentinel, (intersecting: boolean): void => this.onSentinel( intersecting ) )
+    }
+
+    private onSentinel (intersecting: boolean): void {
+        if (!this.ready || !intersecting) return
+        this.anchor = this.firstMessage()
+        this.loadOlder.emit()
     }
 
     private firstMessage (): Element | undefined {

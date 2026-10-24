@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing'
-import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, Mock, MockInstance, vi } from 'vitest'
 import { BrowserService } from '@core/browser/browser.service'
 import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
 
@@ -283,5 +283,71 @@ describe( 'BrowserService', () => {
 
         // Assert
         expect( document.head.querySelector( 'link[rel="canonical"]' ) ).toBeNull()
+    } )
+
+    it( 'tells an Apple platform from the user agent', () => {
+        // Arrange
+        const userAgent: MockInstance = vi.spyOn( navigator, 'userAgent', 'get' )
+        userAgent.mockReturnValueOnce( 'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0)' ).mockReturnValueOnce( 'Mozilla/5.0 (X11; Linux x86_64)' )
+
+        // Act
+        const apple: boolean = service.isApplePlatform
+        const other: boolean = service.isApplePlatform
+
+        // Assert
+        expect( apple ).toBe( true )
+        expect( other ).toBe( false )
+        userAgent.mockRestore()
+    } )
+
+    it( 'exposes the history state', () => {
+        // Arrange
+        history.replaceState( { movementPrefill: 'x' }, '' )
+
+        // Act
+        const state: unknown = service.historyState
+
+        // Assert
+        expect( state ).toEqual( { movementPrefill: 'x' } )
+        history.replaceState( null, '' )
+    } )
+
+    it( 'reports whether any observed entry intersects and stops on disconnect', () => {
+        // Arrange
+        const observe: Mock = vi.fn()
+        const disconnect: Mock = vi.fn()
+        let callback: IntersectionObserverCallback = (): void => undefined
+        vi.stubGlobal( 'IntersectionObserver', class {
+            public constructor ( cb: IntersectionObserverCallback ) { callback = cb }
+            public observe: Mock = observe
+            public disconnect: Mock = disconnect
+        } )
+        const listener: Mock<(intersecting: boolean) => void> = vi.fn()
+        const element: HTMLElement = document.createElement( 'div' )
+
+        // Act
+        const stop: () => void = service.watchIntersection( element, listener )
+        callback( [ { isIntersecting: false }, { isIntersecting: true } ] as IntersectionObserverEntry[], {} as IntersectionObserver )
+        stop()
+
+        // Assert
+        expect( observe ).toHaveBeenCalledWith( element )
+        expect( listener ).toHaveBeenCalledWith( true )
+        expect( disconnect ).toHaveBeenCalledTimes( 1 )
+        vi.unstubAllGlobals()
+    } )
+
+    it( 'watches nothing when intersection observation is unsupported', () => {
+        // Arrange
+        vi.stubGlobal( 'IntersectionObserver', undefined )
+        const listener: Mock<(intersecting: boolean) => void> = vi.fn()
+
+        // Act
+        const stop: () => void = service.watchIntersection( document.createElement( 'div' ), listener )
+        stop()
+
+        // Assert
+        expect( listener ).not.toHaveBeenCalled()
+        vi.unstubAllGlobals()
     } )
 } )

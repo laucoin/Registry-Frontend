@@ -1,5 +1,6 @@
 import { afterNextRender, Component, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, effect, ElementRef, inject, input, InputSignal, output, OutputEmitterRef, Signal, viewChild } from '@angular/core'
 import { TranslocoPipe } from '@jsverse/transloco'
+import { BrowserService } from '@core/browser/browser.service'
 import '@sgdf/ui/button'
 
 const OBSERVER_MARGIN: string = '200px'
@@ -25,32 +26,36 @@ export class LoadMoreComponent {
 
 	private readonly sentinel: Signal<ElementRef<HTMLElement> | undefined> = viewChild<ElementRef<HTMLElement>>('sentinel')
 	private readonly destroyRef: DestroyRef = inject(DestroyRef)
-	private observer: IntersectionObserver | undefined
+	private readonly browser: BrowserService = inject(BrowserService)
+	private stopWatching: (() => void) | undefined
 
 	public constructor() {
 		afterNextRender((): void => {
 			const element: HTMLElement | undefined = this.sentinel()?.nativeElement
-			if (!element || typeof IntersectionObserver === 'undefined') {
+			if (!element) {
 				return
 			}
-			this.observer = new IntersectionObserver((entries: IntersectionObserverEntry[]): void => this.onIntersect(entries), { rootMargin: OBSERVER_MARGIN })
-			this.observer.observe(element)
-			this.destroyRef.onDestroy((): void => this.observer?.disconnect())
+			this.watch(element)
+			this.destroyRef.onDestroy((): void => this.stopWatching?.())
 		})
 
 		// Un lot terminé peut laisser la sentinelle visible : l'observer à nouveau fait signaler son état de nouveau.
 		effect((): void => {
 			const element: HTMLElement | undefined = this.sentinel()?.nativeElement
-			if (this.loading() || !this.autoLoad() || !element || !this.observer) {
+			if (this.loading() || !this.autoLoad() || !element || !this.stopWatching) {
 				return
 			}
-			this.observer.unobserve(element)
-			this.observer.observe(element)
+			this.stopWatching()
+			this.watch(element)
 		})
 	}
 
-	private onIntersect(entries: IntersectionObserverEntry[]): void {
-		if (this.autoLoad() && !this.loading() && entries.some((entry: IntersectionObserverEntry): boolean => entry.isIntersecting)) {
+	private watch(element: HTMLElement): void {
+		this.stopWatching = this.browser.watchIntersection(element, (intersecting: boolean): void => this.onIntersect(intersecting), OBSERVER_MARGIN)
+	}
+
+	private onIntersect(intersecting: boolean): void {
+		if (this.autoLoad() && !this.loading() && intersecting) {
 			this.loadMore.emit()
 		}
 	}

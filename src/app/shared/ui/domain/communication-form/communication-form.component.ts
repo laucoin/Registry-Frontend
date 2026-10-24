@@ -24,6 +24,7 @@ import {
     toCommunicationDto,
     toNewAlertDto,
 } from '@shared/ui/domain/communication-form/communication.form'
+import { BrowserService } from '@core/browser/browser.service'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { tap } from 'rxjs'
@@ -213,7 +214,7 @@ export class CommunicationFormComponent extends BaseFormComponent implements OnI
         this.applyInitialLinks()
     }
 
-    protected readonly shortcutLabel: string = /Mac|iPhone|iPad/.test( navigator.platform || navigator.userAgent ) ? '⌘ + Entrée' : 'Ctrl + Entrée'
+    protected readonly shortcutLabel: string = inject( BrowserService ).isApplePlatform ? '⌘ + ↵' : 'Ctrl + ↵'
 
     protected submitOnShortcut (event: KeyboardEvent): void {
         if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
@@ -226,7 +227,6 @@ export class CommunicationFormComponent extends BaseFormComponent implements OnI
         if (this.saving()) return
 
         if (!this.isFormValid( this.form )) {
-            this.logInvalidForm( this.model() )
             return
         }
 
