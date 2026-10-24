@@ -10,8 +10,11 @@ import { PageSeoModel, RouteSeoModel, SEO_DATA_KEY } from '@core/seo/route-seo.m
 const APPLICATION_NAME: string = 'Registry'
 const NOINDEX_DIRECTIVE: string = 'noindex, nofollow'
 const INDEX_DIRECTIVE: string = 'index, follow'
-const SEO_META_NAMES: readonly string[] = ['description', 'twitter:card']
-const SEO_META_PROPERTIES: readonly string[] = ['og:title', 'og:description', 'og:type', 'og:url', 'og:locale']
+const SHARING_IMAGE_PATH: string = '/img/login-hero.webp'
+const SHARING_IMAGE_WIDTH: string = '1440'
+const SHARING_IMAGE_HEIGHT: string = '1080'
+const SEO_META_NAMES: readonly string[] = ['description', 'twitter:card', 'twitter:image']
+const SEO_META_PROPERTIES: readonly string[] = ['og:title', 'og:description', 'og:type', 'og:url', 'og:locale', 'og:image', 'og:image:width', 'og:image:height']
 
 interface TranslatedPage extends PageSeoModel {
     title: string
@@ -72,13 +75,21 @@ export class RegistryTitleStrategy extends TitleStrategy {
     private publishSharingTags (title: string, description: string, url: string): void {
         this.meta.addTags( [
             { name: 'description', content: description },
-            { name: 'twitter:card', content: 'summary' },
+            { name: 'twitter:card', content: 'summary_large_image' },
+            { name: 'twitter:image', content: this.sharingImageUrl() },
             { property: 'og:title', content: title },
             { property: 'og:description', content: description },
             { property: 'og:type', content: 'website' },
             { property: 'og:url', content: url },
             { property: 'og:locale', content: this.translator.getActiveLang() },
+            { property: 'og:image', content: this.sharingImageUrl() },
+            { property: 'og:image:width', content: SHARING_IMAGE_WIDTH },
+            { property: 'og:image:height', content: SHARING_IMAGE_HEIGHT },
         ] )
+    }
+
+    private sharingImageUrl (): string {
+        return `${ this.browser.origin }${ SHARING_IMAGE_PATH }`
     }
 
     private clearSharingTags (): void {

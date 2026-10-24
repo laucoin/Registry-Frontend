@@ -81,6 +81,21 @@ describe( 'RegistryTitleStrategy', () => {
         expect( setCanonicalLink ).toHaveBeenLastCalledWith( 'https://registry.test/login' )
     } )
 
+    it( 'publishes the sharing image of a public route with an absolute url', () => {
+        // Arrange
+        const data: Record<string, unknown> = { [ SEO_DATA_KEY ]: { descriptionKey: 'seo.login.description' } }
+
+        // Act
+        publish( '/login', 'seo.login.title', data )
+
+        // Assert
+        expect( meta.getTag( 'property="og:image"' )?.content ).toBe( 'https://registry.test/img/login-hero.webp' )
+        expect( meta.getTag( 'name="twitter:image"' )?.content ).toBe( 'https://registry.test/img/login-hero.webp' )
+        expect( meta.getTag( 'name="twitter:card"' )?.content ).toBe( 'summary_large_image' )
+        expect( meta.getTag( 'property="og:image:width"' )?.content ).toBe( '1440' )
+        expect( meta.getTag( 'property="og:image:height"' )?.content ).toBe( '1080' )
+    } )
+
     it( 'removes the public tags when navigating to a private route', () => {
         // Arrange
         publish( '/login', 'seo.login.title', { [ SEO_DATA_KEY ]: { descriptionKey: 'seo.login.description' } } )
@@ -91,6 +106,8 @@ describe( 'RegistryTitleStrategy', () => {
         // Assert
         expect( meta.getTag( 'name="description"' ) ).toBeNull()
         expect( meta.getTag( 'property="og:title"' ) ).toBeNull()
+        expect( meta.getTag( 'property="og:image"' ) ).toBeNull()
+        expect( meta.getTag( 'name="twitter:image"' ) ).toBeNull()
         expect( meta.getTag( 'name="robots"' )?.content ).toBe( 'noindex, nofollow' )
     } )
 
