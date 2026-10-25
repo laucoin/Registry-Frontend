@@ -115,4 +115,32 @@ describe( 'ProjectHomePage', () => {
         // Assert
         expect( [ withoutProject, withoutUser ] ).toEqual( [ false, false ] )
     } )
+
+    it( 'closes the alert drawer only when the drawer itself asks to hide', () => {
+        // Arrange
+        const target: EventTarget = new EventTarget()
+        const own: Event = Object.defineProperties( new Event( 'sgdf-hide' ), { target: { value: target }, currentTarget: { value: target } } )
+        const nested: Event = Object.defineProperties( new Event( 'sgdf-hide' ), { target: { value: target }, currentTarget: { value: new EventTarget() } } )
+        page[ 'creatingAlert' ].set( true )
+
+        // Act
+        page[ 'closeAlertDrawer' ]( nested )
+        const afterNested: boolean = page[ 'creatingAlert' ]()
+        page[ 'closeAlertDrawer' ]( own )
+
+        // Assert
+        expect( afterNested ).toBe( true )
+        expect( page[ 'creatingAlert' ]() ).toBe( false )
+    } )
+
+    it( 'links the movement forms of the selected project', () => {
+        // Arrange
+        const expectedProject: string = PROJECT_ID
+
+        // Act
+        const routes: string[] = [ page[ 'registeredMovementRoute' ](), page[ 'guestMovementRoute' ]() ]
+
+        // Assert
+        expect( routes.every( (route: string): boolean => route.includes( expectedProject ) ) ).toBe( true )
+    } )
 } )

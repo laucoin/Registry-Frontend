@@ -1,30 +1,43 @@
 ---
 mode: agent
-description: Write or extend tests for the Registry frontend (Angular 22, NGXS)
+name: test
+description: Write, extend or fix tests for the Registry frontend (Angular, Vitest, signalStore). Use only when the user asks to add, write, complete or fix tests, or right before a commit when new code lacks coverage. Never write tests automatically after an edit.
 ---
 
 # Write tests — Registry Frontend
 
-Write or extend tests for the code I point you at, following this project's conventions.
+Write or extend tests for the code pointed at, following these conventions.
 
-## First: test setup
+## Stack
 
-This project does **not** yet have a unit-test runner configured (`skipTests` is on in `angular.json`, there is no `test` script, and no `*.spec.ts` files exist). Before writing tests:
+Vitest through `@angular/build:unit-test`, Angular `TestBed`, `@vitest/coverage-v8`. Run `pnpm test` (watch) or
+`pnpm test:coverage` (single run, enforces the thresholds of `angular.json`); lint with `pnpm lint`.
 
-1. If a runner is already present when you look, use it.
-2. Otherwise, set one up with the Angular CLI defaults — `ng add @angular/build` unit-test support (Vitest) or Karma+Jasmine — add the `test` script to `package.json`, and confirm `pnpm run test` runs. Ask me first if you're unsure which runner I want.
+## Conventions
 
-## Conventions to follow
+- Place each spec next to the unit under test: `foo.store.spec.ts`. Match the repository indentation and style.
+- **AAA pattern, strictly.** Every test contains exactly these comments, with no additional detail:
 
-- Place specs next to the unit under test: `foo.component.spec.ts`, `foo.state.spec.ts`.
-- **4-space indent, single quotes, spaces inside brackets. No `any`. Explicit return types.** Lint must pass (`pnpm run lint`).
-- **Components** — use `TestBed` with the standalone component in `imports`. Mock the facade/services it depends on; assert rendered output and that user interactions dispatch the right calls. Keep components thin, so most logic lives in state/services.
-- **NGXS state** — test via `TestBed` + `provideStore([FeatureState])` and `Store`: dispatch an action, mock the injected service (HTTP) to return a controlled observable, then read the resulting `store.selectSnapshot(...)`. Cover success and error paths.
-- **Services** — test HTTP with `provideHttpClientTesting()` / `HttpTestingController`; assert URL, method, body, and response mapping.
-- Mock `@jsverse/transloco` where components render translated strings.
+  ```typescript
+  // Arrange
+  // Act
+  // Assert
+  ```
+
+- Methods ≤ 25 lines, specs included. Descriptive test names.
+- **Stores** (`signalStore`): test through `TestBed`, mock the api, assert the state signals after each method; cover
+  success and error paths (errors are swallowed inside `rxMethod`, so assert the reported error and that the method
+  still works afterwards).
+- **Facades and apis:** mock the store or `HttpTestingController` (`provideHttpClientTesting()`); assert URL, method,
+  body and DTO → model mapping.
+- **Components:** `TestBed` with the standalone component in `imports`, facades mocked; assert rendered output and that
+  interactions call the facade. Mock `@jsverse/transloco` where translated strings are rendered.
+- **Browser globals:** go through `BrowserService`, so mock it instead of touching `window` or `document`.
+- Reuse the shared helpers and fixtures of `shared/helpers/testing/` (excluded from coverage).
 
 ## Deliverable
 
-- Cover happy path, empty/loading, and error states.
-- Add cases to an existing spec when one exists; otherwise create it.
-- Run the test command and `pnpm run lint`, and report results. Don't disable lint rules or weaken assertions to make things pass.
+- Cover the happy path, empty/loading states, error branches and signal state transitions.
+- Add cases to an existing spec when one exists.
+- Run `pnpm test:coverage` and `pnpm lint` and report the result. Never weaken assertions or disable lint rules to pass;
+  coverage thresholds only go up.

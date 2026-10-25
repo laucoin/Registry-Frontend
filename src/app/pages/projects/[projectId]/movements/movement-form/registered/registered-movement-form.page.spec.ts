@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
 import { of } from 'rxjs'
-import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
+import { Mock, afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ConfigModel } from '@core/config/model/config.model'
 import { RegistryConfig } from '@core/config/registry.config'
 import { SessionFacade } from '@core/registry/state/session.facade'
@@ -389,6 +389,33 @@ describe( 'RegisteredMovementFormPage', () => {
             // Assert
             expect( facade[ 'updateRegisteredMovement' ] ).toHaveBeenCalledWith( 'm1', expect.objectContaining( { type: 'IN' } ), WHEN_ETAG )
             expect( facade[ 'createRegisteredMovement' ] ).not.toHaveBeenCalled()
+        } )
+    } )
+
+    describe( 'prefill', () => {
+        afterEach( () => history.replaceState( null, '' ) )
+
+        it( 'starts on the content step with the prefilled participants', () => {
+            // Arrange
+            history.replaceState( { movementPrefill: { type: MovementTypeEnum.IN, reason: undefined, content: [ { participant: { id: 'pa1', firstName: 'Ada', lastName: 'Lovelace' } } ] } }, '' )
+
+            // Act
+            const page: PageApi = create()
+
+            // Assert
+            expect( page.activeTab() ).toBe( 2 )
+            expect( page.model().content.participants ).toHaveLength( 1 )
+        } )
+
+        it( 'keeps the information step when there is nothing to prefill', () => {
+            // Arrange
+            history.replaceState( null, '' )
+
+            // Act
+            const page: PageApi = create()
+
+            // Assert
+            expect( page.activeTab() ).toBe( 1 )
         } )
     } )
 } )

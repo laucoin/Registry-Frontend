@@ -179,4 +179,30 @@ describe( 'AlertElementComponent', () => {
         expect( shown ).toEqual( [ icon, variant, 'Status' ] )
         expect( read( component, 'isInProgress' ) ).toBe( inProgress )
     } )
+
+    it( 'appends the elapsed time to the label of an alert in progress once the timer ticked', () => {
+        // Arrange
+        vi.useFakeTimers()
+        const component: AlertElementComponent = create( { ...ELEMENT, status: { value: 'IN_PROGRESS', label: 'Open' }, dateTime: new Date( Date.now() - 60_000 ) } )
+
+        // Act
+        vi.advanceTimersByTime( 1100 )
+
+        // Assert
+        expect( read<string>( component, 'statusLabel' ) ).toBe( 'Open ()' )
+        vi.useRealTimers()
+    } )
+
+    it( 'keeps the plain label of an alert that is not in progress when the timer ticks', () => {
+        // Arrange
+        vi.useFakeTimers()
+        const component: AlertElementComponent = create( { ...ELEMENT, status: { value: 'RESOLVED', label: 'Done' } } )
+
+        // Act
+        vi.advanceTimersByTime( 1100 )
+
+        // Assert
+        expect( read<string>( component, 'statusLabel' ) ).toBe( 'Done' )
+        vi.useRealTimers()
+    } )
 } )

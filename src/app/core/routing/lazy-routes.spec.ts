@@ -2,7 +2,10 @@ import { Route, Routes } from '@angular/router'
 import { describe, expect, it } from 'vitest'
 import { routes } from '@core/routing/registry.routes'
 
-type Loaded = { component: boolean, children: Routes | undefined }
+interface Loaded {
+    component: boolean
+    children: Routes | undefined
+}
 
 async function load (route: Route): Promise<Loaded> {
     const component: unknown = route.loadComponent ? await (route.loadComponent as () => Promise<unknown>)() : undefined

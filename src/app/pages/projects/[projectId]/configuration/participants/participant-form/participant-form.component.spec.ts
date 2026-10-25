@@ -24,6 +24,8 @@ interface ParticipantFormApi {
     form: Record<string, () => FieldApi>
     handleUserSelection: (user: { label: string, value: object } | undefined) => void
     handleUserSearch: (query: string) => void
+    handleUserChoice: (event: unknown) => void
+    userChoices: () => { label: string, value: { id: string } }[]
     handleGroupSearch: (event: { query: string }) => void
     submit: () => void
     cancel: () => void
@@ -38,10 +40,10 @@ describe( 'ParticipantFormComponent', () => {
     let fixture: ComponentFixture<ParticipantFormComponent>
     let back: Mock<() => void>
 
-    function create (id: string | undefined = undefined): ParticipantFormApi {
+    function create (id: string | undefined = undefined, fetched: object = CHILD): ParticipantFormApi {
         facade = autoMock()
         back = vi.fn()
-        facade[ 'fetchParticipant' ].mockReturnValue( of( CHILD ) )
+        facade[ 'fetchParticipant' ].mockReturnValue( of( fetched ) )
         facade[ 'createParticipant' ].mockReturnValue( of( CHILD ) )
         facade[ 'updateParticipant' ].mockReturnValue( of( CHILD ) )
         RegistryConfig.config = { notification: { duration: {} } } as unknown as ConfigModel
@@ -245,6 +247,71 @@ describe( 'ParticipantFormComponent', () => {
             // Assert
             expect( facade[ 'searchUsers' ] ).toHaveBeenCalledWith( 'gr' )
             expect( facade[ 'searchGroups' ] ).toHaveBeenCalledWith( 'wo' )
+        } )
+    } )
+
+    describe( 'user choice', () => {
+        it( 'links the user chosen among the found ones', () => {
+            // Arrange
+            const page: ParticipantFormApi = create()
+            facade[ 'searchedUsersMetadata' ].mockReturnValue( [ { label: 'g', value: { ...USER_DTO } } ] )
+
+            // Act
+            page.handleUserChoice( { target: { value: USER_DTO.id } } )
+
+            // Assert
+            expect( page.model()[ 'user' ] ).toMatchObject( { value: { id: USER_DTO.id } } )
+        } )
+
+        it( 'unlinks the user when the chosen key is not among the found ones', () => {
+            // Arrange
+            const page: ParticipantFormApi = create()
+            facade[ 'searchedUsersMetadata' ].mockReturnValue( [] )
+            page.handleUserSelection( USER_ITEM )
+
+            // Act
+            page.handleUserChoice( { target: { value: 'unknown' } } )
+
+            // Assert
+            expect( page.model()[ 'user' ] ).toBeNull()
+        } )
+
+        it( 'keeps the chosen user listed first when a new search no longer returns it', () => {
+            // Arrange
+            const page: ParticipantFormApi = create()
+            facade[ 'searchedUsersMetadata' ].mockReturnValue( [ { label: 'other', value: { id: 'other' } } ] )
+            page.handleUserSelection( USER_ITEM )
+
+            // Act
+            const ids: string[] = page.userChoices().map( (option: { value: { id: string } }): string => option.value.id )
+
+            // Assert
+            expect( ids ).toEqual( [ (USER_ITEM.value as { id: string }).id, 'other' ] )
+        } )
+
+        it( 'does not list the chosen user twice when the search still returns it', () => {
+            // Arrange
+            const page: ParticipantFormApi = create()
+            facade[ 'searchedUsersMetadata' ].mockReturnValue( [ USER_ITEM ] )
+            page.handleUserSelection( USER_ITEM )
+
+            // Act
+            const count: number = page.userChoices().length
+
+            // Assert
+            expect( count ).toBe( 1 )
+        } )
+
+        it( 'locks the names of a loaded participant that is linked to a user', () => {
+            // Arrange
+            const fetched: object = { ...CHILD, user: USER_DTO }
+
+            // Act
+            const page: ParticipantFormApi = create( 'pa1', fetched )
+
+            // Assert
+            expect( page.form[ 'firstName' ]().disabled() ).toBe( true )
+            expect( page.model()[ 'user' ] ).toMatchObject( { value: { id: USER_DTO.id } } )
         } )
     } )
 } )
