@@ -1,8 +1,9 @@
 import { signal, WritableSignal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { TranslocoService } from '@jsverse/transloco'
+import { Router } from '@angular/router'
 import { of } from 'rxjs'
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
+import { beforeEach, describe, expect, it, Mock, MockInstance, vi } from 'vitest'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { ProjectApi } from '@core/registry/state/project.api'
@@ -21,6 +22,8 @@ describe( 'ProjectFacade', () => {
     let fetchCurrentUser: Mock<SessionFacade['fetchCurrentUser']>
     let notify: Mock<(message: unknown) => void>
     let currentProjectId: WritableSignal<string | undefined>
+    let refreshCurrentProject: Mock<SessionFacade['refreshCurrentProject']>
+    let api: Record<string, Mock>
 
     beforeEach( () => {
         provideTestConfig()
@@ -31,13 +34,15 @@ describe( 'ProjectFacade', () => {
         setFavoriteById = vi.fn( () => of( undefined ) )
         fetchCurrentUser = vi.fn( () => of( undefined ) )
         notify = vi.fn()
+        refreshCurrentProject = vi.fn()
+        api = { enableProjectById: vi.fn(), deleteProjectById: vi.fn(), getAvailableProjectOptions: vi.fn( () => of( [] ) ) }
         currentProjectId = signal<string | undefined>( undefined )
         TestBed.configureTestingModule( {
             providers: [
                 ProjectFacade,
                 ProjectStore,
-                { provide: ProjectApi, useValue: { findProjects, createProject, updateProjectById, disableProjectById, setFavoriteById } },
-                { provide: SessionFacade, useValue: { currentProjectId, fetchCurrentUser } },
+                { provide: ProjectApi, useValue: { findProjects, createProject, updateProjectById, disableProjectById, setFavoriteById, ...api } },
+                { provide: SessionFacade, useValue: { currentProjectId, fetchCurrentUser, refreshCurrentProject } },
                 { provide: UiFacade, useValue: { notify } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}` } },
             ],
@@ -228,5 +233,109 @@ describe( 'ProjectFacade', () => {
 
         // Assert
         expect( facade.projectError()?.summary ).toBe( 'Title' )
+    } )
+
+    it( 'reloads the current project after enabling it', () => {
+        // Arrange
+        currentProjectId.set( 'p1' )
+        api[ 'enableProjectById' ].mockReturnValue( of( { id: 'p1', name: 'Camp' } as ProjectModel ) )
+
+        // Act
+        facade.enableProject( 'p1' )
+
+        // Assert
+        expect( refreshCurrentProject ).toHaveBeenCalledTimes( 1 )
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'projects.notifications.enable.title' } ) )
+    } )
+
+    it( 'does not reload another project after enabling it', () => {
+        // Arrange
+        currentProjectId.set( 'other' )
+        api[ 'enableProjectById' ].mockReturnValue( of( { id: 'p1', name: 'Camp' } as ProjectModel ) )
+
+        // Act
+        facade.enableProject( 'p1' )
+
+        // Assert
+        expect( refreshCurrentProject ).not.toHaveBeenCalled()
+    } )
+
+    it.each( [ 'disable', 'delete' ] as const )( 'leaves the current project for the projects list after the project is %sd', (command: 'disable' | 'delete') => {
+        // Arrange
+        const navigateByUrl: MockInstance = vi.spyOn( TestBed.inject( Router ), 'navigateByUrl' ).mockResolvedValue( true )
+        currentProjectId.set( 'p1' )
+        const project: ProjectModel = { id: 'p1', name: 'Camp' } as ProjectModel
+        disableProjectById.mockReturnValue( of( project ) )
+        api[ 'deleteProjectById' ].mockReturnValue( of( undefined ) )
+
+        // Act
+        if (command === 'disable') facade.disableProject( 'p1' )
+        else facade.deleteProject( project )
+
+        // Assert
+        expect( navigateByUrl ).toHaveBeenCalledTimes( 1 )
+    } )
+
+    it( 'swallows a refused navigation after a deletion', async () => {
+        // Arrange
+        vi.spyOn( TestBed.inject( Router ), 'navigateByUrl' ).mockRejectedValue( new Error( 'refused' ) )
+        currentProjectId.set( 'p1' )
+        api[ 'deleteProjectById' ].mockReturnValue( of( undefined ) )
+
+        // Act
+        facade.deleteProject( { id: 'p1', name: 'Camp' } as ProjectModel )
+        await Promise.resolve()
+
+        // Assert
+        expect( notify ).toHaveBeenCalledTimes( 1 )
+    } )
+
+    it( 'does not reload the page when a deletion fails', () => {
+        // Arrange
+        api[ 'deleteProjectById' ].mockReturnValue( failing( ERROR_500 ) )
+
+        // Act
+        facade.deleteProject( { id: 'p1' } as ProjectModel )
+
+        // Assert
+        expect( findProjects ).not.toHaveBeenCalled()
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
+    } )
+
+    it( 'loads the project options and refreshes the shown batches in one request', () => {
+        // Arrange
+        facade.fetchProjectsPage( 0, 10 )
+        findProjects.mockClear()
+
+        // Act
+        facade.fetchProjectOptions()
+        facade.refreshProjectsPage()
+
+        // Assert
+        expect( api[ 'getAvailableProjectOptions' ] ).toHaveBeenCalledTimes( 1 )
+        expect( findProjects ).toHaveBeenCalledTimes( 1 )
+    } )
+
+    it( 'forgets the project and the created project id on reset', () => {
+        // Arrange
+        Object.assign( TestBed.inject( ProjectApi ), { findProjectById: vi.fn( () => of( { id: 'p1' } as ProjectModel ) ) } )
+        facade.fetchProject( 'p1' )
+
+        // Act
+        facade.resetProject()
+
+        // Assert
+        expect( facade.project() ).toBeUndefined()
+    } )
+
+    it( 'translates the labels of the profile and favorite filters except the empty option', () => {
+        // Arrange
+        const expectedPrefix: string = 't:'
+
+        // Act
+        const labels: (string | undefined)[] = [ ...facade.withProfilesMetadata(), ...facade.favoritesMetadata() ].map( (item: { label?: string }): string | undefined => item.label )
+
+        // Assert
+        expect( labels.every( (it: string | undefined): boolean => it === '-' || it!.startsWith( expectedPrefix ) ) ).toBe( true )
     } )
 } )

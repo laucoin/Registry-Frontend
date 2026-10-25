@@ -350,4 +350,83 @@ describe( 'BrowserService', () => {
         expect( listener ).not.toHaveBeenCalled()
         vi.unstubAllGlobals()
     } )
+
+    it.each( [ [ 'hidden', false ], [ 'visible', true ] ] as const )( 'reports the page as visible when the document is %s: %s', (state: 'hidden' | 'visible', expected: boolean) => {
+        // Arrange
+        const visibility: MockInstance = vi.spyOn( document, 'visibilityState', 'get' ).mockReturnValue( state )
+
+        // Act
+        const visible: boolean = service.pageVisible
+
+        // Assert
+        expect( visible ).toBe( expected )
+        visibility.mockRestore()
+    } )
+
+    it( 'reports each visibility change until the listener is removed', () => {
+        // Arrange
+        const listener: Mock<(visible: boolean) => void> = vi.fn()
+        const stop: () => void = service.onVisibilityChange( listener )
+
+        // Act
+        document.dispatchEvent( new Event( 'visibilitychange' ) )
+        stop()
+        document.dispatchEvent( new Event( 'visibilitychange' ) )
+
+        // Assert
+        expect( listener ).toHaveBeenCalledTimes( 1 )
+    } )
+
+    it( 'reports the last entry of an observed element and disconnects on stop', () => {
+        // Arrange
+        let callback: IntersectionObserverCallback = (): void => undefined
+        const disconnect: Mock = vi.fn()
+        vi.stubGlobal( 'IntersectionObserver', class {
+            public constructor ( cb: IntersectionObserverCallback ) { callback = cb }
+            public observe: Mock = vi.fn()
+            public disconnect: Mock = disconnect
+        } )
+        const listener: Mock<(visible: boolean) => void> = vi.fn()
+
+        // Act
+        const stop: () => void = service.observeIntersection( document.createElement( 'div' ), listener )
+        callback( [ { isIntersecting: true }, { isIntersecting: false } ] as IntersectionObserverEntry[], {} as IntersectionObserver )
+        stop()
+
+        // Assert
+        expect( listener ).toHaveBeenCalledWith( false )
+        expect( disconnect ).toHaveBeenCalledTimes( 1 )
+        vi.unstubAllGlobals()
+    } )
+
+    it( 'assumes the element visible when intersection observation is unsupported', () => {
+        // Arrange
+        vi.stubGlobal( 'IntersectionObserver', undefined )
+        const listener: Mock<(visible: boolean) => void> = vi.fn()
+
+        // Act
+        const stop: () => void = service.observeIntersection( document.createElement( 'div' ), listener )
+        stop()
+
+        // Assert
+        expect( listener ).toHaveBeenCalledWith( true )
+        vi.unstubAllGlobals()
+    } )
+
+    it( 'marks the cookie secure on an https page only', () => {
+        // Arrange
+        const cookie: MockInstance = vi.spyOn( document, 'cookie', 'set' )
+        vi.stubGlobal( 'location', { protocol: 'https:' } )
+
+        // Act
+        service.writeCookie( 'lang', 'fr', 60 )
+        vi.stubGlobal( 'location', { protocol: 'http:' } )
+        service.writeCookie( 'lang', 'fr', 60 )
+
+        // Assert
+        expect( cookie.mock.calls[ 0 ][ 0 ] ).toContain( '; Secure' )
+        expect( cookie.mock.calls[ 1 ][ 0 ] ).not.toContain( 'Secure' )
+        vi.unstubAllGlobals()
+        cookie.mockRestore()
+    } )
 } )

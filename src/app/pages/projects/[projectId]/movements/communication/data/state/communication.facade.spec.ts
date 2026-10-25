@@ -1,7 +1,7 @@
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { TranslocoService } from '@jsverse/transloco'
-import { of } from 'rxjs'
+import { Observable, of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
@@ -19,6 +19,7 @@ describe( 'CommunicationFacade', () => {
     let updateCommunicationById: Mock<CommunicationApi['updateCommunicationById']>
     let disableCommunicationById: Mock<CommunicationApi['disableCommunicationById']>
     let notify: Mock<(message: unknown) => void>
+    let api: Record<string, Mock>
 
     beforeEach( () => {
         provideTestConfig()
@@ -26,11 +27,12 @@ describe( 'CommunicationFacade', () => {
         updateCommunicationById = vi.fn()
         disableCommunicationById = vi.fn()
         notify = vi.fn()
+        api = { enableCommunicationById: vi.fn(), deleteCommunicationById: vi.fn(), searchMovements: vi.fn( () => of( [] ) ), searchAlerts: vi.fn( () => of( [] ) ) }
         TestBed.configureTestingModule( {
             providers: [
                 CommunicationFacade,
                 CommunicationStore,
-                { provide: CommunicationApi, useValue: { createCommunication, updateCommunicationById, disableCommunicationById } },
+                { provide: CommunicationApi, useValue: { createCommunication, updateCommunicationById, disableCommunicationById, ...api } },
                 { provide: DateFormatPipe, useValue: { transform: (): string => '01/01' } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ) } },
                 { provide: UiFacade, useValue: { notify } },
@@ -100,5 +102,57 @@ describe( 'CommunicationFacade', () => {
 
         // Assert
         expect( facade.communicationError()?.summary ).toBe( 'Title' )
+    } )
+
+    it.each( [ 'enable', 'delete' ] as const )( 'notifies and announces the communication %s', (command: 'enable' | 'delete') => {
+        // Arrange
+        const communication: CommunicationModel = { id: 'c1', message: 'Hello' } as CommunicationModel
+        api[ 'enableCommunicationById' ].mockReturnValue( of( communication ) )
+        api[ 'deleteCommunicationById' ].mockReturnValue( of( undefined ) )
+
+        // Act
+        const run$: Observable<unknown> = command === 'enable' ? facade.enableCommunication( 'c1' ) : facade.deleteCommunication( communication )
+        run$.subscribe()
+
+        // Assert
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: `communications.notifications.${ command }.title` } ) )
+    } )
+
+    it( 'notifies a failed deletion and announces nothing', () => {
+        // Arrange
+        api[ 'deleteCommunicationById' ].mockReturnValue( failing( ERROR_500 ) )
+        const received: unknown[] = []
+        facade.handleCommunicationFirstPageReload().subscribe( (event: unknown): number => received.push( event ) )
+
+        // Act
+        facade.deleteCommunication( { id: 'c1' } as CommunicationModel ).subscribe( { error: (): void => undefined } )
+
+        // Assert
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
+        expect( received ).toEqual( [] )
+    } )
+
+    it( 'searches the movements and the alerts of the selected project', () => {
+        // Arrange
+        const query: string = 'fire'
+
+        // Act
+        facade.searchMovements( query )
+        facade.searchAlerts( query )
+
+        // Assert
+        expect( api[ 'searchMovements' ] ).toHaveBeenCalledWith( 'p1', 'fire' )
+        expect( api[ 'searchAlerts' ] ).toHaveBeenCalledWith( 'p1', 'fire' )
+    } )
+
+    it( 'clears the communication being edited on reset', () => {
+        // Arrange
+        facade.resetCommunication()
+
+        // Act
+        const communication: CommunicationModel | undefined = facade.communication()
+
+        // Assert
+        expect( communication ).toBeUndefined()
     } )
 } )

@@ -73,4 +73,30 @@ describe('HomeFacade', () => {
 		expect(setFavoriteById).toHaveBeenCalledWith('a', false)
 		expect(fetchFavorites).toHaveBeenCalledTimes(1)
 	})
+
+	it('should refresh silently the first page of favorites and of alerted projects', () => {
+		// Arrange
+		const refreshFavorites: ReturnType<typeof vi.fn> = vi.fn()
+		const refreshAttention: ReturnType<typeof vi.fn> = vi.fn()
+		Object.assign(TestBed.inject(HomeStore), { refreshFavorites, refreshAttention })
+
+		// Act
+		facade.refreshFavorites()
+		facade.refreshAttention()
+
+		// Assert
+		expect(refreshFavorites).toHaveBeenCalledWith({ page: 0, size: 3 })
+		expect(refreshAttention).toHaveBeenCalledWith({ page: 0, size: 5 })
+	})
+
+	it('should expose the number of favorites', () => {
+		// Arrange
+
+		// Act
+		const total: number | undefined = facade.favoritesTotal()
+
+		// Assert
+		expect(total).toBe(1)
+		expect(facade.favorites()).toHaveLength(1)
+	})
 })

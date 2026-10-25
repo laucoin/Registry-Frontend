@@ -25,6 +25,7 @@ describe( 'ProjectProfileFacade', () => {
     let blockProjectProfileById: Mock<ProjectProfileApi['blockProjectProfileById']>
     let deleteProjectProfileById: Mock<ProjectProfileApi['deleteProjectProfileById']>
     let notify: Mock<(message: unknown) => void>
+    let api: Record<string, Mock>
 
     beforeEach( () => {
         provideTestConfig()
@@ -33,11 +34,12 @@ describe( 'ProjectProfileFacade', () => {
         blockProjectProfileById = vi.fn()
         deleteProjectProfileById = vi.fn()
         notify = vi.fn()
+        api = { findProjectProfileById: vi.fn(), updateProjectProfileById: vi.fn(), unblockProjectProfileById: vi.fn(), searchUsers: vi.fn( () => of( [] ) ), getAssignableProjectProfileRoles: vi.fn( () => of( [] ) ) }
         TestBed.configureTestingModule( {
             providers: [
                 ProjectProfileFacade,
                 ProjectProfileStore,
-                { provide: ProjectProfileApi, useValue: { findProjectProfiles, createProjectProfiles, blockProjectProfileById, deleteProjectProfileById } },
+                { provide: ProjectProfileApi, useValue: { findProjectProfiles, createProjectProfiles, blockProjectProfileById, deleteProjectProfileById, ...api } },
                 { provide: MetadataApi, useValue: { getProfilesStatus: vi.fn( () => of( [] ) ) } },
                 { provide: PluralTranslationPipe, useValue: { transform: (key: string, count: number | unknown[]): string => `${key}:${Array.isArray( count ) ? count.length : count}` } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ), selectedProject: (): unknown => ({ name: 'Camp' }) } },
@@ -153,5 +155,129 @@ describe( 'ProjectProfileFacade', () => {
 
         // Assert
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { detail: 'project-profiles.notifications.delete.message.other' } ) )
+    } )
+
+    it( 'fetches a project profile of the selected project', () => {
+        // Arrange
+        api[ 'findProjectProfileById' ].mockReturnValue( of( PROFILE ) )
+        let received: ProjectProfileModel | undefined
+
+        // Act
+        facade.fetchProjectProfile( 'pp1' ).subscribe( (it: ProjectProfileModel): void => { received = it } )
+
+        // Assert
+        expect( api[ 'findProjectProfileById' ] ).toHaveBeenCalledWith( 'p1', 'pp1' )
+        expect( received ).toBe( PROFILE )
+    } )
+
+    it( 'notifies a failed project profile fetch', () => {
+        // Arrange
+        api[ 'findProjectProfileById' ].mockReturnValue( failing( ERROR_500 ) )
+
+        // Act
+        facade.fetchProjectProfile( 'pp1' ).subscribe( { error: (): void => undefined } )
+
+        // Assert
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
+    } )
+
+    it( 'uses the edit notification and refreshes the page after an update', () => {
+        // Arrange
+        api[ 'updateProjectProfileById' ].mockReturnValue( of( PROFILE ) )
+
+        // Act
+        facade.updateProjectProfile( 'pp1', {} as never, 'etag-1' ).subscribe()
+
+        // Assert
+        expect( api[ 'updateProjectProfileById' ] ).toHaveBeenCalledWith( 'p1', 'pp1', {}, 'etag-1' )
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'project-profiles.notifications.edit.title', data: expect.objectContaining( { firstName: 'Ada', name: 'Camp' } ) } ) )
+        expect( findProjectProfiles ).toHaveBeenCalledTimes( 1 )
+    } )
+
+    it( 'notifies and refreshes the page after a profile is unblocked', () => {
+        // Arrange
+        api[ 'unblockProjectProfileById' ].mockReturnValue( of( PROFILE ) )
+
+        // Act
+        facade.unblockProjectProfile( PROFILE ).subscribe()
+
+        // Assert
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'project-profiles.notifications.enable.title' } ) )
+        expect( findProjectProfiles ).toHaveBeenCalledTimes( 1 )
+    } )
+
+    it( 'does not refresh the page when unblocking fails', () => {
+        // Arrange
+        api[ 'unblockProjectProfileById' ].mockReturnValue( failing( ERROR_500 ) )
+
+        // Act
+        facade.unblockProjectProfile( PROFILE ).subscribe( { error: (): void => undefined } )
+
+        // Assert
+        expect( findProjectProfiles ).not.toHaveBeenCalled()
+    } )
+
+    it( 'searches the users to invite and the assignable roles for a given project', () => {
+        // Arrange
+        const query: string = 'ada'
+
+        // Act
+        facade.searchUsers( query, 'p2' )
+        facade.fetchAssignableRoles( 'p2' )
+        facade.searchUsers()
+        facade.fetchAssignableRoles()
+
+        // Assert
+        expect( api[ 'searchUsers' ] ).toHaveBeenNthCalledWith( 1, 'p2', 'ada' )
+        expect( api[ 'searchUsers' ] ).toHaveBeenNthCalledWith( 2, 'p1', undefined )
+        expect( api[ 'getAssignableProjectProfileRoles' ] ).toHaveBeenCalledWith( 'p2' )
+        expect( api[ 'getAssignableProjectProfileRoles' ] ).toHaveBeenCalledWith( 'p1' )
+    } )
+
+    it( 'does not refresh the page after inviting users to another project', () => {
+        // Arrange
+        createProjectProfiles.mockReturnValue( of( { createdUserIds: [ 'u1' ], notCreatedUserIds: [] } ) )
+
+        // Act
+        facade.createProjectProfiles( {} as never, 'p2' ).subscribe()
+
+        // Assert
+        expect( notify ).toHaveBeenCalledTimes( 1 )
+        expect( findProjectProfiles ).not.toHaveBeenCalled()
+    } )
+
+    it( 'exposes the date, status and availability of the search once input', () => {
+        // Arrange
+        const at: Date = new Date( '2026-01-01T00:00:00.000Z' )
+
+        // Act
+        facade.inputPageSearchParameters( 'ada', at, 'ACCEPTED' as never, true )
+
+        // Assert
+        expect( facade.projectProfilesPageAtParam()?.toISOString() ).toBe( at.toISOString() )
+        expect( facade.projectProfilesPageStatusParam() ).toBe( 'ACCEPTED' )
+        expect( facade.projectProfilesPageIsAvailableParam() ).toBe( true )
+    } )
+
+    it( 'keeps the search when the same values are input again', () => {
+        // Arrange
+        facade.inputPageSearchParameters( 'ada', undefined, undefined, undefined )
+
+        // Act
+        facade.inputPageSearchParameters( 'ada', undefined, undefined, undefined )
+
+        // Assert
+        expect( facade.projectProfilesPageQueryParam() ).toBe( 'ada' )
+    } )
+
+    it( 'translates the availability labels except the empty option', () => {
+        // Arrange
+        const expectedPrefix: string = 't:'
+
+        // Act
+        const labels: (string | undefined)[] = facade.projectProfilesAvailabilitiesMetadata().map( (item: { label?: string }): string | undefined => item.label )
+
+        // Assert
+        expect( labels.filter( Boolean ).every( (it: string | undefined): boolean => it === '-' || it!.startsWith( expectedPrefix ) ) ).toBe( true )
     } )
 } )

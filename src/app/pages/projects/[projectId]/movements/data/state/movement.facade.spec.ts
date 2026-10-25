@@ -321,4 +321,63 @@ describe( 'MovementFacade', () => {
         expect( api[ 'searchParticipantsAndGroups' ] ).toHaveBeenCalledWith( 'p1', ParticipantTypeEnum.REGISTERED, 'ada' )
         expect( api[ 'searchVehicles' ] ).toHaveBeenCalledWith( 'p1', 'ada' )
     } )
+
+    it( 'exposes the date bounds, the type and the visibility of the search once input', () => {
+        // Arrange
+        const from: Date = new Date( '2026-01-01T00:00:00.000Z' )
+        const to: Date = new Date( '2026-02-01T00:00:00.000Z' )
+
+        // Act
+        facade.inputPageSearchParameters( 'IN', from, to, true )
+
+        // Assert
+        expect( facade.movementsPageFromParam()?.toISOString() ).toBe( from.toISOString() )
+        expect( facade.movementsPageToParam()?.toISOString() ).toBe( to.toISOString() )
+        expect( facade.movementsPageTypeParam() ).toBe( 'IN' )
+        expect( facade.movementsPageIsVisibleParam() ).toBe( true )
+    } )
+
+    it( 'keeps the search when the same values are input again', () => {
+        // Arrange
+        facade.inputPageSearchParameters( 'IN', undefined, undefined, undefined )
+
+        // Act
+        facade.inputPageSearchParameters( 'IN', undefined, undefined, undefined )
+
+        // Assert
+        expect( facade.movementsPageTypeParam() ).toBe( 'IN' )
+    } )
+
+    it( 'translates the visibility labels except the empty option', () => {
+        // Arrange
+        const expectedPrefix: string = 't:'
+
+        // Act
+        const labels: (string | undefined)[] = facade.visibilitiesMetadata().map( (item: { label?: string }): string | undefined => item.label )
+
+        // Assert
+        expect( labels.every( (it: string | undefined): boolean => it === '-' || it!.startsWith( expectedPrefix ) ) ).toBe( true )
+    } )
+
+    it( 'counts no participant in the notification of a movement without content', () => {
+        // Arrange
+        disableMovementById.mockReturnValue( of( { ...MOVEMENT, content: undefined } as unknown as MovementModel ) )
+
+        // Act
+        facade.disableMovement( 'm1' ).subscribe()
+
+        // Assert
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { data: expect.objectContaining( { participants: 0 } ) } ) )
+    } )
+
+    it( 'restarts the communications from the first page when their search was reset', () => {
+        // Arrange
+        facade.fetchMovementCommunicationsPage( 'm1', 3, 10 )
+
+        // Act
+        facade.fetchMovementCommunicationsPage( 'm1', 4, 10 )
+
+        // Assert
+        expect( api[ 'findMovementCommunications' ] ).toHaveBeenLastCalledWith( 'p1', 'm1', 4, 10, expect.anything() )
+    } )
 } )
