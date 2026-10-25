@@ -140,8 +140,7 @@ describe('SgdfFieldDirective', () => {
         // Arrange
         const { fixture }: ReturnType<typeof create> = create()
         const picker: FieldElement = fixture.nativeElement.querySelector('#custom')
-        const utc: Date = new Date()
-        utc.setUTCHours(7, 5, 0, 0)
+        const utc: Date = new Date(Date.UTC(2026, 9, 3, 7, 5))
         const expectedLocal: string = `${String(utc.getHours()).padStart(2, '0')}:${String(utc.getMinutes()).padStart(2, '0')}`
 
         // Act

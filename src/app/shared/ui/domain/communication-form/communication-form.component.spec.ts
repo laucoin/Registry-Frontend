@@ -38,6 +38,8 @@ interface CommunicationFormApi {
     alertSelectorMode: () => string | undefined
     ngOnInit: () => void
     submit: () => void
+    submitOnShortcut: (event: KeyboardEvent) => void
+    saving: { (): boolean, set: (value: boolean) => void }
     resetForm: () => void
     removeMovementField: () => void
     removeAlertField: () => void
@@ -404,6 +406,77 @@ describe( 'CommunicationFormComponent', () => {
 
             // Assert
             expect( page.model().alert ).toBeNull()
+        } )
+    } )
+
+    describe( 'shortcut and flags', () => {
+        function readyPage (): CommunicationFormApi {
+            const page: CommunicationFormApi = create()
+            fixture.componentRef.setInput( 'initialMovement', MOVEMENT_DTO )
+            page.ngOnInit()
+            page.model.set( { ...page.model(), message: 'hello' } )
+            return page
+        }
+
+        it.each( [ [ { ctrlKey: true } ], [ { metaKey: true } ] ] )( 'saves on Enter with the modifier %j', (modifier: object) => {
+            // Arrange
+            const page: CommunicationFormApi = readyPage()
+            const event: KeyboardEvent = new KeyboardEvent( 'keydown', { key: 'Enter', cancelable: true, ...modifier } )
+
+            // Act
+            page.submitOnShortcut( event )
+
+            // Assert
+            expect( facade[ 'createCommunication' ] ).toHaveBeenCalledTimes( 1 )
+            expect( event.defaultPrevented ).toBe( true )
+        } )
+
+        it.each( [ [ { key: 'Enter' } ], [ { key: 'a', ctrlKey: true } ] ] )( 'does not save on %j', (init: object) => {
+            // Arrange
+            const page: CommunicationFormApi = readyPage()
+
+            // Act
+            page.submitOnShortcut( new KeyboardEvent( 'keydown', init ) )
+
+            // Assert
+            expect( facade[ 'createCommunication' ] ).not.toHaveBeenCalled()
+        } )
+
+        it( 'does not save twice while a save is running', () => {
+            // Arrange
+            const page: CommunicationFormApi = readyPage()
+            page.saving.set( true )
+
+            // Act
+            page.submit()
+
+            // Assert
+            expect( facade[ 'createCommunication' ] ).not.toHaveBeenCalled()
+        } )
+
+        it( 'starts with the new alert field when asked and the project has alerts', () => {
+            // Arrange
+            const page: CommunicationFormApi = create( [ ProjectOptionEnum.ALERT ] )
+            fixture.componentRef.setInput( 'startWithNewAlert', true )
+
+            // Act
+            page.ngOnInit()
+
+            // Assert
+            expect( page.alertSelectorMode() ).toBe( 'NEW' )
+        } )
+
+        it( 'does not start with the new alert field when an alert is already given', () => {
+            // Arrange
+            const page: CommunicationFormApi = create( [ ProjectOptionEnum.ALERT ] )
+            fixture.componentRef.setInput( 'startWithNewAlert', true )
+            fixture.componentRef.setInput( 'initialAlert', ALERT_DTO )
+
+            // Act
+            page.ngOnInit()
+
+            // Assert
+            expect( page.alertSelectorMode() ).toBeUndefined()
         } )
     } )
 } )
