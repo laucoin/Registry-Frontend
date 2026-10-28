@@ -1,0 +1,13 @@
+{
+  "tagline": "Attendance management by project",
+  "eyebrow": "Member area",
+  "title": "Great to see you again",
+  "subtitle": "Sign in with your {{ organizationName }} account to access your projects.",
+  "submit": "Sign in",
+  "legalPrefix": "By signing in, you acknowledge that you have read the",
+  "terms": "terms of use",
+  "legalMiddle": "and the",
+  "privacy": "privacy policy",
+  "heroCaption": "Welcome",
+  "heroQuote": "“Having an overview of attendance.”"
+}

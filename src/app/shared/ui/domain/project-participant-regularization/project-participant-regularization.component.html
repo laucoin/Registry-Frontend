@@ -1,0 +1,45 @@
+<sgdf-table class="h-full [&::part(grid)]:h-full [&::part(grid)]:table-fixed" appearance="soft">
+    <sgdf-table-row class="h-px">
+        <sgdf-table-cell header class="flex items-center gap-1">
+            <sgdf-icon name="clock" library="solid"/>
+            <h2 class="text-sm font-semibold uppercase">{{ 'projectHome.participantRegularization.title' | transloco }}</h2>
+            @if (total() !== undefined) {
+                <sgdf-tag class="ml-auto" size="small" variant="info" appearance="soft">{{ 'projectHome.participantRegularization.total' | pluralTranslation: total() | transloco: { count: total() } }}</sgdf-tag>
+            }
+        </sgdf-table-cell>
+    </sgdf-table-row>
+
+    <sgdf-table-row>
+        <sgdf-table-cell class="h-full p-0 align-top">
+            @if (error(); as failure) {
+                <app-section-error data-testid="project-participant-regularization-error" [error]="failure" [retrying]="loading()" (retry)="reload()"/>
+            }
+
+            @if (loading() && total() === undefined) {
+                <app-skeleton-list [rows]="3"/>
+            } @else if (total() === 0) {
+                <p class="m-4 text-sm opacity-80">{{ 'projectHome.participantRegularization.empty' | transloco }}</p>
+            } @else if (total() !== undefined) {
+                <sgdf-list appearance="text" [label]="'projectHome.participantRegularization.title' | transloco">
+                    @for (participant of participants(); track participant.id) {
+                        <sgdf-list-item data-testid="project-participant-regularization-row" appRegularizationRow [participant]="participant"/>
+                    }
+                </sgdf-list>
+            }
+        </sgdf-table-cell>
+    </sgdf-table-row>
+
+    <sgdf-table-row class="h-px">
+        <sgdf-table-cell class="align-bottom">
+            <sgdf-button data-testid="project-participant-regularization-see-all-button" block size="small" appearance="text" (click)="listOpen.set(true)">
+                @if (remaining() > 0) {
+                    {{ 'projectHome.participantRegularization.seeRemaining' | pluralTranslation: remaining() | transloco: { count: remaining() } }}
+                } @else {
+                    {{ 'projectHome.participantRegularization.seeAll' | transloco }}
+                }
+            </sgdf-button>
+        </sgdf-table-cell>
+    </sgdf-table-row>
+</sgdf-table>
+
+<app-overdue-participants-dialog [(open)]="listOpen"/>

@@ -1,0 +1,55 @@
+<sgdf-table class="h-full [&::part(grid)]:h-full" appearance="soft">
+    <sgdf-table-row>
+        <sgdf-table-cell header class="flex items-center gap-1">
+            <sgdf-icon name="language" library="solid"/>
+            <h2>{{ 'myAccount.language.title' | transloco }}</h2>
+        </sgdf-table-cell>
+    </sgdf-table-row>
+
+    <sgdf-table-row>
+        <sgdf-table-cell row-header>
+            @if (availableLanguages.length <= 1) {
+                <p class="m-0">
+                    {{ 'myAccount.language.only' | transloco: { language: ('myAccount.language.' + currentLanguage()) | transloco } }}
+                </p>
+            } @else if (availableLanguages.length === 2) {
+                <sgdf-button-group class="flex w-full" [label]="'myAccount.language.choose' | transloco">
+                    @for (language of availableLanguages; track language) {
+                        <sgdf-button data-testid="account-language-option-button" class="flex-1" variant="primary"
+                                     block
+                                     [appearance]="language === currentLanguage() ? 'solid' : 'outlined'"
+                                     [attr.aria-pressed]="language === currentLanguage()"
+                                     [loading]="pendingLanguage() === language"
+                                     [disabled]="pendingLanguage() !== undefined"
+                                     (click)="select(language)">
+                            {{ ('myAccount.language.' + language) | transloco }}
+                            @if (language === currentLanguage()) {
+                                <span class="sr-only">({{ 'myAccount.selected' | transloco }})</span>
+                            }
+                        </sgdf-button>
+                    }
+                </sgdf-button-group>
+            } @else {
+                <sgdf-select data-testid="account-language-select"
+                        appearance="outlined"
+                        without-label
+                        [label]="'myAccount.language.title' | transloco"
+                        [value]="currentLanguage()"
+                        [disabled]="pendingLanguage() !== undefined"
+                        (change)="selectFromEvent($event)">
+                    @for (language of availableLanguages; track language) {
+                        <sgdf-option [value]="language">
+                            {{ ('myAccount.language.' + language) | transloco }}
+                        </sgdf-option>
+                    }
+                </sgdf-select>
+            }
+        </sgdf-table-cell>
+    </sgdf-table-row>
+
+    <sgdf-table-row class="h-full">
+        <sgdf-table-cell class="align-bottom text-sm opacity-80">
+            {{ 'myAccount.language.hint' | transloco }}
+        </sgdf-table-cell>
+    </sgdf-table-row>
+</sgdf-table>

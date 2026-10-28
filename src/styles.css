@@ -1,0 +1,88 @@
+:root {
+    /* --- Constantes de mise en page --- */
+    --layout--content-width: 90rem;
+    --layout--min-width: 340px;
+
+    /* --- Constantes d'espacement --- */
+    --spacing--in-block-small: 0.5rem;
+    --spacing--in-block: 0.75rem;
+    --spacing--in-block-large: 1rem;
+    --spacing--page-gutter: 1.5rem;
+    --spacing--block: 2rem;
+}
+
+html {
+    min-width: var(--layout--min-width);
+}
+
+:root {
+    background-color: var(--sgdf-nav-bg, var(--sgdf-color-default));
+}
+
+body {
+    min-height: 100vh;
+    background-color: var(--sgdf-color-bg-default);
+}
+
+sgdf-table-cell[header] > h2 {
+    display: inline;
+    margin: 0;
+    color: inherit;
+    font: inherit;
+}
+
+h2.section-title {
+    font-size: var(--sgdf-text-2xl);
+}
+
+sgdf-menu-item {
+    padding: 0.5em 1em;
+}
+
+sgdf-drawer.drawer-sheet {
+    --size: calc(100dvh - 3rem);
+}
+
+sgdf-dialog.dialog-fullscreen {
+    --width: 100vw;
+}
+
+sgdf-dialog.dialog-fullscreen::part(dialog) {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+}
+
+sgdf-dialog::part(footer) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+/* Les textes qui débordent se terminent par une ellipse ; les éléments de l'app utilisent la directive appEllipsis pour leurs propres textes */
+sgdf-page-title::part(base) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+}
+
+sgdf-page-title::part(heading) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+sgdf-list-item::part(title),
+sgdf-option::part(label) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 576px) {
+    sgdf-page-title::part(base) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

@@ -1,0 +1,30 @@
+{
+  "defaultLanguage": "fr",
+  "languages": [
+    "fr",
+    "en"
+  ],
+  "application": {
+    "name": "Registry",
+    "organization": "Scouts et Guides de France",
+    "creator": {
+      "name": "Luc Aucoin",
+      "email": "luc.aucoin1998@gmail.com",
+      "website": "https://doc.laucoin.fr/resume"
+    },
+    "support": {
+      "documentationUrl": "https://doc.laucoin.fr/registry",
+      "issuesUrl": "https://github.com/laucoin/Registry-Frontend/issues"
+    }
+  },
+  "notification": {
+    "duration": {
+      "info": 5000,
+      "success": 3000,
+      "warn": 8000,
+      "error": 15000,
+      "secondary": 5000,
+      "contrast": 5000
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "eyebrow": "Configuration",
+  "title": "Configuration du projet",
+  "subtitle": "Gère les participants, groupes, véhicules et options du projet.",
+  "tiles": {
+    "participants": {
+      "title": "Participants",
+      "description": "Inscrits, invités et données individuelles"
+    },
+    "groups": {
+      "title": "Groupes",
+      "description": "Unités, équipes et affectations"
+    },
+    "vehicles": {
+      "title": "Véhicules",
+      "description": "Parc, conducteurs et capacités"
+    },
+    "activities": {
+      "title": "Activités",
+      "description": "Programme du projet et cadres d'entrées/sorties"
+    },
+    "profiles": {
+      "title": "Membres",
+      "description": "Profils propres au projet : rôles et accès"
+    }
+  },
+  "dangerZone": {
+    "title": "Zone de danger",
+    "disable": {
+      "title": "Masquer le projet",
+      "description": "Tant que le projet est masqué, plus aucun profil, entrée/sortie ou participant ne peut y être créé. Tu peux le démasquer à tout moment.",
+      "action": "Masquer le projet"
+    },
+    "enable": {
+      "title": "Afficher à nouveau le projet",
+      "description": "Le projet est actuellement masqué. Le rendre visible permet de nouveau d’y créer des profils, entrées/sorties, participants, etc.",
+      "action": "Démasquer le projet"
+    },
+    "delete": {
+      "title": "Supprimer le projet",
+      "description": "Supprime définitivement le projet ainsi que tous les éléments qui lui sont liés (profils, entrées/sorties, participants, etc.). Cette action est irréversible.",
+      "action": "Supprimer le projet"
+    }
+  }
+}

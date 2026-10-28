@@ -1,0 +1,6 @@
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  padding-block-end: var(--sgdf-spacing-medium);
+}

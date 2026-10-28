@@ -4,71 +4,70 @@
 [![CodeQL](https://github.com/laucoin/Registry-Frontend/actions/workflows/codeql.yml/badge.svg)](https://github.com/laucoin/Registry-Frontend/actions/workflows/codeql.yml)
 [![Angular](https://img.shields.io/badge/Angular-22-DD0031?logo=angular&logoColor=white)](https://angular.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![PrimeNG](https://img.shields.io/badge/PrimeNG-22-0EA5E9)](https://primeng.org)
 [![pnpm](https://img.shields.io/badge/pnpm-F69220?logo=pnpm&logoColor=white)](https://pnpm.io)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributeurs-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-## This repository 📖
+## Ce dépôt 📖
 
-This project is built with [Angular](https://angular.dev) (standalone components, no NgModules).
+Ce projet est construit avec [Angular](https://angular.dev) (composants standalone, sans NgModules).
 
-This application allows virtual registry management. This is a frontend which calls the backend; authentication is
-brokered by the backend too — the browser is redirected to the backend's own login/logout endpoints and never talks to
-the identity provider directly.
+Cette application permet la gestion d'un registre virtuel. C'est un frontend qui appelle le backend ; l'authentification
+est elle aussi orchestrée par le backend — le navigateur est redirigé vers les endpoints de connexion/déconnexion du
+backend et ne dialogue jamais directement avec le fournisseur d'identité.
 
-Checkout the full documentation [here](https://doc.laucoin.fr/registry).
+Consultez la documentation complète [ici](https://doc.laucoin.fr/registry).
 
-Linked repositories:
+Dépôts liés :
 
 - [Backend](https://github.com/laucoin/Registry-Backend.git)
-- [E2E tests](https://github.com/laucoin/Registry-E2E.git)
+- [Tests E2E](https://github.com/laucoin/Registry-E2E.git)
 
-## How to install and use it? ⚙️
+## Comment l'installer et l'utiliser ? ⚙️
 
-### Prerequisites
+### Prérequis
 
-You need to install a Node environment. To do that there are 2 possibilities.
+Il faut installer un environnement Node. Il y a deux possibilités.
 
-#### Node Version Management (recommended)
+#### Node Version Management (recommandé)
 
 1. Install [NVM](https://github.com/nvm-sh/nvm#installing-and-updating)
-2. Then install node (`^24.15`, CI runs on Node 24 LTS)
+2. Installer ensuite Node (`^24.15`, la CI tourne sur Node 24 LTS)
     ```shell
     nvm install <version>
     ```
 
-#### Classic installation
+#### Installation classique
 
-1. Install [Node.js](https://nodejs.org/en/download/)
+1. Installer [Node.js](https://nodejs.org/en/download/)
 
-Then, in both cases, install [pnpm](https://pnpm.io/installation):
+Ensuite, dans les deux cas, installer [pnpm](https://pnpm.io/installation):
 
 ```shell
 corepack enable pnpm
 ```
 
-### Build and run locally
+### Construire et lancer en local
 
-1. Clone this repository with:
+1. Cloner ce dépôt avec :
     ```shell
     git clone https://github.com/laucoin/Registry-Frontend.git
     ```
-   OR
+   OU
     ```shell
     git clone git@github.com:laucoin/Registry-Frontend.git
     ```
-2. Move into the project directory
+2. Se placer dans le répertoire du projet
     ```shell
     cd Registry-Frontend/
     ```
-3. Install dependencies
+3. Installer les dépendances
     ```shell
     pnpm install
     ```
-4. Create `public/settings/config.json` with your configuration
+4. Créer `public/settings/config.json` avec votre configuration
     ```json
     {
         "defaultLanguage": "fr",
@@ -76,83 +75,6 @@ corepack enable pnpm
             "fr",
             "en"
         ],
-        "primeNg": {
-            "semantic": {
-                "primary": {
-                    "50": "#eef9ff",
-                    "100": "#dcf4ff",
-                    "200": "#b2ebff",
-                    "300": "#6ddcff",
-                    "400": "#20cbff",
-                    "500": "#00b5ff",
-                    "600": "#0091df",
-                    "700": "#0073b4",
-                    "800": "#006295",
-                    "900": "#00507a",
-                    "950": "#003a5d"
-                },
-            "colorScheme": {
-                "light": {
-                    "primary": {
-                        "color": "#003a5d",
-                        "contrastColor": "#eef9ff",
-                        "hoverColor": "#00507a",
-                        "activeColor": "#006295"
-                    },
-                    "highlight": {
-                        "background": "#003a5d",
-                        "focusBackground": "#0073b4",
-                        "color": "#ffffff",
-                        "focusColor": "#ffffff"
-                    }
-                },
-                "dark": {
-                    "primary": {
-                        "color": "#eef9ff",
-                        "contrastColor": "#003a5d",
-                        "hoverColor": "#dcf4ff",
-                        "activeColor": "#b2ebff"
-                    },
-                    "highlight": {
-                        "background": "rgba(250, 250, 250, .16)",
-                        "focusBackground": "rgba(250, 250, 250, .24)",
-                        "color": "rgba(255,255,255,.87)",
-                        "focusColor": "rgba(255,255,255,.87)"
-                    }
-                }
-            }
-            },
-            "components": {
-                "card": {
-                    "body": {
-                        "padding": "1rem"
-                    }
-                },
-                "dataview": {
-                    "root": {
-                        "borderWidth": "0"
-                    },
-                    "header": {
-                        "padding": "0"
-                    }
-                },
-                "menu": {
-                    "item": {
-                        "padding": "0"
-                    }
-                },
-                "popover": {
-                    "content": {
-                        "padding": "0"
-                    }
-                },
-                "tabs": {
-                    "tabpanel": {
-                        "padding": "1rem 0"
-                    }
-                }
-            }
-        },
         "logo": {
             "normal": {
                 "light": "img/SGDF/logo.svg",
@@ -163,7 +85,6 @@ corepack enable pnpm
                 "dark": "img/SGDF/small-logo.svg"
             }
         },
-        "enabledActions": [ "<element-action.enum.ts>" ],
         "notification": {
             "duration": {
                 "info": 5000,
@@ -176,40 +97,40 @@ corepack enable pnpm
         }
     }
     ```
-5. Create `public/settings/env.json` with your environment
+5. Créer `public/settings/env.json` avec votre environnement
     ```json
     {
         "production": "<true-for-non-local>",
         "backend": {
             "url": "<backend-url>",
             "noAuthPaths": [
-                "/api/v1/authentication/login/uri",
-                "/api/v1/authentication/logout/uri",
-                "/api/v1/authentication/token",
-                "/api/v1/authentication/token/refresh"
+                "/api/v2/authentication/login/uri",
+                "/api/v2/authentication/logout/uri",
+                "/api/v2/authentication/token",
+                "/api/v2/authentication/token/refresh"
             ]
         }
     }
     ```
-   Both files are gitignored (`public/settings/*.json`) and fetched at runtime, so they can be swapped per environment
-   without rebuilding the app.
+   Les deux fichiers sont ignorés par git (`public/settings/*.json`) et récupérés à l'exécution : ils peuvent donc être
+   remplacés selon l'environnement sans reconstruire l'application.
 
-Now, you can use the following scripts. Enjoy !
+Vous pouvez maintenant utiliser les scripts suivants. Bon développement !
 
-> To use the frontend properly, you need to start the backend too. To do that refer to
-> the [backend readme](https://github.com/laucoin/Registry-Backend.git).
+> Pour utiliser correctement le frontend, il faut aussi démarrer le backend. Pour cela, voir
+> le [readme du backend](https://github.com/laucoin/Registry-Backend.git).
 
-#### Running the application in dev mode
+#### Lancer l'application en mode développement
 
-You can run your application in dev mode that enables live coding using:
+Vous pouvez lancer l'application en mode développement, qui permet le rechargement à chaud, avec :
 
 ```shell script
 pnpm start
 ```
 
-#### Packaging and running the application
+#### Empaqueter et lancer l'application
 
-The application can be built using (depending your target environment):
+L'application peut être construite avec (selon l'environnement cible) :
 
 ```shell script
 pnpm run build --configuration=development
@@ -219,68 +140,69 @@ pnpm run build --configuration=development
 pnpm run build --configuration=production
 ```
 
-It produces the `index.html` file and all the other resources in the `dist/browser/` directory.
+Cela produit le fichier `index.html` et toutes les autres ressources dans le répertoire `dist/browser/`.
 
-The application is now usable using `dist/browser/index.html`, or served behind nginx as configured by
-the [Dockerfile](Dockerfile) and [nginx.conf](nginx.conf).
+L'application est alors utilisable via `dist/browser/index.html`, ou servie derrière nginx comme configuré par
+le [Dockerfile](Dockerfile) et [nginx.conf](nginx.conf).
 
-#### Code scaffolding
+#### Génération de code
 
-Run `ng generate component component-name` to generate a new component. You can also use
+Lancer `ng generate component component-name` pour générer un nouveau composant. On peut aussi utiliser
 `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
-#### Other scripts
+#### Autres scripts
 
 ```shell script
-pnpm lint   # eslint (angular-eslint)
+pnpm lint            # eslint (angular-eslint)
+pnpm test            # tests unitaires (Vitest), en mode watch
+pnpm test:coverage   # tests unitaires en un passage, avec couverture et seuils de angular.json
 ```
 
-> There is no automated test suite yet — `pnpm lint` and `pnpm build` are the only checks the
-> [Pull Request workflow](.github/workflows/pull-request.yml) runs today.
+> `pnpm lint`, `pnpm test:coverage` et `pnpm build` sont les vérifications que le
+> [workflow Pull Request](.github/workflows/pull-request.yml) exécute ; elles doivent aussi passer avant chaque commit.
 
-#### Further help
+#### Pour aller plus loin
 
-- Angular [documentation](https://angular.dev)
-- Angular CLI [reference](https://angular.dev/tools/cli)
-- TypeScript [documentation](https://www.typescriptlang.org/docs/)
-- NGXS [documentation](https://www.ngxs.io/)
-- PrimeNG [documentation](https://primeng.org/)
-- ngx-translate [documentation](https://github.com/ngx-translate/core)
+- [Documentation](https://angular.dev) d'Angular
+- [Référence](https://angular.dev/tools/cli) d'Angular CLI
+- [Documentation](https://www.typescriptlang.org/docs/) de TypeScript
+- [Documentation](https://ngrx.io/guide/signals) de NgRx Signals
+- [Documentation](https://jsverse.gitbook.io/transloco) de Transloco
 
-## Contributing 💻
+## Contribuer 💻
 
-The `main` branch contain the production code.
+La branche `main` contient le code de production.
 
-WARNING :
+ATTENTION :
 
-- Any development must be done on a separate branch: every change reaches `main` through a pull request.
+- Tout développement doit être fait sur une branche séparée : chaque changement atteint `main` via une pull request.
 
-The GitHub Actions workflows are the review gate — a pull request must be green before merge:
+Les workflows GitHub Actions constituent la barrière de revue — une pull request doit être verte avant d'être fusionnée :
 
-- **Pull Request** ([pull-request.yml](.github/workflows/pull-request.yml)) — runs `pnpm lint` and `pnpm build`, then
-  publishes a branch-tagged image for review.
-- **Dependency Review** ([dependency-review.yml](.github/workflows/dependency-review.yml)) — blocks a pull request that
-  introduces vulnerable dependencies.
-- **Dependency Audit** ([dependency-audit.yml](.github/workflows/dependency-audit.yml)) — weekly `pnpm audit` of the
-  full lockfile, catching vulnerabilities disclosed after a dependency was already merged in (Dependency Review only
-  ever sees a PR's diff).
-- **CodeQL** ([codeql.yml](.github/workflows/codeql.yml)) — javascript-typescript static analysis on pull requests,
-  pushes to `main` and on a schedule.
-- **Release** ([release.yml](.github/workflows/release.yml), on merge to `main`) — builds & pushes the DEV image, then
-  Semantic Release derives the next version from the commit messages, tags it and publishes the release image; a
-  retention job prunes old images. Commit messages must therefore follow
+- **Pull Request** ([pull-request.yml](.github/workflows/pull-request.yml)) — exécute `pnpm lint`, `pnpm test:coverage` et `pnpm build`, puis
+  publie une image taguée par branche pour la revue.
+- **Dependency Review** ([dependency-review.yml](.github/workflows/dependency-review.yml)) — bloque une pull request qui
+  introduit des dépendances vulnérables.
+- **Dependency Audit** ([dependency-audit.yml](.github/workflows/dependency-audit.yml)) — `pnpm audit` hebdomadaire du
+  lockfile complet, qui repère les vulnérabilités divulguées après la fusion d'une dépendance (Dependency Review ne
+  voit que le diff d'une PR).
+- **CodeQL** ([codeql.yml](.github/workflows/codeql.yml)) — analyse statique javascript-typescript sur les pull requests,
+  les pushes vers `main` et selon un calendrier.
+- **Release** ([release.yml](.github/workflows/release.yml), à la fusion vers `main`) — construit et pousse l'image DEV, puis
+  Semantic Release dérive la prochaine version des messages de commit, la tague et publie l'image de release ; un job
+  de rétention élague les anciennes images. Les messages de commit doivent donc suivre
   [Conventional Commits](https://www.conventionalcommits.org/).
-- **Hotfix** ([hotfix.yml](.github/workflows/hotfix.yml)) — pushing a tag matching `*-hotfix-*` (branched off an
-  existing release tag) builds & pushes an isolated hotfix image, outside Semantic Release.
-- **PR Cleanup** ([pr-cleanup.yml](.github/workflows/pr-cleanup.yml)) — deletes the branch image from the registry when
-  the pull request closes.
+- **Hotfix** ([hotfix.yml](.github/workflows/hotfix.yml)) — pousser un tag correspondant à `*-hotfix-*` (créé à partir d'un
+  tag de release existant) construit et pousse une image de hotfix isolée, hors Semantic Release.
+- **PR Cleanup** ([pr-cleanup.yml](.github/workflows/pr-cleanup.yml)) — supprime l'image de la branche du registry à
+  la fermeture de la pull request.
 
-Before contributing, please read the [documentation](https://doc.laucoin.fr/registry) and our
-[code of conduct](CODE_OF_CONDUCT.md).
+Avant de contribuer, merci de lire la [documentation](https://doc.laucoin.fr/registry) et notre
+[code de conduite](CODE_OF_CONDUCT.md).
 
-## Contributors 🧑‍💻
+## Contributeurs 🧑‍💻
 
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/en/reference/emoji-key/)):
+Merci à ces personnes formidables ([légende des emojis](https://allcontributors.org/en/reference/emoji-key/)) :
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
@@ -302,5 +224,5 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/e
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification.
-Contributions of any kind welcome!
+Ce projet suit la spécification [all-contributors](https://github.com/all-contributors/all-contributors).
+Les contributions de toute nature sont les bienvenues !

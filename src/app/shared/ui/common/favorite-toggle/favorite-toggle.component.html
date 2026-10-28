@@ -1,0 +1,6 @@
+<sgdf-icon-button data-testid="favorite-toggle-toggled-button" name="star"
+                  [attr.aria-pressed]="favorite()"
+                  [library]="favorite() ? 'solid' : 'regular'"
+                  [variant]="favorite() ? 'warning' : 'neutral'"
+                  [label]="(favorite() ? 'global.favorite.remove' : 'global.favorite.add') | transloco: { name: name() }"
+                  (click)="toggled.emit()"/>

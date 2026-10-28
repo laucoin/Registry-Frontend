@@ -1,0 +1,66 @@
+<section class="flex flex-col gap-(--spacing--in-block-large)">
+    <header class="flex flex-wrap items-center justify-between gap-(--spacing--in-block)">
+        @if (elementPage(); as page) {
+            <small class="opacity-80">
+                {{ 'global.date-and-time-format.last-refresh' | transloco: { datetime: page.lastRefresh | dateFormat: 'datetime' } }}
+            </small>
+        } @else {
+            <sgdf-skeleton class="w-[12rem] h-[1rem]" effect="pulse" shape="rounded"/>
+        }
+        @if (getTemplate('creation'); as creation) {
+            <ng-container [ngTemplateOutlet]="creation"/>
+        }
+    </header>
+
+    @if (getTemplate('search'); as search) {
+        <sgdf-accordion data-testid="list-accordion" appearance="soft" mode="single-collapsible">
+            <sgdf-accordion-item [expanded]="searchExpanded()">
+                <span slot="title" class="flex flex-wrap items-center gap-2">
+                    {{ 'global.actions.search-and-filter' | transloco }}
+                    @if (activeFilters() > 0) {
+                        <sgdf-tag variant="primary" size="small" pill>
+                            {{ 'global.list.active-filters' | transloco: { count: activeFilters() } }}
+                        </sgdf-tag>
+                    }
+                </span>
+                <ng-container [ngTemplateOutlet]="search"/>
+            </sgdf-accordion-item>
+        </sgdf-accordion>
+    }
+
+    @if (error(); as failure) {
+        <app-section-error data-testid="list-error" [error]="failure" [retrying]="loading() || loadingMore()" (retry)="retry()"/>
+    }
+
+    @if (showSkeleton()) {
+        <app-skeleton-list [rows]="6" appearance="soft" [withDescription]="true"/>
+    } @else if (isEmpty()) {
+        @if (activeFilters() > 0) {
+            <sgdf-callout data-testid="list-no-result-callout" variant="neutral" [title]="'global.list.no-result.title' | transloco">
+                <div class="flex flex-wrap items-center justify-between gap-(--spacing--in-block)">
+                    <span>{{ 'global.list.no-result.message' | transloco }}</span>
+                    <sgdf-button data-testid="list-reset-filters-button" size="small" appearance="outlined" (click)="filtersReset.emit()">
+                        {{ 'global.list.reset-filters' | transloco }}
+                    </sgdf-button>
+                </div>
+            </sgdf-callout>
+        } @else if (getTemplate('empty'); as empty) {
+            <ng-container [ngTemplateOutlet]="empty"/>
+        } @else if (!error()) {
+            <sgdf-callout data-testid="list-empty-callout" variant="neutral" [title]="emptyMessagePrefix() + '.title' | transloco">
+                {{ emptyMessagePrefix() + '.message' | transloco }}
+            </sgdf-callout>
+        }
+    } @else if (elementPage(); as page) {
+        <sgdf-list [label]="label() ?? (emptyMessagePrefix() + '.title' | transloco)" appearance="text">
+            @for (element of page.content; track element.id) {
+                <ng-container [ngTemplateOutlet]="getTemplate('element')"
+                              [ngTemplateOutletContext]="{ $implicit: element }"/>
+            }
+        </sgdf-list>
+        @if (hasMore()) {
+            <app-load-more data-testid="list-load-more" [loadedCount]="page.content.length" [total]="page.totalElements"
+                           [loading]="loadingMore()" [autoLoad]="!error()" (loadMore)="loadMore()"/>
+        }
+    }
+</section>

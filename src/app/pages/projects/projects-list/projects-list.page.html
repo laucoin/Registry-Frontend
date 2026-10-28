@@ -1,0 +1,170 @@
+<sgdf-page-title [eyebrow]="'projects.list.eyebrow' | transloco"
+                 [lede]="'projects.list.subtitle' | transloco">
+    {{ 'projects.list.title' | transloco }}
+    @if (canCreate()) {
+        <sgdf-button data-testid="projects-list-create-button" slot="actions" variant="primary" [routerLink]="createRoute">
+            <sgdf-icon slot="prefix" name="plus" library="solid"/>
+            {{ 'global.actions.create' | transloco }}
+        </sgdf-button>
+    }
+</sgdf-page-title>
+
+<app-list data-testid="projects-list-list" class="mt-(--spacing--block) block"
+          emptyMessagePrefix="projects.notifications.EMPTY"
+          [elementPage]="facade.projectsPage()"
+          [error]="facade.projectsPageError()"
+          [loading]="facade.projectsPageLoading()"
+          [loadingMore]="facade.projectsPageSilentLoading()"
+          [activeFilters]="activeFilters()"
+          (updateRequired)="loadBatch($event)"
+          (filtersReset)="resetFilters()">
+    <ng-template appTemplate="search">
+        <form data-testid="projects-list-search-form" class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-4"
+              (submit)="$event.preventDefault(); search()">
+            <sgdf-input data-testid="projects-list-q-input" appSgdfField [label]="'projects.search-and-filter.text' | transloco"
+                        [formField]="form.q"/>
+            <sgdf-date-time-picker data-testid="projects-list-at-picker" appSgdfField with-time
+                                   [label]="'projects.search-and-filter.datetime' | transloco"
+                                   [formField]="form.at"/>
+            @if (canSeeHidden()) {
+                <sgdf-select data-testid="projects-list-is-visible-select" appSgdfField [label]="'projects.search-and-filter.visibility' | transloco"
+                             [formField]="form.isVisible">
+                    @for (item of facade.visibilitiesMetadata(); track item.label) {
+                        <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+                    }
+                </sgdf-select>
+            }
+            <sgdf-select data-testid="projects-list-is-favorite-select" appSgdfField [label]="'projects.search-and-filter.favorite' | transloco"
+                         [formField]="form.isFavorite">
+                @for (item of facade.favoritesMetadata(); track item.label) {
+                    <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+                }
+            </sgdf-select>
+            @if (canReadAll()) {
+                <sgdf-select data-testid="projects-list-with-profile-select" appSgdfField [label]="'projects.search-and-filter.with-profile' | transloco"
+                             [formField]="form.withProfile">
+                    @for (item of facade.withProfilesMetadata(); track item.label) {
+                        <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+                    }
+                </sgdf-select>
+            }
+            <div class="flex flex-wrap items-center justify-between gap-(--spacing--in-block) md:col-span-4">
+                <sgdf-button data-testid="projects-list-search-submit" class="ms-auto" variant="primary" appearance="outlined" submit
+                             [loading]="facade.projectsPageLoading()">
+                    <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
+                    {{ 'global.actions.search' | transloco }}
+                </sgdf-button>
+            </div>
+        </form>
+    </ng-template>
+
+    <ng-template appTemplate="element" let-project>
+        @let actions = projectActions.actionsFor(project);
+        @let options = project.options ?? [];
+        <sgdf-list-item data-testid="project-row" [attr.data-id]="project.id" [disabled]="!project.visible">
+            <sgdf-avatar slot="start" shape="rounded" variant="primary"
+                         aria-hidden="true"
+                         [initials]="initials(project)"/>
+            <span class="flex min-w-0 items-center gap-2">
+                <app-favorite-toggle data-testid="projects-list-favorite-toggle" [favorite]="!!project.favorite" [name]="project.name"
+                                     (toggled)="toggleFavorite(project)"/>
+                <span appEllipsis>{{ project.name }}</span>
+            </span>
+            <span slot="description" class="flex flex-wrap items-center gap-x-2">
+                @if (project.begin || project.end) {
+                    <span>{{ project.begin ? (project.begin | customDateFormat) : '...' }}</span>
+                    <sgdf-icon name="arrow-right-long" library="solid"/>
+                    <span>{{ project.end ? (project.end | customDateFormat) : '...' }}</span>
+                } @else {
+                    <span>{{ 'projects.list.permanent' | transloco }}</span>
+                }
+            </span>
+            <span slot="end" class="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <span class="flex flex-wrap items-center gap-2">
+                    @if (!project.visible) {
+                        <sgdf-tag appearance="outlined" variant="neutral" pill>{{ 'projects.visible.false' | transloco }}</sgdf-tag>
+                    }
+                    @if (project.status; as status) {
+                        <sgdf-tag appearance="soft" pill
+                                  [variant]="isAvailable(project) ? 'success' : 'info'">{{ status.label }}</sgdf-tag>
+                    }
+                    @if (options.length > 1) {
+                        <sgdf-button data-testid="projects-list-options-button" size="small" variant="neutral" appearance="outlined"
+                                     (click)="optionsProject.set(project)">
+                            {{
+                                'projects.options' | pluralTranslation: options | transloco: {
+                                    name: options[0].label,
+                                    others: options.length - 1
+                                }
+                            }}
+                            <span class="sr-only">({{ 'projects.options-open' | transloco: { name: project.name } }}
+                                )</span>
+                        </sgdf-button>
+                    } @else {
+                        <sgdf-tag appearance="outlined" variant="neutral" pill>
+                            {{
+                                'projects.options' | pluralTranslation: options | transloco: {
+                                    name: options[0]?.label,
+                                    others: 0
+                                }
+                            }}
+                        </sgdf-tag>
+                    }
+                </span>
+                <span class="flex items-center gap-2 max-sm:basis-full">
+                    @if (projectActions.canJoin(project)) {
+                        <sgdf-button data-testid="projects-list-select-button" size="small" appearance="outlined"
+                                     [variant]="project.visible ? 'primary' : 'neutral'"
+                                     [attr.aria-disabled]="project.visible ? null : 'true'"
+                                     (click)="project.visible ? projectActions.join(project) : hiddenProject.set(project)">
+                            {{ 'projects.actions.select' | transloco }}
+                        </sgdf-button>
+                    } @else if (projectActions.canCreateSupport(project)) {
+                        <sgdf-button data-testid="projects-list-create-support-button" size="small" appearance="outlined"
+                                     [variant]="project.visible ? 'primary' : 'neutral'"
+                                     [attr.aria-disabled]="project.visible ? null : 'true'"
+                                     (click)="project.visible ? projectActions.confirmSupportProfile(project) : hiddenProject.set(project)">
+                            {{ 'projects.actions.create-support' | transloco }}
+                        </sgdf-button>
+                    }
+                </span>
+            </span>
+            <app-element-actions data-testid="projects-list-actions" slot="actions" [subject]="project.name" [actions]="actions"/>
+        </sgdf-list-item>
+    </ng-template>
+
+    <ng-template appTemplate="empty">
+        <section class="flex flex-col items-center gap-(--spacing--in-block-large) p-(--spacing--block) text-center">
+            <h2>{{ 'global.welcome.title' | transloco }}</h2>
+            <app-info/>
+            <p>{{ 'global.welcome.begin' | transloco }}</p>
+            @if (canCreate()) {
+                <sgdf-button data-testid="projects-list-create-project-button" variant="primary" [routerLink]="createRoute">
+                    <sgdf-icon slot="prefix" name="plus" library="solid"/>
+                    {{ 'global.welcome.create-project' | transloco }}
+                </sgdf-button>
+            }
+        </section>
+    </ng-template>
+</app-list>
+
+<sgdf-dialog data-testid="projects-list-options-dialog" light-dismiss
+             [open]="!!optionsProject()"
+             [title]="'projects.options.list' | transloco"
+             (sgdf-hide)="closeDialog($event, optionsProject)">
+    <sgdf-list [label]="'projects.options.list' | transloco" appearance="text">
+        @for (option of optionsProject()?.options; track option.value) {
+            <sgdf-list-item>{{ option.label }}</sgdf-list-item>
+        }
+    </sgdf-list>
+</sgdf-dialog>
+
+<sgdf-dialog data-testid="projects-list-hidden-dialog" light-dismiss
+             [open]="!!hiddenProject()"
+             [title]="'projects.hidden-notice.title' | transloco"
+             (sgdf-hide)="closeDialog($event, hiddenProject)">
+    <p class="m-0">{{ 'projects.hidden-notice.message' | transloco: { name: hiddenProject()?.name } }}</p>
+    <sgdf-button data-testid="projects-list-close-button" slot="footer" variant="warning" (click)="hiddenProject.set(undefined)">
+        {{ 'projects.hidden-notice.close' | transloco }}
+    </sgdf-button>
+</sgdf-dialog>

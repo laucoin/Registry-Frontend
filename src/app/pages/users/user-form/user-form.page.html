@@ -1,0 +1,21 @@
+<app-form-dialog data-testid="user-form-modal" [title]="'users.form.title' | transloco: { firstName: facade.user()?.firstName, lastName: facade.user()?.lastName }"
+                 submitLabel="global.actions.edit"
+                 [loading]="facade.userLoading()"
+                 [saving]="saving()"
+                 [error]="error()"
+                 (submitted)="submit()"
+                 (closed)="navigateToRedirectUri()">
+    @if (loadError(); as error) {
+        <app-section-error data-testid="user-form-error" [error]="error" [retrying]="facade.userLoading()" (retry)="loadData()"/>
+    } @else {
+        <sgdf-select data-testid="user-form-role-select" appSgdfField required
+                     [label]="'users.form.role' | transloco"
+                     [hint]="'users.form.hint.role' | transloco"
+                     [formField]="form.role"
+                     [appFieldError]="form.role" translationPrefix="users.form.error.role">
+            @for (role of facade.assignableRolesMetadata(); track role.value) {
+                <sgdf-option [value]="role.value">{{ role.label }}</sgdf-option>
+            }
+        </sgdf-select>
+    }
+</app-form-dialog>

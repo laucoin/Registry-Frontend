@@ -1,0 +1,7 @@
+<div class="messages" role="log" aria-live="polite" [appConversationScroll]="communications()" (loadOlder)="loadOlder()">
+    @for (communication of communications(); track communication.id; ) {
+        <app-dialog-element [communication]='communication'
+                            [previousAuthorId]='getPreviousAuthorId($index)'
+                            [nextAuthorId]='getNextAuthorId($index)' />
+    }
+</div>

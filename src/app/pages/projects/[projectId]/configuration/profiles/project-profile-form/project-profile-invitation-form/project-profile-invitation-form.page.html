@@ -1,0 +1,12 @@
+<app-form data-testid="project-profile-invitation-form-create-page" [form]="form" [loading]="loading()" [error]="error()"
+          [title]="'project-profiles.form.title.create' | transloco : { name: sessionFacade.selectedProject()?.name }">
+    <form novalidate data-testid="project-profile-invitation-form-submit-form" (submit)="$event.preventDefault(); submit()">
+        <sgdf-card>
+            <app-project-profile-invitation-fields [fields]="form"/>
+        </sgdf-card>
+        <app-form-actions data-testid="project-profile-invitation-form-actions" [submitLabel]="'project-profiles.actions.invite-user' | pluralTranslation: model().users.length"
+                          submitIcon="user-plus"
+                          [saving]="saving()"
+                          (cancelled)="navigateToRedirectUri()"/>
+    </form>
+</app-form>

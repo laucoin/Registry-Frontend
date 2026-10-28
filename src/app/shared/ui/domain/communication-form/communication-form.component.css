@@ -1,0 +1,51 @@
+:host {
+  display: block;
+}
+
+.composer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sgdf-spacing-x-small);
+  font-weight: 400;
+}
+
+.composer-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sgdf-spacing-x-small);
+}
+
+.hint {
+  color: var(--sgdf-color-text-light);
+  font-weight: 400;
+}
+
+sgdf-textarea::part(textarea)::placeholder {
+  font-weight: 400;
+}
+
+.field-label {
+  font-weight: 600;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sgdf-spacing-3x-small);
+}
+
+.field-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sgdf-spacing-x-small);
+}
+
+.field-control {
+  flex: 1;
+  min-width: 0;
+}
+
+sgdf-textarea {
+  flex: 1;
+  min-width: 0;
+}

@@ -1,0 +1,42 @@
+<app-form-dialog data-testid="activity-form-dialog" [title]="'activities.form.title' | formTitle: activity() | transloco : { name: activity()?.name }"
+                 [submitLabel]="activity() | formButton"
+                 [submitIcon]="activity() ? 'pen-to-square' : 'plus'"
+                 [loading]="loading()"
+                 [saving]="saving()"
+                 [error]="error()"
+                 (submitted)="submit()"
+                 (closed)="navigateToRedirectUri()">
+    <sgdf-input data-testid="activity-form-name-input" appSgdfField required
+                [label]="'activities.form.name' | transloco"
+                [placeholder]="'activities.form.placeholder.name' | transloco"
+                [formField]="form.name"
+                [appFieldError]="form.name" translationPrefix="activities.form.error.name"/>
+    <sgdf-textarea data-testid="activity-form-description-textarea" appSgdfField rows="4"
+                   [label]="'activities.form.description' | transloco"
+                   [placeholder]="'activities.form.placeholder.description' | transloco"
+                   [formField]="form.description"
+                   [appFieldError]="form.description" translationPrefix="activities.form.error.description"/>
+    <sgdf-duration-picker data-testid="activity-form-duration-picker" appSgdfField units="hours minutes"
+                          [label]="'activities.form.duration' | transloco"
+                          [formField]="form.duration"/>
+    <div>
+        <app-number-range-field data-testid="activity-form-allowed-participants-field" [formField]="form.allowedParticipants"
+                                inputId="allowed-participants"
+                                [label]="'activities.form.allowed-participants' | transloco"
+                                [minPlaceholder]="'activities.form.placeholder.allowed-min-participants' | transloco"
+                                [maxPlaceholder]="'activities.form.placeholder.allowed-max-participants' | transloco"/>
+        <app-field-error data-testid="activity-form-allowed-participants-error" [field]="form.allowedParticipants" translationPrefix="activities.form.error.allowed-participants"/>
+    </div>
+    <div class="grid gap-[0.75rem] md:grid-cols-2">
+        <sgdf-date-time-picker data-testid="activity-form-begin-date-time-picker" appSgdfField with-time value-format="separate"
+                               [label]="'activities.form.begin-datetime' | transloco"
+                               [hint]="'activities.form.hint.begin-date-time' | transloco"
+                               [formField]="form.beginDateTime"
+                               [appFieldError]="form.beginDateTime" translationPrefix="activities.form.error.begin-datetime"/>
+        <sgdf-date-time-picker data-testid="activity-form-end-date-time-picker" appSgdfField with-time value-format="separate"
+                               [label]="'activities.form.end-datetime' | transloco"
+                               [hint]="'activities.form.hint.end-date-time' | transloco"
+                               [formField]="form.endDateTime"
+                               [appFieldError]="form.endDateTime" translationPrefix="activities.form.error.end-datetime"/>
+    </div>
+</app-form-dialog>

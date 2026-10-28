@@ -1,0 +1,141 @@
+{
+  "eyebrow": "Legal",
+  "back": "Back",
+  "title": "Terms of use",
+  "updatedAt": "Last updated: {{ updatedAt }}",
+  "intro": [
+    "These terms of use (the “ToU”) govern access to and use of Registry (the “Application”), a free tool for managing attendance by project, made available to the members of {{ organizationName }}.",
+    "By signing in to the Application, you acknowledge that you have read these ToU and the privacy policy, and you agree to comply with them."
+  ],
+  "sections": {
+    "publisher": {
+      "title": "1. Publisher",
+      "identityLine": "Registry is published, in a personal and non-professional capacity, by {{ creatorName }}. Contact: <a href=\"mailto:{{ creatorEmail }}\">{{ creatorEmail }}</a>.",
+      "affiliationLine": "Registry was originally designed for the Scouts et Guides de France (SGDF), but the Application is a service offered as SaaS that can be deployed for other organizations: this instance is made available to the members of {{ organizationName }}, which acts as identity provider for sign-in (SSO). Depending on the arrangements specific to this deployment, {{ organizationName }} may also be involved in hosting or technical monitoring of the Application, but this is not systematic; where applicable, these details are communicated by {{ organizationName }} or by the Publisher.",
+      "hostingClause": "The Application is hosted by {{ providerName }}, whose registered office is located at {{ providerAddress }}.",
+      "hostingFallback": "Information about the host is not provided on this page; you can obtain it by writing to <a href=\"mailto:{{ creatorEmail }}\">{{ creatorEmail }}</a>.",
+      "contactLine": "For any question about these ToU, you can write to <a href=\"mailto:{{ creatorEmail }}\">{{ creatorEmail }}</a>."
+    },
+    "definitions": {
+      "title": "2. Definitions",
+      "body": [
+        "For the purposes of these ToU, the following terms have the meaning indicated below:"
+      ],
+      "list": [
+        "“Application”: the Registry service, accessible via the site and the interface described in these ToU.",
+        "“Publisher”: the natural person identified in article 1, responsible for the publication and technical operation of the Application.",
+        "“User”: any person with an Account, who signs in to the Application through their {{ organizationName }} account.",
+        "“Account”: a User’s personal access to the Application, associated with their {{ organizationName }} identity (identifier, email address, first name, last name).",
+        "“Project”: a space created in the Application by one or more Users to track the attendance of Participants at an activity, a camp or any other activity of {{ organizationName }}.",
+        "“Project Manager”: the User who creates and administers a Project, as well as any person they authorize to enter data in it.",
+        "“Participant”: any person whose attendance at a Project is recorded by a User (last name, first name, date of birth, attendance), whether or not they have an Account themselves. Depending on the organization, Participants may be minors supervised as part of the activities of {{ organizationName }}."
+      ]
+    },
+    "acceptance": {
+      "title": "3. Acceptance of the ToU",
+      "body": [
+        "Creating or using an Account constitutes full and unreserved acceptance of these ToU. If you do not accept these ToU, you must not use the Application."
+      ]
+    },
+    "access": {
+      "title": "4. Access to the service",
+      "body": [
+        "Access to the Application is reserved for people with a valid {{ organizationName }} account: sign-in is done exclusively through the single sign-on (SSO) provided by {{ organizationName }}; the Publisher manages neither passwords nor direct registration.",
+        "The Publisher reserves the right to suspend or remove a User’s access in the event of use contrary to these ToU."
+      ]
+    },
+    "description": {
+      "title": "5. Description of the service",
+      "body": [
+        "Registry allows Users to create Projects and record in them the check-ins and check-outs (attendance) of Participants at activities of {{ organizationName }}. These records form a register intended to ensure the traceability of attendance, in particular to reconstruct the course of events in the event of an incident (accident, assault, or any other need for evidence). The Application is provided free of charge, with no financial consideration or subscription."
+      ]
+    },
+    "roles": {
+      "title": "6. Allocation of responsibilities for personal data",
+      "body": [
+        "Using the Application involves processing two categories of personal data, for which responsibility under the General Data Protection Regulation (GDPR) is allocated differently:",
+        "For Account data ({{ organizationName }} identifier, email, first name, last name), the Publisher acts as data controller: it determines the purposes and means of this processing, and it is the one to be contacted to exercise rights relating to this data.",
+        "For Participant data entered in a Project, the Project Manager acts as data controller: they decide to enter this data, and must make sure they have a legal basis and, where applicable, the information or consent of the legal guardians of minor Participants. The Publisher acts in this case only as a processor, within the meaning of Article 28 of the GDPR: it provides the technical tool and uses this data only on the instructions of the Project Manager, solely for the operation of the Application.",
+        "These principles are detailed in the privacy policy, which you should refer to in order to understand precisely how your data, and that of the Participants you enter, is processed."
+      ]
+    },
+    "commitments": {
+      "title": "7. User commitments",
+      "body": [
+        "By using the Application, every User agrees to:"
+      ],
+      "list": [
+        "use the Application only in the context of legitimate activities of {{ organizationName }}, and not for personal purposes or purposes unrelated to that use;",
+        "enter accurate and up-to-date data about Participants;",
+        "keep their access confidential and not share their Account with a third party;",
+        "as a Project Manager, comply with the GDPR for the Participant data they enter, in particular making sure they have the necessary legal basis and, where applicable, informing the legal guardians of the minor Participants concerned;",
+        "not divert the Application from its purpose, nor attempt to compromise its operation or security."
+      ]
+    },
+    "minors": {
+      "title": "8. Particular attention to minors",
+      "body": [
+        "Depending on the organization, the Participants recorded in the Application may be minors. In this case, the Publisher has no direct contact with Participants nor, where applicable, with their legal guardians: it is for the Project Manager, in the course of their role within {{ organizationName }}, to make sure they have the authorization or legal basis needed to enter this data, and to inform the families concerned.",
+        "If you are yourself a minor and have an Account (for example as a young leader), use of the Application must take place under the supervision of responsible adults within {{ organizationName }}."
+      ]
+    },
+    "ip": {
+      "title": "9. Intellectual property",
+      "body": [
+        "The Application, its code, its structure and its interface are the property of the Publisher, except for elements belonging to third parties (in particular the brand and visual identity elements of {{ organizationName }}, which remain the property of {{ organizationName }}).",
+        "The source code of the Application is published on GitHub (<a href=\"https://github.com/laucoin/Registry-Frontend\" target=\"_blank\" rel=\"noopener noreferrer\">github.com/laucoin/Registry-Frontend</a>) under a license specific to the Publisher, the “Registry Source-Available License”, which can be consulted in the <a href=\"https://github.com/laucoin/Registry-Frontend/blob/main/LICENSE\" target=\"_blank\" rel=\"noopener noreferrer\">LICENSE</a> file of the repository, and which prevails in the event of any discrepancy with this article. Publishing the source code does not amount to making it available as open source: it authorizes neither its redistribution as an independent project, nor its presentation as one’s own creation, nor the creation of a derivative or competing project, subject to the permissions expressly granted by this license.",
+        "Any unauthorized reproduction or exploitation of the Application, its code or the elements referred to above is prohibited."
+      ]
+    },
+    "availability": {
+      "title": "10. Availability of the service",
+      "body": [
+        "The Application is a free project, developed and maintained on a personal basis. It is provided “as is”, with no guarantee of continuous availability, performance or absence of errors. The Publisher endeavors to provide a quality service, within the limits of their means, but may interrupt, modify or evolve the Application at any time, including for maintenance reasons."
+      ]
+    },
+    "liability": {
+      "title": "11. Limitation of liability",
+      "body": [
+        "As the Application is provided free of charge by an individual publisher, their liability can only be engaged in the event of proven fault, and within what can reasonably be expected of a volunteer project of this nature.",
+        "The Publisher is not responsible for the accuracy, lawfulness or appropriateness of the data entered by Users, nor for the consequences resulting from a use of the Application that does not comply with these ToU."
+      ]
+    },
+    "retention": {
+      "title": "12. Data retention and deletion",
+      "body": [
+        "The data retention arrangements are detailed in the privacy policy. In summary:",
+        "a Participant’s data (identity and attendance) is kept for a minimum of 12 months from their last recorded activity (last attendance or, failing that, creation of the Participant): this period cannot be shortened on request, including by the Project Manager, because it corresponds to the very purpose of the register described in article 5 (traceability of attendance in the event of an incident);",
+        "a Project that has remained inactive for 12 months is then automatically deleted, along with all the Participant data it contains;",
+        "within a Project that has remained active, a Participant who has remained inactive for 12 months (no attendance recorded for them) is also deleted individually, once the 12-month minimum period mentioned above has elapsed;",
+        "attendance, alerts and communications, as well as empty vehicles, activities and groups, are automatically deleted 12 months after their last modification, to avoid keeping data that has become inconsistent;",
+        "an Account that has remained inactive (no sign-in) for 12 months is automatically deleted, unless it is the last administrator of the Application or the sole administrator of a Project."
+      ]
+    },
+    "accountDeletion": {
+      "title": "13. Account deletion",
+      "body": [
+        "You can request the deletion of your Account at any time, in particular from within the Application when this feature is available, or by writing to <a href=\"mailto:{{ creatorEmail }}\">{{ creatorEmail }}</a>.",
+        "If you are the sole administrator of one or more Projects, your Account cannot be deleted until you have appointed another administrator for each of these Projects, or deleted these Projects yourself: this prerequisite prevents a Project shared with other Users from being left without an administrator and therefore unusable.",
+        "Deleting your Account does not automatically delete the Projects you created nor the Participant data they contain, for which you remain responsible as Project Manager as long as they exist. Deleting an Account is final: no data from this Account is kept in anonymized form."
+      ]
+    },
+    "changes": {
+      "title": "14. Changes to the ToU",
+      "body": [
+        "The Publisher may modify these ToU at any time, in particular to reflect legal or functional changes. The date of the last update appears at the top of this page. In the event of a substantial change, Users will be informed as far as possible."
+      ]
+    },
+    "law": {
+      "title": "15. Governing law and disputes",
+      "body": [
+        "These ToU are governed by French law. In the event of a dispute, and failing an amicable resolution, only the competent French courts shall have jurisdiction."
+      ]
+    },
+    "contact": {
+      "title": "16. Contact",
+      "body": [
+        "For any question about the Application or these ToU, contact the Publisher at <a href=\"mailto:{{ creatorEmail }}\">{{ creatorEmail }}</a>."
+      ]
+    }
+  }
+}

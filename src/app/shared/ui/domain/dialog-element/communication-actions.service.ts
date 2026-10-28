@@ -1,0 +1,62 @@
+import { inject, Injectable } from '@angular/core'
+import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
+import { ElementActionsBase, ElementActionSpec } from '@shared/helpers/facade/element-actions.base'
+import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
+import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
+import { CommunicationModel } from '@shared/models/model/communication.model'
+
+/**
+ * Purpose: Indique quelles commandes une communication offre à l'utilisateur connecté et les exécute.
+ * Scope: Construit le menu d'actions (modifier, masquer, réafficher, supprimer) avec ses confirmations.
+ * Limits: Ne détient aucun état ; lit seulement la session et appelle la facade des communications. Le backend vérifie toujours chaque commande.
+ */
+@Injectable()
+export class CommunicationActions extends ElementActionsBase<CommunicationModel> {
+    protected readonly translationPrefix: string = 'communications'
+
+    private readonly facade: CommunicationFacade = inject(CommunicationFacade)
+
+    protected specsFor(communication: CommunicationModel): ElementActionSpec[] {
+        return [this.editSpec(communication), this.hideSpec(communication), this.showSpec(communication), this.deleteSpec(communication)]
+    }
+
+    private editSpec(communication: CommunicationModel): ElementActionSpec {
+        return {
+            id: 'edit',
+            icon: 'pen-to-square',
+            shown: true,
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_U),
+            run: (): void => this.facade.fetchCommunication(communication.id),
+        }
+    }
+
+    private hideSpec(communication: CommunicationModel): ElementActionSpec {
+        return {
+            id: 'disable',
+            icon: 'eye-slash',
+            shown: communication.visible,
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_U),
+            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.disableCommunication(communication.id)) },
+        }
+    }
+
+    private showSpec(communication: CommunicationModel): ElementActionSpec {
+        return {
+            id: 'enable',
+            icon: 'rotate-right',
+            shown: !communication.visible,
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_D),
+            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.enableCommunication(communication.id)) },
+        }
+    }
+
+    private deleteSpec(communication: CommunicationModel): ElementActionSpec {
+        return {
+            id: 'delete',
+            icon: 'trash',
+            shown: true,
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_D),
+            confirmation: { severity: SeverityEnum.DANGER, accept: (): void => this.run(this.facade.deleteCommunication(communication)) },
+        }
+    }
+}

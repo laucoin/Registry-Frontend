@@ -1,0 +1,57 @@
+<sgdf-page-title [eyebrow]="'projectEyebrow.configuration' | transloco" [lede]="'vehicles.list.subtitle' | transloco">
+    {{ 'vehicles.list.title' | transloco }}
+    @if (canCreate()) {
+        <sgdf-button data-testid="vehicles-list-create-button" slot="actions" variant="primary" [routerLink]="createRoute">
+            <sgdf-icon slot="prefix" name="plus" library="solid"/>
+            {{ 'global.actions.create' | transloco }}
+        </sgdf-button>
+    }
+</sgdf-page-title>
+
+<app-vehicle-row #row/>
+
+<app-list data-testid="vehicles-list-list" class="mt-(--spacing--block) block"
+          emptyMessagePrefix="vehicles.notifications.EMPTY"
+          [elementPage]="facade.vehiclesPage()"
+          [error]="facade.vehiclesPageError()"
+          [loading]="facade.vehiclesPageLoading()"
+          [loadingMore]="facade.vehiclesPageSilentLoading()"
+          [activeFilters]="activeFilters()"
+          (updateRequired)="loadBatch($event)"
+          (filtersReset)="resetFilters()">
+    <ng-template appTemplate="search">
+        <form data-testid="vehicles-list-search-form" class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
+              (submit)="$event.preventDefault(); search()">
+            <sgdf-input data-testid="vehicles-list-q-input" appSgdfField [label]="'vehicles.search-and-filter.text' | transloco"
+                        [formField]="form.q"/>
+            <sgdf-date-time-picker data-testid="vehicles-list-at-picker" appSgdfField with-time
+                                   [label]="'vehicles.search-and-filter.datetime' | transloco"
+                                   [formField]="form.at"/>
+            <sgdf-select data-testid="vehicles-list-status-select" appSgdfField [label]="'vehicles.search-and-filter.availability' | transloco"
+                         [formField]="form.status">
+                @for (item of facade.presencesStatusMetadata(); track item.label) {
+                    <sgdf-option [value]="item.value ?? ''">{{ item.label }}</sgdf-option>
+                }
+            </sgdf-select>
+            <sgdf-select *appIfProjectAuthority="hiddenAuthority" data-testid="vehicles-list-is-visible-select" appSgdfField [label]="'vehicles.search-and-filter.visibility' | transloco"
+                         [formField]="form.isVisible">
+                @for (item of facade.visibilitiesMetadata(); track item.label) {
+                    <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+                }
+            </sgdf-select>
+            <div class="flex justify-end md:col-span-2">
+                <sgdf-button data-testid="vehicles-list-search-submit" variant="primary" appearance="outlined" submit
+                             [loading]="facade.vehiclesPageLoading()">
+                    <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
+                    {{ 'global.actions.search' | transloco }}
+                </sgdf-button>
+            </div>
+        </form>
+    </ng-template>
+
+    <ng-template appTemplate="element" let-vehicle>
+        <ng-container [ngTemplateOutlet]="row.template()" [ngTemplateOutletContext]="{ $implicit: vehicle }"/>
+    </ng-template>
+</app-list>
+
+<router-outlet/>

@@ -1,0 +1,12 @@
+<div class="flex flex-col items-center gap-(--spacing--in-block)">
+    <small class="opacity-80">
+        {{ 'global.list.loaded-count' | transloco: { count: loadedCount(), total: total() } }}
+    </small>
+    <span class="sr-only" role="status">
+        {{ 'global.list.loaded-count' | transloco: { count: loadedCount(), total: total() } }}
+    </span>
+    <div #sentinel aria-hidden="true" class="h-px w-full"></div>
+    <sgdf-button data-testid="load-more-load-more-button" appearance="outlined" [loading]="loading()" (click)="loadMore.emit()">
+        {{ 'global.list.load-more' | transloco }}
+    </sgdf-button>
+</div>

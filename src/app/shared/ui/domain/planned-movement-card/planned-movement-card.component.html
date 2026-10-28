@@ -1,0 +1,52 @@
+<sgdf-table class="h-full [&::part(grid)]:h-full [&::part(grid)]:table-fixed" appearance="soft">
+    <sgdf-table-row class="h-px">
+        <sgdf-table-cell header class="flex items-center gap-1">
+            <sgdf-icon [name]="icon()" library="solid"/>
+            <h2 class="text-sm font-semibold uppercase">{{ titleKey() | transloco }}</h2>
+            @if (total() !== undefined) {
+                <sgdf-tag class="ml-auto" size="small" variant="info" appearance="soft">
+                    {{ totalKey() | pluralTranslation: total() | transloco: { count: total() } }}
+                </sgdf-tag>
+            }
+        </sgdf-table-cell>
+    </sgdf-table-row>
+
+    <sgdf-table-row>
+        <sgdf-table-cell class="h-full p-0 align-top">
+            @if (error(); as failure) {
+                <app-section-error data-testid="planned-movement-card-error" [error]="failure" [retrying]="loading()" (retry)="retry.emit()"/>
+            }
+
+            @if (loading() && total() === undefined) {
+                <app-skeleton-list [rows]="3"/>
+            } @else if (total() === 0) {
+                <p class="m-4 text-sm opacity-80">{{ emptyKey() | transloco }}</p>
+            } @else if (total() !== undefined) {
+                <sgdf-list appearance="text" [label]="titleKey() | transloco">
+                    @for (row of rows(); track row.key) {
+                        <sgdf-list-item data-testid="planned-movement-card-row" [class.cursor-pointer]="clickable()" (click)="open(row.movement)">
+                            <sgdf-avatar slot="start" aria-hidden="true" [variant]="rowVariant()">
+                                <sgdf-icon slot="icon" [name]="rowIcon()" library="solid"/>
+                            </sgdf-avatar>
+                            {{ row.title }}
+                            <span slot="description" class="text-xs">
+                                {{ 'projectHome.plannedMovement.people' | pluralTranslation: row.count | transloco: { count: row.count } }}
+                                @if (row.detail) {
+                                    · {{ row.detail }}
+                                }
+                            </span>
+                            @if (row.time) {
+                                <strong slot="end" class="text-base">{{ row.time | customDateFormat }}</strong>
+                            }
+                        </sgdf-list-item>
+                    }
+                </sgdf-list>
+                @if (remaining() > 0) {
+                    <p class="m-0 px-4 pb-3 text-xs opacity-80">
+                        {{ 'projectHome.plannedMovement.more' | pluralTranslation: remaining() | transloco: { count: remaining() } }}
+                    </p>
+                }
+            }
+        </sgdf-table-cell>
+    </sgdf-table-row>
+</sgdf-table>

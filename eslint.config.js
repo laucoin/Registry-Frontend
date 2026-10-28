@@ -63,6 +63,14 @@ module.exports = tsEslint.config(
         },
     },
     {
+        // Les stores et features @ngrx/signals reposent sur des types inférés ; les annoter n'apporte rien.
+        files: [ '**/*.store.ts', 'src/app/shared/helpers/store/*.feature.ts' ],
+        rules: {
+            '@typescript-eslint/typedef': 'off',
+            '@typescript-eslint/explicit-function-return-type': 'off',
+        },
+    },
+    {
         files: [ '**/*.html' ],
         extends: [
             ...angular.configs.templateRecommended,

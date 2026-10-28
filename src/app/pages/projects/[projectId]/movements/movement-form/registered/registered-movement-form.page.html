@@ -1,0 +1,162 @@
+<app-form data-testid="registered-movement-form-page" [form]="form"
+          [loading]="loading()"
+          [error]="error()"
+          [title]="('movements.form.title' | formTitle: movement()) + '.' + (model().information.type || 'none') | transloco : {
+              datetime: movement()?.dateTime | dateFormat: 'datetime'
+          }">
+    <sgdf-stepper data-testid="registered-movement-form-stepper" linear [active]="'step-' + activeTab()" [label]="'movements.form.title.information' | transloco">
+        <sgdf-step name="step-1" [completed]="activeTab() > 1">{{ 'movements.form.title.information' | transloco }}</sgdf-step>
+        <sgdf-step name="step-2" [completed]="activeTab() > 2">{{ 'movements.form.title.content' | transloco }}</sgdf-step>
+        @if (vehicleStep()) {
+            <sgdf-step name="step-3">{{ 'movements.form.title.vehicle' | transloco }}</sgdf-step>
+        }
+    </sgdf-stepper>
+
+    @if (activeTab() === 1) {
+        <form novalidate data-testid="registered-movement-form-information-form" class="mt-[1rem]" (submit)="$event.preventDefault(); nextFromInformation()">
+            <sgdf-card>
+                <div class="grid gap-[0.75rem] md:grid-cols-2">
+                    <sgdf-date-time-picker data-testid="registered-movement-form-date-time-picker" appSgdfField with-time required
+                                           [label]="'movements.form.datetime' | transloco"
+                                           [formField]="form.information.dateTime"
+                                           [appFieldError]="form.information.dateTime" translationPrefix="movements.form.error.datetime"/>
+                    <sgdf-select data-testid="registered-movement-form-type-select" appSgdfField required
+                                 [label]="'movements.form.type' | transloco"
+                                 [placeholder]="'movements.form.placeholder.type' | transloco"
+                                 [formField]="form.information.type"
+                                 [appFieldError]="form.information.type" translationPrefix="movements.form.error.type"
+                                 (change)="handleTypeChange($event)">
+                        @for (type of facade.movementTypesMetadata(); track type.value) {
+                            @if (type.value) {
+                                <sgdf-option [value]="type.value">{{ type.label }}</sgdf-option>
+                            }
+                        }
+                    </sgdf-select>
+                </div>
+            </sgdf-card>
+            <div class="flex items-center justify-between pt-[1rem]">
+                <sgdf-button data-testid="registered-movement-form-information-cancel-button" variant="neutral" appearance="text" (click)="navigateToRedirectUri()">
+                    {{ 'global.actions.cancel' | transloco }}
+                </sgdf-button>
+                <sgdf-button data-testid="registered-movement-form-information-next-submit" variant="primary" appearance="outlined" submit>
+                    {{ 'global.actions.next' | transloco }}
+                    @if (!uiFacade.tinyScreen()) {
+                        <sgdf-icon slot="suffix" name="arrow-right" library="solid"/>
+                    }
+                </sgdf-button>
+            </div>
+        </form>
+    } @else if (activeTab() === 2) {
+        <form novalidate data-testid="registered-movement-form-content-form" class="mt-[1rem]" (submit)="$event.preventDefault(); nextFromContent()">
+            <sgdf-card>
+                <div class="flex flex-col gap-[0.75rem]">
+                    @if (reasonRequired()) {
+                        <sgdf-select data-testid="registered-movement-form-reason-select" with-search without-filter with-clear required
+                                     [label]="'movements.form.reason.name' | transloco"
+                                     [placeholder]="'movements.form.placeholder.reason' | transloco"
+                                     [attr.no-results-label]="'movements.form.reason.empty-search' | transloco"
+                                     [value]="reasonKeyOf(model().content.reason)"
+                                     [appFieldError]="form.content.reason" translationPrefix="movements.form.error.reason"
+                                     (sgdf-show)="handleReasonSearch('')"
+                                     (sgdf-search)="handleReasonSearch($any($event).detail.query)"
+                                     (change)="handleReasonChoice($event)">
+                            @for (option of reasonOptions(); track reasonKeyOf(option)) {
+                                <sgdf-option [value]="reasonKeyOf(option)">{{ option.label }}</sgdf-option>
+                            }
+                        </sgdf-select>
+                        <sgdf-divider/>
+                    }
+                    <div>
+                        <h2 class="section-title">{{ 'movements.form.content.registered' | pluralTranslation: model().content.participants | transloco }}</h2>
+                        <app-select-elements-field data-testid="registered-movement-form-participants-field" [formField]="form.content.participants" [appFieldError]="form.content.participants" translationPrefix="movements.form.error.participantContent"
+                                                   [label]="'movements.form.content.registered.search' | transloco"
+                                                   [suggestions]="suggestions()"
+                                                   [expand]="contentOfChoice"
+                                                   [identify]="identifyContent"
+                                                   [groupOf]="groupOfContent"
+                                                   [groupLabel]="groupLabel"
+                                                   [ungroupedLabel]="'movements.form.content.registered.individual' | transloco"
+                                                   [warningOf]="participantWarning"
+                                                   [selectItemBuilder]="contentLabel"
+                                                   [selectionLabel]="'movements.form.content.registered.selected' | pluralTranslation: model().content.participants | transloco"
+                                                   [emptyMessage]="'movements.form.content.registered.empty-search' | transloco"
+                                                   [emptySelectionMessage]="'movements.form.content.registered.empty' | transloco"
+                                                   (handleSearch)="handleParticipantsAndGroupsSearch($event)"/>
+                    </div>
+                </div>
+            </sgdf-card>
+            <div class="flex items-center justify-between pt-[1rem]">
+                <sgdf-button data-testid="registered-movement-form-content-previous-button" variant="neutral" appearance="text" (click)="goTo(1)">
+                    <sgdf-icon slot="prefix" name="arrow-left" library="solid"/>
+                    {{ 'global.actions.previous' | transloco }}
+                </sgdf-button>
+                <sgdf-button data-testid="registered-movement-form-content-next-submit" variant="primary" submit [loading]="saving()">
+                    @if (vehicleStep()) {
+                        {{ 'global.actions.next' | transloco }}
+                        @if (!uiFacade.tinyScreen()) {
+                            <sgdf-icon slot="suffix" name="arrow-right" library="solid"/>
+                        }
+                    } @else {
+                        @if (!uiFacade.tinyScreen()) {
+                            <sgdf-icon slot="prefix" [name]="movement() ? 'pen-to-square' : 'plus'" library="solid"/>
+                        }
+                        {{ movement() | formButton | transloco }}
+                    }
+                </sgdf-button>
+            </div>
+        </form>
+    } @else {
+        <form novalidate data-testid="registered-movement-form-vehicles-form" class="mt-[1rem]" (submit)="$event.preventDefault(); submit()">
+            <sgdf-card>
+                <div class="flex flex-col gap-[0.75rem]">
+                    <sgdf-select data-testid="registered-movement-form-vehicle-select" with-search without-filter
+                                 [label]="'movements.form.vehicles.search' | transloco"
+                                 [attr.no-results-label]="'movements.form.vehicles.empty-search' | transloco"
+                                 (sgdf-show)="handleVehicleSearch('')"
+                                 (sgdf-search)="handleVehicleSearch($any($event).detail.query)"
+                                 (change)="handleVehicleChoice($event)">
+                        @for (option of facade.searchedVehicleMetadata(); track option.value.id) {
+                            <sgdf-option [value]="option.value.id">{{ VehicleHelper.toSelectItem(option.value).label }}</sgdf-option>
+                        }
+                    </sgdf-select>
+                    <h2 class="section-title">{{ 'movements.form.vehicles.selected' | pluralTranslation: model().vehicles | transloco }}</h2>
+                    @for (item of form.vehicles; track $index) {
+                        <div class="grid items-start gap-[0.75rem] md:grid-cols-[1fr_1fr_auto]">
+                            <div class="flex items-center gap-[0.5rem]">
+                                {{ VehicleHelper.toSelectItem(item.vehicle().value()).label }}
+                                @if (vehicleWarning(item.vehicle().value()); as warning) {
+                                    <sgdf-tag variant="warning">{{ warning }}</sgdf-tag>
+                                }
+                            </div>
+                            <sgdf-select data-testid="registered-movement-form-driver-select" required
+                                         [label]="'movements.form.driver.title' | transloco"
+                                         [attr.no-results-label]="'movements.form.driver.empty' | transloco"
+                                         [value]="item.driver().value()?.id ?? ''"
+                                         [appFieldError]="item.driver" translationPrefix="movements.form.error.driver"
+                                         (change)="handleDriverChoice($index, $event)">
+                                @for (driver of drivers(); track driver.value.id) {
+                                    <sgdf-option [value]="driver.value.id">{{ driver.label }}</sgdf-option>
+                                }
+                            </sgdf-select>
+                            <sgdf-icon-button data-testid="registered-movement-form-remove-vehicle-button" name="xmark" library="solid"
+                                              [attr.label]="'global.actions.remove' | transloco"
+                                              (click)="removeVehicle($index)"/>
+                        </div>
+                    } @empty {
+                        <p class="m-0 text-sm">{{ 'movements.form.vehicles.empty' | transloco }}</p>
+                    }
+                </div>
+            </sgdf-card>
+            <div class="flex items-center justify-between pt-[1rem]">
+                <sgdf-button data-testid="registered-movement-form-vehicles-previous-button" variant="neutral" appearance="text" (click)="goTo(2)">
+                    <sgdf-icon slot="prefix" name="arrow-left" library="solid"/>
+                    {{ 'global.actions.previous' | transloco }}
+                </sgdf-button>
+                <sgdf-button data-testid="registered-movement-form-submit" variant="primary" submit [loading]="saving()">
+                    <sgdf-icon slot="prefix" [name]="movement() ? 'pen-to-square' : 'plus'" library="solid"/>
+                    {{ movement() | formButton | transloco }}
+                </sgdf-button>
+            </div>
+        </form>
+    }
+</app-form>

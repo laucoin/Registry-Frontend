@@ -1,0 +1,22 @@
+import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
+import { GenericResponseDto } from '@shared/models/dto/response/generic.response.dto'
+import { GroupResponseDto } from '@shared/models/dto/response/group.response.dto'
+import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
+import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
+import { UserResponseDto } from '@shared/models/dto/response/user.response.dto'
+
+export interface ParticipantResponseDto extends GenericResponseDto {
+    firstName: string
+    lastName: string
+    birthday: string
+    major: boolean
+    type: SelectOptionModel<ParticipantTypeEnum>
+    groups: GroupResponseDto[] | undefined
+    status: SelectOptionModel<PresenceStatusEnum>
+    startAvailability: CustomDatetimeModel | undefined
+    endAvailability: CustomDatetimeModel | undefined
+    effectiveArrival: Date | undefined
+    effectiveDeparture: Date | undefined
+    user: UserResponseDto | undefined
+}

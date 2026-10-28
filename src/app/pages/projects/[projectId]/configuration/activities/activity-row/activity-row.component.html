@@ -1,0 +1,44 @@
+<ng-template #row let-activity>
+    <sgdf-list-item data-testid="activity-row" [attr.data-id]="activity.id" [disabled]="!activity.visible">
+        <sgdf-avatar slot="start" variant="primary" shape="rounded" aria-hidden="true" [initials]="initials(activity)"/>
+        <span appEllipsis>{{ title(activity) }}</span>
+        <span slot="description" class="flex flex-wrap items-center gap-x-3">
+            @if (activity.duration; as duration) {
+                <span class="inline-flex items-center gap-1">
+                    <sgdf-icon name="hourglass-half" library="solid"/>
+                    {{ duration.label }}
+                </span>
+            }
+            @if (participantsRange(activity); as range) {
+                <span class="inline-flex items-center gap-1">
+                    <sgdf-icon name="users" library="solid"/>
+                    {{ range }}
+                </span>
+            }
+            @if (activity.startAvailability || activity.endAvailability) {
+                <span class="inline-flex flex-wrap items-center gap-x-2">
+                    <span>{{ activity.startAvailability ? (activity.startAvailability | customDateFormat) : '...' }}</span>
+                    <sgdf-icon name="arrow-right-long" library="solid"/>
+                    <span>{{ activity.endAvailability ? (activity.endAvailability | customDateFormat) : '...' }}</span>
+                </span>
+            }
+        </span>
+        <span slot="end" class="flex flex-wrap items-center gap-2">
+            @if (!activity.visible) {
+                <sgdf-tag appearance="outlined" variant="neutral" pill>{{ 'activities.visible.false' | transloco }}</sgdf-tag>
+            }
+            @if (activity.status; as status) {
+                <sgdf-tag appearance="soft" pill [variant]="statusVariant(activity)">{{ status.label }}</sgdf-tag>
+            }
+            @if (actions.primaryFor(activity); as primary) {
+                <sgdf-button data-testid="activity-row-button" size="small" appearance="outlined" variant="primary"
+                             [attr.aria-disabled]="primary.disabled ? 'true' : null"
+                             (click)="primary.disabled ? null : primary.run()">
+                    <sgdf-icon slot="prefix" [name]="primary.icon" library="solid"/>
+                    {{ primary.label | transloco }}
+                </sgdf-button>
+            }
+        </span>
+        <app-element-actions data-testid="activity-row-actions" slot="actions" [subject]="title(activity)" [actions]="actions.menuFor(activity)"/>
+    </sgdf-list-item>
+</ng-template>

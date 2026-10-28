@@ -1,0 +1,50 @@
+import { GenericHelper } from '@shared/helpers/generic.helper'
+
+/**
+ * Purpose: Utilitaires de chaînes.
+ * Scope: Invalidation de cache, troncature, vérifications de blancs, conversion de nombres, remplissage de chiffres et casse de titre.
+ * Limits: Aucune traduction et aucun accès au navigateur.
+ */
+export class StringHelper {
+    public static addCacheBustingToUrl (url: string): string {
+        const separator: string = url.includes( '?' ) ? '&' : '?'
+        return `${url}${separator}cache-bust=${Math.random()}`
+    }
+
+    public static truncate (text: string | undefined, maxLength: number, tail?: string): string {
+        if (GenericHelper.isNull( text )) return ''
+        if (text!.length > maxLength) return text!.substring( 0, maxLength ) + (tail ?? '')
+        return text!
+    }
+
+    public static isBlank (text: string | undefined): boolean {
+        if (GenericHelper.isNull( text )) return false
+        return text!.trim().length === 0
+    }
+
+    public static isNullOrBlank (text: string | undefined): boolean {
+        return GenericHelper.isNull( text ) || text!.trim().length === 0
+    }
+
+    public static isNotNullNorBlank (text: string | undefined): boolean {
+        return !this.isNullOrBlank( text )
+    }
+
+    public static toNumber (value: number | string | null | undefined): number | undefined {
+        switch (true) {
+            case GenericHelper.isNull( value ):
+                return undefined
+            case typeof value == 'string': {
+                const parsed: number = Number.parseFloat( value as string )
+                return Number.isNaN( parsed ) ? undefined : parsed
+            }
+            default:
+                return value!
+        }
+    }
+
+    public static formatDigits (value: number, range: number): string {
+        return value.toString().padStart( range, '0' )
+    }
+
+}

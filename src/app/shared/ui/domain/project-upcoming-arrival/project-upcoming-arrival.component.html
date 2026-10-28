@@ -1,0 +1,11 @@
+<app-planned-movement-card class="block h-full"
+                           titleKey="projectHome.upcomingArrival.title"
+                           totalKey="projectHome.upcomingArrival.total"
+                           emptyKey="projectHome.upcomingArrival.empty"
+                           icon="plane-arrival"
+                           rowIcon="arrow-right-to-bracket"
+                           rowVariant="success"
+                           [movements]="movements()"
+                           [loading]="loading()"
+                           [error]="error()"
+                           (retry)="reload()"/>

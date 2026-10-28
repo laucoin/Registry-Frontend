@@ -1,0 +1,75 @@
+<sgdf-navbar [torn]="!uiFacade.tinyScreen()" [label]="'navbar.label.main' | transloco" [attr.subnav-label]="'navbar.label.project' | transloco">
+    <a data-testid="navbar-home-link" slot="brand" [routerLink]="RegistryRouteEnum.HOME"
+       [attr.aria-label]="application.name"
+       class="flex items-center gap-3 no-underline!">
+        <sgdf-icon class="text-3xl [--picto-color:white]" name="logo-symbole" library="sgdf-picto"/>
+        <ng-container [ngTemplateOutlet]="title"
+                      [ngTemplateOutletContext]="{ $implicit: application.name, subTitle: application.organization }"/>
+    </a>
+
+    @if (selectedProject(); as project) {
+        <div slot="context" class="flex min-w-0 items-center gap-3 text-white">
+            <span class="hidden opacity-60 md:block" aria-hidden="true">/</span>
+            <span class="sr-only">{{ 'navbar.context.project' | transloco }}</span>
+            <a data-testid="navbar-project-home-link" [routerLink]="projectHomeUrl()" class="min-w-0 text-white! no-underline!">
+                <strong class="block max-w-64 truncate" [attr.title]="project.name">{{ project.name }}</strong>
+            </a>
+        </div>
+    }
+
+    @for (menu of appMenus(); track menu.url) {
+        <ng-container [ngTemplateOutlet]="navItem" [ngTemplateOutletContext]="{ $implicit: menu, slot: 'end' }"/>
+    }
+
+
+    @for (menu of projectMenus(); track menu.url) {
+        <ng-container [ngTemplateOutlet]="navItem" [ngTemplateOutletContext]="{ $implicit: menu, slot: 'subnav' }"/>
+    }
+    @if (currentUser(); as user) {
+        <sgdf-menu slot="actions" placement="bottom-end">
+            <button data-testid="navbar-account-menu-button" slot="trigger"
+                    type="button"
+                    class="flex cursor-pointer items-center gap-3 border-0 bg-transparent p-0 text-left font-[inherit] text-inherit"
+                    [attr.aria-label]="'navbar.user.menu' | transloco: { name: userFullName() }">
+                <sgdf-avatar [attr.initials]="userInitials()" variant="info" appearance="solid"/>
+                <span class="hidden min-w-0 max-w-56 flex-col md:flex">
+                    <strong class="truncate" [attr.title]="userFullName()">{{ userFullName() }}</strong>
+                    @if (user.role?.label; as roleLabel) {
+                        <small class="truncate text-xs opacity-80" [attr.title]="roleLabel">{{ roleLabel }}</small>
+                    }
+                </span>
+                <sgdf-icon name="chevron-down" library="solid"/>
+            </button>
+            @for (menu of userMenus(); track menu.url) {
+                <ng-container [ngTemplateOutlet]="menuItem" [ngTemplateOutletContext]="{ $implicit: menu }"/>
+            }
+            <sgdf-divider/>
+            <ng-container [ngTemplateOutlet]="menuItem"
+                          [ngTemplateOutletContext]="{ $implicit: logoutMenu, variant: 'danger', action: logout }"/>
+        </sgdf-menu>
+    }
+</sgdf-navbar>
+
+<ng-template #title let-title let-subTitle="subTitle">
+    <span class="hidden flex-col text-white md:flex">
+        <strong>{{ title }}</strong>
+        <small class="text-xs opacity-80">{{ subTitle }}</small>
+    </span>
+</ng-template>
+
+<ng-template #navItem let-menu let-slot="slot">
+    @let current = activeMenuUrl() === menu.url;
+    <sgdf-nav-item data-testid="navbar-nav-link" [slot]="slot" [routerLink]="menu.url" [current]="current">
+        @if (menu.icon) {
+            <sgdf-icon slot="icon" [attr.name]="menu.icon.name" [library]="menu.icon.library"></sgdf-icon>
+        }
+        {{ menu.label | transloco }}
+    </sgdf-nav-item>
+</ng-template>
+
+<ng-template #menuItem let-menu let-variant="variant" let-action="action">
+    <sgdf-menu-item data-testid="navbar-account-menu-item" [routerLink]="menu.url" [attr.variant]="variant" (click)="action?.()">
+        <sgdf-icon slot="icon" [attr.name]="menu.icon.name" [library]="menu.icon.library"></sgdf-icon>
+        {{ menu.label | transloco }}
+    </sgdf-menu-item>
+</ng-template>

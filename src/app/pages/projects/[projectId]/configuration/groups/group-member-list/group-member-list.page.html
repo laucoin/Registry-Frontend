@@ -1,0 +1,93 @@
+<sgdf-page-title [eyebrow]="'projectEyebrow.configuration' | transloco" [lede]="'groups.members-page.subtitle' | transloco">
+    @if (group(); as current) {
+        {{ current.name }}
+    } @else {
+        <sgdf-skeleton effect="pulse" shape="rounded" class="inline-block w-48 h-8"/>
+    }
+    @if (canAddMembers()) {
+        <sgdf-button data-testid="group-member-list-add-members-button" slot="actions" variant="primary" (click)="initAddMembersForm()">
+            <sgdf-icon slot="prefix" name="user-plus" library="solid"/>
+            {{ 'groups.actions.add-members' | transloco }}
+        </sgdf-button>
+    }
+    @if (canCreateMember()) {
+        <sgdf-button data-testid="group-member-list-create-member-button" slot="actions" appearance="outlined" (click)="initCreateMemberForm()">
+            <sgdf-icon slot="prefix" name="plus" library="solid"/>
+            {{ 'groups.actions.create-member' | transloco }}
+        </sgdf-button>
+    }
+</sgdf-page-title>
+
+<app-participant-row #row [groupId]="group()?.id"/>
+
+<app-list data-testid="group-member-list-list" class="mt-(--spacing--block) block"
+          emptyMessagePrefix="participants.notifications.EMPTY"
+          [elementPage]="facade.groupMembersPage()"
+          [error]="facade.groupMembersPageError()"
+          [loading]="facade.groupMembersPageLoading()"
+          [loadingMore]="facade.groupMembersPageSilentLoading()"
+          [activeFilters]="activeFilters()"
+          (updateRequired)="loadBatch($event)"
+          (filtersReset)="resetFilters()">
+    <ng-template appTemplate="search">
+        <form data-testid="group-member-list-search-form" class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-3"
+              (submit)="$event.preventDefault(); search()">
+            <sgdf-input data-testid="group-member-list-q-input" appSgdfField [label]="'participants.search-and-filter.text' | transloco"
+                        [formField]="form.q"/>
+            <sgdf-select data-testid="group-member-list-status-select" appSgdfField [label]="'participants.search-and-filter.status' | transloco"
+                         [formField]="form.status">
+                @for (item of participantFacade.presencesStatusMetadata(); track item.label) {
+                    <sgdf-option [value]="item.value ?? ''">{{ item.label }}</sgdf-option>
+                }
+            </sgdf-select>
+            <sgdf-select *appIfProjectAuthority="hiddenAuthority" data-testid="group-member-list-is-visible-select" appSgdfField [label]="'participants.search-and-filter.visibility' | transloco"
+                         [formField]="form.isVisible">
+                @for (item of participantFacade.visibilitiesMetadata(); track item.label) {
+                    <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+                }
+            </sgdf-select>
+            <div class="flex justify-end md:col-span-3">
+                <sgdf-button data-testid="group-member-list-search-submit" variant="primary" appearance="outlined" submit
+                             [loading]="facade.groupMembersPageLoading()">
+                    <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
+                    {{ 'global.actions.search' | transloco }}
+                </sgdf-button>
+            </div>
+        </form>
+    </ng-template>
+
+    <ng-template appTemplate="element" let-participant>
+        <ng-container [ngTemplateOutlet]="row.template()" [ngTemplateOutletContext]="{ $implicit: participant }"/>
+    </ng-template>
+</app-list>
+
+<sgdf-drawer data-testid="group-member-list-add-members-drawer" [open]="addMembersFormLayerOpened()"
+             [placement]="uiFacade.tinyScreen() ? 'bottom' : 'right'"
+             [title]="'groups.actions.add-members' | transloco"
+             (sgdf-hide)="closeLayer($event, addMembersFormLayerOpened)">
+    <form novalidate data-testid="group-member-list-add-members-form" class="flex flex-col gap-[0.75rem]" (submit)="$event.preventDefault(); addMembers()">
+        <div>
+            <h2 class="section-title">{{ 'groups.form.members' | pluralTranslation: addMembersModel().participants | transloco }}</h2>
+            <app-select-elements-field data-testid="group-member-list-participants-field" [formField]="addMembersForm.participants" [appFieldError]="addMembersForm.participants" translationPrefix="groups.form.error.add-members"
+                                       [label]="'groups.form.members.search' | transloco"
+                                       [suggestions]="facade.searchedParticipantsMetadata()"
+                                       [selectItemBuilder]="ParticipantHelper.toSelectItem"
+                                       [selectionLabel]="'groups.form.members.selected' | pluralTranslation: addMembersModel().participants | transloco"
+                                       [emptyMessage]="'groups.form.members.empty' | transloco"
+                                       [emptySelectionMessage]="'groups.form.members.empty-search' | transloco"
+                                       (handleSearch)="handleSearch($event.query)"/>
+        </div>
+        <app-form-actions data-testid="group-member-list-actions" submitLabel="groups.actions.add" submitIcon="user-plus"
+                          (cancelled)="addMembersFormLayerOpened.set(false)"/>
+    </form>
+</sgdf-drawer>
+
+<sgdf-drawer data-testid="group-member-list-create-member-drawer" [open]="createMemberFormLayerOpened()"
+             [placement]="uiFacade.tinyScreen() ? 'bottom' : 'right'"
+             [title]="'groups.actions.create-member' | transloco"
+             (sgdf-hide)="closeLayer($event, createMemberFormLayerOpened)">
+    @if (createMemberFormLayerOpened()) {
+        <app-participant-form [defaultGroup]="group()" [showTitle]="false" [redirect]="false"
+                              (cancelled)="createMemberFormLayerOpened.set(false)"/>
+    }
+</sgdf-drawer>

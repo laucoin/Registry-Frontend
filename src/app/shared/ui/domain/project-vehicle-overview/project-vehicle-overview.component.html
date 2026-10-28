@@ -1,0 +1,48 @@
+<sgdf-table class="h-full [&::part(grid)]:h-full [&::part(grid)]:table-fixed" appearance="soft">
+    <sgdf-table-row class="h-px">
+        <sgdf-table-cell header class="flex items-center gap-1">
+            <sgdf-icon name="car" library="solid"/>
+            <h2 class="text-sm font-semibold uppercase">{{ 'projectHome.vehicleOverview.title' | transloco }}</h2>
+            @if (total() !== undefined) {
+                <sgdf-tag class="ml-auto" size="small" variant="info" appearance="soft">
+                    {{ 'projectHome.vehicleOverview.total' | transloco: { count: total() } }}
+                </sgdf-tag>
+            }
+        </sgdf-table-cell>
+    </sgdf-table-row>
+
+    <sgdf-table-row>
+        <sgdf-table-cell class="h-full p-0 align-top">
+            <div class="flex h-full flex-col min-[500px]:flex-row">
+                @for (stat of stats(); track stat.labelKey) {
+                    @if (!$first) {
+                        <sgdf-divider class="m-0 min-[500px]:hidden" appearance="soft"/>
+                        <sgdf-divider class="h-auto shrink-0 self-stretch max-[499px]:hidden" appearance="soft" orientation="vertical"/>
+                    }
+                    <div class="flex min-w-0 flex-1 flex-col items-start gap-1 p-4">
+                        <span class="text-xs uppercase">{{ 'projectHome.vehicleOverview.' + stat.labelKey | transloco }}</span>
+                        <strong class="text-3xl font-bold">{{ stat.value ?? '–' }}</strong>
+                    </div>
+                }
+            </div>
+        </sgdf-table-cell>
+    </sgdf-table-row>
+
+    @if (lastRefresh()) {
+        <sgdf-table-row class="h-px">
+            <sgdf-table-cell class="align-bottom text-xs opacity-80">
+                {{ 'global.date-and-time-format.last-refresh' | transloco: { datetime: lastRefresh() | dateFormat: 'datetime' } }}
+            </sgdf-table-cell>
+        </sgdf-table-row>
+    }
+
+    @if (showLink()) {
+        <sgdf-table-row class="h-px">
+            <sgdf-table-cell class="align-bottom">
+                <sgdf-button data-testid="project-vehicle-overview-see-all-button" block size="small" appearance="text" [routerLink]="link()">
+                    {{ 'projectHome.vehicleOverview.seeAll' | transloco }}
+                </sgdf-button>
+            </sgdf-table-cell>
+        </sgdf-table-row>
+    }
+</sgdf-table>

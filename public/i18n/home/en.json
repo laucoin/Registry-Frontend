@@ -1,0 +1,61 @@
+{
+  "eyebrow": "Application space",
+  "greeting": "Hello {{name}}",
+  "subtitle": "Find your projects, your invitations and the items that need your attention.",
+  "create": "Create a project",
+  "favorites": {
+    "title": "My favorite projects",
+    "summary": {
+      "one": "{{count}} favorite",
+      "few": "{{count}} favorites"
+    },
+    "seeAll": "See all projects",
+    "empty": "No favorite project yet. Mark a project as a favorite from the project list.",
+    "participants": {
+      "one": "{{count}} participant",
+      "few": "{{count}} participants"
+    },
+    "vehicles": {
+      "one": "{{count}} vehicle",
+      "few": "{{count}} vehicles"
+    },
+    "groups": {
+      "one": "{{count}} group",
+      "few": "{{count}} groups"
+    },
+    "remove": "Remove from favorites: {{name}}",
+    "permanent": "Permanent project",
+    "period": "From {{begin}} to {{end}}",
+    "updated": "Updated"
+  },
+  "invitations": {
+    "title": "Received invitations",
+    "pending": {
+      "zero": "None pending",
+      "one": "{{count}} pending",
+      "few": "{{count}} pending"
+    },
+    "invitedAs": "Invitation as {{role}}",
+    "accept": "Accept",
+    "refuse": "Decline",
+    "empty": "No pending invitation.",
+    "seeAll": "See all invitations"
+  },
+  "attention": {
+    "title": "Projects needing attention",
+    "alerts": {
+      "one": "{{count}} alert",
+      "few": "{{count}} alerts"
+    },
+    "empty": "No project has an ongoing alert.",
+    "open": "Open the alerts of {{name}}"
+  },
+  "quickAccess": {
+    "title": "Quick access",
+    "users": "Users",
+    "account": "My account",
+    "projects": "My projects",
+    "help": "Documentation",
+    "support": "Support"
+  }
+}

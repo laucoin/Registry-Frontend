@@ -1,0 +1,90 @@
+import { TestBed } from '@angular/core/testing'
+import { of } from 'rxjs'
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
+import { CommunicationModel } from '@shared/models/model/communication.model'
+import { CommunicationApi } from '@pages/projects/[projectId]/movements/communication/data/state/communication.api'
+import { CommunicationStore } from '@pages/projects/[projectId]/movements/communication/data/state/communication.store'
+import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
+import { ERROR_500, failing } from '@shared/helpers/testing/test-fixtures'
+import { AlertModel } from '@shared/models/model/alert.model'
+import { MovementModel } from '@shared/models/model/movement.model'
+
+describe( 'CommunicationStore', () => {
+    let store: InstanceType<typeof CommunicationStore>
+    let findCommunicationById: Mock<CommunicationApi['findCommunicationById']>
+    let searchMovements: Mock<CommunicationApi['searchMovements']>
+    let searchAlerts: Mock<CommunicationApi['searchAlerts']>
+
+    beforeEach( () => {
+        findCommunicationById = vi.fn()
+        searchMovements = vi.fn()
+        searchAlerts = vi.fn()
+        TestBed.configureTestingModule( {
+            providers: [
+                CommunicationStore,
+                { provide: CommunicationApi, useValue: { findCommunicationById, searchMovements, searchAlerts } },
+                { provide: DateFormatPipe, useValue: { transform: (): string => '01/01' } },
+            ],
+        } )
+        store = TestBed.inject( CommunicationStore )
+    } )
+
+    it( 'loads a single communication and ends the loading state', () => {
+        // Arrange
+        findCommunicationById.mockReturnValue( of( { id: 'c1' } as CommunicationModel ) )
+
+        // Act
+        store.fetchCommunication( { projectId: 'p1', id: 'c1' } )
+
+        // Assert
+        expect( store.communication.element()?.id ).toBe( 'c1' )
+        expect( store.communication.loading() ).toBe( false )
+    } )
+
+    it( 'keeps a failed communication fetch in the block and ends the loading state', () => {
+        // Arrange
+        findCommunicationById.mockReturnValue( failing( ERROR_500 ) )
+
+        // Act
+        store.fetchCommunication( { projectId: 'p1', id: 'c1' } )
+
+        // Assert
+        expect( store.communication.error()?.summary ).toBe( 'Title' )
+        expect( store.communication.loading() ).toBe( false )
+        expect( store.communication.element() ).toBeUndefined()
+    } )
+
+    it( 'forgets the loaded communication on reset', () => {
+        // Arrange
+        findCommunicationById.mockReturnValue( of( { id: 'c1' } as CommunicationModel ) )
+        store.fetchCommunication( { projectId: 'p1', id: 'c1' } )
+
+        // Act
+        store.resetCommunication()
+
+        // Assert
+        expect( store.communication.element() ).toBeUndefined()
+    } )
+
+    it( 'turns the searched movements into select items labelled with their reason and date', () => {
+        // Arrange
+        searchMovements.mockReturnValue( of( [ { id: 'm1', reason: { label: 'Arrival' } } as MovementModel ] ) )
+
+        // Act
+        store.searchMovements( { projectId: 'p1', q: 'arr' } )
+
+        // Assert
+        expect( store.metadata.searchedMovements()[ 0 ].label ).toBe( 'Arrival (01/01)' )
+    } )
+
+    it( 'turns the searched alerts into select items labelled with their title and date', () => {
+        // Arrange
+        searchAlerts.mockReturnValue( of( [ { id: 'al1', title: 'Fire' } as AlertModel ] ) )
+
+        // Act
+        store.searchAlerts( { projectId: 'p1', q: 'fi' } )
+
+        // Assert
+        expect( store.metadata.searchedAlerts()[ 0 ].label ).toBe( 'Fire (01/01)' )
+    } )
+} )

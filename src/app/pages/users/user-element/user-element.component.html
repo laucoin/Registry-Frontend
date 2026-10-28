@@ -1,0 +1,23 @@
+<sgdf-list appearance="soft" [label]="fullName()">
+    <sgdf-list-item data-testid="user-element-row">
+        <sgdf-avatar slot="start" variant="primary" aria-hidden="true" [initials]="initials()"/>
+        <span class="truncate">{{ fullName() }}</span>
+        <span slot="description" class="flex flex-wrap items-center gap-x-3">
+            <span class="truncate">{{ user().email }}</span>
+            @if (user().birthday; as birthday) {
+                <span class="inline-flex items-center gap-1">
+                    <sgdf-icon name="cake-candles" library="solid"/>
+                    {{ birthday | dateFormat: 'date' }}
+                </span>
+            }
+        </span>
+        <span slot="end" class="flex flex-wrap items-center gap-2">
+            @if (user().role; as role) {
+                <sgdf-tag appearance="outlined" pill>{{ role.label }}</sgdf-tag>
+            }
+            <sgdf-tag appearance="soft" pill [variant]="user().visible ? 'success' : 'warning'">
+                {{ user() | visibilityName: 'users' | transloco }}
+            </sgdf-tag>
+        </span>
+    </sgdf-list-item>
+</sgdf-list>

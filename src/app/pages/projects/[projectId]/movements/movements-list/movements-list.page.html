@@ -1,0 +1,58 @@
+<sgdf-page-title [eyebrow]="'projectEyebrow.monitoring' | transloco" [lede]="'movements.list.subtitle' | transloco">
+    {{ 'movements.list.title' | transloco }}
+    @if (canCreate()) {
+        <sgdf-button data-testid="movements-list-registered-button" slot="actions" variant="primary" [routerLink]="createRegisteredRoute">
+            <sgdf-icon slot="prefix" name="plus" library="solid"/>
+            {{ 'movements.list.create.registered' | transloco }}
+        </sgdf-button>
+        <sgdf-button data-testid="movements-list-guest-button" slot="actions" variant="neutral" appearance="outlined" [routerLink]="createGuestRoute">
+            <sgdf-icon slot="prefix" name="plus" library="solid"/>
+            {{ 'movements.list.create.guest' | transloco }}
+        </sgdf-button>
+    }
+</sgdf-page-title>
+
+<app-list data-testid="movements-list-list" class="mt-(--spacing--block) block"
+          emptyMessagePrefix="movements.notifications.EMPTY"
+          [elementPage]="facade.movementsPage()"
+          [error]="facade.movementsPageError()"
+          [loading]="facade.movementsPageLoading()"
+          [loadingMore]="facade.movementsPageSilentLoading()"
+          [activeFilters]="activeFilters()"
+          (updateRequired)="loadBatch($event)"
+          (filtersReset)="resetFilters()">
+    <ng-template appTemplate="search">
+        <form data-testid="movements-list-search-form" class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
+              (submit)="$event.preventDefault(); search()">
+            <sgdf-date-time-picker data-testid="movements-list-from-picker" appSgdfField with-time
+                                   [label]="'movements.search-and-filter.start-datetime' | transloco"
+                                   [formField]="form.from"/>
+            <sgdf-date-time-picker data-testid="movements-list-to-picker" appSgdfField with-time
+                                   [label]="'movements.search-and-filter.end-datetime' | transloco"
+                                   [formField]="form.to"/>
+            <sgdf-select data-testid="movements-list-type-select" appSgdfField [label]="'movements.search-and-filter.type' | transloco"
+                         [formField]="form.type">
+                @for (item of facade.movementTypesMetadata(); track item.label) {
+                    <sgdf-option [value]="item.value ?? ''">{{ item.label }}</sgdf-option>
+                }
+            </sgdf-select>
+            <sgdf-select *appIfProjectAuthority="hiddenAuthority" data-testid="movements-list-is-visible-select" appSgdfField [label]="'movements.search-and-filter.visibility' | transloco"
+                         [formField]="form.isVisible">
+                @for (item of facade.visibilitiesMetadata(); track item.label) {
+                    <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+                }
+            </sgdf-select>
+            <div class="flex justify-end md:col-span-2">
+                <sgdf-button data-testid="movements-list-search-submit" variant="primary" appearance="outlined" submit
+                             [loading]="facade.movementsPageLoading()">
+                    <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
+                    {{ 'global.actions.search' | transloco }}
+                </sgdf-button>
+            </div>
+        </form>
+    </ng-template>
+
+    <ng-template appTemplate="element" let-movement>
+        <sgdf-list-item data-testid="movement-row" [attr.data-id]="movement.id" appMovementElement [movement]="movement"/>
+    </ng-template>
+</app-list>

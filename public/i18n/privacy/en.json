@@ -1,0 +1,110 @@
+{
+  "eyebrow": "Legal",
+  "back": "Back",
+  "title": "Privacy policy",
+  "updatedAt": "Last updated: September 17, 2026",
+  "intro": [
+    "This policy explains which personal data is processed by Registry (the “Application”), why, and how you can exercise your rights. It supplements the terms of use (ToU), which define in particular the terms “User”, “Participant”, “Project” and “Project Manager”."
+  ],
+  "sections": {
+    "controller": {
+      "title": "1. Who is responsible for your data?",
+      "body": [
+        "Two categories of data are processed in the Application, with two distinct controllers:",
+        "For your Account data ({{ organizationName }} identifier, email, first name, last name), the data controller is the Publisher: {{ creatorName }}, contact <a href=\"mailto:{{ creatorEmail }}\">{{ creatorEmail }}</a>.",
+        "For the Participants’ data that you enter, or that another User enters, in a Project, the data controller is the Manager of that Project — that is, the User who created or administers the Project concerned. In this case the Publisher acts only as a technical processor, within the meaning of Article 28 of the GDPR: it hosts and operates the tool, without itself deciding the purposes of this processing."
+      ]
+    },
+    "dataCollected": {
+      "title": "2. What data is collected?",
+      "body": ["The Application processes the following categories of data:"],
+      "list": [
+        "Account data: identifier, email, first name and last name, transmitted by {{ organizationName }} at sign-in (single sign-on, SSO).",
+        "Technical sign-in data: cookies strictly necessary for authentication (session) and for protection against CSRF attacks, and cookies storing your display theme and language preferences (see section 8 “Cookies”).",
+        "Participant data: last name, first name, date of birth and attendance (check-ins/check-outs) in a Project, entered by a User."
+      ]
+    },
+    "purposes": {
+      "title": "3. Why is this data processed?",
+      "body": [
+        "Account data is used to authenticate Users, secure their session, and let them access the Projects they manage.",
+        "Participant data forms an attendance register (check-ins/check-outs) intended to let Users keep track of who took part in their Projects, and to ensure the traceability of this attendance in the event of an incident (accident, assault, or any other need for evidence). It is this register purpose that justifies the minimum retention period described in section 7."
+      ]
+    },
+    "legalBasis": {
+      "title": "4. Legal bases",
+      "body": [
+        "The processing of Account data is based on the performance of the ToU that you accept by using the Application, as well as on the Publisher’s legitimate interest in ensuring the security and proper functioning of the service.",
+        "The processing of Participant data is based on the legal basis chosen and assumed by the Project Manager who enters it (for example {{ organizationName }}’s legitimate interest in ensuring the safety and traceability of attendance at its activities), within the scope of their own GDPR obligations as data controller for this data."
+      ]
+    },
+    "recipients": {
+      "title": "5. Who has access to your data?",
+      "body": [
+        "The data is accessible to the Publisher, to the extent necessary for the operation and maintenance of the Application, and to the host (see section 10), who acts as a technical processor. Depending on the arrangements specific to this deployment, {{ organizationName }} may also have access to the data for hosting or technical monitoring purposes; this is not systematic, however.",
+        "{{ organizationName }} also acts as identity provider (SSO): at sign-in, {{ organizationName }} transmits to the Application your identifier, email, first name and last name, but receives back no data entered in the Application (Projects, attendance, Participant data), unless {{ organizationName }} is also involved in hosting or monitoring as indicated above.",
+        "No data is sold, rented or transmitted for advertising purposes."
+      ]
+    },
+    "minors": {
+      "title": "6. Particular attention to minors",
+      "body": [
+        "Depending on the organization, Participants may be minors, which calls for particular vigilance in accordance with Article 8 of the GDPR on children’s data. Where applicable, the Publisher has no direct contact with Participants nor, where applicable, with their legal guardians.",
+        "It is for the Project Manager, in the course of their role within {{ organizationName }}, to make sure they have the legal basis and, where applicable, the necessary information or consent of the legal guardians before entering the data of a minor Participant in the Application."
+      ]
+    },
+    "retention": {
+      "title": "7. Retention periods",
+      "body": [
+        "Your Account data is kept as long as your Account exists, and deleted when you request its deletion (see section 11). If you are the sole administrator of one or more Projects, deleting your Account is conditional on appointing another administrator for those Projects, or on deleting them, to prevent a Project shared with other Users from becoming unusable. An Account that has remained inactive (no sign-in) for 12 months is automatically deleted, unless it is the last administrator of the Application or the sole administrator of a Project: in that case the Account is kept until another administrator has been appointed. You may also delete your Account yourself at any time, under the conditions described above.",
+        "A Participant’s data (identity and attendance) is kept for a minimum of 12 months from their last recorded activity (last attendance or, failing that, creation of the Participant). In accordance with the GDPR’s storage limitation principle (Article 5), data may be kept for as long as the purpose that justifies it requires: this minimum period corresponds to the traceability register purpose described in section 3, and therefore cannot be shortened on request before it expires, including by the Project Manager.",
+        "After this minimum period, a Project that has remained inactive for 12 months is automatically deleted, along with all the Participant data it contains; within a Project that has remained active, a Participant who has remained inactive for 12 months (no attendance recorded for them) is also deleted individually. To avoid keeping data that has become inconsistent (for example an attendance whose Participant has been deleted), attendance, alerts and communications, as well as empty vehicles, activities and groups, are also automatically deleted 12 months after their last modification."
+      ]
+    },
+    "cookies": {
+      "title": "8. Cookies",
+      "body": [
+        "The Application only uses cookies that are strictly necessary for its operation or for personalizing its interface: a session cookie to keep you signed in, a token protecting against CSRF attacks, and two preference cookies storing the display theme (light, dark or system) and the language you have chosen, so as to apply them as soon as the Application opens, before you sign in. These preference cookies are kept for 12 months and contain no personal data. No audience measurement, advertising or tracking cookie is used.",
+        "As these cookies are strictly necessary for the operation of the service or limited to display preferences that you chose yourself, placing them does not require your prior consent, in accordance with the applicable regulations (Article 82 of the French Data Protection Act)."
+      ]
+    },
+    "security": {
+      "title": "9. Security",
+      "body": [
+        "The Application implements reasonable technical measures to protect your data: encrypted connection (HTTPS), session cookies not accessible from JavaScript, protection against CSRF attacks."
+      ]
+    },
+    "hosting": {
+      "title": "10. Hosting and data transfers",
+      "clause": "The data is hosted by {{ providerName }}, whose registered office is located at {{ providerAddress }}, within the European Union. No data is transferred outside the European Union.",
+      "fallback": "Information about the host is not provided on this page; you can obtain it by writing to <a href=\"mailto:{{ creatorEmail }}\">{{ creatorEmail }}</a>. In any case, the service is hosted within the European Union."
+    },
+    "rights": {
+      "title": "11. Your rights",
+      "body": [
+        "In accordance with the GDPR, you have the right of access, rectification, erasure, restriction, objection and portability regarding the data concerning you.",
+        "To exercise these rights over your Account data, or to delete it, contact the Publisher at <a href=\"mailto:{{ creatorEmail }}\">{{ creatorEmail }}</a> (direct deletion from within the Application may also be available). If you are the sole administrator of a Project, this deletion first requires appointing another administrator or deleting the Project (see section 7).",
+        "To exercise these rights over a Participant’s data, contact the Manager of the Project in which this data was entered: they are the data controller. If you don’t know whom to contact, you can write to the Publisher, who will point you in the right direction as far as possible.",
+        "The right to erasure of a Participant’s data cannot, however, be exercised before the 12-month minimum retention period described in section 7 has expired: during this period, the data remains necessary for the traceability register purpose, which rules out the application of the right to erasure within the meaning of Article 17 of the GDPR. The rights of access and rectification, for their part, can be exercised at any time, including during this period."
+      ]
+    },
+    "complaint": {
+      "title": "12. Complaint to the CNIL",
+      "body": [
+        "If you believe your rights are not being respected, you can lodge a complaint with the French data protection authority, the Commission Nationale de l'Informatique et des Libertés (CNIL): <a href=\"https://www.cnil.fr\" target=\"_blank\" rel=\"noopener noreferrer\">www.cnil.fr</a>."
+      ]
+    },
+    "contact": {
+      "title": "13. Contact",
+      "body": [
+        "For any question about this privacy policy, write to <a href=\"mailto:{{ creatorEmail }}\">{{ creatorEmail }}</a>."
+      ]
+    },
+    "changes": {
+      "title": "14. Changes to the privacy policy",
+      "body": [
+        "This policy may be modified at any time, in particular to reflect legal or functional changes. The date of the last update appears at the top of this page."
+      ]
+    }
+  }
+}

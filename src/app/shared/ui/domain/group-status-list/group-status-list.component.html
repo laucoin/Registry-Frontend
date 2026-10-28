@@ -1,0 +1,78 @@
+@if (error(); as failure) {
+    <app-section-error data-testid="group-status-list-groups-error" [error]="failure" [retrying]="loading() || loadingMore()" (retry)="retry()"/>
+}
+
+@if (showSkeleton()) {
+    <sgdf-accordion data-testid="group-status-list-loading-accordion" appearance="soft" aria-busy="true" [attr.aria-label]="'global.list.loading' | transloco">
+        @for (row of skeletonRows; track row) {
+            <sgdf-accordion-item>
+                <sgdf-skeleton class="w-[40%] h-[1rem]" slot="title" shape="rounded" effect="pulse"/>
+            </sgdf-accordion-item>
+        }
+    </sgdf-accordion>
+} @else if (isEmpty()) {
+    @if (!error()) {
+        <sgdf-callout data-testid="group-status-list-empty-callout" variant="neutral" [title]="'projectHome.groupStatus.empty.title' | transloco">
+            {{ 'projectHome.groupStatus.empty.message' | transloco }}
+        </sgdf-callout>
+    }
+} @else if (groupPage(); as page) {
+    <sgdf-accordion data-testid="group-status-list-accordion" mode="multiple" appearance="soft" heading-level="2">
+        @for (group of page.content; track group.id) {
+            <sgdf-accordion-item [expanded]="onlyGroup()" (sgdf-after-expand)="opened(group)">
+                <span slot="title" class="flex flex-wrap items-center gap-2">
+                    <span appEllipsis class="max-w-full">{{ group.name }}</span>
+                    <sgdf-tag variant="neutral" size="small" appearance="soft">
+                        {{ 'projectHome.groupStatus.onSite' | pluralTranslation: group.onSiteMembersCount ?? 0 | transloco: { count: group.onSiteMembersCount ?? 0 } }}
+                    </sgdf-tag>
+                    @if ((group.outMembersCount ?? 0) > 0) {
+                        <sgdf-tag variant="warning" size="small" appearance="soft">
+                            {{ 'projectHome.groupStatus.outside' | pluralTranslation: group.outMembersCount | transloco: { count: group.outMembersCount } }}
+                        </sgdf-tag>
+                    }
+                    @if ((group.overdueMembersCount ?? 0) > 0) {
+                        <sgdf-tag variant="danger" size="small" appearance="soft">
+                            {{ 'projectHome.groupStatus.overdue' | pluralTranslation: group.overdueMembersCount | transloco: { count: group.overdueMembersCount } }}
+                        </sgdf-tag>
+                    }
+                    @if (checkedCount(group) > 0) {
+                        <sgdf-tag variant="primary" size="small" appearance="soft">
+                            {{ 'projectHome.groupStatus.checkedOf' | transloco: { checked: checkedCount(group), total: group.onSiteMembersCount ?? 0 } }}
+                        </sgdf-tag>
+                    }
+                </span>
+                @if (members(group); as block) {
+                    @if (block.error; as failure) {
+                        <app-section-error data-testid="group-status-list-members-error" [error]="failure" [retrying]="block.loading || block.silentLoading" (retry)="retryMembers(group)"/>
+                    }
+                    @if (block.loading && !block.element) {
+                        <app-skeleton-list [rows]="memberSkeletonRows"/>
+                    } @else if (block.element; as members) {
+                        @if (members.content.length === 0) {
+                            @if (!block.error) {
+                                <p class="m-0 text-sm opacity-80">{{ 'projectHome.groupStatus.noMembers' | transloco }}</p>
+                            }
+                        } @else {
+                            <sgdf-list appearance="text" [label]="'projectHome.groupStatus.membersOf' | transloco: { name: group.name }">
+                                @for (row of rows(group); track row.id) {
+                                    <sgdf-list-item data-testid="group-status-list-member-row" appMonitoringRow [row]="row" [selectable]="true"
+                                                    [checked]="checkedIds().has(row.id)"
+                                                    (checkedChange)="rowCheckedChange(row.id, $event)"/>
+                                }
+                            </sgdf-list>
+                            @if (hasMoreMembers(group)) {
+                                <app-load-more data-testid="group-status-list-members-load-more" [loadedCount]="members.content.length" [total]="members.totalElements"
+                                               [loading]="block.silentLoading" [autoLoad]="!block.error"
+                                               (loadMore)="loadMoreMembers(group)"/>
+                            }
+                        }
+                    }
+                }
+            </sgdf-accordion-item>
+        }
+    </sgdf-accordion>
+    @if (hasMore()) {
+        <app-load-more data-testid="group-status-list-groups-load-more" class="mt-(--spacing--block) block" [loadedCount]="page.content.length" [total]="page.totalElements"
+                       [loading]="loadingMore() || membersLoading()" [autoLoad]="!error()" (loadMore)="loadMore()"/>
+    }
+}

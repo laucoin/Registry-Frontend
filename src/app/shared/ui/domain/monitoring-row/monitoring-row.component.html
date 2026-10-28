@@ -1,0 +1,24 @@
+<span slot="start" class="flex items-center gap-3">
+    @if (selectable()) {
+        <sgdf-checkbox data-testid="monitoring-row-checkbox" size="small" [checked]="checked()" (change)="checkedChange.emit($any($event.target).checked)">
+            <span class="sr-only">{{ 'projectHome.participantsPage.check' | transloco: { name: row().title } }}</span>
+        </sgdf-checkbox>
+    }
+    <sgdf-avatar appearance="solid" aria-hidden="true" [variant]="row().statusVariant">
+        <sgdf-icon slot="icon" [name]="row().icon" library="solid"/>
+    </sgdf-avatar>
+</span>
+<span appEllipsis>{{ row().title }}</span>
+@if (row().subtitle || row().overdue) {
+    <span slot="description" class="flex flex-col">
+        @if (row().subtitle) {
+            <span class="truncate">{{ row().subtitle }}</span>
+        }
+        @if (row().overdue) {
+            <span class="font-semibold" style="color: var(--sgdf-color-pc)">{{ 'projectHome.monitoring.overdueHint' | transloco }}</span>
+        }
+    </span>
+}
+@if (row().statusLabel) {
+    <sgdf-tag slot="end" size="small" appearance="soft" pill [variant]="row().statusVariant">{{ row().statusLabel }}</sgdf-tag>
+}

@@ -1,0 +1,18 @@
+@keyframes highlight {
+  0% {
+    background-color: var(--sgdf-color-bg-neutral);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.highlight {
+  animation: highlight 1s ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .highlight {
+    animation: none;
+  }
+}

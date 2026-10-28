@@ -1,0 +1,55 @@
+<sgdf-page-title [eyebrow]="'projectEyebrow.configuration' | transloco" [lede]="'groups.list.subtitle' | transloco">
+    {{ 'groups.list.title' | transloco }}
+    @if (canCreate()) {
+        <sgdf-button data-testid="groups-list-create-button" slot="actions" variant="primary" [routerLink]="createRoute">
+            <sgdf-icon slot="prefix" name="plus" library="solid"/>
+            {{ 'global.actions.create' | transloco }}
+        </sgdf-button>
+    }
+</sgdf-page-title>
+
+<app-group-row #row/>
+
+<app-list data-testid="groups-list-list" class="mt-(--spacing--block) block"
+          emptyMessagePrefix="groups.notifications.EMPTY"
+          [elementPage]="facade.groupsPage()"
+          [error]="facade.groupsPageError()"
+          [loading]="facade.groupsPageLoading()"
+          [loadingMore]="facade.groupsPageSilentLoading()"
+          [activeFilters]="activeFilters()"
+          (updateRequired)="loadBatch($event)"
+          (filtersReset)="resetFilters()">
+    <ng-template appTemplate="search">
+        <form data-testid="groups-list-search-form" class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
+              (submit)="$event.preventDefault(); search()">
+            <sgdf-input data-testid="groups-list-q-input" appSgdfField [label]="'groups.search-and-filter.text' | transloco"
+                        [formField]="form.q"/>
+            <sgdf-date-time-picker data-testid="groups-list-at-picker" appSgdfField with-time
+                                   [label]="'groups.search-and-filter.datetime' | transloco"
+                                   [formField]="form.at"/>
+            <sgdf-select data-testid="groups-list-is-present-select" appSgdfField [label]="'groups.search-and-filter.presence' | transloco"
+                         [formField]="form.isPresent">
+                @for (item of facade.availabilitiesMetadata(); track item.label) {
+                    <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+                }
+            </sgdf-select>
+            <sgdf-select *appIfProjectAuthority="hiddenAuthority" data-testid="groups-list-is-visible-select" appSgdfField [label]="'groups.search-and-filter.visibility' | transloco"
+                         [formField]="form.isVisible">
+                @for (item of facade.visibilitiesMetadata(); track item.label) {
+                    <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+                }
+            </sgdf-select>
+            <div class="flex justify-end md:col-span-2">
+                <sgdf-button data-testid="groups-list-search-submit" variant="primary" appearance="outlined" submit
+                             [loading]="facade.groupsPageLoading()">
+                    <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
+                    {{ 'global.actions.search' | transloco }}
+                </sgdf-button>
+            </div>
+        </form>
+    </ng-template>
+
+    <ng-template appTemplate="element" let-group>
+        <ng-container [ngTemplateOutlet]="row.template()" [ngTemplateOutletContext]="{ $implicit: group }"/>
+    </ng-template>
+</app-list>

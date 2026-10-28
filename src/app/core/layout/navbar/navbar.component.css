@@ -1,0 +1,4 @@
+sgdf-navbar {
+    --content-width: var(--layout--content-width);
+    --padding-inline: var(--spacing--page-gutter);
+}

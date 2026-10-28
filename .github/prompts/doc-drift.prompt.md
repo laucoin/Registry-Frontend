@@ -1,51 +1,67 @@
 ---
 mode: agent
-description: Compare the Registry frontend codebase against its documentation and surface drift
+name: doc-drift
+description: Compare the Registry frontend codebase against its documentation and surface drift. Use when asked to check the code against the documentation or the specs.
 ---
 
 # Documentation drift check — Registry Frontend
 
-Find every place where the documentation and the frontend codebase disagree, then help me resolve each one. Don't change anything until step 4 tells you which action to take.
+Find every place where the documentation and the frontend codebase disagree, then help resolve each one. Change nothing
+until step 4 tells you which action to take.
 
 ## Step 1 — Locate the documentation
 
-Ask me where the documentation lives, if I haven't said already. Default: `https://doc.laucoin.fr/registry`. I may instead give a local path (a checkout of the docs source) — treat that as authoritative over the remote default whenever provided.
+Default: `https://doc.laucoin.fr/registry` (functional and technical sections). If a local copy may be fresher (e.g.
+`../../Documentations/documentation/registry`), propose it to the user with `AskUserQuestion` instead of asking where
+the docs are; a local path is authoritative over the remote default.
 
-Once you know the location, look for an `AGENTS.md` at its root (`<location>/AGENTS.md` whether that's a URL or a local path) and follow it for how to navigate the docs. If there isn't one, fall back to the site's own navigation: this documentation set is generally split into a **Functional** section (what the product does, roles/permissions, features with business rules and BDD scenarios) and a **Technical** section (architecture, stack, API contracts, data model, ADRs). Use that split for steps 2 and 3 below. If the real structure differs, adapt to what you actually find.
+Look for an `AGENTS.md` at the documentation root and follow it to navigate. Otherwise use the **Functional** section
+(features, roles/permissions, business rules, BDD scenarios) and the **Technical** section (architecture, stack, API
+contracts, data model, ADRs). ADRs **007, 008 and 012** are frontend-scoped; the others govern the backend.
 
-## Step 2 — Compare the technical diff
+## Step 2 — Compare the technical documentation
 
-Compare the Technical documentation against what the frontend actually does:
+Compare against what the frontend actually does (`AGENTS.md` is the reference for the intended design):
 
-- Architecture (NGXS + feature-first): state flow component → facade → action → state → service, and where documented feature code is supposed to live (`domains/<domain>/`, `shell/`, `shared/util-*`).
-- Angular version/build tooling, standalone components, routing/lazy-loading claims vs actual `app.routes.ts`.
-- API integration: which backend endpoints/versions each service actually calls vs what's documented.
-- Accessibility and UX/UI commitments (semantic HTML, keyboard support, i18n via `@ngx-translate`, theming) vs what the components actually implement.
-- Any ADRs — do they still reflect the decision actually implemented?
+- Architecture: `api` → `store` (`signalStore`) → `facade` flow, `core/` / `pages/` / `shared/` placement and the
+  documented exceptions.
+- Angular version and build tooling, standalone components, routing and lazy loading vs `registry.routes.ts`.
+- API integration: which backend endpoints and version each `*.api.ts` calls vs the documented contract (`/api/v2`,
+  pagination, error keys), and the DTO → model mappers.
+- Runtime configuration (`public/settings/config.json`, `env.json`), theming through `@sgdf/ui`, i18n through
+  `@jsverse/transloco`, accessibility and UX commitments.
+- ADRs: do they still reflect the decision actually implemented?
 
 ## Step 3 — Compare feature by feature
 
-Walk the Functional documentation's feature list. For each documented feature, check against the actual components/state/services and tests:
+Walk the functional documentation's feature list. For each feature, check components, stores, facades and specs:
 
 - Does it still exist, and does the described behavior match the current implementation and UI flow?
-- Do documented roles/permissions gate the same screens/actions they gate in code (guards, `*ngIf`/`@if` on permission checks)?
-- Do documented business rules, form validation, and edge cases match what the facades/state/validators actually do?
-- Do documented BDD scenarios still hold against current behavior?
+- Do documented roles and permissions gate the same screens and actions as the guards and permission-driven UI? (The
+  frontend enforces nothing: the backend is the security boundary.)
+- Do documented business rules, form validation and edge cases match the facades, stores and validators?
+- Do documented BDD scenarios still hold against the current behavior?
 
 ## Step 4 — Verdict and action
 
-If nothing surfaced in steps 2 and 3, tell me that and stop — no changes needed.
+If nothing surfaced in steps 2 and 3, say so and stop: no change needed.
 
-Otherwise, list every discrepancy point-by-point. For each one give: what the doc says, what the code actually does (with `file:line`), and the doc section it came from. Then ask me, per discrepancy (or in bulk if I say so), to pick one:
+Otherwise list every discrepancy: what the doc says, what the code does (`file:line`), and the doc section. Then ask,
+per discrepancy (or in bulk if the user says so), with `AskUserQuestion` and a recommended option first:
 
 1. **Update the documentation** to match the code.
 2. **Update the code** to match the documentation.
-3. **Re-explain the feature** — my understanding of the doc or the code was wrong; I'll clarify and you re-evaluate that point.
+3. **Re-explain the feature**: the understanding of the doc or the code was wrong; the user clarifies and the point is
+   re-evaluated.
 
-Wait for my decision before touching anything.
+Wait for the decision before touching anything.
 
 ## Step 5 — Making the change
 
-- **Update the documentation**: if the location I gave you in step 1 was the remote URL, you can't write to it — ask me for a local path to the documentation source before editing. If I already gave a local path, edit it there directly.
-- **Update the code**: follow this repo's conventions (`AGENTS.md`, and the checks in `code-review.prompt.md`) and update/add tests for the changed behavior.
-- **Re-explain**: fold my correction back into your understanding and re-check whether the discrepancy still stands before moving on.
+Documentation and code are never changed in the same step (`AGENTS.md` §8, Separation).
+
+- **Update the documentation:** a remote URL is read-only. Ask for the local path of the documentation source, then
+  edit it there. The documentation repository has its own commits; none land in this repository.
+- **Update the code:** follow `AGENTS.md`, then the `test` skill for the changed behavior, and the `code-review` skill
+  before the commit.
+- **Re-explain:** fold the correction back in and re-check whether the discrepancy still stands.

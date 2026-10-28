@@ -1,0 +1,44 @@
+<app-form data-testid="group-form-page" [form]="form"
+          [loading]="loading()"
+          [error]="error()"
+          [title]="'groups.form.title' | formTitle: group() | transloco: { name: group()?.name }">
+    <form novalidate data-testid="group-form-submit-form" (submit)="$event.preventDefault(); submit()">
+        <sgdf-card>
+            <div class="flex flex-col gap-[0.75rem]">
+                <sgdf-input data-testid="group-form-name-input" appSgdfField required
+                            [label]="'groups.form.name' | transloco"
+                            [placeholder]="'groups.form.placeholder.name' | transloco"
+                            [formField]="form.name"
+                            [appFieldError]="form.name" translationPrefix="groups.form.error.name"/>
+                <div class="grid gap-[0.75rem] md:grid-cols-2">
+                    <sgdf-date-time-picker data-testid="group-form-begin-date-time-picker" appSgdfField with-time value-format="separate"
+                                           [label]="'groups.form.begin-datetime' | transloco"
+                                           [hint]="'groups.form.hint.begin-date-time' | transloco"
+                                           [formField]="form.beginDateTime"
+                                           [appFieldError]="form.beginDateTime" translationPrefix="groups.form.error.begin-datetime"/>
+                    <sgdf-date-time-picker data-testid="group-form-end-date-time-picker" appSgdfField with-time value-format="separate"
+                                           [label]="'groups.form.end-datetime' | transloco"
+                                           [hint]="'groups.form.hint.end-date-time' | transloco"
+                                           [formField]="form.endDateTime"
+                                           [appFieldError]="form.endDateTime" translationPrefix="groups.form.error.end-datetime"/>
+                </div>
+                <sgdf-divider/>
+                <div>
+                    <h2 class="section-title">{{ 'groups.form.members' | pluralTranslation: model().participants | transloco }}</h2>
+                    <app-select-elements-field data-testid="group-form-participants-field" [formField]="form.participants" [appFieldError]="form.participants" translationPrefix="groups.form.error.members"
+                                               [label]="'groups.form.members.search' | transloco"
+                                               [suggestions]="facade.searchedParticipantsMetadata()"
+                                               [selectItemBuilder]="ParticipantHelper.toSelectItem"
+                                               [selectionLabel]="'groups.form.members.selected' | pluralTranslation: model().participants | transloco"
+                                               [emptyMessage]="'groups.form.members.empty' | transloco"
+                                               [emptySelectionMessage]="'groups.form.members.empty-search' | transloco"
+                                               (handleSearch)="handleSearch($event.query)"/>
+                </div>
+            </div>
+        </sgdf-card>
+        <app-form-actions data-testid="group-form-actions" [submitLabel]="group() | formButton"
+                          [submitIcon]="group() ? 'pen-to-square' : 'plus'"
+                          [saving]="saving()"
+                          (cancelled)="navigateToRedirectUri()"/>
+    </form>
+</app-form>

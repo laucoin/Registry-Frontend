@@ -1,0 +1,129 @@
+<app-form data-testid="guest-movement-form-page" [form]="form"
+          [loading]="loading()"
+          [error]="error()"
+          [title]="('movements.form.title' | formTitle: movement()) + '.' + (model().information.type || 'none') | transloco : {
+              datetime: movement()?.dateTime | dateFormat: 'datetime'
+          }">
+    <sgdf-stepper data-testid="guest-movement-form-stepper" linear [active]="'step-' + activeTab()" [label]="'movements.form.title.information' | transloco">
+        <sgdf-step name="step-1" [completed]="activeTab() > 1">{{ 'movements.form.title.information' | transloco }}</sgdf-step>
+        <sgdf-step name="step-2">{{ 'movements.form.title.content' | transloco }}</sgdf-step>
+    </sgdf-stepper>
+
+    @if (activeTab() === 1) {
+        <form novalidate data-testid="guest-movement-form-information-form" class="mt-[1rem]" (submit)="$event.preventDefault(); nextFromInformation()">
+            <sgdf-card>
+                <div class="grid gap-[0.75rem] md:grid-cols-2">
+                    <sgdf-date-time-picker data-testid="guest-movement-form-date-time-picker" appSgdfField with-time required
+                                           [label]="'movements.form.datetime' | transloco"
+                                           [formField]="form.information.dateTime"
+                                           [appFieldError]="form.information.dateTime" translationPrefix="movements.form.error.datetime"/>
+                    <sgdf-select data-testid="guest-movement-form-type-select" appSgdfField required
+                                 [label]="'movements.form.type' | transloco"
+                                 [placeholder]="'movements.form.placeholder.type' | transloco"
+                                 [formField]="form.information.type"
+                                 [appFieldError]="form.information.type" translationPrefix="movements.form.error.type"
+                                 (change)="handleTypeChange($event)">
+                        @for (type of facade.movementTypesMetadata(); track type.value) {
+                            @if (type.value) {
+                                <sgdf-option [value]="type.value">{{ type.label }}</sgdf-option>
+                            }
+                        }
+                    </sgdf-select>
+                </div>
+            </sgdf-card>
+            <div class="flex items-center justify-between pt-[1rem]">
+                <sgdf-button data-testid="guest-movement-form-information-cancel-button" variant="neutral" appearance="text" (click)="navigateToRedirectUri()">
+                    {{ 'global.actions.cancel' | transloco }}
+                </sgdf-button>
+                <sgdf-button data-testid="guest-movement-form-information-next-submit" variant="primary" appearance="outlined" submit>
+                    {{ 'global.actions.next' | transloco }}
+                    @if (!uiFacade.tinyScreen()) {
+                        <sgdf-icon slot="suffix" name="arrow-right" library="solid"/>
+                    }
+                </sgdf-button>
+            </div>
+        </form>
+    } @else {
+        <form novalidate data-testid="guest-movement-form-content-form" class="mt-[1rem]" (submit)="$event.preventDefault(); submit()">
+            <sgdf-card>
+                <div class="flex flex-col gap-[0.75rem]">
+                    @if (arrival()) {
+                        <sgdf-select data-testid="guest-movement-form-reason-select" with-search without-filter with-clear required
+                                     [label]="'movements.form.reason.name' | transloco"
+                                     [placeholder]="'movements.form.placeholder.reason' | transloco"
+                                     [attr.no-results-label]="'movements.form.reason.empty-search' | transloco"
+                                     [value]="reasonKeyOf(model().content.reason)"
+                                     [appFieldError]="form.content.reason" translationPrefix="movements.form.error.reason"
+                                     (sgdf-show)="handleReasonSearch('')"
+                                     (sgdf-search)="handleReasonSearch($any($event).detail.query)"
+                                     (change)="handleReasonChoice($event)">
+                            @for (option of reasonOptions(); track reasonKeyOf(option)) {
+                                <sgdf-option [value]="reasonKeyOf(option)">{{ option.label }}</sgdf-option>
+                            }
+                        </sgdf-select>
+                        <sgdf-divider/>
+                        <h2 class="section-title">{{ 'movements.form.content.guest' | pluralTranslation: model().content.guests.length | transloco }}</h2>
+                        @for (guest of form.content.guests; track $index) {
+                            <div class="flex items-start gap-[0.5rem]">
+                                <div class="flex flex-1 flex-col gap-[0.75rem]">
+                                    <div class="grid gap-[0.75rem] md:grid-cols-2">
+                                        <sgdf-input data-testid="guest-movement-form-first-name-input" appSgdfField required
+                                                    [label]="'participants.form.firstname' | transloco"
+                                                    [placeholder]="'participants.form.placeholder.firstname' | transloco"
+                                                    [formField]="guest.firstName"
+                                                    [appFieldError]="guest.firstName" translationPrefix="participants.form.error.firstname"/>
+                                        <sgdf-input data-testid="guest-movement-form-last-name-input" appSgdfField required
+                                                    [label]="'participants.form.lastname' | transloco"
+                                                    [placeholder]="'participants.form.placeholder.lastname' | transloco"
+                                                    [formField]="guest.lastName"
+                                                    [appFieldError]="guest.lastName" translationPrefix="participants.form.error.lastname"/>
+                                    </div>
+                                    <sgdf-date-time-picker data-testid="guest-movement-form-birthday-picker" appSgdfField required
+                                                           [label]="'participants.form.birthday' | transloco"
+                                                           [formField]="guest.birthday"
+                                                           [appFieldError]="guest.birthday" translationPrefix="participants.form.error.birthday"/>
+                                </div>
+                                <sgdf-icon-button data-testid="guest-movement-form-remove-guest-button" name="xmark" library="solid"
+                                                  [attr.label]="'global.actions.remove' | transloco"
+                                                  [disabled]="!!guest.id().value()"
+                                                  (click)="removeGuest($index)"/>
+                            </div>
+                            @if (!$last) {
+                                <sgdf-divider/>
+                            }
+                        }
+                        <div class="flex justify-center">
+                            <sgdf-button data-testid="guest-movement-form-add-guest-button" variant="neutral" appearance="outlined" (click)="addGuest()">
+                                <sgdf-icon slot="prefix" name="plus" library="solid"/>
+                                {{ 'movements.form.content.guest.add' | transloco }}
+                            </sgdf-button>
+                        </div>
+                        <app-field-error data-testid="guest-movement-form-guest-content-error" [field]="form.content.guests" translationPrefix="movements.form.error.guestContent"/>
+                    } @else {
+                        <h2 class="section-title">{{ 'movements.form.content.registered' | pluralTranslation: model().content.participants | transloco }}</h2>
+                        <app-select-elements-field data-testid="guest-movement-form-participants-field" [formField]="form.content.participants" [appFieldError]="form.content.participants" translationPrefix="movements.form.error.participantContent"
+                                                   [label]="'movements.form.content.registered.search' | transloco"
+                                                   [suggestions]="suggestions()"
+                                                   [expand]="contentOfChoice"
+                                                   [identify]="identifyContent"
+                                                   [selectItemBuilder]="contentLabel"
+                                                   [selectionLabel]="'movements.form.content.registered.selected' | pluralTranslation: model().content.participants | transloco"
+                                                   [emptyMessage]="'movements.form.content.registered.empty-search' | transloco"
+                                                   [emptySelectionMessage]="'movements.form.content.registered.empty' | transloco"
+                                                   (handleSearch)="handleGuestsSearch($event)"/>
+                    }
+                </div>
+            </sgdf-card>
+            <div class="flex items-center justify-between pt-[1rem]">
+                <sgdf-button data-testid="guest-movement-form-content-previous-button" variant="neutral" appearance="text" (click)="goTo(1)">
+                    <sgdf-icon slot="prefix" name="arrow-left" library="solid"/>
+                    {{ 'global.actions.previous' | transloco }}
+                </sgdf-button>
+                <sgdf-button data-testid="guest-movement-form-content-submit" variant="primary" submit [loading]="saving()">
+                    <sgdf-icon slot="prefix" [name]="movement() ? 'pen-to-square' : 'plus'" library="solid"/>
+                    {{ movement() | formButton | transloco }}
+                </sgdf-button>
+            </div>
+        </form>
+    }
+</app-form>

@@ -1,0 +1,11 @@
+<sgdf-list aria-busy="true" [appearance]="appearance()" [label]="'global.list.loading' | transloco">
+    @for (row of indexes(); track row) {
+        <sgdf-list-item>
+            <sgdf-skeleton class="h-[2.5rem] w-[2.5rem]" slot="start" shape="circle" effect="pulse"/>
+            <sgdf-skeleton class="h-[1rem] w-1/2" shape="rounded" effect="pulse"/>
+            @if (withDescription()) {
+                <sgdf-skeleton class="h-[0.75rem] w-2/3" slot="description" shape="rounded" effect="pulse"/>
+            }
+        </sgdf-list-item>
+    }
+</sgdf-list>

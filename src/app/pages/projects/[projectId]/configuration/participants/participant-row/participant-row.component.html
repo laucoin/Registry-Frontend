@@ -1,0 +1,58 @@
+<ng-template #row let-participant>
+    <sgdf-list-item data-testid="participant-row" [attr.data-id]="participant.id" [disabled]="!participant.visible">
+        <sgdf-avatar slot="start" variant="primary" aria-hidden="true" [initials]="initials(participant)"/>
+        <span appEllipsis>{{ fullName(participant) }}</span>
+        <span slot="description" class="flex flex-wrap items-center gap-x-3">
+            @if (participant.groups?.[0]; as group) {
+                @if (otherGroups(participant) > 0) {
+                    <sgdf-button data-testid="participant-row-groups-of-button" size="small" appearance="text" (click)="groupsOf.set(participant)">
+                        {{
+                            'participants.group' | pluralTranslation: otherGroups(participant) + 1 | transloco: {
+                                name: group.name,
+                                others: otherGroups(participant)
+                            }
+                        }}
+                    </sgdf-button>
+                } @else {
+                    <span>{{ group.name }}</span>
+                }
+            }
+            @if (participant.startAvailability || participant.endAvailability) {
+                <span class="inline-flex flex-wrap items-center gap-x-2">
+                    <span>{{ participant.startAvailability ? (participant.startAvailability | customDateFormat) : '...' }}</span>
+                    <sgdf-icon name="arrow-right-long" library="solid"/>
+                    <span>{{ participant.endAvailability ? (participant.endAvailability | customDateFormat) : '...' }}</span>
+                </span>
+            }
+        </span>
+        <span slot="end" class="flex flex-wrap items-center gap-2">
+            @if (!participant.visible) {
+                <sgdf-tag appearance="outlined" variant="neutral" pill>{{ 'participants.visible.false' | transloco }}</sgdf-tag>
+            }
+            <sgdf-tag appearance="soft" pill [variant]="statusVariant(participant)">{{ participant.status.label }}</sgdf-tag>
+            @if (actions.primaryFor(participant, groupId()); as primary) {
+                <sgdf-button data-testid="participant-row-button" size="small" appearance="outlined" variant="primary"
+                             [attr.aria-disabled]="primary.disabled ? 'true' : null"
+                             (click)="primary.disabled ? null : primary.run()">
+                    <sgdf-icon slot="prefix" [name]="primary.icon" library="solid"/>
+                    {{ primary.label | transloco }}
+                </sgdf-button>
+            }
+        </span>
+        <app-element-actions data-testid="participant-row-actions" slot="actions" [subject]="fullName(participant)" [actions]="actions.menuFor(participant, groupId())"/>
+    </sgdf-list-item>
+</ng-template>
+
+<sgdf-dialog data-testid="participant-row-dialog" light-dismiss
+             [open]="!!groupsOf()"
+             [title]="'participants.group-layer-title' | pluralTranslation: groupsOf()?.groups | transloco"
+             (sgdf-hide)="closeDialog($event)">
+    <sgdf-list appearance="text" [label]="'participants.group-layer-title' | pluralTranslation: groupsOf()?.groups | transloco">
+        @for (group of groupsOf()?.groups; track group.id) {
+            <sgdf-list-item>
+                <sgdf-icon slot="start" name="sitemap" library="solid"/>
+                {{ group.name }}
+            </sgdf-list-item>
+        }
+    </sgdf-list>
+</sgdf-dialog>

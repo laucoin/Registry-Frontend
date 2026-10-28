@@ -1,7 +1,7 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # Config
-public/settings/*.json
+public/settings/env.json
 
 # Compiled output
 /dist
@@ -39,8 +39,8 @@ yarn-error.log
 testem.log
 /typings
 
-# Claude Code (local-only, thin skills referencing .github/prompts)
-.claude/
+# Claude Code (skills and shared settings are versioned)
+.claude/settings.local.json
 
 # System files
 .DS_Store

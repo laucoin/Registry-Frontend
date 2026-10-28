@@ -46,8 +46,8 @@ runs:
           const HOTFIX_RE = /^(\d+\.\d+\.\d+)-hotfix-(\d+)$/;
           const PROTECTED_TAGS = new Set(['main', 'latest']);
 
-          // GHCR containers owned by a user. For an organization, swap these two
-          // calls for the *ForOrg equivalents and pass `org` instead of `username`.
+          // Conteneurs GHCR appartenant à un utilisateur. Pour une organisation, remplacer ces deux
+          // appels par leurs équivalents *ForOrg et passer `org` au lieu de `username`.
           const versions = await github.paginate(
             github.rest.packages.getAllPackageVersionsForPackageOwnedByUser,
             { package_type: 'container', package_name: packageName, username: owner, per_page: 100 }
@@ -79,10 +79,10 @@ runs:
 
           const toDelete = new Set();
 
-          // 1) Release images beyond the newest N.
+          // 1) Images de release au-delà des N plus récentes.
           for (const r of releases.slice(keepReleases)) toDelete.add(r.id);
 
-          // 2) Latest hotfix per kept release survives; the rest go.
+          // 2) Le dernier hotfix de chaque release conservée survit ; les autres sont supprimés.
           const latestHotfix = new Map(); // base -> {num, id}
           for (const h of hotfixes) {
             if (!keptBases.has(h.base)) continue;
@@ -90,11 +90,11 @@ runs:
             if (!cur || h.num > cur.num) latestHotfix.set(h.base, h);
           }
           for (const h of hotfixes) {
-            if (!keptBases.has(h.base)) { toDelete.add(h.id); continue; }  // hotfix of an evicted release
-            if (latestHotfix.get(h.base).id !== h.id) toDelete.add(h.id);  // superseded hotfix
+            if (!keptBases.has(h.base)) { toDelete.add(h.id); continue; }  // hotfix d'une release évincée
+            if (latestHotfix.get(h.base).id !== h.id) toDelete.add(h.id);  // hotfix remplacé
           }
 
-          // Never delete a version that also carries a protected tag (main/latest).
+          // Ne jamais supprimer une version qui porte aussi un tag protégé (main/latest).
           for (const id of [...toDelete]) {
             const tags = tagsById.get(id) ?? [];
             if (tags.some(t => PROTECTED_TAGS.has(t))) {
