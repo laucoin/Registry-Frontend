@@ -14,7 +14,7 @@ import { GroupFormPage } from '@pages/projects/[projectId]/configuration/groups/
 import { GroupFormModel } from '@pages/projects/[projectId]/configuration/groups/group-form/group.form'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { autoMock } from '@shared/helpers/testing/auto-mock'
-import { GROUP_DTO, PARTICIPANT_DTO, WHEN_ETAG } from '@shared/helpers/testing/response-fixtures'
+import { GROUP_DTO, WHEN_ETAG } from '@shared/helpers/testing/response-fixtures'
 
 interface PageApi {
     submit: () => void
@@ -22,7 +22,7 @@ interface PageApi {
     error: () => unknown
 }
 
-const FILLED: GroupFormModel = { name: 'Wolves', beginDateTime: null, endDateTime: null, participants: [ { ...PARTICIPANT_DTO } as never ] }
+const FILLED: GroupFormModel = { name: 'Wolves', beginDateTime: null, endDateTime: null }
 
 describe( 'GroupFormPage', () => {
     let facade: Record<string, Mock>
@@ -31,7 +31,7 @@ describe( 'GroupFormPage', () => {
     function create (id: string | undefined): PageApi {
         facade = autoMock()
         back = vi.fn()
-        facade[ 'fetchGroup' ].mockReturnValue( of( { ...GROUP_DTO, members: [ PARTICIPANT_DTO ] } ) )
+        facade[ 'fetchGroup' ].mockReturnValue( of( GROUP_DTO ) )
         facade[ 'updateGroup' ].mockReturnValue( of( GROUP_DTO ) )
         facade[ 'createGroup' ].mockReturnValue( of( GROUP_DTO ) )
         RegistryConfig.config = { notification: { duration: {} } } as unknown as ConfigModel
@@ -77,7 +77,7 @@ describe( 'GroupFormPage', () => {
 
         // Assert
         expect( facade[ 'fetchGroup' ] ).toHaveBeenCalledWith( id )
-        expect( page.model().participants.map( (item: { id: string }): string => item.id ) ).toEqual( [ 'pa1' ] )
+        expect( page.model().name ).toEqual( GROUP_DTO.name )
     } )
 
     it( 'updates the group with its id and the form values, then goes back', () => {
@@ -88,7 +88,7 @@ describe( 'GroupFormPage', () => {
         page.submit()
 
         // Assert
-        expect( facade[ 'updateGroup' ] ).toHaveBeenCalledWith( 'g1', expect.objectContaining( { name: 'Wolves', members: [ 'pa1' ] } ), WHEN_ETAG )
+        expect( facade[ 'updateGroup' ] ).toHaveBeenCalledWith( 'g1', expect.objectContaining( { name: GROUP_DTO.name } ), WHEN_ETAG )
         expect( facade[ 'createGroup' ] ).not.toHaveBeenCalled()
         expect( back ).toHaveBeenCalledTimes( 1 )
     } )
@@ -102,7 +102,7 @@ describe( 'GroupFormPage', () => {
         page.submit()
 
         // Assert
-        expect( facade[ 'createGroup' ] ).toHaveBeenCalledWith( expect.objectContaining( { name: 'Wolves', members: [ 'pa1' ] } ) )
+        expect( facade[ 'createGroup' ] ).toHaveBeenCalledWith( expect.objectContaining( { name: 'Wolves' } ) )
         expect( facade[ 'updateGroup' ] ).not.toHaveBeenCalled()
     } )
 

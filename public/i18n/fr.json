@@ -1008,9 +1008,6 @@
           "dateRequiredForTime": "Ce groupe termine à une certaine heure ok ! Mais quel jour ? 📆",
           "beginDateBeforeEndDate": "Ce groupe part avant d’être arrivé ! Ça c’est de l’ambition."
         },
-        "members": {
-          "required": "Impossible de créer un groupe sans membres. Ce groupe a besoin de renforts !"
-        },
         "add-members": {
           "required": "Ajouter des membres sans membres, on tient quelque-chose là !"
         }

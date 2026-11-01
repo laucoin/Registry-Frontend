@@ -4,5 +4,4 @@ export interface GroupDto {
     name: string
     startAvailability: CustomDatetimeModel | undefined
     endAvailability: CustomDatetimeModel | undefined
-    members: string[]
 }

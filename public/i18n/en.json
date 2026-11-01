@@ -1008,9 +1008,6 @@
           "dateRequiredForTime": "This group leaves at a certain time, ok! But which day? 📆",
           "beginDateBeforeEndDate": "This group leaves before arriving! Now that’s ambition."
         },
-        "members": {
-          "required": "Unable to create a group without members. This group needs reinforcements!"
-        },
         "add-members": {
           "required": "Adding members without members, we’re onto something here!"
         }
