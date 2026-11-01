@@ -1,5 +1,6 @@
 import { ActivityResponseDto } from '@shared/models/dto/response/activity.response.dto'
 import { PlannedMovementResponseDto } from '@shared/models/dto/response/planned-movement.response.dto'
+import { AlertStatisticsResponseDto } from '@shared/models/dto/response/alert-statistics.response.dto'
 import { AlertResponseDto } from '@shared/models/dto/response/alert.response.dto'
 import { CommunicationResponseDto } from '@shared/models/dto/response/communication.response.dto'
 import { GroupResponseDto } from '@shared/models/dto/response/group.response.dto'
@@ -63,6 +64,8 @@ export const MOVEMENT_DTO: MovementResponseDto = {
 export const COMMUNICATION_DTO: CommunicationResponseDto = {
     ...GENERIC, id: 'c1', dateTime: WHEN, message: 'hello', movement: MOVEMENT_DTO, alert: undefined,
 }
+
+export const ALERT_STATISTICS_DTO: AlertStatisticsResponseDto = { resolvedCount: 13, canceledCount: 2, averageResolutionSeconds: 8100, realAlertRate: 13 / 15 }
 
 export const ALERT_DTO: AlertResponseDto = {
     ...GENERIC, id: 'al1', dateTime: WHEN, title: 'Fire', status: { label: 'In progress', value: 'IN_PROGRESS' as never },

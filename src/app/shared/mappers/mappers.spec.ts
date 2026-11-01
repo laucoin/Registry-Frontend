@@ -3,6 +3,7 @@ import { HISTORY, PARTICIPANT_DTO, PLANNED_MOVEMENT_DTO, PROJECT_DTO, USER_DTO, 
 import { ActivityMapper } from '@shared/mappers/activity.mapper'
 import { AlertCriticalityMetadataMapper } from '@shared/mappers/alert-criticality-metadata.mapper'
 import { AlertMapper } from '@shared/mappers/alert.mapper'
+import { AlertStatisticsMapper } from '@shared/mappers/alert-statistics.mapper'
 import { FeaturesMapper } from '@shared/mappers/features.mapper'
 import { FeaturesResponseDto } from '@shared/models/dto/response/features.response.dto'
 import { AlertCriticalityMetadataResponseDto } from '@shared/models/dto/response/alert-criticality-metadata.response.dto'
@@ -189,6 +190,18 @@ describe( 'mappers', () => {
         expect( model.lastCommunication?.message ).toBe( 'hello' )
         expect( model.communications?.[ 0 ].movement?.contentType ).toBe( 'GUEST' )
         expect( communicationModel.alert ).toBeUndefined()
+    } )
+
+    it( 'maps the statistics of the alerts and turns the missing values into undefined', () => {
+        // Arrange
+        const empty: ReturnType<typeof AlertStatisticsMapper.toModel> = { resolvedCount: 0, canceledCount: 0, averageResolutionSeconds: undefined, realAlertRate: undefined }
+
+        // Act
+        const mapped: ReturnType<typeof AlertStatisticsMapper.toModel> = AlertStatisticsMapper.toModel( { resolvedCount: 0, canceledCount: 0, averageResolutionSeconds: null, realAlertRate: null } )
+
+        // Assert
+        expect( mapped ).toEqual( empty )
+        expect( AlertStatisticsMapper.toModel( { resolvedCount: 3, canceledCount: 1, averageResolutionSeconds: 60, realAlertRate: 0.75 } ).realAlertRate ).toBe( 0.75 )
     } )
 
     it( 'maps the elements of a page and keeps the paging fields', () => {

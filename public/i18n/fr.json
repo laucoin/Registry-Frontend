@@ -1445,6 +1445,18 @@
       "title": "Alertes",
       "subtitle": "Les alertes du projet : suis celles en cours, ajoute des communications, résous-les ou annule-les."
     },
+    "statistics": {
+      "resolution": {
+        "title": "Temps moyen de résolution",
+        "hint": "Moyenne sur les alertes résolues",
+        "empty": "Aucune alerte résolue"
+      },
+      "rate": {
+        "title": "Taux d’alertes réelles",
+        "hint": "{{resolved}} résolues sur {{closed}} clôturées",
+        "empty": "Aucune alerte clôturée"
+      }
+    },
     "search-and-filter": {
       "text": "Titre",
       "start-datetime": "Après le",

@@ -5,12 +5,15 @@ import { FieldTree, FormField } from '@angular/forms/signals'
 import { TranslocoPipe } from '@jsverse/transloco'
 import '@sgdf/ui/button'
 import '@sgdf/ui/date-time-picker'
+import '@sgdf/ui/format-duration'
+import '@sgdf/ui/format-number'
 import '@sgdf/ui/icon'
 import '@sgdf/ui/input'
 import '@sgdf/ui/list-item'
 import '@sgdf/ui/option'
 import '@sgdf/ui/page-title'
 import '@sgdf/ui/select'
+import '@sgdf/ui/stat'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
 import {
     AlertsListSearchModel,
@@ -20,14 +23,17 @@ import {
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { DurationHelper } from '@shared/helpers/duration.helper'
 import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
+import { AlertStatisticsModel } from '@shared/models/model/alert-statistics.model'
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
+import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
 import { AlertElementComponent } from '@shared/ui/domain/alert-element/alert-element.component'
 
 /**
  * Purpose: Page listant les alertes du projet sélectionné avec recherche et déclencheur « charger plus ».
- * Scope: Lie le composant de liste à la facade des alertes et possède le formulaire de recherche ; chaque ligne est un élément d'alerte.
+ * Scope: Lie le composant de liste à la facade des alertes et possède le formulaire de recherche ; chaque ligne est un élément d'alerte. Affiche au-dessus les statistiques des alertes (temps moyen de résolution et taux d'alertes réelles).
  * Limits: Ne détient aucun état de domaine et n'appelle jamais le backend.
  */
 @Component({
@@ -35,6 +41,7 @@ import { AlertElementComponent } from '@shared/ui/domain/alert-element/alert-ele
     imports: [
         IfProjectAuthorityDirective,
         ListComponent,
+        SectionErrorComponent,
         AlertElementComponent,
         RegistryTemplateDirective,
         SgdfFieldDirective,
@@ -58,6 +65,18 @@ export class AlertsListPage {
         this.facade.alertsPageToParam() !== undefined,
     ].filter(Boolean).length)
 
+    protected readonly resolutionDuration: Signal<string | undefined> = computed((): string | undefined => {
+        const seconds: number | undefined = this.facade.alertStatistics()?.averageResolutionSeconds
+
+        return seconds === undefined ? undefined : DurationHelper.toIsoDuration(seconds)
+    })
+
+    protected readonly closedAlertsCount: Signal<number> = computed((): number => {
+        const statistics: AlertStatisticsModel | undefined = this.facade.alertStatistics()
+
+        return (statistics?.resolvedCount ?? 0) + (statistics?.canceledCount ?? 0)
+    })
+
     protected readonly model: WritableSignal<AlertsListSearchModel> = signal(toAlertsListSearchModel({
         q: this.facade.alertsPageQueryParam(),
         status: this.facade.alertsPageStatusParam(),
@@ -68,6 +87,7 @@ export class AlertsListPage {
     protected readonly form: FieldTree<AlertsListSearchModel> = createSearchForm(this.model)
 
     public constructor() {
+        this.facade.fetchAlertStatistics()
         this.facade.fetchAlertsPage(undefined, undefined)
     }
 

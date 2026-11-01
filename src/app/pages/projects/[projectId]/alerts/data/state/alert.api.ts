@@ -13,6 +13,9 @@ import {AlertStatusEnum} from '@shared/models/enumeration/alert-status.enum'
 import { AlertResponseDto } from '@shared/models/dto/response/alert.response.dto'
 import { CommunicationResponseDto } from '@shared/models/dto/response/communication.response.dto'
 import { AlertMapper } from '@shared/mappers/alert.mapper'
+import { AlertStatisticsMapper } from '@shared/mappers/alert-statistics.mapper'
+import { AlertStatisticsModel } from '@shared/models/model/alert-statistics.model'
+import { AlertStatisticsResponseDto } from '@shared/models/dto/response/alert-statistics.response.dto'
 import { CommunicationMapper } from '@shared/mappers/communication.mapper'
 import { PageMapper } from '@shared/mappers/page.mapper'
 import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
@@ -44,6 +47,12 @@ export class AlertApi extends GenericProjectApi {
             ).toString()}`,
         ).pipe(
             map( (dto: PageResponseDto<AlertResponseDto>): PageModel<AlertModel> => PageMapper.toModel( dto, AlertMapper.toModel ) ),
+        )
+    }
+
+    public findAlertStatistics(projectId: string | undefined): Observable<AlertStatisticsModel> {
+        return this.http.get<AlertStatisticsResponseDto>( `${this.buildRequestBaseUrl(projectId)}/statistics` ).pipe(
+            map( AlertStatisticsMapper.toModel ),
         )
     }
 

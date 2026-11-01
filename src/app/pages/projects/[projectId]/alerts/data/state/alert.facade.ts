@@ -11,6 +11,7 @@ import { Observable, tap } from 'rxjs'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
 import { AlertDto } from '@pages/projects/[projectId]/alerts/data/dto/alert.dto'
 import { AlertModel } from '@shared/models/model/alert.model'
+import { AlertStatisticsModel } from '@shared/models/model/alert-statistics.model'
 import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
 import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 import { CommunicationModel } from '@shared/models/model/communication.model'
@@ -51,6 +52,12 @@ export class AlertFacade extends GenericProjectElementFacade {
             DateHelper.buildDate( this.store.alerts.params.to() ),
         )
 
+    public readonly alertStatistics: Signal<AlertStatisticsModel | undefined> = this.store.statistics.element
+
+    public readonly alertStatisticsLoading: Signal<boolean> = this.store.statistics.loading
+
+    public readonly alertStatisticsError: Signal<NotificationModel | undefined> = this.store.statistics.error
+
     public readonly alertCommunicationsPage: Signal<PageModel<CommunicationModel> | undefined> = this.store.communications.element
 
     public readonly alertCommunicationsPageLoading: Signal<boolean> = this.store.communications.loading
@@ -69,6 +76,14 @@ export class AlertFacade extends GenericProjectElementFacade {
     public readonly alertCriticalityRule: Signal<string | undefined> = computed( (): string | undefined => this.store.metadata.criticality()?.rule )
 
     public readonly alertStatusMetadata: Signal<SelectOptionModel<AlertStatusEnum | undefined>[]> = this.store.metadata.status
+
+    public fetchAlertStatistics (): void {
+        this.store.fetchAlertStatistics( { projectId: this.selectedProjectId() } )
+    }
+
+    public reloadAlertStatistics (): void {
+        this.store.reloadAlertStatistics( { projectId: this.selectedProjectId() } )
+    }
 
     public fetchAlertsPage (
         page: number | undefined,
@@ -166,6 +181,9 @@ export class AlertFacade extends GenericProjectElementFacade {
         this.onCommandSucceeded( 'alert', command, 'alerts.notifications', { title: alert?.title, status: alert?.status?.label } )
 
         this.reloadAlertsPage()
+        if (this.alertStatistics()) {
+            this.reloadAlertStatistics()
+        }
     }
 
     public reloadAlertsPage (): void {

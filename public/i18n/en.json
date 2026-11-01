@@ -1445,6 +1445,18 @@
       "title": "Alerts",
       "subtitle": "The project’s alerts: follow the ongoing ones, add communications, resolve or cancel them."
     },
+    "statistics": {
+      "resolution": {
+        "title": "Average resolution time",
+        "hint": "Average over the resolved alerts",
+        "empty": "No resolved alert"
+      },
+      "rate": {
+        "title": "Real alert rate",
+        "hint": "{{resolved}} resolved out of {{closed}} closed",
+        "empty": "No closed alert"
+      }
+    },
     "search-and-filter": {
       "text": "Title",
       "start-datetime": "After",

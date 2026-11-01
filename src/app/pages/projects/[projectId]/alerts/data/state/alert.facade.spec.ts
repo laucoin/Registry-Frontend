@@ -19,6 +19,7 @@ describe( 'AlertFacade', () => {
     let facade: AlertFacade
     let findAlerts: Mock<AlertApi['findAlerts']>
     let findAlertCommunications: Mock<AlertApi['findAlertCommunications']>
+    let findAlertStatistics: Mock<AlertApi['findAlertStatistics']>
     let createAlert: Mock<AlertApi['createAlert']>
     let updateAlertStatusById: Mock<AlertApi['updateAlertStatusById']>
     let disableAlertById: Mock<AlertApi['disableAlertById']>
@@ -30,6 +31,7 @@ describe( 'AlertFacade', () => {
         provideTestConfig()
         findAlerts = vi.fn( () => of( pageOf<AlertModel>( [], 2 ) ) )
         findAlertCommunications = vi.fn( () => of( pageOf<CommunicationModel>( [], 1 ) ) )
+        findAlertStatistics = vi.fn( () => of( { resolvedCount: 3, canceledCount: 1, averageResolutionSeconds: 60, realAlertRate: 0.75 } ) )
         createAlert = vi.fn()
         updateAlertStatusById = vi.fn()
         disableAlertById = vi.fn()
@@ -40,7 +42,7 @@ describe( 'AlertFacade', () => {
             providers: [
                 AlertFacade,
                 AlertStore,
-                { provide: AlertApi, useValue: { findAlerts, findAlertCommunications, createAlert, updateAlertStatusById, disableAlertById, enableAlertById, deleteAlertById } },
+                { provide: AlertApi, useValue: { findAlerts, findAlertCommunications, findAlertStatistics, createAlert, updateAlertStatusById, disableAlertById, enableAlertById, deleteAlertById } },
                 { provide: MetadataApi, useValue: { getAlertsStatus: vi.fn( () => of( [] ) ), getAlertCriticality: vi.fn( () => of( { levels: [], rule: 'Aging rule' } ) ) } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ) } },
                 { provide: UiFacade, useValue: { notify } },
@@ -175,6 +177,29 @@ describe( 'AlertFacade', () => {
         expect( findAlerts ).toHaveBeenCalledTimes( 1 )
     } )
 
+    it( 'reloads the statistics after a command when they are displayed', () => {
+        // Arrange
+        facade.fetchAlertStatistics()
+        updateAlertStatusById.mockReturnValue( of( { id: 'al1', title: 'Fire' } as AlertModel ) )
+
+        // Act
+        facade.updateAlertStatus( 'al1', AlertStatusEnum.RESOLVED ).subscribe()
+
+        // Assert
+        expect( findAlertStatistics ).toHaveBeenCalledTimes( 2 )
+    } )
+
+    it( 'does not load the statistics after a command when they are not displayed', () => {
+        // Arrange
+        updateAlertStatusById.mockReturnValue( of( { id: 'al1', title: 'Fire' } as AlertModel ) )
+
+        // Act
+        facade.updateAlertStatus( 'al1', AlertStatusEnum.RESOLVED ).subscribe()
+
+        // Assert
+        expect( findAlertStatistics ).not.toHaveBeenCalled()
+    } )
+
     it( 'reports a failed command once and does not reload the alerts', () => {
         // Arrange
         disableAlertById.mockReturnValue( failing( ERROR_503 ) )
@@ -263,5 +288,30 @@ describe( 'AlertFacade', () => {
 
         // Assert
         expect( facade.alertsPageQueryParam() ).toBe( before )
+    } )
+
+    it( 'loads the statistics of the selected project and exposes them as signals', () => {
+        // Arrange
+
+        // Act
+        facade.fetchAlertStatistics()
+
+        // Assert
+        expect( findAlertStatistics ).toHaveBeenCalledWith( 'p1' )
+        expect( facade.alertStatistics()?.realAlertRate ).toBe( 0.75 )
+        expect( facade.alertStatisticsLoading() ).toBe( false )
+        expect( facade.alertStatisticsError() ).toBeUndefined()
+    } )
+
+    it( 'exposes the failure of the statistics without touching the alerts page', () => {
+        // Arrange
+        findAlertStatistics.mockReturnValue( failing( ERROR_503 ) )
+
+        // Act
+        facade.fetchAlertStatistics()
+
+        // Assert
+        expect( facade.alertStatisticsError()?.summary ).toBe( 'Down' )
+        expect( facade.alertsPageError() ).toBeUndefined()
     } )
 } )

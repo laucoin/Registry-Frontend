@@ -10,7 +10,7 @@ import { AlertApi } from '@pages/projects/[projectId]/alerts/data/state/alert.ap
 import { refreshOnLanguageChange } from '@shared/helpers/store/language-refresh'
 import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
-import { metadataFetcher, pageFetcher, paramsUpdater, withEmptyOption } from '@shared/helpers/store/paged-store.methods'
+import { elementFetcher, metadataFetcher, pageFetcher, paramsUpdater, silentElementFetcher, withEmptyOption } from '@shared/helpers/store/paged-store.methods'
 import { withProfileScope } from '@shared/helpers/store/with-profile-scope.feature'
 import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
 import { AlertCriticalityMetadataModel } from '@shared/models/model/alert-criticality-metadata.model'
@@ -18,6 +18,10 @@ import { AlertModel } from '@shared/models/model/alert.model'
 import { AlertPageParamsModel } from '@shared/models/model/alert-page-params.model'
 
 interface AlertsPageRequest extends CumulativePageRequest {
+    projectId: string | undefined
+}
+
+interface AlertStatisticsRequest {
     projectId: string | undefined
 }
 
@@ -43,6 +47,7 @@ const defaultAlertStore: AlertStoreModel = {
         from: undefined,
         to: undefined,
     } ),
+    statistics: { element: undefined, loading: false, error: undefined },
     metadata: {
         status: [],
         criticality: undefined,
@@ -77,6 +82,8 @@ export const AlertStore = signalStore(
         fetchAlertCommunicationsPage: pageFetcher( store, 'communications', (request: AlertCommunicationsPageRequest, params: CommunicationPageParamsModel) =>
             api.findAlertCommunications( request.projectId, request.id, request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
         updateAlertCommunicationsPageSearchParams: paramsUpdater( store, 'communications' ),
+        fetchAlertStatistics: elementFetcher( store, 'statistics', (request: AlertStatisticsRequest) => api.findAlertStatistics( request.projectId ) ),
+        reloadAlertStatistics: silentElementFetcher( store, 'statistics', (request: AlertStatisticsRequest) => api.findAlertStatistics( request.projectId ) ),
     }) ),
     withHooks( {
         onInit: (store): void => refreshOnLanguageChange( store.fetchAlertStatus, store.fetchAlertCriticality ),

@@ -9,12 +9,14 @@ import { AlertApi } from '@pages/projects/[projectId]/alerts/data/state/alert.ap
 import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures'
 import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
 import { AlertModel } from '@shared/models/model/alert.model'
+import { AlertStatisticsModel } from '@shared/models/model/alert-statistics.model'
 import { CommunicationModel } from '@shared/models/model/communication.model'
 
 describe( 'AlertStore', () => {
     let store: InstanceType<typeof AlertStore>
     let findAlerts: Mock<AlertApi['findAlerts']>
     let findAlertCommunications: Mock<AlertApi['findAlertCommunications']>
+    let findAlertStatistics: Mock<AlertApi['findAlertStatistics']>
     let getAlertsStatus: Mock<MetadataApi['getAlertsStatus']>
     let getAlertCriticality: Mock<MetadataApi['getAlertCriticality']>
     let langChanges: Subject<string>
@@ -22,13 +24,14 @@ describe( 'AlertStore', () => {
     beforeEach( () => {
         findAlerts = vi.fn()
         findAlertCommunications = vi.fn()
+        findAlertStatistics = vi.fn()
         getAlertsStatus = vi.fn( () => of( [ { label: 'In progress', value: AlertStatusEnum.IN_PROGRESS } ] ) )
         getAlertCriticality = vi.fn( () => of( { levels: [], rule: 'Aging rule' } ) )
         langChanges = new Subject<string>()
         TestBed.configureTestingModule( {
             providers: [
                 AlertStore,
-                { provide: AlertApi, useValue: { findAlerts, findAlertCommunications } },
+                { provide: AlertApi, useValue: { findAlerts, findAlertCommunications, findAlertStatistics } },
                 { provide: MetadataApi, useValue: { getAlertsStatus, getAlertCriticality } },
                 { provide: ErrorReporter, useValue: { notify: vi.fn() } },
                 { provide: TranslocoService, useValue: { langChanges$: langChanges.asObservable() } },
@@ -142,5 +145,62 @@ describe( 'AlertStore', () => {
         // Assert
         expect( store.communications.error()?.summary ).toBe( 'Title' )
         expect( store.alerts.error() ).toBeUndefined()
+    } )
+
+    it( 'stores the statistics and ends their loading state', () => {
+        // Arrange
+        const statistics: AlertStatisticsModel = { resolvedCount: 13, canceledCount: 2, averageResolutionSeconds: 8100, realAlertRate: 13 / 15 }
+        findAlertStatistics.mockReturnValue( of( statistics ) )
+
+        // Act
+        store.fetchAlertStatistics( { projectId: 'p1' } )
+
+        // Assert
+        expect( store.statistics.element() ).toEqual( statistics )
+        expect( store.statistics.loading() ).toBe( false )
+        expect( findAlertStatistics ).toHaveBeenCalledWith( 'p1' )
+    } )
+
+    it( 'keeps a failed statistics fetch in the statistics block only and still works afterwards', () => {
+        // Arrange
+        findAlertStatistics.mockReturnValueOnce( failing( ERROR_500 ) )
+        store.fetchAlertStatistics( { projectId: 'p1' } )
+        const failure: string | undefined = store.statistics.error()?.summary
+        findAlertStatistics.mockReturnValue( of( { resolvedCount: 1, canceledCount: 0, averageResolutionSeconds: 60, realAlertRate: 1 } ) )
+
+        // Act
+        store.fetchAlertStatistics( { projectId: 'p1' } )
+
+        // Assert
+        expect( failure ).toBe( 'Title' )
+        expect( store.alerts.error() ).toBeUndefined()
+        expect( store.statistics.error() ).toBeUndefined()
+        expect( store.statistics.element()?.resolvedCount ).toBe( 1 )
+    } )
+
+    it( 'reloads the statistics without raising their loading flag and keeps the previous ones when it fails', () => {
+        // Arrange
+        findAlertStatistics.mockReturnValueOnce( of( { resolvedCount: 1, canceledCount: 0, averageResolutionSeconds: 60, realAlertRate: 1 } ) )
+        store.fetchAlertStatistics( { projectId: 'p1' } )
+        findAlertStatistics.mockReturnValueOnce( failing( ERROR_500 ) )
+
+        // Act
+        store.reloadAlertStatistics( { projectId: 'p1' } )
+
+        // Assert
+        expect( store.statistics.element()?.resolvedCount ).toBe( 1 )
+        expect( store.statistics.loading() ).toBe( false )
+        expect( store.statistics.error() ).toBeUndefined()
+    } )
+
+    it( 'replaces the statistics with the reloaded ones', () => {
+        // Arrange
+        findAlertStatistics.mockReturnValue( of( { resolvedCount: 5, canceledCount: 1, averageResolutionSeconds: 120, realAlertRate: 5 / 6 } ) )
+
+        // Act
+        store.reloadAlertStatistics( { projectId: 'p1' } )
+
+        // Assert
+        expect( store.statistics.element()?.resolvedCount ).toBe( 5 )
     } )
 } )
