@@ -20,6 +20,11 @@ interface PageApi {
     submit: () => void
     model: { (): GroupFormModel, set: (value: GroupFormModel) => void }
     error: () => unknown
+    activeTab: () => number
+    createdGroupId: () => string | undefined
+    addMembersModel: { set: (value: { participants: { id: string }[] }) => void }
+    addMembers: () => void
+    skip: () => void
 }
 
 const FILLED: GroupFormModel = { name: 'Wolves', beginDateTime: null, endDateTime: null }
@@ -34,6 +39,7 @@ describe( 'GroupFormPage', () => {
         facade[ 'fetchGroup' ].mockReturnValue( of( GROUP_DTO ) )
         facade[ 'updateGroup' ].mockReturnValue( of( GROUP_DTO ) )
         facade[ 'createGroup' ].mockReturnValue( of( GROUP_DTO ) )
+        facade[ 'addMembersToGroup' ].mockReturnValue( of( { members: [ 'pa1' ], notAddedMemberIds: [] } ) )
         RegistryConfig.config = { notification: { duration: {} } } as unknown as ConfigModel
         RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] }, hosting: { providerName: null, providerAddress: null } }
         TestBed.configureTestingModule( {
@@ -104,6 +110,75 @@ describe( 'GroupFormPage', () => {
         // Assert
         expect( facade[ 'createGroup' ] ).toHaveBeenCalledWith( expect.objectContaining( { name: 'Wolves' } ) )
         expect( facade[ 'updateGroup' ] ).not.toHaveBeenCalled()
+    } )
+
+    it( 'moves to the members step after the creation, without leaving the page', () => {
+        // Arrange
+        const page: PageApi = create( undefined )
+        page.model.set( FILLED )
+
+        // Act
+        page.submit()
+
+        // Assert
+        expect( [ page.activeTab(), page.createdGroupId() ] ).toEqual( [ 2, GROUP_DTO.id ] )
+        expect( back ).not.toHaveBeenCalled()
+    } )
+
+    it( 'adds the chosen members to the created group, then goes back', () => {
+        // Arrange
+        const page: PageApi = create( undefined )
+        page.model.set( FILLED )
+        page.submit()
+        page.addMembersModel.set( { participants: [ { id: 'pa1' } ] } )
+
+        // Act
+        page.addMembers()
+
+        // Assert
+        expect( facade[ 'addMembersToGroup' ] ).toHaveBeenCalledWith( GROUP_DTO.id, [ 'pa1' ] )
+        expect( back ).toHaveBeenCalledTimes( 1 )
+    } )
+
+    it( 'does not add members when none is chosen', () => {
+        // Arrange
+        const page: PageApi = create( undefined )
+        page.model.set( FILLED )
+        page.submit()
+
+        // Act
+        page.addMembers()
+
+        // Assert
+        expect( facade[ 'addMembersToGroup' ] ).not.toHaveBeenCalled()
+        expect( back ).not.toHaveBeenCalled()
+    } )
+
+    it( 'stays on the members step when adding members fails', () => {
+        // Arrange
+        const page: PageApi = create( undefined )
+        facade[ 'addMembersToGroup' ].mockReturnValue( throwError( (): object => ({ title: 'T' }) ) )
+        page.model.set( FILLED )
+        page.submit()
+        page.addMembersModel.set( { participants: [ { id: 'pa1' } ] } )
+
+        // Act
+        page.addMembers()
+
+        // Assert
+        expect( [ back.mock.calls.length, page.error() ] ).toEqual( [ 0, { title: 'T' } ] )
+    } )
+
+    it( 'skips the members step by going back', () => {
+        // Arrange
+        const page: PageApi = create( undefined )
+
+        // Act
+        page.skip()
+
+        // Assert
+        expect( back ).toHaveBeenCalledTimes( 1 )
+        expect( facade[ 'addMembersToGroup' ] ).not.toHaveBeenCalled()
     } )
 
     it( 'shows the error of a failed save and stays on the page', () => {

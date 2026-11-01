@@ -973,6 +973,17 @@
         "create": "Créer un groupe",
         "edit": "Modifier le groupe “{{name}}”"
       },
+      "subtitle": {
+        "information": "Informations",
+        "members": "Membres"
+      },
+      "members-step": {
+        "created": {
+          "title": "Le groupe “{{name}}” est déjà créé",
+          "message": "Il n’est plus possible de revenir en arrière : le groupe existe dès maintenant. Ajoute des membres ou passe cette étape, tu pourras toujours les ajouter plus tard depuis la liste des groupes."
+        },
+        "skip": "Passer cette étape"
+      },
       "name": "Nom",
       "begin-datetime": "Date & Heure d’arrivée",
       "end-datetime": "Date & Heure de départ",

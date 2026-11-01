@@ -1,5 +1,5 @@
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, signal, WritableSignal } from '@angular/core'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, model, ModelSignal, signal, WritableSignal } from '@angular/core'
 import { GroupModel } from '@shared/models/model/group.model'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/data/state/group.facade'
@@ -13,12 +13,29 @@ import {
 import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
 import { FormComponent } from '@shared/ui/common/form/form.component'
 import {TranslocoPipe} from '@jsverse/transloco'
+import '@sgdf/ui/button'
+import '@sgdf/ui/callout'
 import '@sgdf/ui/card'
 import '@sgdf/ui/date-time-picker'
+import '@sgdf/ui/icon'
 import '@sgdf/ui/input'
+import '@sgdf/ui/step'
+import '@sgdf/ui/stepper'
 import { FieldErrorDirective } from '@shared/directives/field-error.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { FormActionsComponent } from '@shared/ui/common/form-actions/form-actions.component'
+import {
+    SelectElementsFieldComponent,
+} from '@shared/ui/common/select-elements-field/select-elements-field.component'
+import { ParticipantHelper } from '@shared/helpers/participant.helper'
+import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
+import {
+    AddMembersFormModel,
+    createAddMembersForm,
+    emptyAddMembersFormModel,
+    toMemberIds,
+} from '@pages/projects/[projectId]/configuration/groups/group-member-list/add-members.form'
+import { tap } from 'rxjs'
 import { ProjectModel } from '@shared/models/model/project.model'
 import { BaseFormComponent } from '@shared/ui/base/base-form.component'
 import { withLoading } from '@shared/helpers/rx.helper'
@@ -28,8 +45,8 @@ import { GenericHelper } from '@shared/helpers/generic.helper'
 import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
- * Purpose: Page avec le formulaire de création ou d'édition d'un groupe.
- * Scope: Construit le formulaire, le soumet via la facade et navigue en arrière.
+ * Purpose: Page avec le formulaire de création ou d'édition d'un groupe ; une création se poursuit par une étape facultative d'ajout de membres au nouveau groupe.
+ * Scope: Construit les formulaires, les soumet via la facade et navigue en arrière. Une fois créé, le groupe ne peut plus être édité depuis cette page : l'étape des membres ne fait qu'être ignorée ou soumise.
  * Limits: Ne détient aucun état de domaine et n'appelle jamais le backend.
  */
 @Component( {
@@ -43,12 +60,16 @@ import { ETagHelper } from '@shared/helpers/etag.helper'
         FormField,
         FormTitlePipe,
         FormButtonPipe,
+        SelectElementsFieldComponent,
+        PluralTranslationPipe,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './group-form.page.html',
 } )
 export class GroupFormPage extends BaseFormComponent {
     protected readonly facade: GroupFacade = inject( GroupFacade )
+
+    protected readonly ParticipantHelper: typeof ParticipantHelper = ParticipantHelper
 
     protected readonly group: WritableSignal<GroupModel | undefined> = signal( undefined )
     protected readonly contextProject: WritableSignal<ProjectModel | undefined> = signal( undefined )
@@ -57,6 +78,11 @@ export class GroupFormPage extends BaseFormComponent {
         project: this.contextProject,
         formatDate: (date: CustomDatetimeModel): string | undefined => this.datePipe.transform( date ),
     } )
+
+    protected readonly addMembersModel: WritableSignal<AddMembersFormModel> = signal( emptyAddMembersFormModel() )
+    protected readonly addMembersForm: FieldTree<AddMembersFormModel> = createAddMembersForm( this.addMembersModel )
+    protected readonly createdGroupId: WritableSignal<string | undefined> = signal( undefined )
+    protected readonly activeTab: ModelSignal<number> = model<number>( 1 )
 
     public constructor () {
         super()
@@ -99,7 +125,29 @@ export class GroupFormPage extends BaseFormComponent {
         }
 
         const dto: GroupDto = toGroupDto( this.model() )
-        this.save( editing ? this.facade.updateGroup( this.group()!.id, dto, ETagHelper.ifMatch( this.group() ) ) : this.facade.createGroup( dto ) )
+        if (editing) this.save( this.facade.updateGroup( this.group()!.id, dto, ETagHelper.ifMatch( this.group() ) ) )
+        else this.save( this.facade.createGroup( dto ).pipe( tap( (it: GroupModel): void => this.startMembersStep( it ) ) ), false )
+    }
+
+    private startMembersStep (created: GroupModel): void {
+        this.createdGroupId.set( created.id )
+        this.activeTab.set( 2 )
+    }
+
+    protected addMembers (): void {
+        const groupId: string | undefined = this.createdGroupId()
+        if (this.saving() || GenericHelper.isNull( groupId ) || !this.isFormValid( this.addMembersForm )) return
+
+        this.save( this.facade.addMembersToGroup( groupId!, toMemberIds( this.addMembersModel() ) ).pipe( tap( (): void => this.navigateToRedirectUri() ) ), false )
+    }
+
+    protected skip (): void {
+        this.navigateToRedirectUri()
+    }
+
+    protected handleSearch (searched: string | undefined): void {
+        this.addMembersForm.participants().markAsTouched()
+        this.facade.searchParticipants( searched )
     }
 
     protected get idParam (): string | undefined {
