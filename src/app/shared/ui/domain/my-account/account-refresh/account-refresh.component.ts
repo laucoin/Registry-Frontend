@@ -4,9 +4,9 @@ import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 import { REFRESH_CHOICES } from '@shared/helpers/refresh/refresh-choices.const';
 import { RefreshModeEnum } from "@shared/models/enumeration/refresh-mode.enum";
 import { RefreshChoiceModel } from "@shared/models/model/refresh-choice.model";
-import '@sgdf/ui/button'
-import '@sgdf/ui/button-group'
 import '@sgdf/ui/icon'
+import '@sgdf/ui/radio'
+import '@sgdf/ui/radio-group'
 import '@sgdf/ui/table'
 import '@sgdf/ui/table-cell'
 import '@sgdf/ui/table-row'

@@ -3,9 +3,9 @@ import { SessionFacade } from "@core/registry/state/session.facade";
 import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 import { ThemeEnum } from "@shared/models/enumeration/theme.enum";
 import { ThemeChoiceModel } from "@shared/models/model/theme-choice.model";
-import '@sgdf/ui/button'
-import '@sgdf/ui/button-group'
 import '@sgdf/ui/icon'
+import '@sgdf/ui/radio'
+import '@sgdf/ui/radio-group'
 import '@sgdf/ui/table'
 import '@sgdf/ui/table-cell'
 import '@sgdf/ui/table-row'

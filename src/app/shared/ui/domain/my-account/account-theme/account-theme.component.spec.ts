@@ -22,47 +22,37 @@ describe('AccountThemeComponent', () => {
 		await fixture.whenStable();
 	});
 
-	it('should mark the current theme as pressed', () => {
+	it('should select the current theme in the group', () => {
 		// Arrange
-		const buttons: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('sgdf-button'));
+		const group: HTMLElement & { value: string } = fixture.nativeElement.querySelector('sgdf-radio-group');
 
 		// Act
-		const pressed: (string | null)[] = buttons.map((button: HTMLElement): string | null => button.getAttribute('aria-pressed'));
+		const value: string = group.value;
 
 		// Assert
-		expect(pressed).toEqual(['true', 'false', 'false']);
+		expect(value).toBe(ThemeEnum.LIGHT);
 	});
 
-	it('should forward the clicked theme to the facade', () => {
+	it('should forward the chosen theme to the facade', () => {
 		// Arrange
-		const dark: HTMLElement = fixture.nativeElement.querySelectorAll('sgdf-button')[1];
+		const group: HTMLElement = fixture.nativeElement.querySelector('sgdf-radio-group');
+		Object.defineProperty(group, 'value', { value: ThemeEnum.DARK });
 
 		// Act
-		dark.click();
+		group.dispatchEvent(new Event('change'));
 
 		// Assert
 		expect(updateCurrentUserTheme).toHaveBeenCalledWith(ThemeEnum.DARK);
 	});
 
-	it('should render one button per choice of the facade', () => {
+	it('should render one radio per choice of the facade', () => {
 		// Arrange
-		const buttons: NodeListOf<HTMLElement> = fixture.nativeElement.querySelectorAll('sgdf-button');
+		const radios: NodeListOf<HTMLElement> = fixture.nativeElement.querySelectorAll('sgdf-radio');
 
 		// Act
-		const count: number = buttons.length;
+		const count: number = radios.length;
 
 		// Assert
 		expect(count).toBe(THEME_CHOICES.length);
-	});
-
-	it('should tell screen readers which theme is selected', () => {
-		// Arrange
-		const buttons: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('sgdf-button'));
-
-		// Act
-		const hints: (string | undefined)[] = buttons.map((button: HTMLElement): string | undefined => button.querySelector('.sr-only')?.textContent?.trim());
-
-		// Assert
-		expect(hints).toEqual(['(myAccount.selected)', undefined, undefined]);
 	});
 });

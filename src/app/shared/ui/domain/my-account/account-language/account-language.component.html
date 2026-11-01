@@ -13,22 +13,17 @@
                     {{ 'myAccount.language.only' | transloco: { language: ('myAccount.language.' + currentLanguage()) | transloco } }}
                 </p>
             } @else if (availableLanguages.length === 2) {
-                <sgdf-button-group class="flex w-full" [label]="'myAccount.language.choose' | transloco">
+                <sgdf-radio-group data-testid="account-language-options-group" appearance="segmented" without-label
+                                  [label]="'myAccount.language.choose' | transloco"
+                                  [value]="currentLanguage()"
+                                  [disabled]="pendingLanguage() !== undefined"
+                                  (change)="select($any($event.target).value)">
                     @for (language of availableLanguages; track language) {
-                        <sgdf-button data-testid="account-language-option-button" class="flex-1" variant="primary"
-                                     block
-                                     [appearance]="language === currentLanguage() ? 'solid' : 'outlined'"
-                                     [attr.aria-pressed]="language === currentLanguage()"
-                                     [loading]="pendingLanguage() === language"
-                                     [disabled]="pendingLanguage() !== undefined"
-                                     (click)="select(language)">
+                        <sgdf-radio data-testid="account-language-option-radio" [value]="language">
                             {{ ('myAccount.language.' + language) | transloco }}
-                            @if (language === currentLanguage()) {
-                                <span class="sr-only">({{ 'myAccount.selected' | transloco }})</span>
-                            }
-                        </sgdf-button>
+                        </sgdf-radio>
                     }
-                </sgdf-button-group>
+                </sgdf-radio-group>
             } @else {
                 <sgdf-select data-testid="account-language-select"
                         appearance="outlined"

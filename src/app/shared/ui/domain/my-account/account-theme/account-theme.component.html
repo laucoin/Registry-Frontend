@@ -8,21 +8,17 @@
 
     <sgdf-table-row>
         <sgdf-table-cell row-header>
-            <sgdf-button-group class="flex w-full" [label]="'myAccount.theme.choose' | transloco">
+            <sgdf-radio-group data-testid="account-theme-choices-group" appearance="segmented" without-label
+                              [label]="'myAccount.theme.choose' | transloco"
+                              [value]="currentTheme()"
+                              (change)="select($any($event.target).value)">
                 @for (choice of choices; track choice.theme) {
-                    <sgdf-button data-testid="account-theme-choice-button" class="flex-1" variant="primary"
-                                 block
-                                 [appearance]="choice.theme === currentTheme() ? 'solid' : 'outlined'"
-                                 [attr.aria-pressed]="choice.theme === currentTheme()"
-                                 (click)="select(choice.theme)">
-                        <sgdf-icon class="max-sm:hidden" slot="prefix" [name]="choice.icon" library="solid"/>
+                    <sgdf-radio data-testid="account-theme-choice-radio" [value]="choice.theme">
+                        <sgdf-icon class="max-sm:hidden" [name]="choice.icon" library="solid"/>
                         {{ choice.labelKey | transloco }}
-                        @if (choice.theme === currentTheme()) {
-                            <span class="sr-only">({{ 'myAccount.selected' | transloco }})</span>
-                        }
-                    </sgdf-button>
+                    </sgdf-radio>
                 }
-            </sgdf-button-group>
+            </sgdf-radio-group>
         </sgdf-table-cell>
     </sgdf-table-row>
 

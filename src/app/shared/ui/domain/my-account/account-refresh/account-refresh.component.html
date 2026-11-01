@@ -8,20 +8,16 @@
 
     <sgdf-table-row>
         <sgdf-table-cell row-header>
-            <sgdf-button-group class="flex w-full" [label]="'myAccount.refresh.choose' | transloco">
+            <sgdf-radio-group data-testid="account-refresh-modes-group" appearance="segmented" without-label
+                              [label]="'myAccount.refresh.choose' | transloco"
+                              [value]="currentMode()"
+                              (change)="select($any($event.target).value)">
                 @for (choice of choices; track choice.mode) {
-                    <sgdf-button data-testid="account-refresh-mode-button" class="flex-1" variant="primary"
-                                 block
-                                 [appearance]="choice.mode === currentMode() ? 'solid' : 'outlined'"
-                                 [attr.aria-pressed]="choice.mode === currentMode()"
-                                 (click)="select(choice.mode)">
+                    <sgdf-radio data-testid="account-refresh-mode-radio" [value]="choice.mode">
                         {{ choice.labelKey | transloco }}
-                        @if (choice.mode === currentMode()) {
-                            <span class="sr-only">({{ 'myAccount.selected' | transloco }})</span>
-                        }
-                    </sgdf-button>
+                    </sgdf-radio>
                 }
-            </sgdf-button-group>
+            </sgdf-radio-group>
         </sgdf-table-cell>
     </sgdf-table-row>
 

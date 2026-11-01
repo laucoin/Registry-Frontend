@@ -32,39 +32,39 @@ describe('AccountLanguageComponent', () => {
 		await createComponent(['fr', 'en']);
 	});
 
-	it('should mark the current language as pressed', () => {
+	it('should select the current language in the group', () => {
 		// Arrange
-		const buttons: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('sgdf-button'));
+		const group: HTMLElement & { value: string } = fixture.nativeElement.querySelector('sgdf-radio-group');
 
 		// Act
-		const pressed: (string | null)[] = buttons.map((button: HTMLElement): string | null => button.getAttribute('aria-pressed'));
+		const value: string = group.value;
 
 		// Assert
-		expect(pressed).toEqual(['true', 'false']);
+		expect(value).toBe('fr');
 	});
 
-	it('should forward the clicked language to the facade', () => {
+	it('should forward the chosen language to the facade', () => {
 		// Arrange
-		const english: HTMLElement = fixture.nativeElement.querySelectorAll('sgdf-button')[1];
+		const group: HTMLElement = fixture.nativeElement.querySelector('sgdf-radio-group');
+		Object.defineProperty(group, 'value', { value: 'en' });
 
 		// Act
-		english.click();
+		group.dispatchEvent(new Event('change'));
 
 		// Assert
 		expect(updateCurrentUserLanguage).toHaveBeenCalledWith('en');
 	});
 
-	it('should show the loader only on the language being saved', async () => {
+	it('should disable the group while a language is being saved', async () => {
 		// Arrange
 		pending.set('en');
 
 		// Act
 		await fixture.whenStable();
-		const buttons: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('sgdf-button'));
+		const group: HTMLElement & { disabled: boolean } = fixture.nativeElement.querySelector('sgdf-radio-group');
 
 		// Assert
-		expect(buttons.map((button: HTMLElement): boolean => (button as HTMLElement & { loading: boolean }).loading)).toEqual([false, true]);
-		expect(buttons.every((button: HTMLElement): boolean => (button as HTMLElement & { disabled: boolean }).disabled)).toBe(true);
+		expect(group.disabled).toBe(true);
 	});
 
 	it('should switch to a select past two languages', async () => {
@@ -76,7 +76,7 @@ describe('AccountLanguageComponent', () => {
 
 		// Assert
 		expect(options).toBe(3);
-		expect(fixture.nativeElement.querySelector('sgdf-button')).toBeNull();
+		expect(fixture.nativeElement.querySelector('sgdf-radio-group')).toBeNull();
 	});
 
 	it('should apply the language picked in the select', async () => {
@@ -92,17 +92,6 @@ describe('AccountLanguageComponent', () => {
 		expect(updateCurrentUserLanguage).toHaveBeenCalledWith('de');
 	});
 
-	it('should tell screen readers which language is selected', () => {
-		// Arrange
-		const buttons: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('sgdf-button'));
-
-		// Act
-		const hints: number = buttons.filter((button: HTMLElement): boolean => button.querySelector('.sr-only')?.textContent?.trim() === '(myAccount.selected)').length;
-
-		// Assert
-		expect(hints).toBe(1);
-	});
-
 	it('should only say that no other language is available when there is a single one', async () => {
 		// Arrange
 		await createComponent(['fr']);
@@ -112,7 +101,7 @@ describe('AccountLanguageComponent', () => {
 
 		// Assert
 		expect(message).toBe('myAccount.language.only');
-		expect(fixture.nativeElement.querySelector('sgdf-button')).toBeNull();
+		expect(fixture.nativeElement.querySelector('sgdf-radio-group')).toBeNull();
 		expect(fixture.nativeElement.querySelector('sgdf-select')).toBeNull();
 	});
 

@@ -21,47 +21,37 @@ describe('AccountRefreshComponent', () => {
 		await fixture.whenStable();
 	});
 
-	it('should render one button per refresh mode', () => {
+	it('should render one radio per refresh mode', () => {
 		// Arrange
-		const buttons: NodeListOf<HTMLElement> = fixture.nativeElement.querySelectorAll('sgdf-button');
+		const radios: NodeListOf<HTMLElement> = fixture.nativeElement.querySelectorAll('sgdf-radio');
 
 		// Act
-		const count: number = buttons.length;
+		const count: number = radios.length;
 
 		// Assert
 		expect(count).toBe(4);
 	});
 
-	it('should mark the current mode as pressed', () => {
+	it('should select the current mode in the group', () => {
 		// Arrange
-		const buttons: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('sgdf-button'));
+		const group: HTMLElement & { value: string } = fixture.nativeElement.querySelector('sgdf-radio-group');
 
 		// Act
-		const pressed: (string | null)[] = buttons.map((button: HTMLElement): string | null => button.getAttribute('aria-pressed'));
+		const value: string = group.value;
 
 		// Assert
-		expect(pressed).toEqual(['false', 'false', 'true', 'false']);
+		expect(value).toBe(RefreshModeEnum.NORMAL);
 	});
 
-	it('should forward the clicked mode to the facade', () => {
+	it('should forward the chosen mode to the facade', () => {
 		// Arrange
-		const fast: HTMLElement = fixture.nativeElement.querySelectorAll('sgdf-button')[3];
+		const group: HTMLElement = fixture.nativeElement.querySelector('sgdf-radio-group');
+		Object.defineProperty(group, 'value', { value: RefreshModeEnum.FAST });
 
 		// Act
-		fast.click();
+		group.dispatchEvent(new Event('change'));
 
 		// Assert
 		expect(updateCurrentUserRefreshMode).toHaveBeenCalledWith(RefreshModeEnum.FAST);
-	});
-
-	it('should tell screen readers which mode is selected', () => {
-		// Arrange
-		const buttons: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('sgdf-button'));
-
-		// Act
-		const hints: (string | undefined)[] = buttons.map((button: HTMLElement): string | undefined => button.querySelector('.sr-only')?.textContent?.trim());
-
-		// Assert
-		expect(hints).toEqual([undefined, undefined, '(myAccount.selected)', undefined]);
 	});
 });
