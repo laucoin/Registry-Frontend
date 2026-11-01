@@ -11,6 +11,7 @@ import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
 import { metadataFetcher, pageFetcher, paramsUpdater, withEmptyOption } from '@shared/helpers/store/paged-store.methods'
 import { UserHelper } from '@shared/helpers/user.helper'
 import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
+import { FeaturesModel } from '@shared/models/model/features.model'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 import { UserModel } from '@shared/models/model/user.model'
 import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper'
@@ -42,6 +43,7 @@ const defaultProjectProfileStore: ProjectProfileStoreModel = {
             { label: 'project-profiles.visible.true', value: true },
             { label: 'project-profiles.visible.false', value: false },
         ],
+        features: { inviteByEmail: false },
     },
 }
 
@@ -65,6 +67,9 @@ export const ProjectProfileStore = signalStore(
         ),
         fetchAssignableRoles: metadataFetcher<ProjectProfileStoreModel, 'roles', string | undefined, SelectOptionModel<string>[]>(
             store, 'roles', (projectId: string | undefined) => api.getAssignableProjectProfileRoles( projectId ),
+        ),
+        fetchFeatures: metadataFetcher<ProjectProfileStoreModel, 'features', void, FeaturesModel>(
+            store, 'features', () => metadataApi.getFeatures(),
         ),
     }) ),
     withHooks( {

@@ -3,6 +3,8 @@ import { HISTORY, PARTICIPANT_DTO, PLANNED_MOVEMENT_DTO, PROJECT_DTO, USER_DTO, 
 import { ActivityMapper } from '@shared/mappers/activity.mapper'
 import { AlertCriticalityMetadataMapper } from '@shared/mappers/alert-criticality-metadata.mapper'
 import { AlertMapper } from '@shared/mappers/alert.mapper'
+import { FeaturesMapper } from '@shared/mappers/features.mapper'
+import { FeaturesResponseDto } from '@shared/models/dto/response/features.response.dto'
 import { AlertCriticalityMetadataResponseDto } from '@shared/models/dto/response/alert-criticality-metadata.response.dto'
 import { CommunicationMapper } from '@shared/mappers/communication.mapper'
 import { CurrentUserMapper } from '@shared/mappers/current-user.mapper'
@@ -346,5 +348,16 @@ describe( 'mappers', () => {
         // Assert
         expect( model ).toEqual( dto )
         expect( model.levels ).not.toBe( undefined )
+    } )
+
+    it( 'copies the enabled features', () => {
+        // Arrange
+        const dto: FeaturesResponseDto = { inviteByEmail: true }
+
+        // Act
+        const model: ReturnType<typeof FeaturesMapper.toModel> = FeaturesMapper.toModel( dto )
+
+        // Assert
+        expect( model ).toEqual( { inviteByEmail: true } )
     } )
 } )

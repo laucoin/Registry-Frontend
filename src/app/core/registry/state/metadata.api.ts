@@ -10,6 +10,9 @@ import {AlertStatusEnum} from '@shared/models/enumeration/alert-status.enum'
 import { AlertCriticalityMetadataMapper } from '@shared/mappers/alert-criticality-metadata.mapper'
 import { AlertCriticalityMetadataResponseDto } from '@shared/models/dto/response/alert-criticality-metadata.response.dto'
 import { AlertCriticalityMetadataModel } from '@shared/models/model/alert-criticality-metadata.model'
+import { FeaturesMapper } from '@shared/mappers/features.mapper'
+import { FeaturesResponseDto } from '@shared/models/dto/response/features.response.dto'
+import { FeaturesModel } from '@shared/models/model/features.model'
 
 /**
  * Purpose: Envoie les requêtes HTTP du domaine des métadonnées.
@@ -48,5 +51,11 @@ export class MetadataApi extends GenericApi {
 
     public getAlertsStatus(): Observable<SelectOptionModel<AlertStatusEnum>[]> {
         return this.http.get<SelectOptionModel<AlertStatusEnum>[]>(`${this.baseUrl}/alerts/status`)
+    }
+
+    public getFeatures(): Observable<FeaturesModel> {
+        return this.http.get<FeaturesResponseDto>(`${this.baseUrl}/features`).pipe(
+            map( FeaturesMapper.toModel ),
+        )
     }
 }

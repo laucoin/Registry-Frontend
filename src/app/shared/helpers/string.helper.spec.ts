@@ -47,6 +47,17 @@ describe( 'StringHelper', () => {
         expect( notNullNorBlank ).toEqual( [ false, false, false, true ] )
     } )
 
+    it( 'recognizes an email address and rejects what is not one', () => {
+        // Arrange
+        const samples: (string | undefined)[] = [ 'ada@x.test', 'a.b+c@sub.x.test', undefined, '', 'ada', 'ada@x', 'ada @x.test', `${'a'.repeat( 320 )}@x.test` ]
+
+        // Act
+        const result: boolean[] = samples.map( (text: string | undefined): boolean => StringHelper.isEmail( text ) )
+
+        // Assert
+        expect( result ).toEqual( [ true, true, false, false, false, false, false, false ] )
+    } )
+
     it( 'converts numbers and numeric strings but leaves missing values undefined', () => {
         // Arrange
         const samples: (number | string | null | undefined)[] = [ 12, '34', null, undefined ]

@@ -33,7 +33,7 @@
                                    [selectionLabel]="'project-profiles.form.users.selected' | pluralTranslation: fields().users().value().length | transloco"
                                    [emptyMessage]="'project-profiles.form.users.empty' | transloco"
                                    [emptySelectionMessage]="'project-profiles.form.users.empty-search' | transloco"
-                                   [suggestions]="facade.searchedUsersMetadata()"
+                                   [suggestions]="suggestions()"
                                    [selectItemBuilder]="UserHelper.toSelectItem"
                                    (handleSearch)="handleSearch($event)"/>
     </div>

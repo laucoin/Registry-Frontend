@@ -46,6 +46,7 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
 
     public readonly searchedUsersMetadata: Signal<SelectOptionModel<UserModel>[]> = this.store.metadata.searched
     public readonly projectProfileAssignableRolesMetadata: Signal<SelectOptionModel<string>[]> = this.store.metadata.roles
+    public readonly inviteByEmailEnabled: Signal<boolean> = this.store.metadata.features.inviteByEmail
     public readonly projectProfilesStatusMetadata: Signal<SelectOptionModel<ProfileStatusEnum | undefined>[]> = this.store.metadata.status
     public readonly projectProfilesAvailabilitiesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed( (): SelectOptionModel<boolean | undefined>[] =>
         this.store.metadata.availabilities().map( (status: SelectOptionModel<boolean | undefined>): SelectOptionModel<boolean | undefined> => ({
@@ -90,6 +91,10 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
 
     public fetchAssignableRoles (projectId: string | undefined = this.selectedProjectId()): void {
         this.store.fetchAssignableRoles( projectId )
+    }
+
+    public fetchFeatures (): void {
+        this.store.fetchFeatures()
     }
 
     public fetchProjectProfile (id: string): Observable<ProjectProfileModel> {

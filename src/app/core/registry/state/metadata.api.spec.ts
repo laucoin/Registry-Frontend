@@ -13,6 +13,7 @@ const CASES: ApiCase<MetadataApi>[] = [
     { name: 'lists the participant types', method: 'GET', url: `${BASE}/participants/types`, call: (api: MetadataApi) => api.getParticipantsTypes(), response: OPTIONS, verify: same },
     { name: 'gets the alert criticality levels and rule', method: 'GET', url: `${BASE}/alerts/criticality`, call: (api: MetadataApi) => api.getAlertCriticality(), response: { levels: OPTIONS, rule: 'Rule' }, verify: (result: unknown): void => expect( result ).toEqual( { levels: OPTIONS, rule: 'Rule' } ) },
     { name: 'lists the alert statuses', method: 'GET', url: `${BASE}/alerts/status`, call: (api: MetadataApi) => api.getAlertsStatus(), response: OPTIONS, verify: same },
+    { name: 'gets the enabled features', method: 'GET', url: `${BASE}/features`, call: (api: MetadataApi) => api.getFeatures(), response: { inviteByEmail: true }, verify: (result: unknown): void => expect( result ).toEqual( { inviteByEmail: true } ) },
 ]
 
 describeApi( 'MetadataApi', MetadataApi, CASES )

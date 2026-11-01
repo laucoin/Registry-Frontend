@@ -415,6 +415,7 @@
         "empty": "No user selected",
         "search": "Invite users",
         "empty-search": "No user found",
+        "invite": "Invite {{email}} by email",
         "one": "User",
         "few": "Users",
         "selected": {

@@ -4,6 +4,7 @@ import { PageRequestInformationModel } from '@shared/models/model/page-request-i
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { UserModel } from '@shared/models/model/user.model'
+import { FeaturesModel } from '@shared/models/model/features.model'
 import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
 
 export interface ProjectProfileStoreModel extends SectionErrorsState {
@@ -13,5 +14,6 @@ export interface ProjectProfileStoreModel extends SectionErrorsState {
         status: SelectOptionModel<ProfileStatusEnum | undefined>[]
         searched: SelectOptionModel<UserModel>[]
         availabilities: SelectOptionModel<boolean | undefined>[]
+        features: FeaturesModel
     }
 }

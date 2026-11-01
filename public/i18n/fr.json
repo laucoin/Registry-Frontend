@@ -415,6 +415,7 @@
         "empty": "Aucun utilisateur sélectionné",
         "search": "Inviter des utilisateurs",
         "empty-search": "Aucun utilisateur trouvé",
+        "invite": "Inviter {{email}} par email",
         "one": "Utilisateur",
         "few": "Utilisateurs",
         "selected": {

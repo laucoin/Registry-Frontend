@@ -5,7 +5,7 @@ import { ProjectProfilesDto } from '@pages/projects/[projectId]/configuration/pr
 import { RegistrySchemas } from '@shared/helpers/form/registry.schemas'
 import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
-import { UserModel } from '@shared/models/model/user.model'
+import { InvitedUserModel } from '@shared/models/model/invited-user.model'
 
 export interface ProjectProfileFormModel {
     role: string
@@ -14,7 +14,7 @@ export interface ProjectProfileFormModel {
 }
 
 export interface ProjectProfileInvitationFormModel extends ProjectProfileFormModel {
-    users: UserModel[]
+    users: InvitedUserModel[]
 }
 
 export function toProjectProfileFormModel (profile?: ProjectProfileModel): ProjectProfileFormModel {
@@ -40,7 +40,7 @@ export function toProjectProfileDto (model: ProjectProfileFormModel): ProjectPro
 export function toProjectProfilesDto (model: ProjectProfileInvitationFormModel): ProjectProfilesDto {
     return {
         ...toProjectProfileDto( model ),
-        emails: model.users.map( (user: UserModel): string => user.email ),
+        emails: model.users.map( (user: InvitedUserModel): string => user.email ),
     }
 }
 

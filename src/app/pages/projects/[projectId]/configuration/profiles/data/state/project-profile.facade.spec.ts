@@ -40,7 +40,7 @@ describe( 'ProjectProfileFacade', () => {
                 ProjectProfileFacade,
                 ProjectProfileStore,
                 { provide: ProjectProfileApi, useValue: { findProjectProfiles, createProjectProfiles, blockProjectProfileById, deleteProjectProfileById, ...api } },
-                { provide: MetadataApi, useValue: { getProfilesStatus: vi.fn( () => of( [] ) ) } },
+                { provide: MetadataApi, useValue: { getProfilesStatus: vi.fn( () => of( [] ) ), getFeatures: vi.fn( () => of( { inviteByEmail: true } ) ) } },
                 { provide: PluralTranslationPipe, useValue: { transform: (key: string, count: number | unknown[]): string => `${key}:${Array.isArray( count ) ? count.length : count}` } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ), selectedProject: (): unknown => ({ name: 'Camp' }) } },
                 { provide: UiFacade, useValue: { notify } },
@@ -232,6 +232,18 @@ describe( 'ProjectProfileFacade', () => {
         expect( api[ 'searchUsers' ] ).toHaveBeenNthCalledWith( 2, 'p1', undefined )
         expect( api[ 'getAssignableProjectProfileRoles' ] ).toHaveBeenCalledWith( 'p2' )
         expect( api[ 'getAssignableProjectProfileRoles' ] ).toHaveBeenCalledWith( 'p1' )
+    } )
+
+    it( 'exposes whether the invitation by email is enabled once the features are fetched', () => {
+        // Arrange
+        const before: boolean = facade.inviteByEmailEnabled()
+
+        // Act
+        facade.fetchFeatures()
+
+        // Assert
+        expect( before ).toBe( false )
+        expect( facade.inviteByEmailEnabled() ).toBe( true )
     } )
 
     it( 'does not refresh the page after inviting users to another project', () => {

@@ -1,5 +1,8 @@
 import { GenericHelper } from '@shared/helpers/generic.helper'
 
+const EMAIL_PATTERN: RegExp = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
+const EMAIL_MAX_LENGTH: number = 320
+
 /**
  * Purpose: Utilitaires de chaînes.
  * Scope: Invalidation de cache, troncature, vérifications de blancs, conversion de nombres, remplissage de chiffres et casse de titre.
@@ -28,6 +31,10 @@ export class StringHelper {
 
     public static isNotNullNorBlank (text: string | undefined): boolean {
         return !this.isNullOrBlank( text )
+    }
+
+    public static isEmail (text: string | undefined): boolean {
+        return !GenericHelper.isNull( text ) && text!.length <= EMAIL_MAX_LENGTH && EMAIL_PATTERN.test( text! )
     }
 
     public static toNumber (value: number | string | null | undefined): number | undefined {

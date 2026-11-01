@@ -17,6 +17,7 @@ describe( 'ProjectProfileStore', () => {
     let searchUsers: Mock<ProjectProfileApi['searchUsers']>
     let getAssignableProjectProfileRoles: Mock<ProjectProfileApi['getAssignableProjectProfileRoles']>
     let getProfilesStatus: Mock<MetadataApi['getProfilesStatus']>
+    let getFeatures: Mock<MetadataApi['getFeatures']>
     let notify: Mock<(message: unknown) => void>
     let langChanges: Subject<string>
 
@@ -25,13 +26,14 @@ describe( 'ProjectProfileStore', () => {
         searchUsers = vi.fn()
         getAssignableProjectProfileRoles = vi.fn()
         getProfilesStatus = vi.fn( () => of( [ { label: 'Invited', value: ProfileStatusEnum.INVITED } ] ) )
+        getFeatures = vi.fn()
         notify = vi.fn()
         langChanges = new Subject<string>()
         TestBed.configureTestingModule( {
             providers: [
                 ProjectProfileStore,
                 { provide: ProjectProfileApi, useValue: { findProjectProfiles, searchUsers, getAssignableProjectProfileRoles } },
-                { provide: MetadataApi, useValue: { getProfilesStatus } },
+                { provide: MetadataApi, useValue: { getProfilesStatus, getFeatures } },
                 { provide: ErrorReporter, useValue: { notify } },
                 { provide: TranslocoService, useValue: { langChanges$: langChanges.asObservable() } },
             ],
@@ -147,5 +149,36 @@ describe( 'ProjectProfileStore', () => {
         // Assert
         expect( store.sectionErrors()[ 'metadata.roles' ]?.summary ).toBe( 'Title' )
         expect( store.metadata.roles() ).toHaveLength( 1 )
+    } )
+
+    it( 'keeps the invitation by email disabled until the features are fetched', () => {
+        // Arrange & Act
+        const enabled: boolean = store.metadata.features.inviteByEmail()
+
+        // Assert
+        expect( enabled ).toBe( false )
+    } )
+
+    it( 'stores the enabled features', () => {
+        // Arrange
+        getFeatures.mockReturnValue( of( { inviteByEmail: true } ) )
+
+        // Act
+        store.fetchFeatures()
+
+        // Assert
+        expect( store.metadata.features() ).toEqual( { inviteByEmail: true } )
+    } )
+
+    it( 'keeps a failed features fetch in the section error and keeps the invitation by email disabled', () => {
+        // Arrange
+        getFeatures.mockReturnValue( failing( ERROR_500 ) )
+
+        // Act
+        store.fetchFeatures()
+
+        // Assert
+        expect( store.sectionErrors()[ 'metadata.features' ]?.summary ).toBe( 'Title' )
+        expect( store.metadata.features.inviteByEmail() ).toBe( false )
     } )
 } )
