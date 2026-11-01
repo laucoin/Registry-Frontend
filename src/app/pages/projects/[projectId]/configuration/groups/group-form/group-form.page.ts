@@ -25,17 +25,13 @@ import { FieldErrorDirective } from '@shared/directives/field-error.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { FormActionsComponent } from '@shared/ui/common/form-actions/form-actions.component'
 import {
-    SelectElementsFieldComponent,
-} from '@shared/ui/common/select-elements-field/select-elements-field.component'
-import { ParticipantHelper } from '@shared/helpers/participant.helper'
-import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
-import {
     AddMembersFormModel,
     createAddMembersForm,
     emptyAddMembersFormModel,
     toMemberIds,
 } from '@pages/projects/[projectId]/configuration/groups/group-member-list/add-members.form'
 import { tap } from 'rxjs'
+import { GroupMembersFieldComponent } from '@shared/ui/domain/group-members-field/group-members-field.component'
 import { ProjectModel } from '@shared/models/model/project.model'
 import { BaseFormComponent } from '@shared/ui/base/base-form.component'
 import { withLoading } from '@shared/helpers/rx.helper'
@@ -60,16 +56,13 @@ import { ETagHelper } from '@shared/helpers/etag.helper'
         FormField,
         FormTitlePipe,
         FormButtonPipe,
-        SelectElementsFieldComponent,
-        PluralTranslationPipe,
+        GroupMembersFieldComponent,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './group-form.page.html',
 } )
 export class GroupFormPage extends BaseFormComponent {
     protected readonly facade: GroupFacade = inject( GroupFacade )
-
-    protected readonly ParticipantHelper: typeof ParticipantHelper = ParticipantHelper
 
     protected readonly group: WritableSignal<GroupModel | undefined> = signal( undefined )
     protected readonly contextProject: WritableSignal<ProjectModel | undefined> = signal( undefined )
@@ -146,7 +139,6 @@ export class GroupFormPage extends BaseFormComponent {
     }
 
     protected handleSearch (searched: string | undefined): void {
-        this.addMembersForm.participants().markAsTouched()
         this.facade.searchParticipants( searched )
     }
 

@@ -34,16 +34,12 @@ import '@sgdf/ui/select'
 import '@sgdf/ui/skeleton'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import {TranslocoPipe} from '@jsverse/transloco'
-import {
-    SelectElementsFieldComponent,
-} from '@shared/ui/common/select-elements-field/select-elements-field.component'
 import { Observable, switchMap, tap } from 'rxjs'
+import { GroupMembersFieldComponent } from '@shared/ui/domain/group-members-field/group-members-field.component'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { EventHelper } from '@shared/helpers/event.helper'
 import { FormActionsComponent } from '@shared/ui/common/form-actions/form-actions.component'
-import { ParticipantHelper } from '@shared/helpers/participant.helper'
 import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
-import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { ParticipantFormComponent } from '@pages/projects/[projectId]/configuration/participants/participant-form/participant-form.component'
 
 /**
@@ -63,9 +59,8 @@ import { ParticipantFormComponent } from '@pages/projects/[projectId]/configurat
         NgTemplateOutlet,
         FormField,
         TranslocoPipe,
-        SelectElementsFieldComponent,
+        GroupMembersFieldComponent,
         FormActionsComponent,
-        PluralTranslationPipe,
         ParticipantFormComponent,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -80,8 +75,6 @@ export class GroupMemberListPage {
     private readonly route: ActivatedRoute = inject( ActivatedRoute )
     private readonly sessionFacade: SessionFacade = inject( SessionFacade )
     protected readonly uiFacade: UiFacade = inject( UiFacade )
-
-    protected readonly ParticipantHelper: typeof ParticipantHelper = ParticipantHelper
 
     protected readonly group: WritableSignal<GroupModel | undefined> = signal( undefined )
     protected readonly groupLoading: WritableSignal<boolean> = signal( false )
@@ -169,7 +162,6 @@ export class GroupMemberListPage {
     }
 
     protected handleSearch (searched: string | undefined): void {
-        this.addMembersForm.participants().markAsTouched()
         this.facade.searchParticipants( searched )
     }
 

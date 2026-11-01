@@ -67,15 +67,8 @@
              (sgdf-hide)="closeLayer($event, addMembersFormLayerOpened)">
     <form novalidate data-testid="group-member-list-add-members-form" class="flex flex-col gap-[0.75rem]" (submit)="$event.preventDefault(); addMembers()">
         <div>
-            <h2 class="section-title">{{ 'groups.form.members' | pluralTranslation: addMembersModel().participants | transloco }}</h2>
-            <app-select-elements-field data-testid="group-member-list-participants-field" [formField]="addMembersForm.participants" [appFieldError]="addMembersForm.participants" translationPrefix="groups.form.error.add-members"
-                                       [label]="'groups.form.members.search' | transloco"
-                                       [suggestions]="facade.searchedParticipantsMetadata()"
-                                       [selectItemBuilder]="ParticipantHelper.toSelectItem"
-                                       [selectionLabel]="'groups.form.members.selected' | pluralTranslation: addMembersModel().participants | transloco"
-                                       [emptyMessage]="'groups.form.members.empty' | transloco"
-                                       [emptySelectionMessage]="'groups.form.members.empty-search' | transloco"
-                                       (handleSearch)="handleSearch($event.query)"/>
+            <app-group-members-field data-testid="group-member-list-members-field" [field]="addMembersForm.participants" [suggestions]="facade.searchedParticipantsMetadata()"
+                                     (searched)="handleSearch($event)"/>
         </div>
         <app-form-actions data-testid="group-member-list-actions" submitLabel="groups.actions.add" submitIcon="user-plus"
                           (cancelled)="addMembersFormLayerOpened.set(false)"/>

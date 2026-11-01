@@ -42,15 +42,8 @@
         </sgdf-callout>
         <form novalidate data-testid="group-form-members-form" class="mt-[1rem]" (submit)="$event.preventDefault(); addMembers()">
             <sgdf-card>
-                <h2 class="section-title">{{ 'groups.form.members' | pluralTranslation: addMembersModel().participants | transloco }}</h2>
-                <app-select-elements-field data-testid="group-form-participants-field" [formField]="addMembersForm.participants" [appFieldError]="addMembersForm.participants" translationPrefix="groups.form.error.add-members"
-                                           [label]="'groups.form.members.search' | transloco"
-                                           [suggestions]="facade.searchedParticipantsMetadata()"
-                                           [selectItemBuilder]="ParticipantHelper.toSelectItem"
-                                           [selectionLabel]="'groups.form.members.selected' | pluralTranslation: addMembersModel().participants | transloco"
-                                           [emptyMessage]="'groups.form.members.empty' | transloco"
-                                           [emptySelectionMessage]="'groups.form.members.empty-search' | transloco"
-                                           (handleSearch)="handleSearch($event.query)"/>
+                <app-group-members-field data-testid="group-form-members-field" [field]="addMembersForm.participants" [suggestions]="facade.searchedParticipantsMetadata()"
+                                         (searched)="handleSearch($event)"/>
             </sgdf-card>
             <div class="flex items-center justify-between pt-[1rem]">
                 <sgdf-button data-testid="group-form-members-skip-button" variant="neutral" appearance="text" [disabled]="saving()" (click)="skip()" [attr.label]="'groups.form.members-step.skip' | transloco">
