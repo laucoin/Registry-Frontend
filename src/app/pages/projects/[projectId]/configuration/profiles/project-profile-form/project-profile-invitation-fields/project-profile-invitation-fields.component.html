@@ -31,7 +31,7 @@
         <app-select-elements-field data-testid="project-profile-invitation-fields-users-field" [formField]="fields().users" [appFieldError]="fields().users" translationPrefix="project-profiles.form.error.users"
                                    [label]="'project-profiles.form.users.search' | transloco"
                                    [selectionLabel]="'project-profiles.form.users.selected' | pluralTranslation: fields().users().value().length | transloco"
-                                   [emptyMessage]="'project-profiles.form.users.empty' | transloco"
+                                   [emptyMessage]="(facade.inviteByEmailEnabled() ? 'project-profiles.form.users.empty-invite' : 'project-profiles.form.users.empty') | transloco"
                                    [emptySelectionMessage]="'project-profiles.form.users.empty-search' | transloco"
                                    [suggestions]="suggestions()"
                                    [selectItemBuilder]="UserHelper.toSelectItem"

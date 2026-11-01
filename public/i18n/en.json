@@ -413,6 +413,7 @@
       "end-datetime": "Access end date & time",
       "users": {
         "empty": "No user selected",
+        "empty-invite": "No user found. Enter a complete email address to invite this person.",
         "search": "Invite users",
         "empty-search": "No user found",
         "invite": "Invite {{email}} by email",
