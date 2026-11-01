@@ -1439,6 +1439,18 @@
       "datetime": "Date & Heure"
     }
   },
+  "timeline": {
+    "planned": {
+      "title": "Présence prévue",
+      "empty": "Aucune présence prévue."
+    },
+    "actual": {
+      "title": "Sorties",
+      "empty": "Aucune sortie."
+    },
+    "ongoing": "Sortie en cours depuis le {{since}}",
+    "no-period": "Aucune période à afficher : le projet n’a pas de dates et rien n’est encore prévu ni enregistré."
+  },
   "alerts": {
     "untitled": "Alerte sans titre",
     "list": {

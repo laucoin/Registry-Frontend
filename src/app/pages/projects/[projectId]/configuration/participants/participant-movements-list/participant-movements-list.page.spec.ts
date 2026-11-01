@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, convertToParamMap, ParamMap } from '@angular/router'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { BehaviorSubject, of, Subject } from 'rxjs'
+import { SessionFacade } from '@core/registry/state/session.facade'
 import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import { ParticipantMovementsListPage } from '@pages/projects/[projectId]/configuration/participants/participant-movements-list/participant-movements-list.page'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
@@ -19,6 +20,8 @@ describe('ParticipantMovementsListPage', () => {
     let fetchEntity: Mock
     let fetchMovements: Mock
     let reloadMovements: Mock
+    let fetchTimeline: Mock
+    let reloadTimeline: Mock
     let inputSearch: Mock
     let page: ParticipantMovementsListPage
 
@@ -35,6 +38,8 @@ describe('ParticipantMovementsListPage', () => {
         fetchEntity = vi.fn(() => of(ENTITY))
         fetchMovements = vi.fn()
         reloadMovements = vi.fn()
+        fetchTimeline = vi.fn()
+        reloadTimeline = vi.fn()
         inputSearch = vi.fn()
         TestBed.configureTestingModule({
             providers: [
@@ -43,6 +48,7 @@ describe('ParticipantMovementsListPage', () => {
                     provide: MovementFacade,
                     useValue: { handleMovementFirstPageReload: (): Subject<void> => firstPageReload, handleMovementCurrentPageReload: (): Subject<void> => currentPageReload },
                 },
+                { provide: SessionFacade, useValue: { selectedProject: signal(undefined) } },
                 {
                     provide: ParticipantFacade,
                     useValue: {
@@ -53,6 +59,8 @@ describe('ParticipantMovementsListPage', () => {
                         fetchParticipant: fetchEntity,
                         fetchParticipantMovementsPage: fetchMovements,
                         reloadParticipantMovementsPage: reloadMovements,
+                        fetchParticipantTimeline: fetchTimeline,
+                        reloadParticipantTimeline: reloadTimeline,
                         inputMovementsPageSearchParameters: inputSearch,
                     },
                 },
@@ -152,6 +160,40 @@ describe('ParticipantMovementsListPage', () => {
 
         // Assert
         expect(reloadMovements).toHaveBeenCalledWith('participant1')
+    })
+
+    it('loads the timeline of the participant when created', () => {
+        // Arrange
+
+        // Act
+        const calls: unknown[][] = fetchTimeline.mock.calls
+
+        // Assert
+        expect(calls).toEqual([['participant1']])
+    })
+
+    it('reloads the timeline when a movement is created or changes', () => {
+        // Arrange
+        reloadTimeline.mockClear()
+
+        // Act
+        firstPageReload.next()
+        currentPageReload.next()
+
+        // Assert
+        expect(reloadTimeline).toHaveBeenCalledTimes(2)
+        expect(reloadTimeline).toHaveBeenCalledWith('participant1')
+    })
+
+    it('loads the timeline again when the user retries after a failure', () => {
+        // Arrange
+        fetchTimeline.mockClear()
+
+        // Act
+        page['retryTimeline']()
+
+        // Assert
+        expect(fetchTimeline).toHaveBeenCalledWith('participant1')
     })
 
     it('stops listening once destroyed', () => {

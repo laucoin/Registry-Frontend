@@ -4,6 +4,8 @@ import { ActivityMapper } from '@shared/mappers/activity.mapper'
 import { AlertCriticalityMetadataMapper } from '@shared/mappers/alert-criticality-metadata.mapper'
 import { AlertMapper } from '@shared/mappers/alert.mapper'
 import { AlertStatisticsMapper } from '@shared/mappers/alert-statistics.mapper'
+import { ParticipantTimelineMapper } from '@shared/mappers/participant-timeline.mapper'
+import { TimelineMapper } from '@shared/mappers/timeline.mapper'
 import { FeaturesMapper } from '@shared/mappers/features.mapper'
 import { FeaturesResponseDto } from '@shared/models/dto/response/features.response.dto'
 import { AlertCriticalityMetadataResponseDto } from '@shared/models/dto/response/alert-criticality-metadata.response.dto'
@@ -202,6 +204,32 @@ describe( 'mappers', () => {
         // Assert
         expect( mapped ).toEqual( empty )
         expect( AlertStatisticsMapper.toModel( { resolvedCount: 3, canceledCount: 1, averageResolutionSeconds: 60, realAlertRate: 0.75 } ).realAlertRate ).toBe( 0.75 )
+    } )
+
+    it( 'maps a planned range with open bounds and an outing with real dates', () => {
+        // Arrange
+        const outing: { start: Date, end: Date, ongoing: boolean } = { start: new Date( WHEN ), end: new Date( WHEN ), ongoing: true }
+
+        // Act
+        const range: ReturnType<typeof TimelineMapper.toRange> = TimelineMapper.toRange( { start: { date: '2026-07-03', time: undefined }, end: null } )
+
+        // Assert
+        expect( range ).toEqual( { start: { date: '2026-07-03', time: undefined }, end: undefined } )
+        expect( TimelineMapper.toOuting( outing ) ).toEqual( outing )
+        expect( TimelineMapper.toOuting( outing ).start ).toBeInstanceOf( Date )
+    } )
+
+    it( 'maps the timeline of a participant with its planned ranges and its outings', () => {
+        // Arrange
+        const dto: Parameters<typeof ParticipantTimelineMapper.toModel>[ 0 ] = { planned: [ { start: null, end: null } ], actual: [ { start: new Date( WHEN ), end: new Date( WHEN ), ongoing: false } ] }
+
+        // Act
+        const model: ReturnType<typeof ParticipantTimelineMapper.toModel> = ParticipantTimelineMapper.toModel( dto )
+
+        // Assert
+        expect( model.planned ).toEqual( [ { start: undefined, end: undefined } ] )
+        expect( model.actual ).toHaveLength( 1 )
+        expect( model.actual[ 0 ].ongoing ).toBe( false )
     } )
 
     it( 'maps the elements of a page and keeps the paging fields', () => {

@@ -1,6 +1,7 @@
 import { ParticipantApi } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.api'
 import { ApiCase, PAGE_QUERY, describeApi, expectMapped, expectMappedList, expectMappedPage } from '@shared/helpers/testing/api-test.helper'
-import { GROUP_DTO, MOVEMENT_DTO, PARTICIPANT_DTO, USER_DTO, pageDto } from '@shared/helpers/testing/response-fixtures'
+import { expect } from 'vitest'
+import { GROUP_DTO, MOVEMENT_DTO, PARTICIPANT_DTO, PARTICIPANT_TIMELINE_DTO, USER_DTO, WHEN, pageDto } from '@shared/helpers/testing/response-fixtures'
 
 const BASE: string = '/api/v2/projects/p1/participants'
 const PARAMS: never = { resetSearch: false, q: 'x' } as never
@@ -19,6 +20,7 @@ const CASES: ApiCase<ParticipantApi>[] = [
     { name: 'searches groups with a text', method: 'GET', url: `${BASE}/search/groups?q=wo`, call: (api: ParticipantApi) => api.searchGroups( 'p1', 'wo' ), response: [ GROUP_DTO ], verify: expectMappedList },
     { name: 'searches groups without a text', method: 'GET', url: `${BASE}/search/groups`, call: (api: ParticipantApi) => api.searchGroups( 'p1', undefined ), response: [ GROUP_DTO ], verify: expectMappedList },
     { name: 'pages the movements of a participant', method: 'GET', url: new RegExp( `${BASE}/pa1/movements\\?${PAGE_QUERY}` ), call: (api: ParticipantApi) => api.findParticipantMovements( 'p1', 'pa1', 0, 10, PARAMS ), response: pageDto( [ MOVEMENT_DTO ] ), verify: expectMappedPage },
+    { name: 'reads the timeline of a participant', method: 'GET', url: `${BASE}/pa1/timeline`, call: (api: ParticipantApi) => api.findParticipantTimeline( 'p1', 'pa1' ), response: PARTICIPANT_TIMELINE_DTO, verify: (result: unknown): void => expect( result ).toEqual( { planned: [ { start: { date: '2026-07-03', time: undefined }, end: undefined } ], actual: [ { start: new Date( WHEN ), end: new Date( WHEN ), ongoing: true } ] } ) },
     { name: 'finds the birthdays of the participants', method: 'GET', url: `${BASE}/birthday`, call: (api: ParticipantApi) => api.findParticipantsBirthdays( 'p1' ), response: [ PARTICIPANT_DTO ], verify: expectMappedList },
 ]
 

@@ -6,6 +6,15 @@
     }
 </sgdf-page-title>
 
+<app-presence-timeline data-testid="participant-movements-list-timeline" class="mt-(--spacing--block) block"
+                       [planned]="facade.participantTimeline()?.planned ?? []"
+                       [actual]="facade.participantTimeline()?.actual ?? []"
+                       [projectBegin]="session.selectedProject()?.begin"
+                       [projectEnd]="session.selectedProject()?.end"
+                       [loading]="facade.participantTimelineLoading()"
+                       [error]="facade.participantTimelineError()"
+                       (retry)="retryTimeline()"/>
+
 <app-list data-testid="participant-movements-list-list" class="mt-(--spacing--block) block"
           emptyMessagePrefix="movements.notifications.EMPTY"
           [elementPage]="facade.participantMovementsPage()"

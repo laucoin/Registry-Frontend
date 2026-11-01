@@ -23,6 +23,9 @@ import { ParticipantMapper } from '@shared/mappers/participant.mapper'
 import { UserMapper } from '@shared/mappers/user.mapper'
 import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
 import { ETagHelper } from '@shared/helpers/etag.helper'
+import { ParticipantTimelineMapper } from '@shared/mappers/participant-timeline.mapper'
+import { ParticipantTimelineModel } from '@shared/models/model/participant-timeline.model'
+import { ParticipantTimelineResponseDto } from '@shared/models/dto/response/participant-timeline.response.dto'
 
 /**
  * Purpose: Envoie les requêtes HTTP du domaine des participants.
@@ -85,6 +88,12 @@ export class ParticipantApi extends GenericProjectApi {
             ).toString() : ''}`,
         ).pipe(
             map( (dtos: GroupResponseDto[]): GroupModel[] => dtos.map( GroupMapper.toModel ) ),
+        )
+    }
+
+    public findParticipantTimeline(projectId: string | undefined, id: string): Observable<ParticipantTimelineModel> {
+        return this.http.get<ParticipantTimelineResponseDto>( `${this.buildRequestBaseUrl(projectId)}/${id}/timeline` ).pipe(
+            map( ParticipantTimelineMapper.toModel ),
         )
     }
 

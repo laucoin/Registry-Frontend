@@ -14,6 +14,7 @@ import '@sgdf/ui/page-title'
 import '@sgdf/ui/select'
 import '@sgdf/ui/skeleton'
 import { distinctUntilChanged, map, tap } from 'rxjs'
+import { SessionFacade } from '@core/registry/state/session.facade'
 import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import {
     ParticipantMovementsListSearchModel,
@@ -29,11 +30,12 @@ import { withLoading } from '@shared/helpers/rx.helper'
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
+import { PresenceTimelineComponent } from '@shared/ui/common/presence-timeline/presence-timeline.component'
 import { MovementElementComponent } from '@shared/ui/domain/movement-element/movement-element.component'
 
 /**
  * Purpose: Page listant les mouvements d'un participant avec recherche et déclencheur « charger plus ».
- * Scope: Lie le composant de liste à la facade des participants, possède le formulaire de recherche, affiche le nom du participant et recharge quand un mouvement change.
+ * Scope: Lie le composant de liste à la facade des participants, possède le formulaire de recherche, affiche le nom du participant et ses frises prévue et réelle, et recharge quand un mouvement change.
  * Limits: Ne détient aucun état de domaine et n'appelle jamais le backend.
  */
 @Component({
@@ -41,6 +43,7 @@ import { MovementElementComponent } from '@shared/ui/domain/movement-element/mov
     imports: [
         IfProjectAuthorityDirective,
         ListComponent,
+        PresenceTimelineComponent,
         MovementElementComponent,
         RegistryTemplateDirective,
         SgdfFieldDirective,
@@ -57,6 +60,7 @@ export class ParticipantMovementsListPage {
     private readonly destroyRef: DestroyRef = inject( DestroyRef )
     protected readonly facade: ParticipantFacade = inject(ParticipantFacade)
     protected readonly movementFacade: MovementFacade = inject(MovementFacade)
+    protected readonly session: SessionFacade = inject(SessionFacade)
     private readonly route: ActivatedRoute = inject(ActivatedRoute)
 
     protected readonly entity: WritableSignal<ParticipantModel | undefined> = signal(undefined)
@@ -94,15 +98,18 @@ export class ParticipantMovementsListPage {
         this.facade.fetchParticipant(this.id()).pipe(
                 withLoading(this.entityLoading),
             ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe((entity: ParticipantModel): void => this.entity.set(entity))
+        this.facade.fetchParticipantTimeline(this.id())
         this.facade.fetchParticipantMovementsPage(this.id(), undefined, undefined)
     }
 
     private handleMovementActions(): void {
         this.movementFacade.handleMovementFirstPageReload().pipe(
                 tap((): void => this.facade.fetchParticipantMovementsPage(this.id(), 0, undefined)),
+                tap((): void => this.facade.reloadParticipantTimeline(this.id())),
             ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe()
         this.movementFacade.handleMovementCurrentPageReload().pipe(
                 tap((): void => this.facade.reloadParticipantMovementsPage(this.id())),
+                tap((): void => this.facade.reloadParticipantTimeline(this.id())),
             ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe()
     }
 
@@ -120,6 +127,10 @@ export class ParticipantMovementsListPage {
     protected resetFilters(): void {
         this.model.set({ type: '', from: null, to: null, isVisible: '' })
         this.search()
+    }
+
+    protected retryTimeline(): void {
+        this.facade.fetchParticipantTimeline(this.id())
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {

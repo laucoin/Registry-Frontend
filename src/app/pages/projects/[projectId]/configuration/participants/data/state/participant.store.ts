@@ -12,10 +12,12 @@ import { refreshOnLanguageChange } from '@shared/helpers/store/language-refresh'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
 import {
     contentsRequester,
+    elementFetcher,
     metadataFetcher,
     movementContentsFetcher,
     pageFetcher,
     paramsUpdater,
+    silentElementFetcher,
     withEmptyOption,
 } from '@shared/helpers/store/paged-store.methods'
 import { withProfileScope } from '@shared/helpers/store/with-profile-scope.feature'
@@ -33,6 +35,11 @@ interface ParticipantsPageRequest extends CumulativePageRequest {
 }
 
 interface ParticipantMovementsPageRequest extends ParticipantsPageRequest {
+    id: string
+}
+
+interface ParticipantTimelineRequest {
+    projectId: string | undefined
     id: string
 }
 
@@ -58,6 +65,7 @@ const defaultParticipantStore: ParticipantStoreModel = {
         from: undefined,
         to: undefined,
     } ),
+    timeline: { element: undefined, loading: false, error: undefined },
     metadata: {
         searchedUsers: [],
         searchedGroups: [],
@@ -106,6 +114,8 @@ export const ParticipantStore = signalStore(
             merge: CumulativePageHelper.merge,
             after: contentsRequester( store.fetchParticipantMovementsContents ),
         } ),
+        fetchParticipantTimeline: elementFetcher( store, 'timeline', (request: ParticipantTimelineRequest) => api.findParticipantTimeline( request.projectId, request.id ) ),
+        reloadParticipantTimeline: silentElementFetcher( store, 'timeline', (request: ParticipantTimelineRequest) => api.findParticipantTimeline( request.projectId, request.id ) ),
     }) ),
     withHooks( {
         onInit: (store): void => refreshOnLanguageChange( store.fetchPresencesStatus ),

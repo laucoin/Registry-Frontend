@@ -11,7 +11,7 @@ import { ParticipantApi } from '@pages/projects/[projectId]/configuration/partic
 import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import { ParticipantStore } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.store'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
-import { ERROR_500, failing, pageOf, provideTestConfig } from '@shared/helpers/testing/test-fixtures'
+import { ERROR_500, ERROR_503, failing, pageOf, provideTestConfig } from '@shared/helpers/testing/test-fixtures'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 
@@ -33,7 +33,7 @@ describe( 'ParticipantFacade', () => {
         updateParticipantById = vi.fn()
         deleteParticipantById = vi.fn()
         exportParticipantById = vi.fn()
-        api = { findParticipantById: vi.fn(), disableParticipantById: vi.fn(), enableParticipantById: vi.fn(), searchUsers: vi.fn( () => of( [] ) ), searchGroups: vi.fn( () => of( [] ) ) }
+        api = { findParticipantTimeline: vi.fn( () => of( { planned: [], actual: [] } ) ), findParticipantById: vi.fn(), disableParticipantById: vi.fn(), enableParticipantById: vi.fn(), searchUsers: vi.fn( () => of( [] ) ), searchGroups: vi.fn( () => of( [] ) ) }
         downloadJson = vi.spyOn( BrowserService.prototype, 'downloadJson' ).mockReset().mockImplementation( (): void => undefined )
         notify = vi.fn()
         TestBed.configureTestingModule( {
@@ -244,5 +244,41 @@ describe( 'ParticipantFacade', () => {
 
         // Assert
         expect( facade.participantMovementsPageTypeParam() ).toBe( 'IN' )
+    } )
+
+    it( 'loads the timeline of a participant for the selected project and exposes it as signals', () => {
+        // Arrange
+
+        // Act
+        facade.fetchParticipantTimeline( 'pa1' )
+
+        // Assert
+        expect( api[ 'findParticipantTimeline' ] ).toHaveBeenCalledWith( 'p1', 'pa1' )
+        expect( facade.participantTimeline() ).toEqual( { planned: [], actual: [] } )
+        expect( facade.participantTimelineLoading() ).toBe( false )
+        expect( facade.participantTimelineError() ).toBeUndefined()
+    } )
+
+    it( 'reloads the timeline of a participant', () => {
+        // Arrange
+        facade.fetchParticipantTimeline( 'pa1' )
+
+        // Act
+        facade.reloadParticipantTimeline( 'pa1' )
+
+        // Assert
+        expect( api[ 'findParticipantTimeline' ] ).toHaveBeenCalledTimes( 2 )
+    } )
+
+    it( 'exposes the failure of the timeline without touching the movements', () => {
+        // Arrange
+        api[ 'findParticipantTimeline' ].mockReturnValue( failing( ERROR_503 ) )
+
+        // Act
+        facade.fetchParticipantTimeline( 'pa1' )
+
+        // Assert
+        expect( facade.participantTimelineError()?.summary ).toBe( 'Down' )
+        expect( facade.participantMovementsPageError() ).toBeUndefined()
     } )
 } )

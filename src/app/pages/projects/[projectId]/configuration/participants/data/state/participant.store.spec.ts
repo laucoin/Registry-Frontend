@@ -4,6 +4,7 @@ import { of, Subject } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { MetadataApi } from '@core/registry/state/metadata.api'
 import { ErrorReporter } from '@core/registry/state/error-reporter'
+import { ParticipantTimelineModel } from '@shared/models/model/participant-timeline.model'
 import { ParticipantApi } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.api'
 import { ParticipantStore } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.store'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
@@ -17,6 +18,7 @@ describe( 'ParticipantStore', () => {
     let store: InstanceType<typeof ParticipantStore>
     let findParticipants: Mock<ParticipantApi['findParticipants']>
     let findParticipantMovements: Mock<ParticipantApi['findParticipantMovements']>
+    let findParticipantTimeline: Mock<ParticipantApi['findParticipantTimeline']>
     let searchUsers: Mock<ParticipantApi['searchUsers']>
     let searchGroups: Mock<ParticipantApi['searchGroups']>
     let findMovementsContents: Mock<MovementApi['findMovementsContents']>
@@ -25,6 +27,7 @@ describe( 'ParticipantStore', () => {
     beforeEach( () => {
         findParticipants = vi.fn()
         findParticipantMovements = vi.fn()
+        findParticipantTimeline = vi.fn()
         searchUsers = vi.fn()
         searchGroups = vi.fn()
         findMovementsContents = vi.fn( () => of( [] ) )
@@ -32,7 +35,7 @@ describe( 'ParticipantStore', () => {
         TestBed.configureTestingModule( {
             providers: [
                 ParticipantStore,
-                { provide: ParticipantApi, useValue: { findParticipants, findParticipantMovements, searchUsers, searchGroups } },
+                { provide: ParticipantApi, useValue: { findParticipants, findParticipantMovements, findParticipantTimeline, searchUsers, searchGroups } },
                 { provide: MovementApi, useValue: { findMovementsContents } },
                 { provide: MetadataApi, useValue: { getPresencesStatus: vi.fn( () => of( [] ) ) } },
                 { provide: ErrorReporter, useValue: { notify } },
@@ -148,5 +151,51 @@ describe( 'ParticipantStore', () => {
         // Assert
         expect( store.movements.error()?.summary ).toBe( 'Title' )
         expect( store.participants.error() ).toBeUndefined()
+    } )
+
+    it( 'stores the timeline of a participant and ends its loading state', () => {
+        // Arrange
+        const timeline: ParticipantTimelineModel = { planned: [], actual: [ { start: new Date( 0 ), end: new Date( 1 ), ongoing: false } ] }
+        findParticipantTimeline.mockReturnValue( of( timeline ) )
+
+        // Act
+        store.fetchParticipantTimeline( { projectId: 'p1', id: 'pa1' } )
+
+        // Assert
+        expect( findParticipantTimeline ).toHaveBeenCalledWith( 'p1', 'pa1' )
+        expect( store.timeline.element() ).toEqual( timeline )
+        expect( store.timeline.loading() ).toBe( false )
+    } )
+
+    it( 'keeps a failed timeline fetch in the timeline block only and still works afterwards', () => {
+        // Arrange
+        findParticipantTimeline.mockReturnValueOnce( failing( ERROR_500 ) )
+        store.fetchParticipantTimeline( { projectId: 'p1', id: 'pa1' } )
+        const failure: string | undefined = store.timeline.error()?.summary
+        findParticipantTimeline.mockReturnValue( of( { planned: [], actual: [] } ) )
+
+        // Act
+        store.fetchParticipantTimeline( { projectId: 'p1', id: 'pa1' } )
+
+        // Assert
+        expect( failure ).toBe( 'Title' )
+        expect( store.movements.error() ).toBeUndefined()
+        expect( store.timeline.error() ).toBeUndefined()
+        expect( store.timeline.element() ).toEqual( { planned: [], actual: [] } )
+    } )
+
+    it( 'reloads the timeline silently and keeps the previous one when it fails', () => {
+        // Arrange
+        findParticipantTimeline.mockReturnValueOnce( of( { planned: [], actual: [] } ) )
+        store.fetchParticipantTimeline( { projectId: 'p1', id: 'pa1' } )
+        findParticipantTimeline.mockReturnValueOnce( failing( ERROR_500 ) )
+
+        // Act
+        store.reloadParticipantTimeline( { projectId: 'p1', id: 'pa1' } )
+
+        // Assert
+        expect( store.timeline.element() ).toEqual( { planned: [], actual: [] } )
+        expect( store.timeline.loading() ).toBe( false )
+        expect( store.timeline.error() ).toBeUndefined()
     } )
 } )

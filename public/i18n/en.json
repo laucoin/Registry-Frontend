@@ -1439,6 +1439,18 @@
       "datetime": "Date & Time"
     }
   },
+  "timeline": {
+    "planned": {
+      "title": "Planned presence",
+      "empty": "No planned presence."
+    },
+    "actual": {
+      "title": "Outings",
+      "empty": "No outing."
+    },
+    "ongoing": "Outing in progress since {{since}}",
+    "no-period": "No period to show: the project has no dates and nothing is planned or recorded yet."
+  },
   "alerts": {
     "untitled": "Untitled alert",
     "list": {

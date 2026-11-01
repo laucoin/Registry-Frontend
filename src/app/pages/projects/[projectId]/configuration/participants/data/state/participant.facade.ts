@@ -3,6 +3,7 @@ import { Observable, tap } from 'rxjs'
 import { BrowserService } from '@core/browser/browser.service'
 import { PageModel } from '@shared/models/model/page.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
+import { ParticipantTimelineModel } from '@shared/models/model/participant-timeline.model'
 import { ParticipantDto } from '@pages/projects/[projectId]/configuration/participants/data/dto/participant.dto'
 import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
@@ -54,6 +55,12 @@ export class ParticipantFacade extends GenericProjectElementFacade {
     public readonly participantMovementsPageSilentLoading: Signal<boolean> = this.store.movements.silentLoading
 
     public readonly participantMovementsPageError: Signal<NotificationModel | undefined> = this.store.movements.error
+
+    public readonly participantTimeline: Signal<ParticipantTimelineModel | undefined> = this.store.timeline.element
+
+    public readonly participantTimelineLoading: Signal<boolean> = this.store.timeline.loading
+
+    public readonly participantTimelineError: Signal<NotificationModel | undefined> = this.store.timeline.error
 
     public readonly participantMovementsPageResetSearch: Signal<boolean> = this.store.movements.params.resetSearch
 
@@ -116,6 +123,14 @@ export class ParticipantFacade extends GenericProjectElementFacade {
     ): void {
         const index: number | undefined = this.participantMovementsPageResetSearch() ? 0 : page
         this.store.fetchParticipantMovementsPage( { projectId: this.selectedProjectId(), id: id, page: index, size: size } )
+    }
+
+    public fetchParticipantTimeline (id: string): void {
+        this.store.fetchParticipantTimeline( { projectId: this.selectedProjectId(), id: id } )
+    }
+
+    public reloadParticipantTimeline (id: string): void {
+        this.store.reloadParticipantTimeline( { projectId: this.selectedProjectId(), id: id } )
     }
 
     public reloadParticipantMovementsPage (id: string): void {

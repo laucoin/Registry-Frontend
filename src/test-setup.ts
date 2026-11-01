@@ -1,6 +1,6 @@
 /**
  * Purpose: Complète l'environnement jsdom utilisé par les tests unitaires.
- * Scope: Écarte les avertissements de jsdom sur les feuilles de style des web components qu'il ne sait pas analyser, donne aux custom elements associés aux formulaires de @sgdf/ui les membres d'ElementInternals que jsdom n'a pas, aux éléments de dialogue les méthodes qui les ouvrent et les ferment, et la liste d'animations que lisent les web components.
+ * Scope: Écarte les avertissements de jsdom sur les feuilles de style des web components qu'il ne sait pas analyser, donne aux custom elements associés aux formulaires de @sgdf/ui les membres d'ElementInternals que jsdom n'a pas, aux éléments de dialogue les méthodes qui les ouvrent et les ferment, la liste d'animations que lisent les web components et un `ResizeObserver` qui n'observe rien.
  * Limits: Simples substituts ; chaque élément est valide, rien n'est validé ni soumis et un dialogue n'est pas affiché dans la top layer.
  */
 interface JsdomErrorEmitter {
@@ -40,4 +40,18 @@ HTMLDialogElement.prototype.close ??= function (this: HTMLDialogElement): void {
 
 Element.prototype.getAnimations ??= function (): Animation[] {
     return []
+}
+
+globalThis.ResizeObserver ??= class implements ResizeObserver {
+    public observe (): void {
+        return undefined
+    }
+
+    public unobserve (): void {
+        return undefined
+    }
+
+    public disconnect (): void {
+        return undefined
+    }
 }
