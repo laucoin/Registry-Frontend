@@ -1099,6 +1099,17 @@
       "title": "Véhicules",
       "subtitle": "Le parc du projet : conducteurs, capacités et disponibilités."
     },
+    "statistics": {
+      "out": {
+        "title": "Temps en sortie",
+        "hint": "Cumul de toutes les sorties"
+      },
+      "usage": {
+        "title": "Taux d’utilisation",
+        "hint": "Temps en sortie sur la période de disponibilité",
+        "empty": "Aucune période de disponibilité ni dates de projet pour le calculer"
+      }
+    },
     "search-and-filter": {
       "text": "Immatriculation, modèle, marque",
       "datetime": "Date & Heure",

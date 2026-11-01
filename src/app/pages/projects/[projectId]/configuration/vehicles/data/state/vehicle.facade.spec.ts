@@ -27,7 +27,7 @@ describe( 'VehicleFacade', () => {
         findVehicles = vi.fn( () => of( pageOf<VehicleModel>( [], 2 ) ) )
         createVehicle = vi.fn()
         enableVehicleById = vi.fn()
-        api = { findVehicleById: vi.fn(), updateVehicleById: vi.fn(), disableVehicleById: vi.fn(), deleteVehicleById: vi.fn() }
+        api = { findVehicleTimeline: vi.fn( () => of( { planned: [], actual: [], outSeconds: 0, usageRate: undefined } ) ), findVehicleById: vi.fn(), updateVehicleById: vi.fn(), disableVehicleById: vi.fn(), deleteVehicleById: vi.fn() }
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
@@ -230,5 +230,41 @@ describe( 'VehicleFacade', () => {
 
         // Assert
         expect( facade.vehicleMovementsPageTypeParam() ).toBe( 'IN' )
+    } )
+
+    it( 'loads the timeline of a vehicle for the selected project and exposes it as signals', () => {
+        // Arrange
+
+        // Act
+        facade.fetchVehicleTimeline( 'v1' )
+
+        // Assert
+        expect( api[ 'findVehicleTimeline' ] ).toHaveBeenCalledWith( 'p1', 'v1' )
+        expect( facade.vehicleTimeline()?.outSeconds ).toBe( 0 )
+        expect( facade.vehicleTimelineLoading() ).toBe( false )
+        expect( facade.vehicleTimelineError() ).toBeUndefined()
+    } )
+
+    it( 'reloads the timeline of a vehicle', () => {
+        // Arrange
+        facade.fetchVehicleTimeline( 'v1' )
+
+        // Act
+        facade.reloadVehicleTimeline( 'v1' )
+
+        // Assert
+        expect( api[ 'findVehicleTimeline' ] ).toHaveBeenCalledTimes( 2 )
+    } )
+
+    it( 'exposes the failure of the timeline without touching the movements', () => {
+        // Arrange
+        api[ 'findVehicleTimeline' ].mockReturnValue( failing( ERROR_503 ) )
+
+        // Act
+        facade.fetchVehicleTimeline( 'v1' )
+
+        // Assert
+        expect( facade.vehicleTimelineError()?.summary ).toBe( 'Down' )
+        expect( facade.vehicleMovementsPageError() ).toBeUndefined()
     } )
 } )

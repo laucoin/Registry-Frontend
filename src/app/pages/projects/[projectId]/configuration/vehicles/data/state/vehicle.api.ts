@@ -13,6 +13,9 @@ import { MovementResponseDto } from '@shared/models/dto/response/movement.respon
 import { VehicleResponseDto } from '@shared/models/dto/response/vehicle.response.dto'
 import { MovementMapper } from '@shared/mappers/movement.mapper'
 import { PageMapper } from '@shared/mappers/page.mapper'
+import { VehicleTimelineMapper } from '@shared/mappers/vehicle-timeline.mapper'
+import { VehicleTimelineModel } from '@shared/models/model/vehicle-timeline.model'
+import { VehicleTimelineResponseDto } from '@shared/models/dto/response/vehicle-timeline.response.dto'
 import { VehicleMapper } from '@shared/mappers/vehicle.mapper'
 import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
 import { ETagHelper } from '@shared/helpers/etag.helper'
@@ -50,6 +53,12 @@ export class VehicleApi extends GenericProjectApi {
     public findVehicleById(projectId: string | undefined, id: string): Observable<VehicleModel> {
         return this.http.get<VehicleResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`).pipe(
             map( VehicleMapper.toModel ),
+        )
+    }
+
+    public findVehicleTimeline(projectId: string | undefined, id: string): Observable<VehicleTimelineModel> {
+        return this.http.get<VehicleTimelineResponseDto>( `${this.buildRequestBaseUrl(projectId)}/${id}/timeline` ).pipe(
+            map( VehicleTimelineMapper.toModel ),
         )
     }
 

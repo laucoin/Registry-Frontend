@@ -11,10 +11,12 @@ import { refreshOnLanguageChange } from '@shared/helpers/store/language-refresh'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
 import {
     contentsRequester,
+    elementFetcher,
     metadataFetcher,
     movementContentsFetcher,
     pageFetcher,
     paramsUpdater,
+    silentElementFetcher,
     withEmptyOption,
 } from '@shared/helpers/store/paged-store.methods'
 import { withProfileScope } from '@shared/helpers/store/with-profile-scope.feature'
@@ -29,6 +31,11 @@ interface VehiclesPageRequest extends CumulativePageRequest {
 }
 
 interface VehicleMovementsPageRequest extends VehiclesPageRequest {
+    id: string
+}
+
+interface VehicleTimelineRequest {
+    projectId: string | undefined
     id: string
 }
 
@@ -50,6 +57,7 @@ const defaultVehicleStore: VehicleStoreModel = {
         from: undefined,
         to: undefined,
     } ),
+    timeline: { element: undefined, loading: false, error: undefined },
     metadata: {
         availabilities: [
             { label: '-', value: undefined },
@@ -91,6 +99,8 @@ export const VehicleStore = signalStore(
             merge: CumulativePageHelper.merge,
             after: contentsRequester( store.fetchVehicleMovementsContents ),
         } ),
+        fetchVehicleTimeline: elementFetcher( store, 'timeline', (request: VehicleTimelineRequest) => api.findVehicleTimeline( request.projectId, request.id ) ),
+        reloadVehicleTimeline: silentElementFetcher( store, 'timeline', (request: VehicleTimelineRequest) => api.findVehicleTimeline( request.projectId, request.id ) ),
     }) ),
     withHooks( {
         onInit: (store): void => refreshOnLanguageChange( store.fetchPresencesStatus ),

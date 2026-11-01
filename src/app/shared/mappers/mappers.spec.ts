@@ -6,6 +6,7 @@ import { AlertMapper } from '@shared/mappers/alert.mapper'
 import { AlertStatisticsMapper } from '@shared/mappers/alert-statistics.mapper'
 import { ParticipantTimelineMapper } from '@shared/mappers/participant-timeline.mapper'
 import { TimelineMapper } from '@shared/mappers/timeline.mapper'
+import { VehicleTimelineMapper } from '@shared/mappers/vehicle-timeline.mapper'
 import { FeaturesMapper } from '@shared/mappers/features.mapper'
 import { FeaturesResponseDto } from '@shared/models/dto/response/features.response.dto'
 import { AlertCriticalityMetadataResponseDto } from '@shared/models/dto/response/alert-criticality-metadata.response.dto'
@@ -230,6 +231,20 @@ describe( 'mappers', () => {
         expect( model.planned ).toEqual( [ { start: undefined, end: undefined } ] )
         expect( model.actual ).toHaveLength( 1 )
         expect( model.actual[ 0 ].ongoing ).toBe( false )
+    } )
+
+    it( 'maps the timeline of a vehicle with its time out and its usage rate, which can be missing', () => {
+        // Arrange
+        const dto: Parameters<typeof VehicleTimelineMapper.toModel>[ 0 ] = { planned: [], actual: [ { start: new Date( WHEN ), end: new Date( WHEN ), ongoing: true } ], outSeconds: 3600, usageRate: 0.25 }
+
+        // Act
+        const model: ReturnType<typeof VehicleTimelineMapper.toModel> = VehicleTimelineMapper.toModel( dto )
+
+        // Assert
+        expect( model.outSeconds ).toBe( 3600 )
+        expect( model.usageRate ).toBe( 0.25 )
+        expect( model.actual[ 0 ].ongoing ).toBe( true )
+        expect( VehicleTimelineMapper.toModel( { ...dto, usageRate: null } ).usageRate ).toBeUndefined()
     } )
 
     it( 'maps the elements of a page and keeps the paging fields', () => {

@@ -1099,6 +1099,17 @@
       "title": "Vehicles",
       "subtitle": "The project’s fleet: drivers, capacities and availabilities."
     },
+    "statistics": {
+      "out": {
+        "title": "Time out",
+        "hint": "Total of all the outings"
+      },
+      "usage": {
+        "title": "Usage rate",
+        "hint": "Time out over the availability period",
+        "empty": "No availability period nor project dates to compute it"
+      }
+    },
     "search-and-filter": {
       "text": "License plate, model, make",
       "datetime": "Date & Time",

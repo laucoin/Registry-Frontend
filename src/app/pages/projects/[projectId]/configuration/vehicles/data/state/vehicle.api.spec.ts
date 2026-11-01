@@ -1,11 +1,13 @@
+import { expect } from 'vitest'
 import { VehicleApi } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.api'
 import { ApiCase, PAGE_QUERY, describeApi, expectMapped, expectMappedPage } from '@shared/helpers/testing/api-test.helper'
-import { MOVEMENT_DTO, VEHICLE_DTO, pageDto } from '@shared/helpers/testing/response-fixtures'
+import { MOVEMENT_DTO, VEHICLE_DTO, VEHICLE_TIMELINE_DTO, WHEN, pageDto } from '@shared/helpers/testing/response-fixtures'
 
 const BASE: string = '/api/v2/projects/p1/vehicles'
 const PARAMS: never = { resetSearch: false, q: 'x' } as never
 
 const CASES: ApiCase<VehicleApi>[] = [
+    { name: 'reads the timeline of a vehicle', method: 'GET', url: `${BASE}/v1/timeline`, call: (api: VehicleApi) => api.findVehicleTimeline( 'p1', 'v1' ), response: VEHICLE_TIMELINE_DTO, verify: (result: unknown): void => expect( result ).toEqual( { planned: [ { start: undefined, end: { date: '2026-07-20', time: undefined } } ], actual: [ { start: new Date( WHEN ), end: new Date( WHEN ), ongoing: false } ], outSeconds: 7200, usageRate: undefined } ) },
     { name: 'pages the elements with the search parameters', method: 'GET', url: new RegExp( `${BASE}\\?${PAGE_QUERY}&q=x$` ), call: (api: VehicleApi) => api.findVehicles( 'p1', 0, 10, PARAMS ), response: pageDto( [ VEHICLE_DTO ] ), verify: expectMappedPage },
     { name: 'finds an element by id', method: 'GET', url: `${BASE}/v1`, call: (api: VehicleApi) => api.findVehicleById( 'p1', 'v1' ), response: VEHICLE_DTO, verify: expectMapped },
     { name: 'creates an element', method: 'POST', url: BASE, body: { name: 'x' }, call: (api: VehicleApi) => api.createVehicle( 'p1', { name: 'x' } as never ), response: VEHICLE_DTO, verify: expectMapped },

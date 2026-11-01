@@ -1,6 +1,7 @@
 import { ActivityResponseDto } from '@shared/models/dto/response/activity.response.dto'
 import { PlannedMovementResponseDto } from '@shared/models/dto/response/planned-movement.response.dto'
 import { ParticipantTimelineResponseDto } from '@shared/models/dto/response/participant-timeline.response.dto'
+import { VehicleTimelineResponseDto } from '@shared/models/dto/response/vehicle-timeline.response.dto'
 import { AlertStatisticsResponseDto } from '@shared/models/dto/response/alert-statistics.response.dto'
 import { AlertResponseDto } from '@shared/models/dto/response/alert.response.dto'
 import { CommunicationResponseDto } from '@shared/models/dto/response/communication.response.dto'
@@ -69,6 +70,12 @@ export const COMMUNICATION_DTO: CommunicationResponseDto = {
 export const PARTICIPANT_TIMELINE_DTO: ParticipantTimelineResponseDto = {
     planned: [ { start: { date: '2026-07-03', time: undefined }, end: null } ],
     actual: [ { start: WHEN, end: WHEN, ongoing: true } ],
+}
+
+export const VEHICLE_TIMELINE_DTO: VehicleTimelineResponseDto = {
+    planned: [ { start: null, end: { date: '2026-07-20', time: undefined } } ],
+    actual: [ { start: WHEN, end: WHEN, ongoing: false } ],
+    outSeconds: 7200, usageRate: null,
 }
 
 export const ALERT_STATISTICS_DTO: AlertStatisticsResponseDto = { resolvedCount: 13, canceledCount: 2, averageResolutionSeconds: 8100, realAlertRate: 13 / 15 }

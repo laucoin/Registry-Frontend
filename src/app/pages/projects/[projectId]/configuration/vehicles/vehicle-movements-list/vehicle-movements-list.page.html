@@ -6,6 +6,36 @@
     }
 </sgdf-page-title>
 
+<app-presence-timeline data-testid="vehicle-movements-list-timeline" class="mt-(--spacing--block) block"
+                       [planned]="facade.vehicleTimeline()?.planned ?? []"
+                       [actual]="facade.vehicleTimeline()?.actual ?? []"
+                       [projectBegin]="session.selectedProject()?.begin"
+                       [projectEnd]="session.selectedProject()?.end"
+                       [loading]="facade.vehicleTimelineLoading()"
+                       [error]="facade.vehicleTimelineError()"
+                       (retry)="retryTimeline()"/>
+
+@if (!facade.vehicleTimelineError()) {
+    <section data-testid="vehicle-movements-list-statistics-section" class="mt-(--spacing--block) grid grid-cols-1 gap-(--spacing--in-block-large) md:grid-cols-2">
+        @let timeline = facade.vehicleTimeline();
+        @let usage = timeline?.usageRate;
+        <sgdf-stat data-testid="vehicle-movements-list-out-stat" [loading]="facade.vehicleTimelineLoading()"
+                   [title]="'vehicles.statistics.out.title' | transloco"
+                   [hint]="timeline ? ('vehicles.statistics.out.hint' | transloco) : ''">
+            @if (outDuration(); as duration) {
+                <sgdf-format-duration [value]="duration"/>
+            }
+        </sgdf-stat>
+        <sgdf-stat data-testid="vehicle-movements-list-usage-stat" [loading]="facade.vehicleTimelineLoading()"
+                   [title]="'vehicles.statistics.usage.title' | transloco"
+                   [hint]="timeline ? ((usage === undefined ? 'vehicles.statistics.usage.empty' : 'vehicles.statistics.usage.hint') | transloco) : ''">
+            @if (usage !== undefined) {
+                <sgdf-format-number type="percent" [value]="usage"/>
+            }
+        </sgdf-stat>
+    </section>
+}
+
 <app-list data-testid="vehicle-movements-list-list" class="mt-(--spacing--block) block"
           emptyMessagePrefix="movements.notifications.EMPTY"
           [elementPage]="facade.vehicleMovementsPage()"

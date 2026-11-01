@@ -4,6 +4,7 @@ import { of, Subject } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { MetadataApi } from '@core/registry/state/metadata.api'
 import { ErrorReporter } from '@core/registry/state/error-reporter'
+import { VehicleTimelineModel } from '@shared/models/model/vehicle-timeline.model'
 import { VehicleApi } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.api'
 import { VehicleStore } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.store'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
@@ -17,6 +18,7 @@ describe( 'VehicleStore', () => {
     let store: InstanceType<typeof VehicleStore>
     let findVehicles: Mock<VehicleApi['findVehicles']>
     let findVehicleMovements: Mock<VehicleApi['findVehicleMovements']>
+    let findVehicleTimeline: Mock<VehicleApi['findVehicleTimeline']>
     let findMovementsContents: Mock<MovementApi['findMovementsContents']>
     let getPresencesStatus: Mock<MetadataApi['getPresencesStatus']>
     let langChanges: Subject<string>
@@ -24,13 +26,14 @@ describe( 'VehicleStore', () => {
     beforeEach( () => {
         findVehicles = vi.fn()
         findVehicleMovements = vi.fn()
+        findVehicleTimeline = vi.fn()
         findMovementsContents = vi.fn( () => of( [] ) )
         getPresencesStatus = vi.fn( () => of( [ { label: 'In', value: PresenceStatusEnum.IN } ] ) )
         langChanges = new Subject<string>()
         TestBed.configureTestingModule( {
             providers: [
                 VehicleStore,
-                { provide: VehicleApi, useValue: { findVehicles, findVehicleMovements } },
+                { provide: VehicleApi, useValue: { findVehicles, findVehicleMovements, findVehicleTimeline } },
                 { provide: MovementApi, useValue: { findMovementsContents } },
                 { provide: MetadataApi, useValue: { getPresencesStatus } },
                 { provide: ErrorReporter, useValue: { notify: vi.fn() } },
@@ -136,5 +139,51 @@ describe( 'VehicleStore', () => {
         // Assert
         expect( store.movements.error()?.summary ).toBe( 'Title' )
         expect( store.vehicles.error() ).toBeUndefined()
+    } )
+
+    it( 'stores the timeline of a vehicle and ends its loading state', () => {
+        // Arrange
+        const timeline: VehicleTimelineModel = { planned: [], actual: [], outSeconds: 60, usageRate: 0.5 }
+        findVehicleTimeline.mockReturnValue( of( timeline ) )
+
+        // Act
+        store.fetchVehicleTimeline( { projectId: 'p1', id: 'v1' } )
+
+        // Assert
+        expect( findVehicleTimeline ).toHaveBeenCalledWith( 'p1', 'v1' )
+        expect( store.timeline.element() ).toEqual( timeline )
+        expect( store.timeline.loading() ).toBe( false )
+    } )
+
+    it( 'keeps a failed timeline fetch in the timeline block only and still works afterwards', () => {
+        // Arrange
+        findVehicleTimeline.mockReturnValueOnce( failing( ERROR_500 ) )
+        store.fetchVehicleTimeline( { projectId: 'p1', id: 'v1' } )
+        const failure: string | undefined = store.timeline.error()?.summary
+        findVehicleTimeline.mockReturnValue( of( { planned: [], actual: [], outSeconds: 0, usageRate: undefined } ) )
+
+        // Act
+        store.fetchVehicleTimeline( { projectId: 'p1', id: 'v1' } )
+
+        // Assert
+        expect( failure ).toBe( 'Title' )
+        expect( store.movements.error() ).toBeUndefined()
+        expect( store.timeline.error() ).toBeUndefined()
+        expect( store.timeline.element()?.outSeconds ).toBe( 0 )
+    } )
+
+    it( 'reloads the timeline silently and keeps the previous one when it fails', () => {
+        // Arrange
+        findVehicleTimeline.mockReturnValueOnce( of( { planned: [], actual: [], outSeconds: 5, usageRate: undefined } ) )
+        store.fetchVehicleTimeline( { projectId: 'p1', id: 'v1' } )
+        findVehicleTimeline.mockReturnValueOnce( failing( ERROR_500 ) )
+
+        // Act
+        store.reloadVehicleTimeline( { projectId: 'p1', id: 'v1' } )
+
+        // Assert
+        expect( store.timeline.element()?.outSeconds ).toBe( 5 )
+        expect( store.timeline.loading() ).toBe( false )
+        expect( store.timeline.error() ).toBeUndefined()
     } )
 } )

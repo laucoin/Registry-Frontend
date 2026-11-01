@@ -2,6 +2,7 @@ import { computed, inject, Injectable, Signal } from '@angular/core'
 import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
+import { VehicleTimelineModel } from '@shared/models/model/vehicle-timeline.model'
 import { VehicleDto } from '@pages/projects/[projectId]/configuration/vehicles/data/dto/vehicle.dto'
 import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
@@ -41,6 +42,9 @@ export class VehicleFacade extends GenericProjectElementFacade {
     public readonly vehicleMovementsPageLoading: Signal<boolean> = this.store.movements.loading
     public readonly vehicleMovementsPageSilentLoading: Signal<boolean> = this.store.movements.silentLoading
     public readonly vehicleMovementsPageError: Signal<NotificationModel | undefined> = this.store.movements.error
+    public readonly vehicleTimeline: Signal<VehicleTimelineModel | undefined> = this.store.timeline.element
+    public readonly vehicleTimelineLoading: Signal<boolean> = this.store.timeline.loading
+    public readonly vehicleTimelineError: Signal<NotificationModel | undefined> = this.store.timeline.error
     private readonly vehicleMovementsPageResetSearch: Signal<boolean> = this.store.movements.params.resetSearch
     public readonly vehicleMovementsPageTypeParam: Signal<string | undefined> = this.store.movements.params.type
     public readonly vehicleMovementsPageFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
@@ -98,6 +102,14 @@ export class VehicleFacade extends GenericProjectElementFacade {
     ): void {
         const index: number | undefined = this.vehicleMovementsPageResetSearch() ? 0 : page
         this.store.fetchVehicleMovementsPage( { projectId: this.selectedProjectId(), id: id, page: index, size: size } )
+    }
+
+    public fetchVehicleTimeline (id: string): void {
+        this.store.fetchVehicleTimeline( { projectId: this.selectedProjectId(), id: id } )
+    }
+
+    public reloadVehicleTimeline (id: string): void {
+        this.store.reloadVehicleTimeline( { projectId: this.selectedProjectId(), id: id } )
     }
 
     public reloadVehicleMovementsPage (id: string): void {
