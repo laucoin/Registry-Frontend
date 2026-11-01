@@ -13,7 +13,10 @@ import { ActivityResponseDto } from '@shared/models/dto/response/activity.respon
 import { MovementResponseDto } from '@shared/models/dto/response/movement.response.dto'
 import { ActivityMapper } from '@shared/mappers/activity.mapper'
 import { MovementMapper } from '@shared/mappers/movement.mapper'
+import { ActivityStatisticsMapper } from '@shared/mappers/activity-statistics.mapper'
 import { PageMapper } from '@shared/mappers/page.mapper'
+import { ActivityStatisticsModel } from '@shared/models/model/activity-statistics.model'
+import { ActivityStatisticsResponseDto } from '@shared/models/dto/response/activity-statistics.response.dto'
 import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
 import { ETagHelper } from '@shared/helpers/etag.helper'
 
@@ -50,6 +53,12 @@ export class ActivityApi extends GenericProjectApi {
     public findActivityById(projectId: string | undefined, id: string): Observable<ActivityModel> {
         return this.http.get<ActivityResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`).pipe(
             map( ActivityMapper.toModel ),
+        )
+    }
+
+    public findActivityStatistics(projectId: string | undefined, id: string): Observable<ActivityStatisticsModel> {
+        return this.http.get<ActivityStatisticsResponseDto>( `${this.buildRequestBaseUrl(projectId)}/${id}/statistics` ).pipe(
+            map( ActivityStatisticsMapper.toModel ),
         )
     }
 

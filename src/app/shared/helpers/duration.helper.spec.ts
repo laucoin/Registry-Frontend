@@ -22,4 +22,22 @@ describe( 'DurationHelper', () => {
         // Assert
         expect( iso ).toBe( expected )
     } )
+
+    it.each( [
+        [ 0, 'PT0S' ],
+        [ 45, 'PT45S' ],
+        [ 8100, 'PT2H15M' ],
+        [ 86400, 'PT24H' ],
+        [ 2203200, 'PT612H' ],
+        [ 2203500, 'PT612H5M' ],
+        [ 90, 'PT2M' ],
+    ] )( 'writes %s seconds in hours and minutes as the ISO duration %s', (seconds: number, expected: string) => {
+        // Arrange
+
+        // Act
+        const iso: string = DurationHelper.toIsoHours( seconds )
+
+        // Assert
+        expect( iso ).toBe( expected )
+    } )
 } )

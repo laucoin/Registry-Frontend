@@ -1,11 +1,13 @@
+import { expect } from 'vitest'
 import { ActivityApi } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.api'
 import { ApiCase, PAGE_QUERY, describeApi, expectMapped, expectMappedPage } from '@shared/helpers/testing/api-test.helper'
-import { ACTIVITY_DTO, MOVEMENT_DTO, pageDto } from '@shared/helpers/testing/response-fixtures'
+import { ACTIVITY_DTO, ACTIVITY_STATISTICS_DTO, MOVEMENT_DTO, pageDto } from '@shared/helpers/testing/response-fixtures'
 
 const BASE: string = '/api/v2/projects/p1/activities'
 const PARAMS: never = { resetSearch: false, q: 'x' } as never
 
 const CASES: ApiCase<ActivityApi>[] = [
+    { name: 'reads the statistics of an activity', method: 'GET', url: `${BASE}/a1/statistics`, call: (api: ActivityApi) => api.findActivityStatistics( 'p1', 'a1' ), response: ACTIVITY_STATISTICS_DTO, verify: (result: unknown): void => expect( result ).toEqual( ACTIVITY_STATISTICS_DTO ) },
     { name: 'pages the elements with the search parameters', method: 'GET', url: new RegExp( `${BASE}\\?${PAGE_QUERY}&q=x$` ), call: (api: ActivityApi) => api.findActivities( 'p1', 0, 10, PARAMS ), response: pageDto( [ ACTIVITY_DTO ] ), verify: expectMappedPage },
     { name: 'finds an element by id', method: 'GET', url: `${BASE}/a1`, call: (api: ActivityApi) => api.findActivityById( 'p1', 'a1' ), response: ACTIVITY_DTO, verify: expectMapped },
     { name: 'creates an element', method: 'POST', url: BASE, body: { name: 'x' }, call: (api: ActivityApi) => api.createActivity( 'p1', { name: 'x' } as never ), response: ACTIVITY_DTO, verify: expectMapped },

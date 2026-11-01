@@ -1225,6 +1225,21 @@
       "title": "Activities",
       "subtitle": "The project’s program and check-in/check-out frameworks."
     },
+    "statistics": {
+      "participation": {
+        "title": "Participation",
+        "hint": "{{count}} participants out of {{total}}",
+        "empty": "No participant in the project"
+      },
+      "movement": {
+        "title": "Time out",
+        "hint": "Total duration of the outings of the activity"
+      },
+      "man": {
+        "title": "Man hours",
+        "hint": "Time each participant spent out, added up"
+      }
+    },
     "search-and-filter": {
       "text": "Name",
       "datetime": "Date & Time",

@@ -19,6 +19,8 @@ describe('ActivityMovementsListPage', () => {
     let fetchEntity: Mock
     let fetchMovements: Mock
     let reloadMovements: Mock
+    let fetchStatistics: Mock
+    let reloadStatistics: Mock
     let inputSearch: Mock
     let page: ActivityMovementsListPage
 
@@ -35,6 +37,8 @@ describe('ActivityMovementsListPage', () => {
         fetchEntity = vi.fn(() => of(ENTITY))
         fetchMovements = vi.fn()
         reloadMovements = vi.fn()
+        fetchStatistics = vi.fn()
+        reloadStatistics = vi.fn()
         inputSearch = vi.fn()
         TestBed.configureTestingModule({
             providers: [
@@ -53,6 +57,8 @@ describe('ActivityMovementsListPage', () => {
                         fetchActivity: fetchEntity,
                         fetchActivityMovementsPage: fetchMovements,
                         reloadActivityMovementsPage: reloadMovements,
+                        fetchActivityStatistics: fetchStatistics,
+                        reloadActivityStatistics: reloadStatistics,
                         inputMovementsPageSearchParameters: inputSearch,
                     },
                 },
@@ -152,6 +158,40 @@ describe('ActivityMovementsListPage', () => {
 
         // Assert
         expect(reloadMovements).toHaveBeenCalledWith('activity1')
+    })
+
+    it('loads the statistics of the activity when created', () => {
+        // Arrange
+
+        // Act
+        const calls: unknown[][] = fetchStatistics.mock.calls
+
+        // Assert
+        expect(calls).toEqual([['activity1']])
+    })
+
+    it('reloads the statistics when a movement is created or changes', () => {
+        // Arrange
+        reloadStatistics.mockClear()
+
+        // Act
+        firstPageReload.next()
+        currentPageReload.next()
+
+        // Assert
+        expect(reloadStatistics).toHaveBeenCalledTimes(2)
+        expect(reloadStatistics).toHaveBeenCalledWith('activity1')
+    })
+
+    it('loads the statistics again when the user retries after a failure', () => {
+        // Arrange
+        fetchStatistics.mockClear()
+
+        // Act
+        page['retryStatistics']()
+
+        // Assert
+        expect(fetchStatistics).toHaveBeenCalledWith('activity1')
     })
 
     it('stops listening once destroyed', () => {

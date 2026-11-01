@@ -3,6 +3,7 @@ import { HISTORY, PARTICIPANT_DTO, PLANNED_MOVEMENT_DTO, PROJECT_DTO, USER_DTO, 
 import { ActivityMapper } from '@shared/mappers/activity.mapper'
 import { AlertCriticalityMetadataMapper } from '@shared/mappers/alert-criticality-metadata.mapper'
 import { AlertMapper } from '@shared/mappers/alert.mapper'
+import { ActivityStatisticsMapper } from '@shared/mappers/activity-statistics.mapper'
 import { AlertStatisticsMapper } from '@shared/mappers/alert-statistics.mapper'
 import { ParticipantTimelineMapper } from '@shared/mappers/participant-timeline.mapper'
 import { TimelineMapper } from '@shared/mappers/timeline.mapper'
@@ -245,6 +246,18 @@ describe( 'mappers', () => {
         expect( model.usageRate ).toBe( 0.25 )
         expect( model.actual[ 0 ].ongoing ).toBe( true )
         expect( VehicleTimelineMapper.toModel( { ...dto, usageRate: null } ).usageRate ).toBeUndefined()
+    } )
+
+    it( 'maps the statistics of an activity and turns the missing rate into undefined', () => {
+        // Arrange
+        const dto: Parameters<typeof ActivityStatisticsMapper.toModel>[ 0 ] = { participantCount: 3, projectParticipantCount: 12, participantRate: 0.25, movementSeconds: 3600, manSeconds: 10800 }
+
+        // Act
+        const model: ReturnType<typeof ActivityStatisticsMapper.toModel> = ActivityStatisticsMapper.toModel( dto )
+
+        // Assert
+        expect( model ).toEqual( dto )
+        expect( ActivityStatisticsMapper.toModel( { ...dto, participantRate: null } ).participantRate ).toBeUndefined()
     } )
 
     it( 'maps the elements of a page and keeps the paging fields', () => {

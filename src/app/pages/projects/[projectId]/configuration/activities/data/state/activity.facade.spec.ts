@@ -28,7 +28,7 @@ describe( 'ActivityFacade', () => {
         createActivity = vi.fn()
         disableActivityById = vi.fn()
         deleteActivityById = vi.fn()
-        api = { findActivityById: vi.fn(), updateActivityById: vi.fn(), enableActivityById: vi.fn() }
+        api = { findActivityStatistics: vi.fn( () => of( { participantCount: 1, projectParticipantCount: 2, participantRate: 0.5, movementSeconds: 60, manSeconds: 120 } ) ), findActivityById: vi.fn(), updateActivityById: vi.fn(), enableActivityById: vi.fn() }
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
@@ -229,5 +229,41 @@ describe( 'ActivityFacade', () => {
         // Assert
         expect( facade.activitiesPageQueryParam() ).toBe( 'hike' )
         expect( facade.activitiesPageIsAvailableParam() ).toBe( true )
+    } )
+
+    it( 'loads the statistics of an activity for the selected project and exposes them as signals', () => {
+        // Arrange
+
+        // Act
+        facade.fetchActivityStatistics( 'a1' )
+
+        // Assert
+        expect( api[ 'findActivityStatistics' ] ).toHaveBeenCalledWith( 'p1', 'a1' )
+        expect( facade.activityStatistics()?.participantRate ).toBe( 0.5 )
+        expect( facade.activityStatisticsLoading() ).toBe( false )
+        expect( facade.activityStatisticsError() ).toBeUndefined()
+    } )
+
+    it( 'reloads the statistics of an activity', () => {
+        // Arrange
+        facade.fetchActivityStatistics( 'a1' )
+
+        // Act
+        facade.reloadActivityStatistics( 'a1' )
+
+        // Assert
+        expect( api[ 'findActivityStatistics' ] ).toHaveBeenCalledTimes( 2 )
+    } )
+
+    it( 'exposes the failure of the statistics without touching the movements', () => {
+        // Arrange
+        api[ 'findActivityStatistics' ].mockReturnValue( failing( ERROR_503 ) )
+
+        // Act
+        facade.fetchActivityStatistics( 'a1' )
+
+        // Assert
+        expect( facade.activityStatisticsError()?.summary ).toBe( 'Down' )
+        expect( facade.activityMovementsPageError() ).toBeUndefined()
     } )
 } )

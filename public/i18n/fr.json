@@ -1225,6 +1225,21 @@
       "title": "Activités",
       "subtitle": "Le programme du projet et les cadres d'entrées/sorties."
     },
+    "statistics": {
+      "participation": {
+        "title": "Participation",
+        "hint": "{{count}} participants sur {{total}}",
+        "empty": "Aucun participant dans le projet"
+      },
+      "movement": {
+        "title": "Temps en sortie",
+        "hint": "Durée cumulée des sorties de l’activité"
+      },
+      "man": {
+        "title": "Heures homme",
+        "hint": "Temps passé en sortie par chaque participant, cumulé"
+      }
+    },
     "search-and-filter": {
       "text": "Nom",
       "datetime": "Date & Heure",

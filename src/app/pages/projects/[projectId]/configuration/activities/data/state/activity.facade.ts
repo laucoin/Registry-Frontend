@@ -2,6 +2,7 @@ import { computed, inject, Injectable, Signal } from '@angular/core'
 import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { ActivityModel } from '@shared/models/model/activity.model'
+import { ActivityStatisticsModel } from '@shared/models/model/activity-statistics.model'
 import { ActivityDto } from '@pages/projects/[projectId]/configuration/activities/data/dto/activity.dto'
 import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
@@ -40,6 +41,9 @@ export class ActivityFacade extends GenericProjectElementFacade {
     public readonly activityMovementsPageLoading: Signal<boolean> = this.store.movements.loading
     public readonly activityMovementsPageSilentLoading: Signal<boolean> = this.store.movements.silentLoading
     public readonly activityMovementsPageError: Signal<NotificationModel | undefined> = this.store.movements.error
+    public readonly activityStatistics: Signal<ActivityStatisticsModel | undefined> = this.store.statistics.element
+    public readonly activityStatisticsLoading: Signal<boolean> = this.store.statistics.loading
+    public readonly activityStatisticsError: Signal<NotificationModel | undefined> = this.store.statistics.error
     public readonly activityMovementsPageResetSearch: Signal<boolean> = this.store.movements.params.resetSearch
     public readonly activityMovementsPageTypeParam: Signal<string | undefined> = this.store.movements.params.type
     public readonly activityMovementsPageFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
@@ -99,6 +103,14 @@ export class ActivityFacade extends GenericProjectElementFacade {
     ): void {
         const index: number | undefined = this.activityMovementsPageResetSearch() ? 0 : page
         this.store.fetchActivityMovementsPage( { projectId: this.selectedProjectId(), id: id, page: index, size: size } )
+    }
+
+    public fetchActivityStatistics (id: string): void {
+        this.store.fetchActivityStatistics( { projectId: this.selectedProjectId(), id: id } )
+    }
+
+    public reloadActivityStatistics (id: string): void {
+        this.store.reloadActivityStatistics( { projectId: this.selectedProjectId(), id: id } )
     }
 
     public reloadActivityMovementsPage (id: string): void {

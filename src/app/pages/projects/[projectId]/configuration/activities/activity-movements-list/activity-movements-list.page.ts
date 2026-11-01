@@ -7,12 +7,15 @@ import { ActivatedRoute, ParamMap } from '@angular/router'
 import { TranslocoPipe } from '@jsverse/transloco'
 import '@sgdf/ui/button'
 import '@sgdf/ui/date-time-picker'
+import '@sgdf/ui/format-duration'
+import '@sgdf/ui/format-number'
 import '@sgdf/ui/icon'
 import '@sgdf/ui/list-item'
 import '@sgdf/ui/option'
 import '@sgdf/ui/page-title'
 import '@sgdf/ui/select'
 import '@sgdf/ui/skeleton'
+import '@sgdf/ui/stat'
 import { distinctUntilChanged, map, tap } from 'rxjs'
 import { ActivityFacade } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
 import {
@@ -24,16 +27,18 @@ import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { DurationHelper } from '@shared/helpers/duration.helper'
 import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
 import { withLoading } from '@shared/helpers/rx.helper'
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { ActivityModel } from '@shared/models/model/activity.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
+import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
 import { MovementElementComponent } from '@shared/ui/domain/movement-element/movement-element.component'
 
 /**
  * Purpose: Page listant les mouvements d'une activité avec recherche et déclencheur « charger plus ».
- * Scope: Lie le composant de liste à la facade des activités, possède le formulaire de recherche, affiche le nom de l'activité et recharge quand un mouvement change.
+ * Scope: Lie le composant de liste à la facade des activités, possède le formulaire de recherche, affiche le nom de l'activité et ses statistiques (participation, temps en sortie et heures homme), et recharge quand un mouvement change.
  * Limits: Ne détient aucun état de domaine et n'appelle jamais le backend.
  */
 @Component({
@@ -41,6 +46,7 @@ import { MovementElementComponent } from '@shared/ui/domain/movement-element/mov
     imports: [
         IfProjectAuthorityDirective,
         ListComponent,
+        SectionErrorComponent,
         MovementElementComponent,
         RegistryTemplateDirective,
         SgdfFieldDirective,
@@ -65,6 +71,18 @@ export class ActivityMovementsListPage {
     protected readonly title: Signal<string> = computed((): string => {
         const entity: ActivityModel | undefined = this.entity()
         return entity ? entity.name : ''
+    })
+
+    protected readonly movementDuration: Signal<string | undefined> = computed((): string | undefined => {
+        const seconds: number | undefined = this.facade.activityStatistics()?.movementSeconds
+
+        return seconds === undefined ? undefined : DurationHelper.toIsoHours(seconds)
+    })
+
+    protected readonly manDuration: Signal<string | undefined> = computed((): string | undefined => {
+        const seconds: number | undefined = this.facade.activityStatistics()?.manSeconds
+
+        return seconds === undefined ? undefined : DurationHelper.toIsoHours(seconds)
     })
 
     protected readonly activeFilters: Signal<number> = computed((): number => [
@@ -94,15 +112,18 @@ export class ActivityMovementsListPage {
         this.facade.fetchActivity(this.id()).pipe(
                 withLoading(this.entityLoading),
             ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe((entity: ActivityModel): void => this.entity.set(entity))
+        this.facade.fetchActivityStatistics(this.id())
         this.facade.fetchActivityMovementsPage(this.id(), undefined, undefined)
     }
 
     private handleMovementActions(): void {
         this.movementFacade.handleMovementFirstPageReload().pipe(
                 tap((): void => this.facade.fetchActivityMovementsPage(this.id(), 0, undefined)),
+                tap((): void => this.facade.reloadActivityStatistics(this.id())),
             ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe()
         this.movementFacade.handleMovementCurrentPageReload().pipe(
                 tap((): void => this.facade.reloadActivityMovementsPage(this.id())),
+                tap((): void => this.facade.reloadActivityStatistics(this.id())),
             ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe()
     }
 
@@ -120,6 +141,10 @@ export class ActivityMovementsListPage {
     protected resetFilters(): void {
         this.model.set({ type: '', from: null, to: null, isVisible: '' })
         this.search()
+    }
+
+    protected retryStatistics(): void {
+        this.facade.fetchActivityStatistics(this.id())
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {

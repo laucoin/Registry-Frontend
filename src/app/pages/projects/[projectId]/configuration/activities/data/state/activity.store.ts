@@ -6,7 +6,7 @@ import { ActivityStoreModel } from '@pages/projects/[projectId]/configuration/ac
 import { ActivityApi } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.api'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
-import { contentsRequester, movementContentsFetcher, pageFetcher, paramsUpdater } from '@shared/helpers/store/paged-store.methods'
+import { contentsRequester, elementFetcher, movementContentsFetcher, pageFetcher, paramsUpdater, silentElementFetcher } from '@shared/helpers/store/paged-store.methods'
 import { withProfileScope } from '@shared/helpers/store/with-profile-scope.feature'
 import { ActivityModel } from '@shared/models/model/activity.model'
 import { MovementModel } from '@shared/models/model/movement.model'
@@ -18,6 +18,11 @@ interface ActivitiesPageRequest extends CumulativePageRequest {
 }
 
 interface ActivityMovementsPageRequest extends ActivitiesPageRequest {
+    id: string
+}
+
+interface ActivityStatisticsRequest {
+    projectId: string | undefined
     id: string
 }
 
@@ -39,6 +44,7 @@ const defaultActivityStore: ActivityStoreModel = {
         from: undefined,
         to: undefined,
     } ),
+    statistics: { element: undefined, loading: false, error: undefined },
     metadata: {
         availabilities: [
             { label: '-', value: undefined },
@@ -74,5 +80,7 @@ export const ActivityStore = signalStore(
             merge: CumulativePageHelper.merge,
             after: contentsRequester( store.fetchActivityMovementsContents ),
         } ),
+        fetchActivityStatistics: elementFetcher( store, 'statistics', (request: ActivityStatisticsRequest) => api.findActivityStatistics( request.projectId, request.id ) ),
+        reloadActivityStatistics: silentElementFetcher( store, 'statistics', (request: ActivityStatisticsRequest) => api.findActivityStatistics( request.projectId, request.id ) ),
     }) ),
 )

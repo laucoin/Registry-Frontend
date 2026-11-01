@@ -6,6 +6,38 @@
     }
 </sgdf-page-title>
 
+<section data-testid="activity-movements-list-statistics-section" class="mt-(--spacing--block) grid grid-cols-1 gap-(--spacing--in-block-large) md:grid-cols-3">
+    @if (facade.activityStatisticsError(); as failure) {
+        <app-section-error data-testid="activity-movements-list-statistics-error" class="md:col-span-3" [error]="failure"
+                           [retrying]="facade.activityStatisticsLoading()" (retry)="retryStatistics()"/>
+    } @else {
+        @let statistics = facade.activityStatistics();
+        @let rate = statistics?.participantRate;
+        <sgdf-stat data-testid="activity-movements-list-participation-stat" [loading]="facade.activityStatisticsLoading()"
+                   [title]="'activities.statistics.participation.title' | transloco"
+                   [hint]="statistics ? ((rate === undefined ? 'activities.statistics.participation.empty' : 'activities.statistics.participation.hint')
+                           | transloco: { count: statistics.participantCount, total: statistics.projectParticipantCount }) : ''">
+            @if (rate !== undefined) {
+                <sgdf-format-number type="percent" [value]="rate"/>
+            }
+        </sgdf-stat>
+        <sgdf-stat data-testid="activity-movements-list-movement-stat" [loading]="facade.activityStatisticsLoading()"
+                   [title]="'activities.statistics.movement.title' | transloco"
+                   [hint]="statistics ? ('activities.statistics.movement.hint' | transloco) : ''">
+            @if (movementDuration(); as duration) {
+                <sgdf-format-duration [value]="duration"/>
+            }
+        </sgdf-stat>
+        <sgdf-stat data-testid="activity-movements-list-man-stat" [loading]="facade.activityStatisticsLoading()"
+                   [title]="'activities.statistics.man.title' | transloco"
+                   [hint]="statistics ? ('activities.statistics.man.hint' | transloco) : ''">
+            @if (manDuration(); as duration) {
+                <sgdf-format-duration [value]="duration"/>
+            }
+        </sgdf-stat>
+    }
+</section>
+
 <app-list data-testid="activity-movements-list-list" class="mt-(--spacing--block) block"
           emptyMessagePrefix="movements.notifications.EMPTY"
           [elementPage]="facade.activityMovementsPage()"

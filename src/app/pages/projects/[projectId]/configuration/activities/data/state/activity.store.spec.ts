@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing'
 import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { ErrorReporter } from '@core/registry/state/error-reporter'
+import { ActivityStatisticsModel } from '@shared/models/model/activity-statistics.model'
 import { ActivityApi } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.api'
 import { ActivityStore } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.store'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
@@ -15,18 +16,20 @@ describe( 'ActivityStore', () => {
     let store: InstanceType<typeof ActivityStore>
     let findActivities: Mock<ActivityApi['findActivities']>
     let findActivityMovements: Mock<ActivityApi['findActivityMovements']>
+    let findActivityStatistics: Mock<ActivityApi['findActivityStatistics']>
     let findMovementsContents: Mock<MovementApi['findMovementsContents']>
     let notify: Mock<(message: unknown) => void>
 
     beforeEach( () => {
         findActivities = vi.fn()
         findActivityMovements = vi.fn()
+        findActivityStatistics = vi.fn()
         findMovementsContents = vi.fn( () => of( [] ) )
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 ActivityStore,
-                { provide: ActivityApi, useValue: { findActivities, findActivityMovements } },
+                { provide: ActivityApi, useValue: { findActivities, findActivityMovements, findActivityStatistics } },
                 { provide: MovementApi, useValue: { findMovementsContents } },
                 { provide: ErrorReporter, useValue: { notify } },
             ],
@@ -145,5 +148,51 @@ describe( 'ActivityStore', () => {
         // Assert
         expect( store.activities.params.q() ).toBe( 'camp' )
         expect( store.movements.params.type() ).toBeUndefined()
+    } )
+
+    it( 'stores the statistics of an activity and ends their loading state', () => {
+        // Arrange
+        const statistics: ActivityStatisticsModel = { participantCount: 2, projectParticipantCount: 4, participantRate: 0.5, movementSeconds: 60, manSeconds: 120 }
+        findActivityStatistics.mockReturnValue( of( statistics ) )
+
+        // Act
+        store.fetchActivityStatistics( { projectId: 'p1', id: 'a1' } )
+
+        // Assert
+        expect( findActivityStatistics ).toHaveBeenCalledWith( 'p1', 'a1' )
+        expect( store.statistics.element() ).toEqual( statistics )
+        expect( store.statistics.loading() ).toBe( false )
+    } )
+
+    it( 'keeps a failed statistics fetch in the statistics block only and still works afterwards', () => {
+        // Arrange
+        findActivityStatistics.mockReturnValueOnce( failing( ERROR_500 ) )
+        store.fetchActivityStatistics( { projectId: 'p1', id: 'a1' } )
+        const failure: string | undefined = store.statistics.error()?.summary
+        findActivityStatistics.mockReturnValue( of( { participantCount: 0, projectParticipantCount: 0, participantRate: undefined, movementSeconds: 0, manSeconds: 0 } ) )
+
+        // Act
+        store.fetchActivityStatistics( { projectId: 'p1', id: 'a1' } )
+
+        // Assert
+        expect( failure ).toBe( 'Title' )
+        expect( store.movements.error() ).toBeUndefined()
+        expect( store.statistics.error() ).toBeUndefined()
+        expect( store.statistics.element()?.participantRate ).toBeUndefined()
+    } )
+
+    it( 'reloads the statistics silently and keeps the previous ones when it fails', () => {
+        // Arrange
+        findActivityStatistics.mockReturnValueOnce( of( { participantCount: 1, projectParticipantCount: 2, participantRate: 0.5, movementSeconds: 5, manSeconds: 5 } ) )
+        store.fetchActivityStatistics( { projectId: 'p1', id: 'a1' } )
+        findActivityStatistics.mockReturnValueOnce( failing( ERROR_500 ) )
+
+        // Act
+        store.reloadActivityStatistics( { projectId: 'p1', id: 'a1' } )
+
+        // Assert
+        expect( store.statistics.element()?.participantCount ).toBe( 1 )
+        expect( store.statistics.loading() ).toBe( false )
+        expect( store.statistics.error() ).toBeUndefined()
     } )
 } )
