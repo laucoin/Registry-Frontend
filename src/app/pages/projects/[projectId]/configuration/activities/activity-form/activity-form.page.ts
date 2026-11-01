@@ -10,7 +10,6 @@ import {
     toActivityFormModel,
 } from '@pages/projects/[projectId]/configuration/activities/activity-form/activity.form'
 import {CustomDatetimeModel} from '@shared/models/model/custom-datetime.model'
-import {FieldErrorComponent} from '@shared/ui/common/field-error/field-error.component'
 import {TranslocoPipe} from '@jsverse/transloco'
 import '@sgdf/ui/date-time-picker'
 import '@sgdf/ui/duration-picker'
@@ -40,7 +39,6 @@ import { ETagHelper } from '@shared/helpers/etag.helper'
     selector: 'app-activity-form',
     imports: [
         FormDialogComponent,
-        FieldErrorComponent,
         TranslocoPipe,
         FormField,
         SgdfFieldDirective,

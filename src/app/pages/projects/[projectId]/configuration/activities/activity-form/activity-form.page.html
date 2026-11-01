@@ -19,14 +19,12 @@
     <sgdf-duration-picker data-testid="activity-form-duration-picker" appSgdfField units="hours minutes"
                           [label]="'activities.form.duration' | transloco"
                           [formField]="form.duration"/>
-    <div>
-        <app-number-range-field data-testid="activity-form-allowed-participants-field" [formField]="form.allowedParticipants"
-                                inputId="allowed-participants"
-                                [label]="'activities.form.allowed-participants' | transloco"
-                                [minPlaceholder]="'activities.form.placeholder.allowed-min-participants' | transloco"
-                                [maxPlaceholder]="'activities.form.placeholder.allowed-max-participants' | transloco"/>
-        <app-field-error data-testid="activity-form-allowed-participants-error" [field]="form.allowedParticipants" translationPrefix="activities.form.error.allowed-participants"/>
-    </div>
+    <app-number-range-field data-testid="activity-form-allowed-participants-field" [formField]="form.allowedParticipants"
+                            [appFieldError]="form.allowedParticipants" translationPrefix="activities.form.error.allowed-participants"
+                            inputId="allowed-participants"
+                            [label]="'activities.form.allowed-participants' | transloco"
+                            [minPlaceholder]="'activities.form.placeholder.allowed-min-participants' | transloco"
+                            [maxPlaceholder]="'activities.form.placeholder.allowed-max-participants' | transloco"/>
     <div class="grid gap-[0.75rem] md:grid-cols-2">
         <sgdf-date-time-picker data-testid="activity-form-begin-date-time-picker" appSgdfField with-time value-format="separate"
                                [label]="'activities.form.begin-datetime' | transloco"

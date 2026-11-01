@@ -5,6 +5,7 @@
     <sgdf-number-input data-testid="number-range-field-min-input" without-steppers with-clear
                        [label]="minLabel()"
                        [placeholder]="minPlaceholder()"
+                       [attr.error]="error() ?? ''"
                        [disabled]="disabled()"
                        [value]="minValue()?.toString() ?? ''"
                        (input)="onInputMin($any($event.target).value || null)"

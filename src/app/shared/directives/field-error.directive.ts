@@ -19,7 +19,7 @@ export class FieldErrorDirective {
     public readonly translationPrefix: InputSignal<string> = input.required()
     public readonly translationArgs: InputSignal<object> = input({})
 
-    protected readonly message: Signal<string | undefined> = computed((): string | undefined =>
+    public readonly message: Signal<string | undefined> = computed((): string | undefined =>
         FieldErrorHelper.text(
             this.field(),
             this.translationPrefix(),

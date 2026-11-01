@@ -13,7 +13,7 @@ interface TemplateTag {
 const TEST_ID_PATTERN: RegExp = /^[a-z0-9]+(-[a-z0-9]+)+$/
 const INTERACTIVE_TAGS: ReadonlySet<string> = new Set( [
     'sgdf-button', 'sgdf-icon-button', 'sgdf-input', 'sgdf-select', 'sgdf-textarea', 'sgdf-date-time-picker', 'sgdf-switch',
-    'sgdf-checkbox', 'sgdf-number-input', 'sgdf-duration-picker', 'sgdf-copy-button', 'sgdf-nav-item', 'sgdf-menu-item',
+    'sgdf-checkbox', 'sgdf-radio-group', 'sgdf-radio', 'sgdf-number-input', 'sgdf-duration-picker', 'sgdf-copy-button', 'sgdf-nav-item', 'sgdf-menu-item',
     'sgdf-tab', 'sgdf-tile', 'sgdf-dialog', 'sgdf-drawer', 'form', 'button', 'app-list', 'app-section-error', 'app-load-more',
     'app-form-dialog', 'app-form-actions', 'app-element-actions', 'app-favorite-toggle', 'app-select-elements-field',
     'app-number-range-field',

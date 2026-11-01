@@ -1,4 +1,5 @@
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal, model, ModelSignal, output, OutputEmitterRef, Signal } from '@angular/core'
+import { FieldErrorDirective } from '@shared/directives/field-error.directive'
 import { FormValueControl } from '@angular/forms/signals'
 import { TranslocoService } from '@jsverse/transloco'
 import '@sgdf/ui/number-input'
@@ -8,16 +9,19 @@ import { StringHelper } from '@shared/helpers/string.helper'
 
 /**
  * Purpose: Champ de formulaire éditant une plage numérique.
- * Scope: Édite un minimum et un maximum et les expose comme valeur d'un champ de signal form.
+ * Scope: Édite un minimum et un maximum et les expose comme valeur d'un champ de signal form ; affiche l'erreur de la plage (`appFieldError`) sous le minimum.
  * Limits: La validation est faite par les règles du formulaire.
  */
 @Component( {
     selector: 'app-number-range-field',
     schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
     templateUrl: './number-range-field.component.html',
+    hostDirectives: [ { directive: FieldErrorDirective, inputs: [ 'appFieldError', 'translationPrefix' ] } ],
 } )
 export class NumberRangeFieldComponent implements FormValueControl<NumericRangeModel | null> {
     private readonly translateService: TranslocoService = inject( TranslocoService )
+
+    protected readonly error: Signal<string | undefined> = inject( FieldErrorDirective ).message
 
     public readonly value: ModelSignal<NumericRangeModel | null> = model<NumericRangeModel | null>( null )
     public readonly disabled: InputSignal<boolean> = input( false )

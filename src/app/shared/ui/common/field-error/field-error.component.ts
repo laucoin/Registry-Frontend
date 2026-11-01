@@ -1,5 +1,5 @@
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal, Signal } from '@angular/core'
-import '@sgdf/ui/callout'
+import '@sgdf/ui/field-error'
 import { TranslocoService } from '@jsverse/transloco'
 import { FieldErrorHelper } from '@shared/helpers/form/field-error.helper'
 import { FieldErrorState } from '@shared/helpers/form/field-state.helper'

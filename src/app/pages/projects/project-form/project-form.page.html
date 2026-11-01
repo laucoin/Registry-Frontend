@@ -80,8 +80,10 @@
                 </sgdf-checkbox>
             </div>
             <sgdf-divider/>
+            @let missingPreRequired = optionsForm().getError('preRequiredOptions');
             @for (option of facade.projectOptionsMetadata(); track option.value) {
-                <sgdf-switch data-testid="project-form-option-switch" appSgdfField class="py-[0.5rem]" [formField]="optionsForm[option.value]">
+                <sgdf-switch data-testid="project-form-option-switch" appSgdfField class="py-[0.5rem]" [formField]="optionsForm[option.value]"
+                             [attr.error]="$any(missingPreRequired)?.for === option.label ? ('projects.form.error.options.preRequiredOptions' | transloco: missingPreRequired) : null">
                     <span class="flex items-center gap-[0.5rem]">
                         <sgdf-icon [name]="option.value | optionIcon" library="solid"/>
                         <span>{{ option.ask }} <b>({{ option.label }})</b></span>
@@ -90,12 +92,6 @@
                 @if (!$last) {
                     <sgdf-divider appearance="soft"/>
                 }
-            }
-            @let missingPreRequired = optionsForm().getError('preRequiredOptions');
-            @if (missingPreRequired) {
-                <sgdf-callout data-testid="project-form-options-error" variant="danger" role="alert">
-                    {{ 'projects.form.error.options.preRequiredOptions' | transloco: missingPreRequired }}
-                </sgdf-callout>
             }
             <div class="flex items-center justify-between pt-[1rem]">
                 <sgdf-button data-testid="project-form-options-previous-button" variant="neutral" appearance="text" (click)="activeTab.set(1)">
