@@ -42,6 +42,7 @@
 
 @if (canCreateAlert()) {
     <sgdf-drawer data-testid="project-home-alert-drawer" light-dismiss
+                 class="drawer-wide"
                  [open]="creatingAlert()"
                  [class.drawer-sheet]="uiFacade.tinyScreen()"
                  [placement]="uiFacade.tinyScreen() ? 'bottom' : 'right'"

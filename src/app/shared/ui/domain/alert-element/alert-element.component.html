@@ -27,6 +27,7 @@
 <app-element-actions data-testid="alert-element-actions" slot="actions" [subject]="accessibleTitle()" [actions]="actionMenuVisible() ? actions() : []"/>
 
 <sgdf-drawer data-testid="alert-element-communications-drawer" light-dismiss
+             class="drawer-wide"
              [open]="communicationsLayerOpened()"
              [class.drawer-sheet]="uiFacade.tinyScreen()"
              [placement]="uiFacade.tinyScreen() ? 'bottom' : 'right'"
