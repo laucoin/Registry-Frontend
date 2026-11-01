@@ -200,7 +200,7 @@ describe( 'user and project profile forms', () => {
 
         it( 'invites the chosen users with the chosen role and dates then goes back', () => {
             // Arrange
-            facade[ 'createProjectProfiles' ].mockReturnValue( of( { createdUserIds: [ 'u1' ], notCreatedUserIds: [] } ) )
+            facade[ 'createProjectProfiles' ].mockReturnValue( of( { createdEmails: [ 'g@x.test' ], notCreatedEmails: [] } ) )
             const page: ProjectProfileInvitationFormPage = create( ProjectProfileInvitationFormPage, ProjectProfileFacade, {} )
             ;(page as unknown as ModelApi).model.set( { role: 'CHIEF', beginDateTime: null, endDateTime: null, users: [ { ...USER_DTO } ] } )
 
@@ -208,7 +208,7 @@ describe( 'user and project profile forms', () => {
             ;(page as unknown as FormApi).submit()
 
             // Assert
-            expect( facade[ 'createProjectProfiles' ] ).toHaveBeenCalledWith( { userIds: [ 'u1' ], role: 'CHIEF', startAccess: undefined, endAccess: undefined } )
+            expect( facade[ 'createProjectProfiles' ] ).toHaveBeenCalledWith( { emails: [ 'g@x.test' ], role: 'CHIEF', startAccess: undefined, endAccess: undefined } )
             expect( back ).toHaveBeenCalledTimes( 1 )
         } )
     } )

@@ -76,7 +76,7 @@ describe( 'ProjectProfileFacade', () => {
 
     it( 'reports a full success when every invitation was created', () => {
         // Arrange
-        const status: CreatedProjectProfiles = { createdUserIds: [ 'u1', 'u2' ], notCreatedUserIds: [] }
+        const status: CreatedProjectProfiles = { createdEmails: [ 'u1@x.test', 'u2@x.test' ], notCreatedEmails: [] }
         createProjectProfiles.mockReturnValue( of( status ) )
 
         // Act
@@ -93,7 +93,7 @@ describe( 'ProjectProfileFacade', () => {
 
     it( 'invites into another project without reloading the profiles of the selected one', () => {
         // Arrange
-        createProjectProfiles.mockReturnValue( of( { createdUserIds: [ 'u1' ], notCreatedUserIds: [] } ) )
+        createProjectProfiles.mockReturnValue( of( { createdEmails: [ 'u1@x.test' ], notCreatedEmails: [] } ) )
 
         // Act
         facade.createProjectProfiles( {} as never, 'p2' ).subscribe()
@@ -105,7 +105,7 @@ describe( 'ProjectProfileFacade', () => {
 
     it( 'warns with the asked and created counts when some invitations failed', () => {
         // Arrange
-        const status: CreatedProjectProfiles = { createdUserIds: [ 'u1' ], notCreatedUserIds: [ 'u2', 'u3' ] }
+        const status: CreatedProjectProfiles = { createdEmails: [ 'u1@x.test' ], notCreatedEmails: [ 'u2@x.test', 'u3@x.test' ] }
         createProjectProfiles.mockReturnValue( of( status ) )
 
         // Act
@@ -236,7 +236,7 @@ describe( 'ProjectProfileFacade', () => {
 
     it( 'does not refresh the page after inviting users to another project', () => {
         // Arrange
-        createProjectProfiles.mockReturnValue( of( { createdUserIds: [ 'u1' ], notCreatedUserIds: [] } ) )
+        createProjectProfiles.mockReturnValue( of( { createdEmails: [ 'u1@x.test' ], notCreatedEmails: [] } ) )
 
         // Act
         facade.createProjectProfiles( {} as never, 'p2' ).subscribe()

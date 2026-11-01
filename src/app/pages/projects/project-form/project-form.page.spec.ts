@@ -51,7 +51,7 @@ describe( 'ProjectFormPage', () => {
     function stubFacades (): void {
         facade = autoMock()
         profileFacade = autoMock()
-        profileFacade[ 'createProjectProfiles' ].mockReturnValue( of( { createdUserIds: [ 'u1' ], notCreatedUserIds: [] } ) )
+        profileFacade[ 'createProjectProfiles' ].mockReturnValue( of( { createdEmails: [ 'u1@x.test' ], notCreatedEmails: [] } ) )
         back = vi.fn()
         navigate = vi.fn( () => Promise.resolve( true ) )
         current = undefined
@@ -400,14 +400,14 @@ describe( 'ProjectFormPage', () => {
         it( 'invites the chosen users into the created project then opens it', () => {
             // Arrange
             const page: ProjectFormApi = reachInvitation()
-            page.invitationModel.set( { role: 'CHIEF', beginDateTime: null, endDateTime: null, users: [ { id: 'u1' } ] } )
+            page.invitationModel.set( { role: 'CHIEF', beginDateTime: null, endDateTime: null, users: [ { id: 'u1', email: 'u1@x.test' } ] } )
 
             // Act
             page.invite()
 
             // Assert
             expect( profileFacade[ 'createProjectProfiles' ] ).toHaveBeenCalledWith(
-                { userIds: [ 'u1' ], role: 'CHIEF', startAccess: undefined, endAccess: undefined }, 'new1',
+                { emails: [ 'u1@x.test' ], role: 'CHIEF', startAccess: undefined, endAccess: undefined }, 'new1',
             )
             expect( navigate ).toHaveBeenCalledWith( expect.stringContaining( 'new1' ) )
         } )
@@ -416,7 +416,7 @@ describe( 'ProjectFormPage', () => {
             // Arrange
             const page: ProjectFormApi = reachInvitation()
             profileFacade[ 'createProjectProfiles' ].mockReturnValue( throwError( (): object => ({ status: 500 }) ) )
-            page.invitationModel.set( { role: 'CHIEF', beginDateTime: null, endDateTime: null, users: [ { id: 'u1' } ] } )
+            page.invitationModel.set( { role: 'CHIEF', beginDateTime: null, endDateTime: null, users: [ { id: 'u1', email: 'u1@x.test' } ] } )
 
             // Act
             page.invite()

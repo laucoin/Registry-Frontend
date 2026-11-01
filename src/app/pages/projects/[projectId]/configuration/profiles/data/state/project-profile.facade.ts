@@ -108,8 +108,8 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
     }
 
     private notifyCreation (creationStatus: CreatedProjectProfiles): void {
-        const created: number = creationStatus?.createdUserIds?.length ?? 0
-        const notCreated: number = creationStatus?.notCreatedUserIds?.length ?? 0
+        const created: number = creationStatus?.createdEmails?.length ?? 0
+        const notCreated: number = creationStatus?.notCreatedEmails?.length ?? 0
         if (notCreated > 0) {
             this.notifyPartialCreation( created, notCreated )
         } else {
@@ -130,8 +130,8 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
     private notifyFullCreation (creationStatus: CreatedProjectProfiles, created: number): void {
         this.notifyMessage(
             SeverityEnum.SUCCESS,
-            this.pluralTranslationPipe.transform( 'project-profiles.notifications.create.title', creationStatus.createdUserIds ),
-            this.pluralTranslationPipe.transform( 'project-profiles.notifications.create.message', creationStatus.createdUserIds ),
+            this.pluralTranslationPipe.transform( 'project-profiles.notifications.create.title', creationStatus.createdEmails ),
+            this.pluralTranslationPipe.transform( 'project-profiles.notifications.create.message', creationStatus.createdEmails ),
             { created: created },
         )
     }

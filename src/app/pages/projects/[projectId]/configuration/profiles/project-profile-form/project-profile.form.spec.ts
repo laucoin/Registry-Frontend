@@ -41,7 +41,7 @@ describe( 'project profile form', () => {
     it( 'maps the models to the edition and invitation dtos', () => {
         // Arrange
         const model: ProjectProfileInvitationFormModel = {
-            role: 'CHIEF', beginDateTime: JUNE, endDateTime: null, users: [ { id: 'u1' } as UserModel ],
+            role: 'CHIEF', beginDateTime: JUNE, endDateTime: null, users: [ { id: 'u1', email: 'u1@x.test' } as UserModel ],
         }
 
         // Act
@@ -50,7 +50,7 @@ describe( 'project profile form', () => {
         // Assert
         expect( dtos ).toEqual( [
             { role: 'CHIEF', startAccess: JUNE, endAccess: undefined },
-            { role: 'CHIEF', startAccess: JUNE, endAccess: undefined, userIds: [ 'u1' ] },
+            { role: 'CHIEF', startAccess: JUNE, endAccess: undefined, emails: [ 'u1@x.test' ] },
         ] )
     } )
 

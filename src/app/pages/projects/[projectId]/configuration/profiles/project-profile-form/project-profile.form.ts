@@ -40,7 +40,7 @@ export function toProjectProfileDto (model: ProjectProfileFormModel): ProjectPro
 export function toProjectProfilesDto (model: ProjectProfileInvitationFormModel): ProjectProfilesDto {
     return {
         ...toProjectProfileDto( model ),
-        userIds: model.users.map( (user: UserModel): string => user.id ),
+        emails: model.users.map( (user: UserModel): string => user.email ),
     }
 }
 
