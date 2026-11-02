@@ -17,6 +17,9 @@ import { UserInvitationModel } from '@shared/models/model/user-invitation.model'
 import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
 import { injectAutoRefresh } from '@shared/helpers/refresh/inject-auto-refresh'
 import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
+import { ElementConfirmationService } from '@shared/helpers/facade/element-confirmation.service'
+import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
+import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 
 const PAGE_SIZE: number = 3
 
@@ -34,6 +37,7 @@ const PAGE_SIZE: number = 3
 })
 export class HomeInvitationsComponent implements OnInit {
 	private readonly facade: UserProfileFacade = inject(UserProfileFacade)
+	private readonly confirmation: ElementConfirmationService = inject(ElementConfirmationService)
 	private readonly autoRefresh: void = injectAutoRefresh('home/invitations', 'counts', (): void => this.facade.refreshProjectProfileInvitationPage())
 
 	protected readonly page: Signal<PageModel<UserInvitationModel> | undefined> = this.facade.userProjectProfileInvitationsPage
@@ -53,6 +57,11 @@ export class HomeInvitationsComponent implements OnInit {
 	}
 
 	protected answer(invitation: UserInvitationModel, accepted: boolean): void {
-		this.facade.manageProjectInvitationAcceptance(invitation.id, accepted)
+		this.confirmation.confirm(
+			`project-profiles.actions.confirmations.${accepted ? ProfileStatusEnum.ACCEPTED : ProfileStatusEnum.REJECTED}`,
+			invitation,
+			accepted ? SeverityEnum.SUCCESS : SeverityEnum.DANGER,
+			(): void => this.facade.manageProjectInvitationAcceptance(invitation.id, accepted),
+		)
 	}
 }

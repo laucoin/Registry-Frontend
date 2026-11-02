@@ -3,6 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { TranslocoPipe } from '@jsverse/transloco'
 import { MockBuilder } from 'ng-mocks'
 import { UserProfileFacade } from '@core/registry/state/user-profile.facade'
+import { ElementConfirmationService } from '@shared/helpers/facade/element-confirmation.service'
+import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { INVITATION_DTO } from '@shared/helpers/testing/response-fixtures'
 import { pageOf } from '@shared/helpers/testing/test-fixtures'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
@@ -22,6 +24,7 @@ describe('HomeInvitationsComponent', () => {
 	let page: WritableSignal<PageModel<UserInvitationModel> | undefined>
 	let fetch: ReturnType<typeof vi.fn>
 	let manage: ReturnType<typeof vi.fn>
+	let confirm: ReturnType<typeof vi.fn>
 
 	async function render(): Promise<void> {
 		fixture = TestBed.createComponent(HomeInvitationsComponent)
@@ -32,9 +35,11 @@ describe('HomeInvitationsComponent', () => {
 		page = signal<PageModel<UserInvitationModel> | undefined>(undefined)
 		fetch = vi.fn()
 		manage = vi.fn()
+		confirm = vi.fn()
 		await MockBuilder(HomeInvitationsComponent).provide(REFRESH_SERVICE_STUB)
 			.mock(TranslocoPipe, (key: string): string => key)
 			.mock(PluralTranslationPipe, (key: string): string => key)
+			.provide({ provide: ElementConfirmationService, useValue: { confirm } })
 			.provide({
 				provide: UserProfileFacade,
 				useValue: {
@@ -68,7 +73,7 @@ describe('HomeInvitationsComponent', () => {
 		expect(fixture.nativeElement.querySelectorAll('sgdf-table-row:not([aria-hidden])').length).toBe(1 + 3 + 1)
 	})
 
-	it('should accept and refuse an invitation', async () => {
+	it('should ask for a confirmation before accepting or refusing an invitation', async () => {
 		// Arrange
 		page.set(pageOf(invitations(1)))
 		await render()
@@ -77,6 +82,23 @@ describe('HomeInvitationsComponent', () => {
 		// Act
 		buttons[0].click()
 		buttons[1].click()
+
+		// Assert
+		expect(manage).not.toHaveBeenCalled()
+		expect(confirm).toHaveBeenNthCalledWith(1, 'project-profiles.actions.confirmations.REJECTED', expect.objectContaining({ id: 'i0' }), SeverityEnum.DANGER, expect.any(Function))
+		expect(confirm).toHaveBeenNthCalledWith(2, 'project-profiles.actions.confirmations.ACCEPTED', expect.objectContaining({ id: 'i0' }), SeverityEnum.SUCCESS, expect.any(Function))
+	})
+
+	it('should answer the invitation once the confirmation is accepted', async () => {
+		// Arrange
+		page.set(pageOf(invitations(1)))
+		await render()
+		const buttons: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('sgdf-button[size="small"]'))
+
+		// Act
+		buttons[0].click()
+		buttons[1].click()
+		confirm.mock.calls.forEach((call: unknown[]): void => (call[3] as () => void)())
 
 		// Assert
 		expect(manage).toHaveBeenNthCalledWith(1, 'i0', false)
