@@ -3,7 +3,7 @@
         <sgdf-avatar slot="start" variant="primary" shape="rounded" aria-hidden="true" [initials]="initials(vehicle)"/>
         <span appEllipsis>{{ title(vehicle) }}</span>
         <span slot="description" class="flex flex-wrap items-center gap-x-3">
-            <span>{{ vehicle.brand }} {{ vehicle.model }}</span>
+            <span appEllipsis>{{ vehicle.brand }} {{ vehicle.model }}</span>
             @if (vehicle.startAvailability || vehicle.endAvailability) {
                 <span class="inline-flex flex-wrap items-center gap-x-2">
                     <span>{{ vehicle.startAvailability ? (vehicle.startAvailability | customDateFormat) : '...' }}</span>
