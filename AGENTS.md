@@ -226,6 +226,10 @@ This exception is standing and does not require asking the user each time — ev
 
 - The frontend enforces nothing. Guards and permission-driven UI exist for usability only — the backend re-checks every
   condition on every request. Never treat a guard or a hidden control as a security boundary.
+- Permissions, not roles: the UI reads authorities, never the role name. **Documented exception:** on the project home
+  page, the birthdays and the participants to regularize are neither loaded nor shown unless the user's role on the
+  project is `PROJECT_ADMINISTRATOR` or `PROJECT_COORDINATOR` (`ProjectRoleEnum`, `ProjectHomePage.canSeeProfileWidgets`).
+  Do not add other role checks without agreeing on a new exception with the user.
 - Pure Client-Side Execution (CSR): Direct access to window, document, localStorage, and sessionStorage is permitted in
   browser contexts, but must remain encapsulated within services or guarded helpers to allow clean unit testing.
 - rxMethod pipes must swallow their own errors (catchError inside, before the error reaches the pipe's outer subject) —
