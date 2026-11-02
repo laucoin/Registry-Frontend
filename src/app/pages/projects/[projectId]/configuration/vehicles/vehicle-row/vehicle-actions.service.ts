@@ -9,7 +9,7 @@ import { VehicleModel } from '@shared/models/model/vehicle.model'
 
 /**
  * Purpose: Indique quelles commandes un véhicule d'une liste offre à l'utilisateur connecté et les exécute.
- * Scope: Construit le menu d'actions (historique des mouvements, modifier, masquer, réafficher, supprimer) avec ses confirmations.
+ * Scope: Construit le menu d'actions (historique des mouvements, modifier, supprimer, restaurer, supprimer définitivement) avec ses confirmations.
  * Limits: Ne détient aucun état ; lit seulement la session et appelle la facade des véhicules. Le backend vérifie toujours chaque commande.
  */
 @Injectable()

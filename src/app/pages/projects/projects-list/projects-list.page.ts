@@ -44,7 +44,7 @@ const INITIALS_LENGTH: number = 2
 
 /**
  * Purpose: Page listant les projets que l'utilisateur peut voir, avec recherche et déclencheur « charger plus ».
- * Scope: Lie le composant de liste à la facade des projets, possède le formulaire de recherche et les projets affichés dans les dialogues d'options et de projets masqués.
+ * Scope: Lie le composant de liste à la facade des projets, possède le formulaire de recherche et les projets affichés dans les dialogues d'options et de projets supprimés.
  * Limits: Ne détient aucun état de domaine et n'appelle jamais le backend ; les commandes sur un projet sont déléguées à ProjectActions.
  */
 @Component({

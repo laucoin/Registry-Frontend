@@ -27,19 +27,19 @@
   "dangerZone": {
     "title": "Zone de danger",
     "softDelete": {
-      "title": "Masquer le projet",
-      "description": "Tant que le projet est masqué, plus aucun profil, entrée/sortie ou participant ne peut y être créé. Tu peux le démasquer à tout moment.",
-      "action": "Masquer le projet"
+      "title": "Supprimer le projet",
+      "description": "Tant que le projet est supprimé, plus aucun profil, entrée/sortie ou participant ne peut y être créé. Tu peux le restaurer à tout moment.",
+      "action": "Supprimer le projet"
     },
     "restore": {
-      "title": "Afficher à nouveau le projet",
-      "description": "Le projet est actuellement masqué. Le rendre visible permet de nouveau d’y créer des profils, entrées/sorties, participants, etc.",
-      "action": "Démasquer le projet"
+      "title": "Restaurer le projet",
+      "description": "Le projet est actuellement supprimé. Le restaurer permet de nouveau d’y créer des profils, entrées/sorties, participants, etc.",
+      "action": "Restaurer le projet"
     },
     "hardDelete": {
-      "title": "Supprimer le projet",
+      "title": "Supprimer définitivement le projet",
       "description": "Supprime définitivement le projet ainsi que tous les éléments qui lui sont liés (profils, entrées/sorties, participants, etc.). Cette action est irréversible.",
-      "action": "Supprimer le projet"
+      "action": "Supprimer définitivement le projet"
     }
   }
 }

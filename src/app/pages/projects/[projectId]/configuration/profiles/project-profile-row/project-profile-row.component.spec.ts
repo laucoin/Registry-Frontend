@@ -105,6 +105,19 @@ describe('ProjectProfileRowComponent', () => {
         expect(star?.getAttribute('aria-pressed')).toBe('true')
     })
 
+    it('should tag a blocked profile and leave an active one untagged', async () => {
+        // Arrange
+        await render(PROFILE, 'project')
+        const activeTag: Element | null = fixture.nativeElement.querySelector('[data-testid="project-profile-row-blocked-tag"]')
+        await render({ ...PROFILE, visible: false } as ProjectProfileModel, 'project')
+
+        // Act
+        const blockedTag: Element | null = fixture.nativeElement.querySelector('[data-testid="project-profile-row-blocked-tag"]')
+
+        // Assert
+        expect(activeTag).toBeNull()
+        expect(blockedTag).not.toBeNull()
+    })
 
     it('should toggle the favorite of the project when the star is clicked', async () => {
         // Arrange

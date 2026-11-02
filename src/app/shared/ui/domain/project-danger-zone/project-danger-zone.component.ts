@@ -18,7 +18,7 @@ import { ProjectModel } from '@shared/models/model/project.model'
 const NAME_MAX_LENGTH: number = 50
 
 /**
- * Purpose: Propose les commandes irréversibles ou restrictives du projet sélectionné : masquer, réafficher et supprimer.
+ * Purpose: Propose les commandes irréversibles ou restrictives du projet sélectionné : supprimer, restaurer et supprimer définitivement.
  * Scope: Affiche chaque commande que l'utilisateur connecté peut exécuter, derrière les mêmes confirmations que la liste des projets ; la suppression demande de saisir une phrase.
  * Limits: N'affiche rien quand l'utilisateur ne peut en exécuter aucune ; le backend vérifie toujours chaque commande.
  */

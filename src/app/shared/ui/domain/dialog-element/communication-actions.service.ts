@@ -7,7 +7,7 @@ import { CommunicationModel } from '@shared/models/model/communication.model'
 
 /**
  * Purpose: Indique quelles commandes une communication offre à l'utilisateur connecté et les exécute.
- * Scope: Construit le menu d'actions (modifier, masquer, réafficher, supprimer) avec ses confirmations.
+ * Scope: Construit le menu d'actions (modifier, supprimer, restaurer, supprimer définitivement) avec ses confirmations.
  * Limits: Ne détient aucun état ; lit seulement la session et appelle la facade des communications. Le backend vérifie toujours chaque commande.
  */
 @Injectable()

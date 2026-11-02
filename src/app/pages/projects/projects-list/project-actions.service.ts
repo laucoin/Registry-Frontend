@@ -25,7 +25,7 @@ interface ProjectActionSpec {
 
 /**
  * Purpose: Indique quelles commandes un projet de la liste offre à l'utilisateur connecté et les exécute.
- * Scope: Construit le menu d'actions (modifier, masquer, réafficher, supprimer) avec ses confirmations, et les commandes de rejoindre et de profil de support d'un projet.
+ * Scope: Construit le menu d'actions (modifier, supprimer, restaurer, supprimer définitivement) avec ses confirmations, et les commandes de rejoindre et de profil de support d'un projet.
  * Limits: Ne détient aucun état ; lit seulement la session et appelle les facades des projets et des profils. Le backend vérifie toujours chaque commande.
  */
 @Injectable()

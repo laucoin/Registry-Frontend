@@ -21,6 +21,9 @@
         </span>
         <span slot="end" class="flex flex-wrap items-center gap-2">
             <sgdf-tag appearance="outlined" pill>{{ profile.role.label }}</sgdf-tag>
+            @if (!profile.visible) {
+                <sgdf-tag data-testid="project-profile-row-blocked-tag" appearance="soft" pill variant="warning">{{ 'project-profiles.blocked' | transloco }}</sgdf-tag>
+            }
             @if (awaitsAnswer(profile)) {
                 <sgdf-button data-testid="project-profile-row-reject-button" size="small" variant="danger" appearance="outlined"
                              (click)="actions.manageAcceptance(profile, ProfileStatusEnum.REJECTED)">

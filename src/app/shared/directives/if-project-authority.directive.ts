@@ -5,7 +5,7 @@ import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authori
 
 /**
  * Purpose: N'affiche son hôte que si l'utilisateur connecté détient une autorité de projet sur le projet sélectionné.
- * Scope: Lit l'utilisateur courant et le projet sélectionné de la session ; sert à masquer le filtre des éléments masqués aux rôles qui ne peuvent pas les réactiver.
+ * Scope: Lit l'utilisateur courant et le projet sélectionné de la session ; sert à masquer le filtre des éléments supprimés aux rôles qui ne peuvent pas les restaurer.
  * Limits: Simple aide à l'usage ; le backend revérifie chaque requête.
  */
 @Directive( {

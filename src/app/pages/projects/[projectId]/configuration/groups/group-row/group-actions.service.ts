@@ -9,7 +9,7 @@ import { GroupModel } from '@shared/models/model/group.model'
 
 /**
  * Purpose: Indique quelles commandes un groupe d'une liste offre à l'utilisateur connecté et les exécute.
- * Scope: Construit le menu d'actions (membres, modifier, masquer, réafficher, supprimer) avec ses confirmations.
+ * Scope: Construit le menu d'actions (membres, modifier, supprimer, restaurer, supprimer définitivement) avec ses confirmations.
  * Limits: Ne détient aucun état ; lit seulement la session et appelle la facade des groupes. Le backend vérifie toujours chaque commande.
  */
 @Injectable()

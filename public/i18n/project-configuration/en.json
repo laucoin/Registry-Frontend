@@ -27,19 +27,19 @@
   "dangerZone": {
     "title": "Danger zone",
     "softDelete": {
-      "title": "Hide the project",
-      "description": "While the project is hidden, no profile, check-in/check-out or participant can be created in it. You can unhide it at any time.",
-      "action": "Hide the project"
+      "title": "Delete the project",
+      "description": "While the project is deleted, no profile, check-in/check-out or participant can be created in it. You can restore it at any time.",
+      "action": "Delete the project"
     },
     "restore": {
-      "title": "Show the project again",
-      "description": "The project is currently hidden. Making it visible allows creating profiles, check-ins/check-outs, participants, etc. in it again.",
-      "action": "Unhide the project"
+      "title": "Restore the project",
+      "description": "The project is currently deleted. Restoring it allows creating profiles, check-ins/check-outs, participants, etc. in it again.",
+      "action": "Restore the project"
     },
     "hardDelete": {
-      "title": "Delete the project",
+      "title": "Permanently delete the project",
       "description": "Permanently deletes the project along with all the items linked to it (profiles, check-ins/check-outs, participants, etc.). This action is irreversible.",
-      "action": "Delete the project"
+      "action": "Permanently delete the project"
     }
   }
 }

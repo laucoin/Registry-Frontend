@@ -11,7 +11,7 @@ import { ParticipantModel } from '@shared/models/model/participant.model'
 
 /**
  * Purpose: Indique quelles commandes un participant d'une liste offre à l'utilisateur connecté et les exécute.
- * Scope: Construit le menu d'actions (historique des mouvements, modifier, masquer, réafficher, retirer d'un groupe, export des données, supprimer) avec ses confirmations ; le groupe dont retirer un membre est le contexte optionnel.
+ * Scope: Construit le menu d'actions (historique des mouvements, modifier, supprimer, restaurer, retirer d'un groupe, export des données, supprimer définitivement) avec ses confirmations ; le groupe dont retirer un membre est le contexte optionnel.
  * Limits: Ne détient aucun état ; lit seulement la session et appelle les facades des participants et des groupes. Le backend vérifie toujours chaque commande.
  */
 @Injectable()

@@ -10,7 +10,7 @@ import { MovementModel } from '@shared/models/model/movement.model'
 
 /**
  * Purpose: Indique quelles commandes un mouvement offre à l'utilisateur connecté et les exécute.
- * Scope: Construit le menu d'actions (modifier, masquer, réafficher, supprimer) avec ses confirmations.
+ * Scope: Construit le menu d'actions (modifier, supprimer, restaurer, supprimer définitivement) avec ses confirmations.
  * Limits: Ne détient aucun état ; lit seulement la session et appelle la facade des mouvements. Le backend vérifie toujours chaque commande.
  */
 @Injectable()

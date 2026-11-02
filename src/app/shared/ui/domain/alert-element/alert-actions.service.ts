@@ -8,7 +8,7 @@ import { AlertModel } from '@shared/models/model/alert.model'
 
 /**
  * Purpose: Indique quelles commandes une alerte offre à l'utilisateur connecté et les exécute.
- * Scope: Construit le menu d'actions (résoudre, annuler, rouvrir, masquer, réafficher, supprimer) avec ses confirmations.
+ * Scope: Construit le menu d'actions (résoudre, annuler, rouvrir, supprimer, restaurer, supprimer définitivement) avec ses confirmations.
  * Limits: Ne détient aucun état ; lit seulement la session et appelle la facade des alertes. Le backend vérifie toujours chaque commande.
  */
 @Injectable()

@@ -9,7 +9,7 @@ import { ActivityModel } from '@shared/models/model/activity.model'
 
 /**
  * Purpose: Indique quelles commandes une activité d'une liste offre à l'utilisateur connecté et les exécute.
- * Scope: Construit le menu d'actions (historique des mouvements, modifier, masquer, réafficher, supprimer) avec ses confirmations.
+ * Scope: Construit le menu d'actions (historique des mouvements, modifier, supprimer, restaurer, supprimer définitivement) avec ses confirmations.
  * Limits: Ne détient aucun état ; lit seulement la session et appelle la facade des activités. Le backend vérifie toujours chaque commande.
  */
 @Injectable()
