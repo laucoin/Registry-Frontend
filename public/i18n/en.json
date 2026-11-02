@@ -71,6 +71,7 @@
     },
     "people": {
       "all": "All",
+      "independent": "Independent",
       "major": {
         "one": "Adult",
         "few": "Adults"
@@ -186,10 +187,15 @@
     "actions": {
       "copy-email": "Copy the email address of {{element.firstName}} {{element.lastName}}",
       "update-role": "Change role",
+      "export": "Export data (GDPR)",
       "unblock": "Unblock",
       "block": "Block",
       "delete": "Delete",
       "confirmations": {
+        "export": {
+          "title": "Export the user data",
+          "message": "You are about to export the personal data of {{element.firstName}} {{element.lastName}}. The file must be deleted as soon as it has been handed to the person concerned."
+        },
         "block": {
           "title": "Block the user",
           "message": "Warning! You are about to block a user. While blocked, {{element.firstName}} {{element.lastName}} will no longer be able to sign in. This change may take a few moments to be applied everywhere."
@@ -396,12 +402,17 @@
       },
       "datetime": "Date & Time",
       "status": "Status",
-      "visibility": "Availability"
+      "availability": "Availability",
+      "blocked": "Access"
     },
     "empty-invitation": "You don’t seem to have any invitation awaiting a reply. You can get one by accepting an invitation you received or by creating a project.",
+    "available": {
+      "true": "Active",
+      "false": "Inactive"
+    },
     "visible": {
-      "true": "Currently valid",
-      "false": "Expired"
+      "true": "Active",
+      "false": "Blocked"
     },
     "form": {
       "title": {
@@ -596,6 +607,10 @@
       "one": "Participant",
       "few": "Participants"
     },
+    "vehicles-layer-title": {
+      "one": "Vehicle",
+      "few": "Vehicles"
+    },
     "content": {
       "one": "{{name}}",
       "few": "{{total}} people"
@@ -648,6 +663,7 @@
           "empty": "No person selected",
           "search": "Add people and groups",
           "empty-search": "No person or group found",
+          "all": "Extend to all project participants",
           "one": "Participant",
           "few": "Participants",
           "group": "Group “{{name}}”",
@@ -693,7 +709,8 @@
         "datetime": {
           "required": "The timestamp of the check-in/check-out must be set. Otherwise, how would we know when it happens?",
           "minDate": "The timestamp of the check-in/check-out is earlier than the end of the project ({{min}}). Let’s stay within the lines!",
-          "maxDate": "The timestamp of the check-in/check-out is later than the end of the project ({{max}}). Let’s stay within the lines!"
+          "maxDate": "The timestamp of the check-in/check-out is later than the end of the project ({{max}}). Let’s stay within the lines!",
+          "future": "The timestamp of the check-in/check-out is in the future. A check-in/check-out can only be recorded once it has happened."
         },
         "type": {
           "required": "The check-in/check-out type must be set. Otherwise I might struggle to tell you whether it was a check-in or a check-out the next time you ask me."
@@ -1286,6 +1303,7 @@
           "maxlength": "Have you seen the length of that name 🤯? Don’t overdo it with your {{actualLength}} characters! The max here is {{requiredLength}}."
         },
         "description": {
+          "blank": "A description made only of spaces says very little. Write something or leave it empty!",
           "maxlength": "Have you seen the length of that description 🤯? Don’t overdo it with your {{actualLength}} characters! The max here is {{requiredLength}}."
         },
         "duration": {

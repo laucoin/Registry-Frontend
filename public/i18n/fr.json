@@ -71,6 +71,7 @@
     },
     "people": {
       "all": "Tous",
+      "independent": "Indépendants",
       "major": {
         "one": "Majeur",
         "few": "Majeurs"
@@ -186,10 +187,15 @@
     "actions": {
       "copy-email": "Copier l’adresse email de {{element.firstName}} {{element.lastName}}",
       "update-role": "Changer son rôle",
+      "export": "Exporter les données (RGPD)",
       "unblock": "Débloquer",
       "block": "Bloquer",
       "delete": "Supprimer",
       "confirmations": {
+        "export": {
+          "title": "Exporter les données de l’utilisateur",
+          "message": "Tu vas exporter les données personnelles de {{element.firstName}} {{element.lastName}}. Le fichier doit être supprimé dès qu’il a été transmis à la personne concernée."
+        },
         "block": {
           "title": "Bloquer l’utilisateur",
           "message": "Attention ! Tu vas bloquer un utilisateur. Tant qu’il est bloqué, {{element.firstName}} {{element.lastName}} ne pourra plus se connecter. Ce changement peut mettre quelques instants à être appliqué partout."
@@ -396,12 +402,17 @@
       },
       "datetime": "Date & Heure",
       "status": "Statut",
-      "visibility": "Disponibilité"
+      "availability": "Disponibilité",
+      "blocked": "Accès"
     },
     "empty-invitation": "Tu ne sembles pas avoir d'invitation en attente de réponse. Tu peux en obtenir un en acceptant une invitation que tu as reçue ou en créant un projet.",
+    "available": {
+      "true": "Actif",
+      "false": "Inactif"
+    },
     "visible": {
-      "true": "En cours de validité",
-      "false": "Expiré"
+      "true": "Actif",
+      "false": "Bloqué"
     },
     "form": {
       "title": {
@@ -596,6 +607,10 @@
       "one": "Participant",
       "few": "Participants"
     },
+    "vehicles-layer-title": {
+      "one": "Véhicule",
+      "few": "Véhicules"
+    },
     "content": {
       "one": "{{name}}",
       "few": "{{total}} personnes"
@@ -648,6 +663,7 @@
           "empty": "Aucune personne sélectionnée",
           "search": "Ajouter des personnes et des groupes",
           "empty-search": "Aucune personne ou groupe trouvé",
+          "all": "Élargir à tous les participants du projet",
           "one": "Participant",
           "few": "Participants",
           "group": "Groupe “{{name}}”",
@@ -693,7 +709,8 @@
         "datetime": {
           "required": "L’horodatage de l'entrée/sortie doit être défini. Sinon, comment savoir quand ça se passe ?",
           "minDate": "L’horodatage de l'entrée/sortie est plus tôt que la fin du projet ({{min}}). Restons dans les clous !",
-          "maxDate": "L’horodatage de l'entrée/sortie est plus tard que la fin du projet ({{max}}). Restons dans les clous !"
+          "maxDate": "L’horodatage de l'entrée/sortie est plus tard que la fin du projet ({{max}}). Restons dans les clous !",
+          "future": "L’horodatage de l'entrée/sortie est dans le futur. Une entrée/sortie ne peut être enregistrée qu’une fois produite."
         },
         "type": {
           "required": "Le type d'entrée/sortie doit être défini. Sinon je risque d’avoir du mal à te dire s’il s’agit d’une entrée ou d’une sortie la prochaine fois que tu me demandes."
@@ -1286,6 +1303,7 @@
           "maxlength": "T’as vu la longueur du nom 🤯 ? N'abuse pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
         },
         "description": {
+          "blank": "Une description faite uniquement d’espaces ne dit pas grand-chose. Écris quelque chose ou laisse-la vide !",
           "maxlength": "T’as vu la longueur de la marque 🤯 ? N'abuse pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
         },
         "duration": {
