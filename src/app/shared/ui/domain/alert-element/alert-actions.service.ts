@@ -48,7 +48,7 @@ export class AlertActions extends ElementActionsBase<AlertModel> {
             id: 'softDelete',
             icon: 'eye-slash',
             shown: alert.visible,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_U),
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_SOFT_DELETE),
             confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.softDeleteAlert(alert.id)) },
         }
     }
@@ -58,7 +58,7 @@ export class AlertActions extends ElementActionsBase<AlertModel> {
             id: 'restore',
             icon: 'rotate-right',
             shown: !alert.visible,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_D),
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_RESTORE),
             confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.restoreAlert(alert.id)) },
         }
     }

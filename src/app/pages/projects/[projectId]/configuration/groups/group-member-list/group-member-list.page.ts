@@ -67,7 +67,7 @@ import { ParticipantFormComponent } from '@pages/projects/[projectId]/configurat
     templateUrl: './group-member-list.page.html',
 } )
 export class GroupMemberListPage {
-    protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_D
+    protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_RESTORE
 
     private readonly destroyRef: DestroyRef = inject( DestroyRef )
     protected readonly facade: GroupFacade = inject( GroupFacade )

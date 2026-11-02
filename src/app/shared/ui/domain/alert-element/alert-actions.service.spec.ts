@@ -29,7 +29,7 @@ describe('AlertActions', () => {
         softDeleteAlert = vi.fn(() => of(undefined))
         restoreAlert = vi.fn(() => of(undefined))
         hardDeleteAlert = vi.fn(() => of(undefined))
-        authorities = signal(['p1_REGISTRY_PROJECT_ALERT_U', 'p1_REGISTRY_PROJECT_ALERT_D'])
+        authorities = signal(['p1_REGISTRY_PROJECT_ALERT_U', 'p1_REGISTRY_PROJECT_ALERT_SOFT_DELETE', 'p1_REGISTRY_PROJECT_ALERT_RESTORE', 'p1_REGISTRY_PROJECT_ALERT_D'])
         TestBed.configureTestingModule({
             providers: [
                 AlertActions,
@@ -119,6 +119,21 @@ describe('AlertActions', () => {
         expect(call()).toHaveBeenCalledTimes(1)
     })
 
+    it('gates softDelete and restore on their own authorities', () => {
+        // Arrange
+        const disabled = (element: AlertModel, id: string): boolean =>
+            actions.actionsFor(element).find((it: ElementActionModel): boolean => it.id === id)!.disabled
+        authorities.set(['p1_REGISTRY_PROJECT_ALERT_U', 'p1_REGISTRY_PROJECT_ALERT_D'])
+
+        // Act
+        const without: boolean[] = [disabled(alertOf(AlertStatusEnum.IN_PROGRESS), 'softDelete'), disabled(alertOf(AlertStatusEnum.IN_PROGRESS, false), 'restore')]
+        authorities.set(['p1_REGISTRY_PROJECT_ALERT_U', 'p1_REGISTRY_PROJECT_ALERT_D', 'p1_REGISTRY_PROJECT_ALERT_SOFT_DELETE', 'p1_REGISTRY_PROJECT_ALERT_RESTORE'])
+        const withThem: boolean[] = [disabled(alertOf(AlertStatusEnum.IN_PROGRESS), 'softDelete'), disabled(alertOf(AlertStatusEnum.IN_PROGRESS, false), 'restore')]
+
+        // Assert
+        expect(without).toEqual([true, true])
+        expect(withThem).toEqual([false, false])
+    })
 
     it('disables the commands the user has no authority for', () => {
         // Arrange

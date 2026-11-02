@@ -60,7 +60,7 @@ export class ParticipantActions extends ElementActionsBase<ParticipantModel, str
             id: 'softDelete',
             icon: 'eye-slash',
             shown: participant.visible,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U),
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_SOFT_DELETE),
             confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.softDeleteParticipant(participant.id)) },
         }
     }
@@ -70,7 +70,7 @@ export class ParticipantActions extends ElementActionsBase<ParticipantModel, str
             id: 'restore',
             icon: 'rotate-right',
             shown: !participant.visible,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_D),
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_RESTORE),
             confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.restoreParticipant(participant.id)) },
         }
     }
@@ -103,7 +103,7 @@ export class ParticipantActions extends ElementActionsBase<ParticipantModel, str
         return {
             id: 'hardDelete',
             icon: 'trash',
-            shown: participant.visible,
+            shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_D),
             confirmation: { severity: SeverityEnum.DANGER, accept: (): void => this.run(this.facade.hardDeleteParticipant(participant)) },
         }

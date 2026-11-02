@@ -37,9 +37,9 @@ export class ProjectDangerZoneComponent {
 	protected readonly project: Signal<ProjectModel | undefined> = this.sessionFacade.selectedProject
 
 	protected readonly canSoftDelete: Signal<boolean> = computed((): boolean =>
-		(this.project()?.visible ?? false) && this.allowed(ProjectAuthorityEnum.REGISTRY_PROJECT_U))
+		(this.project()?.visible ?? false) && this.allowed(ProjectAuthorityEnum.REGISTRY_PROJECT_SOFT_DELETE))
 	protected readonly canRestore: Signal<boolean> = computed((): boolean =>
-		this.project()?.visible === false && this.allowed(ProjectAuthorityEnum.REGISTRY_PROJECT_D))
+		this.project()?.visible === false && this.allowed(ProjectAuthorityEnum.REGISTRY_PROJECT_RESTORE))
 	protected readonly canHardDelete: Signal<boolean> = computed((): boolean =>
 		this.allowed(ProjectAuthorityEnum.REGISTRY_PROJECT_D))
 	protected readonly shown: Signal<boolean> = computed((): boolean => this.canSoftDelete() || this.canRestore() || this.canHardDelete())

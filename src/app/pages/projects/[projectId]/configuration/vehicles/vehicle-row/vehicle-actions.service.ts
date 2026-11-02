@@ -55,7 +55,7 @@ export class VehicleActions extends ElementActionsBase<VehicleModel> {
             id: 'softDelete',
             icon: 'eye-slash',
             shown: vehicle.visible,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_U),
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_SOFT_DELETE),
             confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.softDeleteVehicle(vehicle.id)) },
         }
     }
@@ -65,7 +65,7 @@ export class VehicleActions extends ElementActionsBase<VehicleModel> {
             id: 'restore',
             icon: 'rotate-right',
             shown: !vehicle.visible,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_D),
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_RESTORE),
             confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.restoreVehicle(vehicle.id)) },
         }
     }

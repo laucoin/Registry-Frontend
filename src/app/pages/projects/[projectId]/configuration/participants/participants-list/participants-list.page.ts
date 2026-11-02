@@ -52,7 +52,7 @@ import { ListComponent } from '@shared/ui/common/list/list.component'
     templateUrl: './participants-list.page.html',
 })
 export class ParticipantsListPage {
-    protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_D
+    protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_RESTORE
 
     protected readonly facade: ParticipantFacade = inject(ParticipantFacade)
     private readonly sessionFacade: SessionFacade = inject(SessionFacade)

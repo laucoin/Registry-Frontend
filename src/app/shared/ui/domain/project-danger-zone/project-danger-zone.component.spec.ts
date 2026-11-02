@@ -54,7 +54,7 @@ describe('ProjectDangerZoneComponent', () => {
 
 	it('should offer to soft delete a visible project and to restore a deleted one', () => {
 		// Arrange
-		currentUser.set(userWith(ProjectAuthorityEnum.REGISTRY_PROJECT_U, ProjectAuthorityEnum.REGISTRY_PROJECT_D))
+		currentUser.set(userWith(ProjectAuthorityEnum.REGISTRY_PROJECT_SOFT_DELETE, ProjectAuthorityEnum.REGISTRY_PROJECT_RESTORE, ProjectAuthorityEnum.REGISTRY_PROJECT_D))
 
 		// Act
 		const component: DangerZoneInternals = create()
@@ -65,10 +65,21 @@ describe('ProjectDangerZoneComponent', () => {
 		expect([component.canSoftDelete(), component.canRestore()]).toEqual([false, true])
 	})
 
+	it('should not offer soft delete nor restore with the update and delete authorities only', () => {
+		// Arrange
+		currentUser.set(userWith(ProjectAuthorityEnum.REGISTRY_PROJECT_U, ProjectAuthorityEnum.REGISTRY_PROJECT_D))
+		const component: DangerZoneInternals = create()
+
+		// Act
+		selectedProject.set({ id: 'p1', name: 'Camp', visible: false } as unknown as ProjectModel)
+
+		// Assert
+		expect([component.canSoftDelete(), component.canRestore(), component.canHardDelete()]).toEqual([false, false, true])
+	})
 
 	it('should ask a typed confirmation before permanently deleting the project', () => {
 		// Arrange
-		currentUser.set(userWith(ProjectAuthorityEnum.REGISTRY_PROJECT_D))
+		currentUser.set(userWith(ProjectAuthorityEnum.REGISTRY_PROJECT_RESTORE, ProjectAuthorityEnum.REGISTRY_PROJECT_D))
 		const component: DangerZoneInternals = create()
 
 		// Act

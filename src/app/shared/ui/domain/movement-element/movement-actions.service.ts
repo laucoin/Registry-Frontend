@@ -39,7 +39,7 @@ export class MovementActions extends ElementActionsBase<MovementModel> {
             id: 'softDelete',
             icon: 'eye-slash',
             shown: movement.visible,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_U),
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_SOFT_DELETE),
             confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.softDeleteMovement(movement.id)) },
         }
     }
@@ -49,7 +49,7 @@ export class MovementActions extends ElementActionsBase<MovementModel> {
             id: 'restore',
             icon: 'rotate-right',
             shown: !movement.visible,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_D),
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_RESTORE),
             confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.restoreMovement(movement.id)) },
         }
     }

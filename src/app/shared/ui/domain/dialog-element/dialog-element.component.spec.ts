@@ -18,7 +18,7 @@ describe( 'DialogElementComponent', () => {
     let facade: Record<string, Mock>
     let fixture: ComponentFixture<DialogElementComponent>
 
-    function create (element: object, authorities: string[] = [ 'p1_REGISTRY_PROJECT_COMMUNICATION_U', 'p1_REGISTRY_PROJECT_COMMUNICATION_D' ]): DialogElementComponent {
+    function create (element: object, authorities: string[] = [ 'p1_REGISTRY_PROJECT_COMMUNICATION_U', 'p1_REGISTRY_PROJECT_COMMUNICATION_SOFT_DELETE', 'p1_REGISTRY_PROJECT_COMMUNICATION_RESTORE', 'p1_REGISTRY_PROJECT_COMMUNICATION_D' ]): DialogElementComponent {
         confirm = vi.fn()
         facade = new Proxy( {} as Record<string, Mock>, {
             get: (target: Record<string, Mock>, key: string): Mock => target[ key ] ?? (target[ key ] = vi.fn( () => of( undefined ) )),

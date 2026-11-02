@@ -34,7 +34,7 @@ describe( 'AlertElementComponent', () => {
         TestBed.configureTestingModule( {
             providers: [
                 { provide: AlertFacade, useValue: facade },
-                { provide: SessionFacade, useValue: { currentUser: signal( { id: 'u1', authorities: [ 'p1_REGISTRY_PROJECT_ALERT_U' ] } ), selectedProject: signal( { id: 'p1', options: [] } ), currentProjectId: signal( 'p1' ) } },
+                { provide: SessionFacade, useValue: { currentUser: signal( { id: 'u1', authorities: [ 'p1_REGISTRY_PROJECT_ALERT_U', 'p1_REGISTRY_PROJECT_ALERT_SOFT_DELETE', 'p1_REGISTRY_PROJECT_ALERT_RESTORE' ] } ), selectedProject: signal( { id: 'p1', options: [] } ), currentProjectId: signal( 'p1' ) } },
                 { provide: UiFacade, useValue: { tinyScreen: signal( false ), notify: vi.fn(), confirm } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
                 { provide: Router, useValue: { navigateByUrl: vi.fn( () => Promise.resolve( true ) ) } },

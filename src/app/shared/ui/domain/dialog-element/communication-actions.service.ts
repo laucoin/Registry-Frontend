@@ -35,7 +35,7 @@ export class CommunicationActions extends ElementActionsBase<CommunicationModel>
             id: 'softDelete',
             icon: 'eye-slash',
             shown: communication.visible,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_U),
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_SOFT_DELETE),
             confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.softDeleteCommunication(communication.id)) },
         }
     }
@@ -45,7 +45,7 @@ export class CommunicationActions extends ElementActionsBase<CommunicationModel>
             id: 'restore',
             icon: 'rotate-right',
             shown: !communication.visible,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_D),
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_RESTORE),
             confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.restoreCommunication(communication.id)) },
         }
     }

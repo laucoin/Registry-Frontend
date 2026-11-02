@@ -23,7 +23,7 @@ describe('GroupActions', () => {
     let navigateByUrl: Mock<(url: string) => Promise<boolean>>
 
     beforeEach(() => {
-        authorities = signal(['p1_REGISTRY_PROJECT_GROUP_U', 'p1_REGISTRY_PROJECT_GROUP_D', 'p1_REGISTRY_PROJECT_GROUP_R'])
+        authorities = signal(['p1_REGISTRY_PROJECT_GROUP_U', 'p1_REGISTRY_PROJECT_GROUP_SOFT_DELETE', 'p1_REGISTRY_PROJECT_GROUP_RESTORE', 'p1_REGISTRY_PROJECT_GROUP_D', 'p1_REGISTRY_PROJECT_GROUP_R'])
         facade = { softDeleteGroup: vi.fn(() => of(undefined)), restoreGroup: vi.fn(() => of(undefined)), hardDeleteGroup: vi.fn(() => of(undefined)) }
         confirm = vi.fn()
         navigateByUrl = vi.fn(() => Promise.resolve(true))
@@ -70,6 +70,21 @@ describe('GroupActions', () => {
         expect(shown).toEqual(['members', 'edit', 'restore', 'hardDelete'])
     })
 
+    it('gates softDelete and restore on their own authorities', () => {
+        // Arrange
+        const disabled = (element: GroupModel, id: string): boolean =>
+            actions.actionsFor(element).find((it: ElementActionModel): boolean => it.id === id)!.disabled
+        authorities.set(['p1_REGISTRY_PROJECT_GROUP_U', 'p1_REGISTRY_PROJECT_GROUP_D'])
+
+        // Act
+        const without: boolean[] = [disabled(VISIBLE, 'softDelete'), disabled(HIDDEN, 'restore')]
+        authorities.set(['p1_REGISTRY_PROJECT_GROUP_U', 'p1_REGISTRY_PROJECT_GROUP_D', 'p1_REGISTRY_PROJECT_GROUP_SOFT_DELETE', 'p1_REGISTRY_PROJECT_GROUP_RESTORE'])
+        const withThem: boolean[] = [disabled(VISIBLE, 'softDelete'), disabled(HIDDEN, 'restore')]
+
+        // Assert
+        expect(without).toEqual([true, true])
+        expect(withThem).toEqual([false, false])
+    })
 
     it('disables the commands the user has no authority for', () => {
         // Arrange

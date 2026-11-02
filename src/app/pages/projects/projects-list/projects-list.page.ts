@@ -84,7 +84,7 @@ export class ProjectsListPage {
     protected readonly canReadAll: Signal<boolean> = this.canWith(UserAuthorityEnum.REGISTRY_PROJECT_R)
 
     protected readonly canSeeHidden: Signal<boolean> = computed((): boolean => this.sessionFacade.currentUser()?.authorities
-        .some((authority: string): boolean => authority.endsWith(`_${ProjectAuthorityEnum.REGISTRY_PROJECT_D}`)) ?? false)
+        .some((authority: string): boolean => authority.endsWith(`_${ProjectAuthorityEnum.REGISTRY_PROJECT_RESTORE}`)) ?? false)
 
     protected readonly activeFilters: Signal<number> = computed((): number => [
         StringHelper.isNotNullNorBlank(this.facade.projectsPageQueryParam()),

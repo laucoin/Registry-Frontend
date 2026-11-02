@@ -55,7 +55,7 @@ export class GroupActions extends ElementActionsBase<GroupModel> {
             id: 'softDelete',
             icon: 'eye-slash',
             shown: group.visible,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U),
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_SOFT_DELETE),
             confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.softDeleteGroup(group.id)) },
         }
     }
@@ -65,7 +65,7 @@ export class GroupActions extends ElementActionsBase<GroupModel> {
             id: 'restore',
             icon: 'rotate-right',
             shown: !group.visible,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_D),
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_RESTORE),
             confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.restoreGroup(group.id)) },
         }
     }

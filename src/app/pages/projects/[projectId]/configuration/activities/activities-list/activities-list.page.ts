@@ -54,7 +54,7 @@ import { ListComponent } from '@shared/ui/common/list/list.component'
     templateUrl: './activities-list.page.html',
 })
 export class ActivitiesListPage {
-    protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_D
+    protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_RESTORE
 
     protected readonly facade: ActivityFacade = inject(ActivityFacade)
     private readonly sessionFacade: SessionFacade = inject(SessionFacade)

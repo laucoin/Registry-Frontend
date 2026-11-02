@@ -35,7 +35,7 @@ describe( 'MovementElementComponent', () => {
         TestBed.configureTestingModule( {
             providers: [
                 { provide: MovementFacade, useValue: facade },
-                { provide: SessionFacade, useValue: { currentUser: signal( { id: 'u1', authorities: [ 'p1_REGISTRY_PROJECT_MOVEMENT_U' ] } ), selectedProject: signal( { id: 'p1', options: [] } ), selectedProjectHasOption: (): Signal<boolean> => signal( false ), currentProjectId: signal( 'p1' ) } },
+                { provide: SessionFacade, useValue: { currentUser: signal( { id: 'u1', authorities: [ 'p1_REGISTRY_PROJECT_MOVEMENT_U', 'p1_REGISTRY_PROJECT_MOVEMENT_SOFT_DELETE', 'p1_REGISTRY_PROJECT_MOVEMENT_RESTORE' ] } ), selectedProject: signal( { id: 'p1', options: [] } ), selectedProjectHasOption: (): Signal<boolean> => signal( false ), currentProjectId: signal( 'p1' ) } },
                 { provide: UiFacade, useValue: { tinyScreen: signal( false ), notify: vi.fn(), confirm } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
                 { provide: Router, useValue: { navigateByUrl: vi.fn( () => Promise.resolve( true ) ) } },

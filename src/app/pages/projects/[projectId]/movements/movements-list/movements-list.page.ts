@@ -50,7 +50,7 @@ import { MovementElementComponent } from '@shared/ui/domain/movement-element/mov
     templateUrl: './movements-list.page.html',
 })
 export class MovementsListPage {
-    protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_D
+    protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_RESTORE
 
     protected readonly facade: MovementFacade = inject(MovementFacade)
     private readonly sessionFacade: SessionFacade = inject(SessionFacade)

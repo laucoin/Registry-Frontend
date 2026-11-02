@@ -54,7 +54,7 @@ import { ListComponent } from '@shared/ui/common/list/list.component'
     templateUrl: './vehicles-list.page.html',
 })
 export class VehiclesListPage {
-    protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_D
+    protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_RESTORE
 
     protected readonly facade: VehicleFacade = inject(VehicleFacade)
     private readonly sessionFacade: SessionFacade = inject(SessionFacade)

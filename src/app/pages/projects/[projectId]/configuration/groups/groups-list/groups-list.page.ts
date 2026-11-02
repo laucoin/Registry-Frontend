@@ -53,7 +53,7 @@ import { ListComponent } from '@shared/ui/common/list/list.component'
     templateUrl: './groups-list.page.html',
 })
 export class GroupsListPage {
-    protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_D
+    protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_RESTORE
 
     protected readonly facade: GroupFacade = inject(GroupFacade)
     private readonly sessionFacade: SessionFacade = inject(SessionFacade)

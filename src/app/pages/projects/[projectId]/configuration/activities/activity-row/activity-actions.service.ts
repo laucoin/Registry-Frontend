@@ -55,7 +55,7 @@ export class ActivityActions extends ElementActionsBase<ActivityModel> {
             id: 'softDelete',
             icon: 'eye-slash',
             shown: activity.visible,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_U),
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_SOFT_DELETE),
             confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.softDeleteActivity(activity.id)) },
         }
     }
@@ -65,7 +65,7 @@ export class ActivityActions extends ElementActionsBase<ActivityModel> {
             id: 'restore',
             icon: 'rotate-right',
             shown: !activity.visible,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_D),
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_RESTORE),
             confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.restoreActivity(activity.id)) },
         }
     }

@@ -79,7 +79,7 @@ export class ProjectActions {
 		return {
 			id: 'softDelete',
 			icon: 'eye-slash',
-			authority: ProjectAuthorityEnum.REGISTRY_PROJECT_U,
+			authority: ProjectAuthorityEnum.REGISTRY_PROJECT_SOFT_DELETE,
 			shown: project.visible,
 			confirmation: {
 				severity: SeverityEnum.WARNING,
@@ -92,7 +92,7 @@ export class ProjectActions {
 		return {
 			id: 'restore',
 			icon: 'rotate-right',
-			authority: ProjectAuthorityEnum.REGISTRY_PROJECT_D,
+			authority: ProjectAuthorityEnum.REGISTRY_PROJECT_RESTORE,
 			shown: !project.visible,
 			confirmation: {
 				severity: SeverityEnum.INFO,

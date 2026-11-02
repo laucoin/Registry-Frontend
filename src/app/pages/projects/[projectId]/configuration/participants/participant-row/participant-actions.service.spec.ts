@@ -25,7 +25,7 @@ describe('ParticipantActions', () => {
     let navigateByUrl: Mock<(url: string) => Promise<boolean>>
 
     beforeEach(() => {
-        authorities = signal(['p1_REGISTRY_PROJECT_PARTICIPANT_U', 'p1_REGISTRY_PROJECT_PARTICIPANT_D', 'p1_REGISTRY_PROJECT_PARTICIPANT_HISTORY_R'])
+        authorities = signal(['p1_REGISTRY_PROJECT_PARTICIPANT_U', 'p1_REGISTRY_PROJECT_PARTICIPANT_SOFT_DELETE', 'p1_REGISTRY_PROJECT_PARTICIPANT_RESTORE', 'p1_REGISTRY_PROJECT_PARTICIPANT_D', 'p1_REGISTRY_PROJECT_PARTICIPANT_HISTORY_R'])
         facade = { softDeleteParticipant: vi.fn(() => of(undefined)), restoreParticipant: vi.fn(() => of(undefined)), hardDeleteParticipant: vi.fn(() => of(undefined)), exportParticipant: vi.fn(() => of(undefined)) }
         groupFacade = { removeMemberFromGroup: vi.fn(() => of(undefined)) }
         confirm = vi.fn()
@@ -71,7 +71,7 @@ describe('ParticipantActions', () => {
         const shown: string[] = ids(element)
 
         // Assert
-        expect(shown).toEqual(['movements-history', 'edit', 'restore', 'export'])
+        expect(shown).toEqual(['movements-history', 'edit', 'restore', 'export', 'hardDelete'])
     })
 
     it('disables the export for a user who is neither an administrator nor the linked user', () => {
@@ -109,6 +109,21 @@ describe('ParticipantActions', () => {
         expect(facade['exportParticipant']).toHaveBeenCalledWith(VISIBLE)
     })
 
+    it('gates softDelete and restore on their own authorities', () => {
+        // Arrange
+        const disabled = (element: ParticipantModel, id: string): boolean =>
+            actions.actionsFor(element).find((it: ElementActionModel): boolean => it.id === id)!.disabled
+        authorities.set(['p1_REGISTRY_PROJECT_PARTICIPANT_U', 'p1_REGISTRY_PROJECT_PARTICIPANT_D'])
+
+        // Act
+        const without: boolean[] = [disabled(VISIBLE, 'softDelete'), disabled(HIDDEN, 'restore')]
+        authorities.set(['p1_REGISTRY_PROJECT_PARTICIPANT_U', 'p1_REGISTRY_PROJECT_PARTICIPANT_D', 'p1_REGISTRY_PROJECT_PARTICIPANT_SOFT_DELETE', 'p1_REGISTRY_PROJECT_PARTICIPANT_RESTORE'])
+        const withThem: boolean[] = [disabled(VISIBLE, 'softDelete'), disabled(HIDDEN, 'restore')]
+
+        // Assert
+        expect(without).toEqual([true, true])
+        expect(withThem).toEqual([false, false])
+    })
 
     it('disables the commands the user has no authority for', () => {
         // Arrange

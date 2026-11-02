@@ -70,6 +70,21 @@ describe('ProjectActions', () => {
         expect(ids).toEqual(['edit', 'restore', 'hardDelete'])
     })
 
+    it('gates softDelete and restore on their own authorities', () => {
+        // Arrange
+        const disabled = (element: ProjectModel, id: string): boolean =>
+            actions.actionsFor(element).find((it: ElementActionModel): boolean => it.id === id)!.disabled
+        authorities.set(['p1_REGISTRY_PROJECT_U', 'p1_REGISTRY_PROJECT_D'])
+
+        // Act
+        const without: boolean[] = [disabled(PROJECT, 'softDelete'), disabled(HIDDEN, 'restore')]
+        authorities.set(['p1_REGISTRY_PROJECT_U', 'p1_REGISTRY_PROJECT_D', 'p1_REGISTRY_PROJECT_SOFT_DELETE', 'p1_REGISTRY_PROJECT_RESTORE'])
+        const withThem: boolean[] = [disabled(PROJECT, 'softDelete'), disabled(HIDDEN, 'restore')]
+
+        // Assert
+        expect(without).toEqual([true, true])
+        expect(withThem).toEqual([false, false])
+    })
 
     it('disables the actions the user has no authority for', () => {
         // Arrange

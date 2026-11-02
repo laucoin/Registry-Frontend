@@ -23,7 +23,7 @@ describe('VehicleActions', () => {
     let navigateByUrl: Mock<(url: string) => Promise<boolean>>
 
     beforeEach(() => {
-        authorities = signal(['p1_REGISTRY_PROJECT_VEHICLE_U', 'p1_REGISTRY_PROJECT_VEHICLE_D', 'p1_REGISTRY_PROJECT_VEHICLE_HISTORY_R'])
+        authorities = signal(['p1_REGISTRY_PROJECT_VEHICLE_U', 'p1_REGISTRY_PROJECT_VEHICLE_SOFT_DELETE', 'p1_REGISTRY_PROJECT_VEHICLE_RESTORE', 'p1_REGISTRY_PROJECT_VEHICLE_D', 'p1_REGISTRY_PROJECT_VEHICLE_HISTORY_R'])
         facade = { softDeleteVehicle: vi.fn(() => of(undefined)), restoreVehicle: vi.fn(() => of(undefined)), hardDeleteVehicle: vi.fn(() => of(undefined)) }
         confirm = vi.fn()
         navigateByUrl = vi.fn(() => Promise.resolve(true))
@@ -70,6 +70,21 @@ describe('VehicleActions', () => {
         expect(shown).toEqual(['movements-history', 'edit', 'restore', 'hardDelete'])
     })
 
+    it('gates softDelete and restore on their own authorities', () => {
+        // Arrange
+        const disabled = (element: VehicleModel, id: string): boolean =>
+            actions.actionsFor(element).find((it: ElementActionModel): boolean => it.id === id)!.disabled
+        authorities.set(['p1_REGISTRY_PROJECT_VEHICLE_U', 'p1_REGISTRY_PROJECT_VEHICLE_D'])
+
+        // Act
+        const without: boolean[] = [disabled(VISIBLE, 'softDelete'), disabled(HIDDEN, 'restore')]
+        authorities.set(['p1_REGISTRY_PROJECT_VEHICLE_U', 'p1_REGISTRY_PROJECT_VEHICLE_D', 'p1_REGISTRY_PROJECT_VEHICLE_SOFT_DELETE', 'p1_REGISTRY_PROJECT_VEHICLE_RESTORE'])
+        const withThem: boolean[] = [disabled(VISIBLE, 'softDelete'), disabled(HIDDEN, 'restore')]
+
+        // Assert
+        expect(without).toEqual([true, true])
+        expect(withThem).toEqual([false, false])
+    })
 
     it('disables the commands the user has no authority for', () => {
         // Arrange

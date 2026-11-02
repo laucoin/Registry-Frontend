@@ -74,7 +74,7 @@ export class ProjectProfileActions extends ElementActionsBase<ListedProfileModel
             id: 'block',
             icon: 'ban',
             shown: !own && profile.visible && profile.status?.value === ProfileStatusEnum.ACCEPTED,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U),
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_SOFT_DELETE),
             confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.blockProjectProfile(profile as ProjectProfileModel)) },
         }
     }
@@ -84,7 +84,7 @@ export class ProjectProfileActions extends ElementActionsBase<ListedProfileModel
             id: 'unblock',
             icon: 'rotate-right',
             shown: !own && !profile.visible,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U),
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_RESTORE),
             confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.unblockProjectProfile(profile as ProjectProfileModel)) },
         }
     }

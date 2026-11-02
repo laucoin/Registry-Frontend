@@ -96,6 +96,21 @@ describe('ProjectProfileActions', () => {
         expect(whenSelected).toEqual(['delete'])
     })
 
+    it('gates block and unblock on their own authorities', () => {
+        // Arrange
+        const disabled = (element: ProjectProfileModel, id: string): boolean =>
+            actions.actionsFor(element).find((it: ElementActionModel): boolean => it.id === id)!.disabled
+        authorities.set(['p1_REGISTRY_PROJECT_PROFILE_U', 'p1_REGISTRY_PROJECT_PROFILE_D'])
+
+        // Act
+        const without: boolean[] = [disabled(OTHER, 'block'), disabled(BLOCKED, 'unblock')]
+        authorities.set(['p1_REGISTRY_PROJECT_PROFILE_U', 'p1_REGISTRY_PROJECT_PROFILE_D', 'p1_REGISTRY_PROJECT_PROFILE_SOFT_DELETE', 'p1_REGISTRY_PROJECT_PROFILE_RESTORE'])
+        const withThem: boolean[] = [disabled(OTHER, 'block'), disabled(BLOCKED, 'unblock')]
+
+        // Assert
+        expect(without).toEqual([true, true])
+        expect(withThem).toEqual([false, false])
+    })
 
     it('disables the commands the user has no authority for', () => {
         // Arrange

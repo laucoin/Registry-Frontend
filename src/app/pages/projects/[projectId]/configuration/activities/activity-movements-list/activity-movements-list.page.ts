@@ -58,7 +58,7 @@ import { MovementElementComponent } from '@shared/ui/domain/movement-element/mov
     templateUrl: './activity-movements-list.page.html',
 })
 export class ActivityMovementsListPage {
-    protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_D
+    protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_RESTORE
 
     private readonly destroyRef: DestroyRef = inject( DestroyRef )
     protected readonly facade: ActivityFacade = inject(ActivityFacade)

@@ -47,7 +47,7 @@ export class UserActions extends ElementActionsBase<UserModel> {
             id: 'block',
             icon: 'ban',
             shown: others && user.visible,
-            allowed: this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_U),
+            allowed: this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_SOFT_DELETE),
             confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.facade.blockUser(user.id) },
         }
     }
@@ -57,7 +57,7 @@ export class UserActions extends ElementActionsBase<UserModel> {
             id: 'unblock',
             icon: 'rotate-right',
             shown: others && !user.visible,
-            allowed: this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_U),
+            allowed: this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_RESTORE),
             confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.facade.unblockUser(user.id) },
         }
     }

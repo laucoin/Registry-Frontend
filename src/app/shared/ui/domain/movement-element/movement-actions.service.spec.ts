@@ -24,7 +24,7 @@ describe('MovementActions', () => {
         actions.actionsFor(element).find((action: ElementActionModel): boolean => action.id === id)!
 
     beforeEach(() => {
-        authorities = signal(['p1_REGISTRY_PROJECT_MOVEMENT_U', 'p1_REGISTRY_PROJECT_MOVEMENT_D'])
+        authorities = signal(['p1_REGISTRY_PROJECT_MOVEMENT_U', 'p1_REGISTRY_PROJECT_MOVEMENT_SOFT_DELETE', 'p1_REGISTRY_PROJECT_MOVEMENT_RESTORE', 'p1_REGISTRY_PROJECT_MOVEMENT_D'])
         facade = { softDeleteMovement: vi.fn(() => of(undefined)), restoreMovement: vi.fn(() => of(undefined)), hardDeleteMovement: vi.fn(() => of(undefined)) }
         confirm = vi.fn()
         navigateByUrl = vi.fn(() => Promise.resolve(true))
@@ -89,10 +89,25 @@ describe('MovementActions', () => {
         expect(facade['hardDeleteMovement']).toHaveBeenCalledWith(VISIBLE)
     })
 
+    it('gates softDelete and restore on their own authorities', () => {
+        // Arrange
+        const disabled = (element: MovementModel, id: string): boolean =>
+            actions.actionsFor(element).find((it: ElementActionModel): boolean => it.id === id)!.disabled
+        authorities.set(['p1_REGISTRY_PROJECT_MOVEMENT_U', 'p1_REGISTRY_PROJECT_MOVEMENT_D'])
+
+        // Act
+        const without: boolean[] = [disabled(VISIBLE, 'softDelete'), disabled(HIDDEN, 'restore')]
+        authorities.set(['p1_REGISTRY_PROJECT_MOVEMENT_U', 'p1_REGISTRY_PROJECT_MOVEMENT_D', 'p1_REGISTRY_PROJECT_MOVEMENT_SOFT_DELETE', 'p1_REGISTRY_PROJECT_MOVEMENT_RESTORE'])
+        const withThem: boolean[] = [disabled(VISIBLE, 'softDelete'), disabled(HIDDEN, 'restore')]
+
+        // Assert
+        expect(without).toEqual([true, true])
+        expect(withThem).toEqual([false, false])
+    })
 
     it('disables the commands the user has no authority for', () => {
         // Arrange
-        authorities.set(['p1_REGISTRY_PROJECT_MOVEMENT_U'])
+        authorities.set(['p1_REGISTRY_PROJECT_MOVEMENT_U', 'p1_REGISTRY_PROJECT_MOVEMENT_SOFT_DELETE'])
 
         // Act
         const [edit, hide, remove]: ElementActionModel[] = actions.actionsFor(VISIBLE)

@@ -12,6 +12,7 @@ import { ProjectModel } from '@shared/models/model/project.model'
 import { REFRESH_SERVICE_STUB } from '@shared/helpers/testing/refresh-service.stub';
 
 interface ProjectsListApi {
+    canSeeHidden: () => boolean
     model: WritableSignal<ProjectsListSearchModel>
     optionsProject: WritableSignal<ProjectModel | undefined>
     canCreate: () => boolean
@@ -163,6 +164,19 @@ describe('ProjectsListPage', () => {
         expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith(undefined, undefined, undefined, undefined, undefined)
     })
 
+    it('offers the visibility filter only to users who can restore a project', () => {
+        // Arrange
+        const page: ProjectsListApi = create()
+        authorities.set(['p1_REGISTRY_PROJECT_U', 'p1_REGISTRY_PROJECT_D'])
+        const withoutRestore: boolean = page.canSeeHidden()
+
+        // Act
+        authorities.set(['p1_REGISTRY_PROJECT_RESTORE'])
+
+        // Assert
+        expect(withoutRestore).toBe(false)
+        expect(page.canSeeHidden()).toBe(true)
+    })
 
     it('reads the creation right from the session', () => {
         // Arrange

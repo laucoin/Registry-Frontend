@@ -78,10 +78,25 @@ describe('UserActions', () => {
         expect(shown).toEqual([])
     })
 
+    it('gates block and unblock on their own authorities', () => {
+        // Arrange
+        const disabled = (element: UserModel, id: string): boolean =>
+            actions.actionsFor(element).find((it: ElementActionModel): boolean => it.id === id)!.disabled
+        authorities.set(['REGISTRY_USER_U', 'REGISTRY_USER_D'])
+
+        // Act
+        const without: boolean[] = [disabled(ACTIVE, 'block'), disabled(BLOCKED, 'unblock')]
+        authorities.set(['REGISTRY_USER_U', 'REGISTRY_USER_D', 'REGISTRY_USER_SOFT_DELETE', 'REGISTRY_USER_RESTORE'])
+        const withThem: boolean[] = [disabled(ACTIVE, 'block'), disabled(BLOCKED, 'unblock')]
+
+        // Assert
+        expect(without).toEqual([true, true])
+        expect(withThem).toEqual([false, false])
+    })
 
     it('disables the commands the signed-in user has no authority for', () => {
         // Arrange
-        authorities.set(['REGISTRY_USER_U'])
+        authorities.set(['REGISTRY_USER_U', 'REGISTRY_USER_SOFT_DELETE'])
 
         // Act
         const flags: boolean[] = ['update-role', 'block', 'delete'].map((id: string): boolean => find(ACTIVE, id)!.disabled)

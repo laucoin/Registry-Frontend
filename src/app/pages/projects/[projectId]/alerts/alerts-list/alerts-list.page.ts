@@ -53,7 +53,7 @@ import { AlertElementComponent } from '@shared/ui/domain/alert-element/alert-ele
     templateUrl: './alerts-list.page.html',
 })
 export class AlertsListPage {
-    protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_D
+    protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_RESTORE
 
     protected readonly facade: AlertFacade = inject(AlertFacade)
 
