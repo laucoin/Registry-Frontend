@@ -49,6 +49,7 @@ describe( 'SessionFacade', () => {
     let updateRefreshMode: Mock<(mode: RefreshModeEnum) => void>
     let refreshMode: WritableSignal<RefreshModeEnum>
     let findProjectById: Mock<ProjectApi['findProjectById']>
+    let setFavoriteById: Mock<ProjectApi['setFavoriteById']>
     let deleteCurrentUser: Mock<UserApi['deleteCurrentUser']>
     let exportCurrentUser: Mock<UserApi['exportCurrentUser']>
     let downloadJson: Mock<BrowserService['downloadJson']>
@@ -76,6 +77,7 @@ describe( 'SessionFacade', () => {
         updateLanguagePreference = vi.fn( () => of( { userId: 'u1', theme: 'LIGHT', language: 'en', refreshMode: 'NORMAL' } ) )
         updateRefreshModePreference = vi.fn( () => of( { userId: 'u1', theme: 'LIGHT', language: 'fr', refreshMode: 'FAST' } ) )
         findProjectById = vi.fn( () => of( { id: 'p1' } as ProjectModel ) )
+        setFavoriteById = vi.fn( () => of( undefined ) )
         deleteCurrentUser = vi.fn( () => of( undefined ) )
         exportCurrentUser = vi.fn( () => of( { subjectType: 'USER' } ) )
         downloadJson = vi.fn()
@@ -103,7 +105,7 @@ describe( 'SessionFacade', () => {
         return [
             { provide: SecurityApi, useValue: { getLoginUri, getLogoutUri, fetchToken, fetchCurrentUser, refreshToken } },
             { provide: PreferencesApi, useValue: { updateTheme: updateThemePreference, updateLanguage: updateLanguagePreference, updateRefreshMode: updateRefreshModePreference } },
-            { provide: ProjectApi, useValue: { findProjectById: findProjectById } },
+            { provide: ProjectApi, useValue: { findProjectById: findProjectById, setFavoriteById: setFavoriteById } },
             { provide: UserApi, useValue: { deleteCurrentUser, exportCurrentUser } },
         ]
     }
@@ -682,6 +684,44 @@ describe( 'SessionFacade', () => {
 
             // Assert
             expect( updateRefreshMode ).toHaveBeenCalledWith( RefreshModeEnum.ECO )
+        } )
+    } )
+
+    describe( 'toggleSelectedProjectFavorite', () => {
+        it( 'flips the favorite of the selected project once the api confirms', () => {
+            // Arrange
+            session.setCurrentProject( 'p1', { id: 'p1', favorite: false } as ProjectModel )
+
+            // Act
+            facade.toggleSelectedProjectFavorite()
+
+            // Assert
+            expect( setFavoriteById ).toHaveBeenCalledWith( 'p1', true )
+            expect( session.currentProject.project() ).toEqual( { id: 'p1', favorite: true } )
+        } )
+
+        it( 'does nothing without a selected project', () => {
+            // Arrange
+            session.setCurrentProject( undefined, undefined )
+
+            // Act
+            facade.toggleSelectedProjectFavorite()
+
+            // Assert
+            expect( setFavoriteById ).not.toHaveBeenCalled()
+        } )
+
+        it( 'keeps the project unchanged and reports the failure', () => {
+            // Arrange
+            session.setCurrentProject( 'p1', { id: 'p1', favorite: false } as ProjectModel )
+            setFavoriteById.mockReturnValue( failing( FAILURE ) )
+
+            // Act
+            facade.toggleSelectedProjectFavorite()
+
+            // Assert
+            expect( session.currentProject.project() ).toEqual( { id: 'p1', favorite: false } )
+            expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { detail: FAILURE.message } ) )
         } )
     } )
 

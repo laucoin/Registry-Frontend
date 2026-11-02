@@ -8,6 +8,8 @@ import { UiFacade } from '@core/registry/state/ui.facade'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { EventHelper } from '@shared/helpers/event.helper'
 import { RouteHelper } from '@shared/helpers/route.helper'
+import { FavoriteToggleComponent } from '@shared/ui/common/favorite-toggle/favorite-toggle.component'
+import { ProjectRoleEnum } from '@shared/models/enumeration/project-role.enum'
 import { CommunicationFormComponent } from '@shared/ui/domain/communication-form/communication-form.component'
 import { CurrentUserHelper } from "@core/authentication/tool/current-user.helper";
 import { ProjectAuthorityEnum } from "@shared/models/enumeration/project-authority.enum";
@@ -48,6 +50,7 @@ import {
 	imports: [
 		TranslocoPipe,
 		RouterLink,
+		FavoriteToggleComponent,
 		CommunicationFormComponent,
 		ProjectParticipantOverviewComponent,
 		ProjectParticipantRegularizationComponent,
@@ -79,10 +82,18 @@ export class ProjectHomePage {
 		this.sessionFacade.currentProjectId(),
 		ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_C,
 	))
+	protected readonly canSeeProfileWidgets: Signal<boolean> = computed((): boolean => {
+		const role: string | undefined = this.project()?.profile?.role.value
+		return role === ProjectRoleEnum.PROJECT_ADMINISTRATOR || role === ProjectRoleEnum.PROJECT_COORDINATOR
+	})
 	protected readonly creatingAlert: WritableSignal<boolean> = signal(false)
 
 	protected readonly registeredMovementRoute: Signal<string> = computed((): string => this.projectRoute(RegistryRouteEnum.PROJECTS_MOVEMENTS_REGISTERED_CREATION))
 	protected readonly guestMovementRoute: Signal<string> = computed((): string => this.projectRoute(RegistryRouteEnum.PROJECTS_MOVEMENTS_GUEST_CREATION))
+
+	protected toggleFavorite(): void {
+		this.sessionFacade.toggleSelectedProjectFavorite()
+	}
 
 	protected closeAlertDrawer(event: Event): void {
 		if (EventHelper.isFromHost(event)) {

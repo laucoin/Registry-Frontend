@@ -2,8 +2,9 @@ import { signal, WritableSignal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
+import { ProjectModel } from '@shared/models/model/project.model'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ProjectHomePage } from './project-home.page'
 
 const PROJECT_ID: string = 'p1'
@@ -15,17 +16,22 @@ function userWith( ...authorities: string[] ): CurrentUserModel {
 describe( 'ProjectHomePage', () => {
     let currentUser: WritableSignal<CurrentUserModel | undefined>
     let projectId: WritableSignal<string | undefined>
+    let selectedProject: WritableSignal<ProjectModel | undefined>
+    let toggleSelectedProjectFavorite: ReturnType<typeof vi.fn>
     let page: ProjectHomePage
 
     beforeEach( () => {
         currentUser = signal<CurrentUserModel | undefined>( undefined )
         projectId = signal<string | undefined>( PROJECT_ID )
+        selectedProject = signal<ProjectModel | undefined>( undefined )
+        toggleSelectedProjectFavorite = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 {
                     provide: SessionFacade,
                     useValue: {
-                        selectedProject: signal( undefined ),
+                        selectedProject,
+                        toggleSelectedProjectFavorite,
                         selectedProjectHasOption: (): WritableSignal<boolean> => signal( true ),
                         currentUser,
                         currentProjectId: projectId,
@@ -142,5 +148,36 @@ describe( 'ProjectHomePage', () => {
 
         // Assert
         expect( routes.every( (route: string): boolean => route.includes( expectedProject ) ) ).toBe( true )
+    } )
+
+    it.each( [ [ 'PROJECT_ADMINISTRATOR', true ], [ 'PROJECT_COORDINATOR', true ], [ 'PROJECT_PARTICIPANT', false ] ] )(
+        'shows the birthdays and the regularizations to the role %s: %s', (role: string, expected: boolean) => {
+            // Arrange
+            selectedProject.set( { profile: { role: { value: role } } } as unknown as ProjectModel )
+
+            // Act
+            const visible: boolean = page[ 'canSeeProfileWidgets' ]()
+
+            // Assert
+            expect( visible ).toBe( expected )
+        } )
+
+    it( 'hides the birthdays and the regularizations while the project has no profile', () => {
+        // Arrange
+        selectedProject.set( { id: PROJECT_ID } as unknown as ProjectModel )
+
+        // Act
+        const visible: boolean = page[ 'canSeeProfileWidgets' ]()
+
+        // Assert
+        expect( visible ).toBe( false )
+    } )
+
+    it( 'toggles the favorite of the selected project through the session facade', () => {
+        // Act
+        page[ 'toggleFavorite' ]()
+
+        // Assert
+        expect( toggleSelectedProjectFavorite ).toHaveBeenCalledTimes( 1 )
     } )
 } )

@@ -211,6 +211,17 @@ export class SessionFacade {
         return done.asObservable()
     }
 
+    public toggleSelectedProjectFavorite(): void {
+        const project: ProjectModel | undefined = this.selectedProject()
+        if (GenericHelper.isNull(project)) return
+
+        const favorite: boolean = !project!.favorite
+        this.projectApi.setFavoriteById(project!.id, favorite).pipe(
+            tap((): void => this.applySelectedProjectFavorite(project!, favorite)),
+            catchError((error: ErrorModel): Observable<never> => this.reportError$(error)),
+        ).subscribe()
+    }
+
     public refreshCurrentProject(): void {
         const projectId: string | undefined = this.currentProjectId()
         if (GenericHelper.isNull(projectId)) return
@@ -313,6 +324,10 @@ export class SessionFacade {
             'global.notifications.sign-in-refused.message',
         ))
         return EMPTY
+    }
+
+    private applySelectedProjectFavorite(project: ProjectModel, favorite: boolean): void {
+        if (this.currentProjectId() === project.id) this.session.setCurrentProject(project.id, { ...project, favorite })
     }
 
     private reportError$(error: ErrorModel): Observable<never> {
