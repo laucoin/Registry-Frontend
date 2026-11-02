@@ -31,7 +31,7 @@ export function toActivityFormModel (activity?: ActivityModel): ActivityFormMode
 export function toActivityDto (model: ActivityFormModel): ActivityDto {
     return {
         name: model.name,
-        description: model.description,
+        description: model.description || undefined,
         duration: model.duration || undefined,
         allowedParticipants: model.allowedParticipants ?? undefined,
         startAvailability: model.beginDateTime ?? undefined,
@@ -50,6 +50,7 @@ export function createActivityForm (model: WritableSignal<ActivityFormModel>, co
     return form( model, (path: SchemaPathTree<ActivityFormModel>): void => {
         RegistrySchemas.requiredText( path.name, 150 )
         maxLength( path.description, 2000 )
+        RegistrySchemas.nonBlankIfFilled( path.description )
         allowedParticipantsRules( path.allowedParticipants )
         RegistrySchemas.projectDateTime( path.beginDateTime, context )
         RegistrySchemas.projectDateTime( path.endDateTime, context )

@@ -66,6 +66,28 @@ describe( 'activity form', () => {
         expect( dto.duration ).toBeUndefined()
     } )
 
+    it( 'sends no description when it is empty', () => {
+        // Arrange
+        const model: ActivityFormModel = { ...VALID, description: '' }
+
+        // Act
+        const dto: { description: string | undefined } = toActivityDto( model )
+
+        // Assert
+        expect( dto.description ).toBeUndefined()
+    } )
+
+    it( 'refuses a description made only of spaces', () => {
+        // Arrange
+        const form: FieldTree<ActivityFormModel> = build( { ...VALID, description: '   ' } )
+
+        // Act
+        const kinds: string[] = kindsOf( form.description() )
+
+        // Assert
+        expect( kinds ).toEqual( [ 'blank' ] )
+    } )
+
     it( 'requires a name and limits the description', () => {
         // Arrange
         const tree: FieldTree<ActivityFormModel> = build( { ...VALID, name: '', description: 'a'.repeat( 2001 ) } )
