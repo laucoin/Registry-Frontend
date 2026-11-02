@@ -41,17 +41,17 @@
         </sgdf-tag>
     }
     @if (vehiclesCount() > 0) {
-        <span class="inline-flex items-center gap-1">
-            <sgdf-icon name="car" library="solid"/>
+        <sgdf-button data-testid="movement-element-vehicles-button" size="small" appearance="text" (click)="vehiclesLayerOpened.set(true)">
+            <sgdf-icon slot="prefix" name="car" library="solid"/>
             {{ 'movements.vehicles-count' | pluralTranslation: vehiclesCount() | transloco: { count: vehiclesCount() } }}
-        </span>
+        </sgdf-button>
     }
 </span>
 <span slot="end" class="flex flex-wrap items-center gap-2">
     @if (!movement().visible) {
         <sgdf-tag appearance="outlined" variant="neutral" pill>{{ 'movements.visible.false' | transloco }}</sgdf-tag>
     }
-    @if (prefillService.canCreate() && total() > 0) {
+    @if (reversible() && prefillService.canCreate() && total() > 0) {
         <sgdf-button data-testid="movement-element-reverse-button" size="small" variant="primary" appearance="outlined" (click)="reverse()">
             <sgdf-icon slot="prefix" [name]="movement().type.value === MovementTypeEnum.OUT ? 'arrow-down' : 'arrow-up'" library="solid"/>
             {{ 'movements.reverse.' + movement().type.value | transloco }}
@@ -77,7 +77,7 @@
                 @if (content.vehicle) {
                     <sgdf-tag slot="description" appearance="outlined" pill>{{ VehicleHelper.toSelectItem(content.vehicle).label }}</sgdf-tag>
                 }
-                @if (prefillService.canCreate()) {
+                @if (reversible() && prefillService.canCreate()) {
                     <sgdf-button data-testid="movement-element-participant-reverse-button" slot="end" size="small" variant="primary" appearance="outlined" (click)="reverse([content])">
                         <sgdf-icon slot="prefix" [name]="movement().type.value === MovementTypeEnum.OUT ? 'arrow-down' : 'arrow-up'" library="solid"/>
                         {{ 'movements.reverse.' + movement().type.value | transloco }}
@@ -105,6 +105,9 @@
         @for (pool of pools() | keyvalue; track pool.key) {
             <sgdf-tab data-testid="movement-element-pool-tab" [panel]="'pool-' + pool.key">{{ pool.key }} ({{ pool.value.length }})</sgdf-tab>
         }
+        @if (independent().length > 0) {
+            <sgdf-tab data-testid="movement-element-independent-tab" panel="independent">{{ 'global.people.independent' | transloco }} ({{ independent().length }})</sgdf-tab>
+        }
         <sgdf-tab-panel name="all">
             <ng-container [ngTemplateOutlet]="people" [ngTemplateOutletContext]="{ $implicit: movement().content }"/>
         </sgdf-tab-panel>
@@ -113,6 +116,9 @@
         </sgdf-tab-panel>
         <sgdf-tab-panel name="children">
             <ng-container [ngTemplateOutlet]="people" [ngTemplateOutletContext]="{ $implicit: children() }"/>
+        </sgdf-tab-panel>
+        <sgdf-tab-panel name="independent">
+            <ng-container [ngTemplateOutlet]="people" [ngTemplateOutletContext]="{ $implicit: independent() }"/>
         </sgdf-tab-panel>
         @for (pool of pools() | keyvalue; track pool.key) {
             <sgdf-tab-panel [name]="'pool-' + pool.key">
@@ -134,4 +140,23 @@
         <app-movement-communications-list [movement]="movement()"/>
         <app-communication-form data-testid="movement-element-communication-form" slot="footer" [initialMovement]="movement()"/>
     }
+</sgdf-drawer>
+
+<sgdf-drawer data-testid="movement-element-vehicles-drawer" light-dismiss
+             [open]="vehiclesLayerOpened()"
+             [class.drawer-sheet]="uiFacade.tinyScreen()"
+             [placement]="uiFacade.tinyScreen() ? 'bottom' : 'right'"
+             [title]="'movements.vehicles-layer-title' | pluralTranslation: vehicles() | transloco"
+             (sgdf-hide)="closeVehicles($event)">
+    <sgdf-list appearance="text" [label]="'movements.vehicles-layer-title' | pluralTranslation: vehicles() | transloco">
+        @for (content of vehicles(); track content.vehicle!.id) {
+            <sgdf-list-item data-testid="vehicle-row" [attr.data-id]="content.vehicle!.id">
+                <sgdf-avatar slot="start" variant="primary" aria-hidden="true">
+                    <sgdf-icon slot="icon" name="car" library="solid"/>
+                </sgdf-avatar>
+                {{ VehicleHelper.toSelectItem(content.vehicle!).label }}
+                <span slot="description">{{ (content.participant.firstName | titlecase) + ' ' + (content.participant.lastName | uppercase) }}</span>
+            </sgdf-list-item>
+        }
+    </sgdf-list>
 </sgdf-drawer>

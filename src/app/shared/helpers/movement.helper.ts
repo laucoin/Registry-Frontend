@@ -35,6 +35,20 @@ export class MovementHelper {
         return movement.content.filter( (content: MovementContentModel): boolean => !content.participant.major )
     }
 
+    public static getIndependent (movement: MovementModel): MovementContentModel[] {
+        const hasPool: boolean = movement.content.some( (content: MovementContentModel): boolean => !!content.poolName )
+        return hasPool ? movement.content.filter( (content: MovementContentModel): boolean => !content.poolName ) : []
+    }
+
+    public static getVehicles (movement: MovementModel): MovementContentModel[] {
+        const seen: Set<string> = new Set<string>()
+        return movement.content.filter( (content: MovementContentModel): boolean => {
+            if (!content.vehicle || seen.has( content.vehicle.id )) return false
+            seen.add( content.vehicle.id )
+            return true
+        } )
+    }
+
     public static getPools (movement: MovementModel): Record<string, MovementContentModel[]> {
         return movement.content.reduce(
             (

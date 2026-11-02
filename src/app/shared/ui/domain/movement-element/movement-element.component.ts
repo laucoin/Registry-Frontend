@@ -70,11 +70,13 @@ export class MovementElementComponent extends GenericComponent {
     protected readonly MovementTypeEnum: typeof MovementTypeEnum = MovementTypeEnum
 
     protected readonly participantsLayerOpened: ModelSignal<boolean> = model<boolean>(false)
+    protected readonly vehiclesLayerOpened: ModelSignal<boolean> = model<boolean>(false)
     protected readonly communicationsLayerOpened: ModelSignal<boolean> = model<boolean>(false)
 
     public readonly actionMenuVisible: InputSignal<boolean> = input(true)
     public readonly movement: InputSignal<MovementModel> = input.required()
     public readonly communicable: InputSignal<boolean> = input(false)
+    public readonly reversible: InputSignal<boolean> = input(false)
     public readonly vehicleId: InputSignal<string | undefined> = input()
 
     protected readonly actions: Signal<ElementActionModel[]> = computed((): ElementActionModel[] => this.actionsService.actionsFor(this.movement()))
@@ -118,6 +120,10 @@ export class MovementElementComponent extends GenericComponent {
         this.movement()))
     protected readonly children: Signal<MovementContentModel[]> = computed((): MovementContentModel[] => MovementHelper.getChildren(
         this.movement()))
+    protected readonly independent: Signal<MovementContentModel[]> = computed((): MovementContentModel[] => MovementHelper.getIndependent(
+        this.movement()))
+    protected readonly vehicles: Signal<MovementContentModel[]> = computed((): MovementContentModel[] => MovementHelper.getVehicles(
+        this.movement()))
     protected readonly pools: Signal<Record<string, MovementContentModel[]>> = computed((): Record<string, MovementContentModel[]> => MovementHelper.getPools(
         this.movement()))
     protected readonly driver: Signal<MovementContentModel | undefined> = computed((): MovementContentModel | undefined => {
@@ -140,6 +146,12 @@ export class MovementElementComponent extends GenericComponent {
     protected closeParticipants(event: Event): void {
         if (EventHelper.isFromHost(event)) {
             this.participantsLayerOpened.set(false)
+        }
+    }
+
+    protected closeVehicles(event: Event): void {
+        if (EventHelper.isFromHost(event)) {
+            this.vehiclesLayerOpened.set(false)
         }
     }
 

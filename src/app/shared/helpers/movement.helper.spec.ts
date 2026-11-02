@@ -78,4 +78,39 @@ describe( 'MovementHelper', () => {
         expect( Object.keys( pools ) ).toEqual( [ 'car 1', 'car 2' ] )
         expect( pools[ 'car 1' ] ).toHaveLength( 2 )
     } )
+
+    it( 'lists the members without a pool as independent when at least one pool exists', () => {
+        // Arrange
+        const movement: MovementModel = movementWith( content( 'a', true, 'car 1' ), content( 'b', false ), content( 'c', true ) )
+
+        // Act
+        const independent: string[] = MovementHelper.getIndependent( movement ).map( (item: MovementContentModel): string => item.participant.id )
+
+        // Assert
+        expect( independent ).toEqual( [ 'b', 'c' ] )
+    } )
+
+    it( 'lists no independent member when the movement has no pool', () => {
+        // Arrange
+        const movement: MovementModel = movementWith( content( 'a', true ), content( 'b', false ) )
+
+        // Act
+        const independent: MovementContentModel[] = MovementHelper.getIndependent( movement )
+
+        // Assert
+        expect( independent ).toEqual( [] )
+    } )
+
+    it( 'lists each vehicle once with the first participant carrying it', () => {
+        // Arrange
+        const withVehicle = (id: string, vehicleId?: string): MovementContentModel =>
+            ({ participant: { id }, vehicle: vehicleId ? { id: vehicleId } : undefined }) as unknown as MovementContentModel
+        const movement: MovementModel = movementWith( withVehicle( 'a', 'v1' ), withVehicle( 'b', 'v1' ), withVehicle( 'c' ), withVehicle( 'd', 'v2' ) )
+
+        // Act
+        const vehicles: string[] = MovementHelper.getVehicles( movement ).map( (item: MovementContentModel): string => `${ item.vehicle!.id }:${ item.participant.id }` )
+
+        // Assert
+        expect( vehicles ).toEqual( [ 'v1:a', 'v2:d' ] )
+    } )
 } )

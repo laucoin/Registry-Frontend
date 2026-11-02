@@ -163,6 +163,32 @@ describe( 'MovementElementComponent', () => {
         expect( internals[ 'communicationsLayerOpened' ]() ).toBe( true )
     } )
 
+    it( 'closes the vehiclesLayerOpened drawer when the drawer itself asks for it', () => {
+        // Arrange
+        const component: MovementElementComponent = create( ELEMENT )
+        const internals: Record<string, { set: (value: boolean) => void, (): boolean }> = component as never
+        internals[ 'vehiclesLayerOpened' ].set( true )
+
+        // Act
+        ;(component as unknown as Record<string, (event: Event) => void>)[ 'closeVehicles' ]( hideEvent( true ) )
+
+        // Assert
+        expect( internals[ 'vehiclesLayerOpened' ]() ).toBe( false )
+    } )
+
+    it( 'keeps the vehiclesLayerOpened drawer open when a nested element asks to hide', () => {
+        // Arrange
+        const component: MovementElementComponent = create( ELEMENT )
+        const internals: Record<string, { set: (value: boolean) => void, (): boolean }> = component as never
+        internals[ 'vehiclesLayerOpened' ].set( true )
+
+        // Act
+        ;(component as unknown as Record<string, (event: Event) => void>)[ 'closeVehicles' ]( hideEvent( false ) )
+
+        // Assert
+        expect( internals[ 'vehiclesLayerOpened' ]() ).toBe( true )
+    } )
+
     it( 'counts each distinct vehicle of the movement once', () => {
         // Arrange
         const content: object[] = [ { vehicle: { id: 'v1' } }, { vehicle: { id: 'v1' } }, { vehicle: { id: 'v2' } }, {} ]
