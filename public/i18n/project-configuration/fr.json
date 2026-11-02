@@ -26,17 +26,17 @@
   },
   "dangerZone": {
     "title": "Zone de danger",
-    "disable": {
+    "softDelete": {
       "title": "Masquer le projet",
       "description": "Tant que le projet est masqué, plus aucun profil, entrée/sortie ou participant ne peut y être créé. Tu peux le démasquer à tout moment.",
       "action": "Masquer le projet"
     },
-    "enable": {
+    "restore": {
       "title": "Afficher à nouveau le projet",
       "description": "Le projet est actuellement masqué. Le rendre visible permet de nouveau d’y créer des profils, entrées/sorties, participants, etc.",
       "action": "Démasquer le projet"
     },
-    "delete": {
+    "hardDelete": {
       "title": "Supprimer le projet",
       "description": "Supprime définitivement le projet ainsi que tous les éléments qui lui sont liés (profils, entrées/sorties, participants, etc.). Cette action est irréversible.",
       "action": "Supprimer le projet"

@@ -123,19 +123,19 @@ export class GroupApi extends GenericProjectApi {
         return this.http.delete<void>(`${this.buildRequestBaseUrl(projectId)}/${id}/members/${memberId}`)
     }
 
-    public disableGroupById(projectId: string | undefined, id: string): Observable<GroupModel> {
+    public softDeleteGroupById(projectId: string | undefined, id: string): Observable<GroupModel> {
         return this.http.post<GroupResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
             map( GroupMapper.toModel ),
         )
     }
 
-    public enableGroupById(projectId: string | undefined, id: string): Observable<GroupModel> {
+    public restoreGroupById(projectId: string | undefined, id: string): Observable<GroupModel> {
         return this.http.post<GroupResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
             map( GroupMapper.toModel ),
         )
     }
 
-    public deleteGroupById(projectId: string | undefined, id: string): Observable<void> {
+    public hardDeleteGroupById(projectId: string | undefined, id: string): Observable<void> {
         return this.http.delete<void>(`${this.buildRequestBaseUrl(projectId)}/${id}`)
     }
 }

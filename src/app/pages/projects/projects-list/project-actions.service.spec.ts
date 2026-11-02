@@ -26,7 +26,7 @@ describe('ProjectActions', () => {
 
     beforeEach(() => {
         authorities = signal(['p1_REGISTRY_PROJECT_U', 'p1_REGISTRY_PROJECT_D'])
-        facade = { disableProject: vi.fn(), enableProject: vi.fn(), deleteProject: vi.fn() }
+        facade = { softDeleteProject: vi.fn(), restoreProject: vi.fn(), hardDeleteProject: vi.fn() }
         userProfileFacade = { createSupportProjectProfile: vi.fn(() => of(undefined)) }
         confirm = vi.fn()
         navigateByUrl = vi.fn(() => Promise.resolve(true))
@@ -56,10 +56,10 @@ describe('ProjectActions', () => {
         const ids: string[] = actions.actionsFor(project).map((action: ElementActionModel): string => action.id)
 
         // Assert
-        expect(ids).toEqual(['edit', 'disable', 'delete'])
+        expect(ids).toEqual(['edit', 'softDelete', 'hardDelete'])
     })
 
-    it('offers enable instead of disable for a hidden project', () => {
+    it('offers restore instead of softDelete for a hidden project', () => {
         // Arrange
         const project: ProjectModel = HIDDEN
 
@@ -67,15 +67,16 @@ describe('ProjectActions', () => {
         const ids: string[] = actions.actionsFor(project).map((action: ElementActionModel): string => action.id)
 
         // Assert
-        expect(ids).toEqual(['edit', 'enable', 'delete'])
+        expect(ids).toEqual(['edit', 'restore', 'hardDelete'])
     })
+
 
     it('disables the actions the user has no authority for', () => {
         // Arrange
         authorities.set(['p1_REGISTRY_PROJECT_U'])
 
         // Act
-        const flags: boolean[] = [find(PROJECT, 'edit')!.disabled, find(PROJECT, 'delete')!.disabled]
+        const flags: boolean[] = [find(PROJECT, 'edit')!.disabled, find(PROJECT, 'hardDelete')!.disabled]
 
         // Assert
         expect(flags).toEqual([false, true])
@@ -93,9 +94,9 @@ describe('ProjectActions', () => {
     })
 
     it.each([
-        ['disable', 'disableProject', SeverityEnum.WARNING, PROJECT],
-        ['enable', 'enableProject', SeverityEnum.INFO, HIDDEN],
-        ['delete', 'deleteProject', SeverityEnum.DANGER, PROJECT],
+        ['softDelete', 'softDeleteProject', SeverityEnum.WARNING, PROJECT],
+        ['restore', 'restoreProject', SeverityEnum.INFO, HIDDEN],
+        ['hardDelete', 'hardDeleteProject', SeverityEnum.DANGER, PROJECT],
     ])('asks for a confirmation before running %s, then calls the facade', (id: string, call: string, severity: SeverityEnum, project: ProjectModel) => {
         // Arrange
         const action: ElementActionModel = find(project, id)!

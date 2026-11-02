@@ -89,7 +89,7 @@ describe( 'UserFacade', () => {
         facade.blockUser( 'u1' )
 
         // Assert
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'users.notifications.disable.title' } ) )
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'users.notifications.block.title' } ) )
         expect( findUsers ).toHaveBeenCalledWith( 0, 30, expect.anything() )
         expect( facade.userLoading() ).toBe( false )
     } )

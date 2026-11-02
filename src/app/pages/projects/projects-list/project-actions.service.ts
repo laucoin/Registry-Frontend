@@ -62,7 +62,7 @@ export class ProjectActions {
 	}
 
 	private specsFor(project: ProjectModel): ProjectActionSpec[] {
-		return [this.editSpec(project), this.disableSpec(project), this.enableSpec(project), this.deleteSpec(project)]
+		return [this.editSpec(project), this.softDeleteSpec(project), this.restoreSpec(project), this.hardDeleteSpec(project)]
 	}
 
 	private editSpec(project: ProjectModel): ProjectActionSpec {
@@ -75,41 +75,41 @@ export class ProjectActions {
 		}
 	}
 
-	private disableSpec(project: ProjectModel): ProjectActionSpec {
+	private softDeleteSpec(project: ProjectModel): ProjectActionSpec {
 		return {
-			id: 'disable',
+			id: 'softDelete',
 			icon: 'eye-slash',
 			authority: ProjectAuthorityEnum.REGISTRY_PROJECT_U,
 			shown: project.visible,
 			confirmation: {
 				severity: SeverityEnum.WARNING,
-				accept: (): void => this.facade.disableProject(project.id),
+				accept: (): void => this.facade.softDeleteProject(project.id),
 			},
 		}
 	}
 
-	private enableSpec(project: ProjectModel): ProjectActionSpec {
+	private restoreSpec(project: ProjectModel): ProjectActionSpec {
 		return {
-			id: 'enable',
+			id: 'restore',
 			icon: 'rotate-right',
 			authority: ProjectAuthorityEnum.REGISTRY_PROJECT_D,
 			shown: !project.visible,
 			confirmation: {
 				severity: SeverityEnum.INFO,
-				accept: (): void => this.facade.enableProject(project.id),
+				accept: (): void => this.facade.restoreProject(project.id),
 			},
 		}
 	}
 
-	private deleteSpec(project: ProjectModel): ProjectActionSpec {
+	private hardDeleteSpec(project: ProjectModel): ProjectActionSpec {
 		return {
-			id: 'delete',
+			id: 'hardDelete',
 			icon: 'trash',
 			authority: ProjectAuthorityEnum.REGISTRY_PROJECT_D,
 			shown: true,
 			confirmation: {
 				severity: SeverityEnum.DANGER,
-				accept: (): void => this.facade.deleteProject(project),
+				accept: (): void => this.facade.hardDeleteProject(project),
 			},
 		}
 	}

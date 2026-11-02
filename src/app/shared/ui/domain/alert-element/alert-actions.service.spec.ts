@@ -16,9 +16,9 @@ describe('AlertActions', () => {
     let actions: AlertActions
     let confirm: Mock<(prefix: string, element: unknown, severity: unknown, accept: () => void) => void>
     let updateAlertStatus: Mock
-    let disableAlert: Mock
-    let enableAlert: Mock
-    let deleteAlert: Mock
+    let softDeleteAlert: Mock
+    let restoreAlert: Mock
+    let hardDeleteAlert: Mock
     let authorities: WritableSignal<string[]>
 
     const ids = (alert: AlertModel): string[] => actions.actionsFor(alert).map((action: ElementActionModel): string => action.id)
@@ -26,14 +26,14 @@ describe('AlertActions', () => {
     beforeEach(() => {
         confirm = vi.fn()
         updateAlertStatus = vi.fn(() => of(undefined))
-        disableAlert = vi.fn(() => of(undefined))
-        enableAlert = vi.fn(() => of(undefined))
-        deleteAlert = vi.fn(() => of(undefined))
+        softDeleteAlert = vi.fn(() => of(undefined))
+        restoreAlert = vi.fn(() => of(undefined))
+        hardDeleteAlert = vi.fn(() => of(undefined))
         authorities = signal(['p1_REGISTRY_PROJECT_ALERT_U', 'p1_REGISTRY_PROJECT_ALERT_D'])
         TestBed.configureTestingModule({
             providers: [
                 AlertActions,
-                { provide: AlertFacade, useValue: { updateAlertStatus, disableAlert, enableAlert, deleteAlert } },
+                { provide: AlertFacade, useValue: { updateAlertStatus, softDeleteAlert, restoreAlert, hardDeleteAlert } },
                 { provide: ElementConfirmationService, useValue: { confirm } },
                 { provide: SessionFacade, useValue: { currentUser: (): unknown => ({ authorities: authorities() }), selectedProject: signal({ id: 'p1' }) } },
             ],
@@ -49,7 +49,7 @@ describe('AlertActions', () => {
         const shown: string[] = ids(alert)
 
         // Assert
-        expect(shown).toEqual(['resolve', 'cancel', 'disable', 'delete'])
+        expect(shown).toEqual(['resolve', 'cancel', 'softDelete', 'hardDelete'])
     })
 
     it('offers to reopen a closed alert', () => {
@@ -60,7 +60,7 @@ describe('AlertActions', () => {
         const shown: string[] = ids(alert)
 
         // Assert
-        expect(shown).toEqual(['reopen', 'disable', 'delete'])
+        expect(shown).toEqual(['reopen', 'softDelete', 'hardDelete'])
     })
 
     it('confirms with the translation of the target status, then updates the status', () => {
@@ -84,7 +84,7 @@ describe('AlertActions', () => {
         const shown: string[] = ids(alert)
 
         // Assert
-        expect(shown).toEqual(['enable', 'delete'])
+        expect(shown).toEqual(['restore', 'hardDelete'])
     })
 
     it.each([
@@ -104,9 +104,9 @@ describe('AlertActions', () => {
     })
 
     it.each([
-        ['disable', true, (): Mock => disableAlert],
-        ['enable', false, (): Mock => enableAlert],
-        ['delete', true, (): Mock => deleteAlert],
+        ['softDelete', true, (): Mock => softDeleteAlert],
+        ['restore', false, (): Mock => restoreAlert],
+        ['hardDelete', true, (): Mock => hardDeleteAlert],
     ])('asks for a confirmation before %s, then calls the facade', (id: string, visible: boolean, call: () => Mock) => {
         // Arrange
         const action: ElementActionModel = actions.actionsFor(alertOf(AlertStatusEnum.IN_PROGRESS, visible)).find((it: ElementActionModel): boolean => it.id === id)!
@@ -119,12 +119,13 @@ describe('AlertActions', () => {
         expect(call()).toHaveBeenCalledTimes(1)
     })
 
+
     it('disables the commands the user has no authority for', () => {
         // Arrange
         authorities.set(['p1_REGISTRY_PROJECT_ALERT_U'])
 
         // Act
-        const remove: ElementActionModel = actions.actionsFor(alertOf(AlertStatusEnum.IN_PROGRESS)).find((it: ElementActionModel): boolean => it.id === 'delete')!
+        const remove: ElementActionModel = actions.actionsFor(alertOf(AlertStatusEnum.IN_PROGRESS)).find((it: ElementActionModel): boolean => it.id === 'hardDelete')!
 
         // Assert
         expect(remove.disabled).toBe(true)

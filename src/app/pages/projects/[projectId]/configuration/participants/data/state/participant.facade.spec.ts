@@ -20,7 +20,7 @@ describe( 'ParticipantFacade', () => {
     let findParticipants: Mock<ParticipantApi['findParticipants']>
     let createParticipant: Mock<ParticipantApi['createParticipant']>
     let updateParticipantById: Mock<ParticipantApi['updateParticipantById']>
-    let deleteParticipantById: Mock<ParticipantApi['deleteParticipantById']>
+    let hardDeleteParticipantById: Mock<ParticipantApi['hardDeleteParticipantById']>
     let exportParticipantById: Mock<ParticipantApi['exportParticipantById']>
     let api: Record<string, Mock>
     let downloadJson: Mock<BrowserService['downloadJson']>
@@ -31,16 +31,16 @@ describe( 'ParticipantFacade', () => {
         findParticipants = vi.fn( () => of( pageOf<ParticipantModel>( [], 2 ) ) )
         createParticipant = vi.fn()
         updateParticipantById = vi.fn()
-        deleteParticipantById = vi.fn()
+        hardDeleteParticipantById = vi.fn()
         exportParticipantById = vi.fn()
-        api = { findParticipantTimeline: vi.fn( () => of( { planned: [], actual: [] } ) ), findParticipantById: vi.fn(), disableParticipantById: vi.fn(), enableParticipantById: vi.fn(), searchUsers: vi.fn( () => of( [] ) ), searchGroups: vi.fn( () => of( [] ) ) }
+        api = { findParticipantTimeline: vi.fn( () => of( { planned: [], actual: [] } ) ), findParticipantById: vi.fn(), softDeleteParticipantById: vi.fn(), restoreParticipantById: vi.fn(), searchUsers: vi.fn( () => of( [] ) ), searchGroups: vi.fn( () => of( [] ) ) }
         downloadJson = vi.spyOn( BrowserService.prototype, 'downloadJson' ).mockReset().mockImplementation( (): void => undefined )
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 ParticipantFacade,
                 ParticipantStore,
-                { provide: ParticipantApi, useValue: { findParticipants, createParticipant, updateParticipantById, deleteParticipantById, exportParticipantById, ...api } },
+                { provide: ParticipantApi, useValue: { findParticipants, createParticipant, updateParticipantById, hardDeleteParticipantById, exportParticipantById, ...api } },
                 { provide: MovementApi, useValue: { findMovementsContents: vi.fn( () => of( [] ) ) } },
                 { provide: MetadataApi, useValue: { getPresencesStatus: vi.fn( () => of( [] ) ) } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ) } },
@@ -119,14 +119,14 @@ describe( 'ParticipantFacade', () => {
 
     it( 'notifies and refreshes the page after a deletion', () => {
         // Arrange
-        deleteParticipantById.mockReturnValue( of( undefined ) )
+        hardDeleteParticipantById.mockReturnValue( of( undefined ) )
 
         // Act
-        facade.deleteParticipant( { id: 'pa1', firstName: 'Ada', lastName: 'L' } as ParticipantModel ).subscribe()
+        facade.hardDeleteParticipant( { id: 'pa1', firstName: 'Ada', lastName: 'L' } as ParticipantModel ).subscribe()
 
         // Assert
-        expect( deleteParticipantById ).toHaveBeenCalledWith( undefined, 'pa1' )
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'participants.notifications.delete.title' } ) )
+        expect( hardDeleteParticipantById ).toHaveBeenCalledWith( undefined, 'pa1' )
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'participants.notifications.hardDelete.title' } ) )
         expect( findParticipants ).toHaveBeenCalledWith( 'p1', 0, 30, expect.anything() )
     } )
 
@@ -181,7 +181,7 @@ describe( 'ParticipantFacade', () => {
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
     } )
 
-    it.each( [ 'disable', 'enable' ] as const )( 'announces the participant %s on the current-page reload channel', (command: 'disable' | 'enable') => {
+    it.each( [ 'softDelete', 'restore' ] as const )( 'announces the participant %s on the current-page reload channel', (command: 'softDelete' | 'restore') => {
         // Arrange
         const participant: ParticipantModel = { id: 'pa1', firstName: 'Ada', lastName: 'Lovelace' } as ParticipantModel
         api[ `${ command }ParticipantById` ].mockReturnValue( of( participant ) )
@@ -189,7 +189,7 @@ describe( 'ParticipantFacade', () => {
         facade.handleParticipantCurrentPageReload().subscribe( reloaded )
 
         // Act
-        ;( command === 'disable' ? facade.disableParticipant( 'pa1' ) : facade.enableParticipant( 'pa1' ) ).subscribe()
+        ;( command === 'softDelete' ? facade.softDeleteParticipant( 'pa1' ) : facade.restoreParticipant( 'pa1' ) ).subscribe()
 
         // Assert
         expect( reloaded ).toHaveBeenCalledTimes( 1 )

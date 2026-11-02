@@ -10,38 +10,38 @@
         <sgdf-table-row>
             <sgdf-table-cell row-header>
                 <div class="grid gap-4 md:grid-cols-2">
-                    @if (canDisable()) {
+                    @if (canSoftDelete()) {
                         <sgdf-callout data-testid="project-danger-zone-disable-callout" class="h-full [&::part(base)]:h-full [&::part(content)]:h-full [&::part(message)]:h-full" variant="warning" without-icon>
-                            <span slot="title">{{ 'projectConfiguration.dangerZone.disable.title' | transloco }}</span>
+                            <span slot="title">{{ 'projectConfiguration.dangerZone.softDelete.title' | transloco }}</span>
                             <div class="flex h-full flex-col">
-                                <p class="mt-0 mb-3 font-normal">{{ 'projectConfiguration.dangerZone.disable.description' | transloco }}</p>
-                                <sgdf-button data-testid="project-danger-zone-disable-button" class="mt-auto self-start" variant="warning" appearance="outlined" (click)="disable()">
+                                <p class="mt-0 mb-3 font-normal">{{ 'projectConfiguration.dangerZone.softDelete.description' | transloco }}</p>
+                                <sgdf-button data-testid="project-danger-zone-disable-button" class="mt-auto self-start" variant="warning" appearance="outlined" (click)="softDelete()">
                                     <sgdf-icon slot="prefix" name="eye-slash" library="solid"/>
-                                    {{ 'projectConfiguration.dangerZone.disable.action' | transloco }}
+                                    {{ 'projectConfiguration.dangerZone.softDelete.action' | transloco }}
                                 </sgdf-button>
                             </div>
                         </sgdf-callout>
                     }
-                    @if (canEnable()) {
+                    @if (canRestore()) {
                         <sgdf-callout data-testid="project-danger-zone-enable-callout" class="h-full [&::part(base)]:h-full [&::part(content)]:h-full [&::part(message)]:h-full" variant="info" without-icon>
-                            <span slot="title">{{ 'projectConfiguration.dangerZone.enable.title' | transloco }}</span>
+                            <span slot="title">{{ 'projectConfiguration.dangerZone.restore.title' | transloco }}</span>
                             <div class="flex h-full flex-col">
-                                <p class="mt-0 mb-3 font-normal">{{ 'projectConfiguration.dangerZone.enable.description' | transloco }}</p>
-                                <sgdf-button data-testid="project-danger-zone-enable-button" class="mt-auto self-start" variant="neutral" appearance="outlined" (click)="enable()">
+                                <p class="mt-0 mb-3 font-normal">{{ 'projectConfiguration.dangerZone.restore.description' | transloco }}</p>
+                                <sgdf-button data-testid="project-danger-zone-enable-button" class="mt-auto self-start" variant="neutral" appearance="outlined" (click)="restore()">
                                     <sgdf-icon slot="prefix" name="rotate-right" library="solid"/>
-                                    {{ 'projectConfiguration.dangerZone.enable.action' | transloco }}
+                                    {{ 'projectConfiguration.dangerZone.restore.action' | transloco }}
                                 </sgdf-button>
                             </div>
                         </sgdf-callout>
                     }
-                    @if (canDelete()) {
+                    @if (canHardDelete()) {
                         <sgdf-callout data-testid="project-danger-zone-delete-callout" class="h-full [&::part(base)]:h-full [&::part(content)]:h-full [&::part(message)]:h-full" variant="danger" without-icon>
-                            <span slot="title">{{ 'projectConfiguration.dangerZone.delete.title' | transloco }}</span>
+                            <span slot="title">{{ 'projectConfiguration.dangerZone.hardDelete.title' | transloco }}</span>
                             <div class="flex h-full flex-col">
-                                <p class="mt-0 mb-3 font-normal">{{ 'projectConfiguration.dangerZone.delete.description' | transloco }}</p>
-                                <sgdf-button data-testid="project-danger-zone-delete-button" class="mt-auto self-start" variant="danger" appearance="solid" (click)="delete()">
+                                <p class="mt-0 mb-3 font-normal">{{ 'projectConfiguration.dangerZone.hardDelete.description' | transloco }}</p>
+                                <sgdf-button data-testid="project-danger-zone-delete-button" class="mt-auto self-start" variant="danger" appearance="solid" (click)="hardDelete()">
                                     <sgdf-icon slot="prefix" name="trash" library="solid"/>
-                                    {{ 'projectConfiguration.dangerZone.delete.action' | transloco }}
+                                    {{ 'projectConfiguration.dangerZone.hardDelete.action' | transloco }}
                                 </sgdf-button>
                             </div>
                         </sgdf-callout>

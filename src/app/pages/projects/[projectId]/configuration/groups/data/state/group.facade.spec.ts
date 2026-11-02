@@ -38,7 +38,7 @@ describe( 'GroupFacade', () => {
         addMembersToGroupById = vi.fn()
         removeMemberFromGroupById = vi.fn( () => of( undefined ) )
         notify = vi.fn()
-        api = { findGroupById: vi.fn(), updateGroupById: vi.fn(), disableGroupById: vi.fn(), enableGroupById: vi.fn(), deleteGroupById: vi.fn(), searchParticipants: vi.fn( () => of( [] ) ) }
+        api = { findGroupById: vi.fn(), updateGroupById: vi.fn(), softDeleteGroupById: vi.fn(), restoreGroupById: vi.fn(), hardDeleteGroupById: vi.fn(), searchParticipants: vi.fn( () => of( [] ) ) }
         TestBed.configureTestingModule( {
             providers: [
                 GroupFacade,
@@ -215,13 +215,13 @@ describe( 'GroupFacade', () => {
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'groups.notifications.edit.title' } ) )
     } )
 
-    it.each( [ 'disable', 'enable' ] as const )( 'notifies and refreshes the page after the group is %sd', (command: 'disable' | 'enable') => {
+    it.each( [ 'softDelete', 'restore' ] as const )( 'notifies and refreshes the page after the group is %sd', (command: 'softDelete' | 'restore') => {
         // Arrange
         api[ `${ command }GroupById` ].mockReturnValue( of( { id: 'g1', name: 'Wolves' } as GroupModel ) )
         findGroups.mockClear()
 
         // Act
-        ;( command === 'disable' ? facade.disableGroup( 'g1' ) : facade.enableGroup( 'g1' ) ).subscribe()
+        ;( command === 'softDelete' ? facade.softDeleteGroup( 'g1' ) : facade.restoreGroup( 'g1' ) ).subscribe()
 
         // Assert
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: `groups.notifications.${ command }.title` } ) )
@@ -230,24 +230,24 @@ describe( 'GroupFacade', () => {
 
     it( 'notifies and refreshes the page after the group is deleted', () => {
         // Arrange
-        api[ 'deleteGroupById' ].mockReturnValue( of( undefined ) )
+        api[ 'hardDeleteGroupById' ].mockReturnValue( of( undefined ) )
         findGroups.mockClear()
 
         // Act
-        facade.deleteGroup( { id: 'g1', name: 'Wolves' } as GroupModel ).subscribe()
+        facade.hardDeleteGroup( { id: 'g1', name: 'Wolves' } as GroupModel ).subscribe()
 
         // Assert
-        expect( api[ 'deleteGroupById' ] ).toHaveBeenCalledWith( undefined, 'g1' )
+        expect( api[ 'hardDeleteGroupById' ] ).toHaveBeenCalledWith( undefined, 'g1' )
         expect( findGroups ).toHaveBeenCalledTimes( 1 )
     } )
 
     it( 'does not refresh the page when a deletion fails', () => {
         // Arrange
-        api[ 'deleteGroupById' ].mockReturnValue( failing( ERROR_500 ) )
+        api[ 'hardDeleteGroupById' ].mockReturnValue( failing( ERROR_500 ) )
         findGroups.mockClear()
 
         // Act
-        facade.deleteGroup( { id: 'g1' } as GroupModel ).subscribe( { error: (): void => undefined } )
+        facade.hardDeleteGroup( { id: 'g1' } as GroupModel ).subscribe( { error: (): void => undefined } )
 
         // Assert
         expect( findGroups ).not.toHaveBeenCalled()

@@ -169,11 +169,11 @@ export class MovementFacade extends GenericProjectElementFacade {
     }
 
     public handleMovementFirstPageReload (): Observable<unknown> {
-        return this.commandEvents.on( 'movement', 'create', 'delete' )
+        return this.commandEvents.on( 'movement', 'create', 'hardDelete' )
     }
 
     public handleMovementCurrentPageReload (): Observable<unknown> {
-        return this.commandEvents.on( 'movement', 'update', 'disable', 'enable' )
+        return this.commandEvents.on( 'movement', 'update', 'softDelete', 'restore' )
     }
 
     public fetchMovement (id: string): Observable<MovementModel> {
@@ -206,24 +206,24 @@ export class MovementFacade extends GenericProjectElementFacade {
         )
     }
 
-    public disableMovement (id: string): Observable<MovementModel> {
-        return this.api.disableMovementById( this.selectedProjectId(), id ).pipe(
+    public softDeleteMovement (id: string): Observable<MovementModel> {
+        return this.api.softDeleteMovementById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (disabled: MovementModel): void => this.onCommandSuccess( 'disable', disabled ) ),
+            tap( (disabled: MovementModel): void => this.onCommandSuccess( 'softDelete', disabled ) ),
         )
     }
 
-    public enableMovement (id: string): Observable<MovementModel> {
-        return this.api.enableMovementById( this.selectedProjectId(), id ).pipe(
+    public restoreMovement (id: string): Observable<MovementModel> {
+        return this.api.restoreMovementById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (enabled: MovementModel): void => this.onCommandSuccess( 'enable', enabled ) ),
+            tap( (enabled: MovementModel): void => this.onCommandSuccess( 'restore', enabled ) ),
         )
     }
 
-    public deleteMovement (movement: MovementModel): Observable<void> {
-        return this.api.deleteMovementById( undefined, movement.id ).pipe(
+    public hardDeleteMovement (movement: MovementModel): Observable<void> {
+        return this.api.hardDeleteMovementById( undefined, movement.id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (): void => this.onCommandSuccess( 'delete', movement ) ),
+            tap( (): void => this.onCommandSuccess( 'hardDelete', movement ) ),
         )
     }
 

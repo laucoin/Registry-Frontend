@@ -82,19 +82,19 @@ export class CommunicationApi extends GenericProjectApi {
         )
     }
 
-    public disableCommunicationById(projectId: string | undefined, id: string): Observable<CommunicationModel> {
+    public softDeleteCommunicationById(projectId: string | undefined, id: string): Observable<CommunicationModel> {
         return this.http.post<CommunicationResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
             map( CommunicationMapper.toModel ),
         )
     }
 
-    public enableCommunicationById(projectId: string | undefined, id: string): Observable<CommunicationModel> {
+    public restoreCommunicationById(projectId: string | undefined, id: string): Observable<CommunicationModel> {
         return this.http.post<CommunicationResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
             map( CommunicationMapper.toModel ),
         )
     }
 
-    public deleteCommunicationById(projectId: string | undefined, id: string): Observable<void> {
+    public hardDeleteCommunicationById(projectId: string | undefined, id: string): Observable<void> {
         return this.http.delete<void>(`${this.buildRequestBaseUrl(projectId)}/${id}`)
     }
 }

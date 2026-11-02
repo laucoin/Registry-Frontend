@@ -26,7 +26,7 @@ describe('ParticipantActions', () => {
 
     beforeEach(() => {
         authorities = signal(['p1_REGISTRY_PROJECT_PARTICIPANT_U', 'p1_REGISTRY_PROJECT_PARTICIPANT_D', 'p1_REGISTRY_PROJECT_PARTICIPANT_HISTORY_R'])
-        facade = { disableParticipant: vi.fn(() => of(undefined)), enableParticipant: vi.fn(() => of(undefined)), deleteParticipant: vi.fn(() => of(undefined)), exportParticipant: vi.fn(() => of(undefined)) }
+        facade = { softDeleteParticipant: vi.fn(() => of(undefined)), restoreParticipant: vi.fn(() => of(undefined)), hardDeleteParticipant: vi.fn(() => of(undefined)), exportParticipant: vi.fn(() => of(undefined)) }
         groupFacade = { removeMemberFromGroup: vi.fn(() => of(undefined)) }
         confirm = vi.fn()
         navigateByUrl = vi.fn(() => Promise.resolve(true))
@@ -60,10 +60,10 @@ describe('ParticipantActions', () => {
         const shown: string[] = ids(element)
 
         // Assert
-        expect(shown).toEqual(['movements-history', 'edit', 'disable', 'export', 'delete'])
+        expect(shown).toEqual(['movements-history', 'edit', 'softDelete', 'export', 'hardDelete'])
     })
 
-    it('offers show instead of hide and no deletion for a hidden participant', () => {
+    it('offers restore instead of soft delete for a deleted participant', () => {
         // Arrange
         const element: ParticipantModel = HIDDEN
 
@@ -71,7 +71,7 @@ describe('ParticipantActions', () => {
         const shown: string[] = ids(element)
 
         // Assert
-        expect(shown).toEqual(['movements-history', 'edit', 'enable', 'export'])
+        expect(shown).toEqual(['movements-history', 'edit', 'restore', 'export'])
     })
 
     it('disables the export for a user who is neither an administrator nor the linked user', () => {
@@ -109,12 +109,13 @@ describe('ParticipantActions', () => {
         expect(facade['exportParticipant']).toHaveBeenCalledWith(VISIBLE)
     })
 
+
     it('disables the commands the user has no authority for', () => {
         // Arrange
         authorities.set(['p1_REGISTRY_PROJECT_PARTICIPANT_U'])
 
         // Act
-        const flags: boolean[] = ['movements-history', 'edit', 'delete'].map((id: string): boolean => find(VISIBLE, id).disabled)
+        const flags: boolean[] = ['movements-history', 'edit', 'hardDelete'].map((id: string): boolean => find(VISIBLE, id).disabled)
 
         // Assert
         expect(flags).toEqual([true, false, true])
@@ -135,9 +136,9 @@ describe('ParticipantActions', () => {
     })
 
     it.each([
-        ['disable', 'disableParticipant', SeverityEnum.WARNING, VISIBLE, 'x1'],
-        ['enable', 'enableParticipant', SeverityEnum.INFO, HIDDEN, 'x1'],
-        ['delete', 'deleteParticipant', SeverityEnum.DANGER, VISIBLE, VISIBLE],
+        ['softDelete', 'softDeleteParticipant', SeverityEnum.WARNING, VISIBLE, 'x1'],
+        ['restore', 'restoreParticipant', SeverityEnum.INFO, HIDDEN, 'x1'],
+        ['hardDelete', 'hardDeleteParticipant', SeverityEnum.DANGER, VISIBLE, VISIBLE],
     ])('asks for a confirmation before running %s, then calls the facade', (id: string, call: string, severity: SeverityEnum, element: ParticipantModel, argument: unknown) => {
         // Arrange
         const action: ElementActionModel = find(element, id)
@@ -161,7 +162,7 @@ describe('ParticipantActions', () => {
         const shown: string[] = ids(element, 'g1')
 
         // Assert
-        expect(shown).toEqual(['movements-history', 'edit', 'disable', 'remove-member', 'export', 'delete'])
+        expect(shown).toEqual(['movements-history', 'edit', 'softDelete', 'remove-member', 'export', 'hardDelete'])
     })
 
     it('asks for a confirmation before removing a member, then calls the group facade', () => {

@@ -53,7 +53,7 @@ describe('UserActions', () => {
         const ids: string[] = actions.actionsFor(user).map((action: ElementActionModel): string => action.id)
 
         // Assert
-        expect(ids).toEqual(['update-role', 'disable', 'delete'])
+        expect(ids).toEqual(['update-role', 'block', 'delete'])
     })
 
     it('offers unblock instead of block for a blocked user', () => {
@@ -64,7 +64,7 @@ describe('UserActions', () => {
         const ids: string[] = actions.actionsFor(user).map((action: ElementActionModel): string => action.id)
 
         // Assert
-        expect(ids).toEqual(['update-role', 'enable', 'delete'])
+        expect(ids).toEqual(['update-role', 'unblock', 'delete'])
     })
 
     it('offers nothing on the account of the signed-in user', () => {
@@ -78,12 +78,13 @@ describe('UserActions', () => {
         expect(shown).toEqual([])
     })
 
+
     it('disables the commands the signed-in user has no authority for', () => {
         // Arrange
         authorities.set(['REGISTRY_USER_U'])
 
         // Act
-        const flags: boolean[] = ['update-role', 'disable', 'delete'].map((id: string): boolean => find(ACTIVE, id)!.disabled)
+        const flags: boolean[] = ['update-role', 'block', 'delete'].map((id: string): boolean => find(ACTIVE, id)!.disabled)
 
         // Assert
         expect(flags).toEqual([false, false, true])
@@ -101,8 +102,8 @@ describe('UserActions', () => {
     })
 
     it.each([
-        ['disable', 'blockUser', SeverityEnum.WARNING, ACTIVE, 'u2'],
-        ['enable', 'unblockUser', SeverityEnum.INFO, BLOCKED, 'u2'],
+        ['block', 'blockUser', SeverityEnum.WARNING, ACTIVE, 'u2'],
+        ['unblock', 'unblockUser', SeverityEnum.INFO, BLOCKED, 'u2'],
         ['delete', 'deleteUser', SeverityEnum.DANGER, ACTIVE, ACTIVE],
     ])('asks for a confirmation before running %s, then calls the facade', (id: string, call: string, severity: SeverityEnum, user: UserModel, argument: unknown) => {
         // Arrange

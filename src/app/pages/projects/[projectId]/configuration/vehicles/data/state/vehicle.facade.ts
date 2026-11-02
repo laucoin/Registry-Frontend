@@ -158,24 +158,24 @@ export class VehicleFacade extends GenericProjectElementFacade {
         )
     }
 
-    public disableVehicle (id: string): Observable<VehicleModel> {
-        return this.api.disableVehicleById( this.selectedProjectId(), id ).pipe(
+    public softDeleteVehicle (id: string): Observable<VehicleModel> {
+        return this.api.softDeleteVehicleById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (disabled: VehicleModel): void => this.onCommandSuccess( 'disable', disabled ) ),
+            tap( (disabled: VehicleModel): void => this.onCommandSuccess( 'softDelete', disabled ) ),
         )
     }
 
-    public enableVehicle (id: string): Observable<VehicleModel> {
-        return this.api.enableVehicleById( this.selectedProjectId(), id ).pipe(
+    public restoreVehicle (id: string): Observable<VehicleModel> {
+        return this.api.restoreVehicleById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (enabled: VehicleModel): void => this.onCommandSuccess( 'enable', enabled ) ),
+            tap( (enabled: VehicleModel): void => this.onCommandSuccess( 'restore', enabled ) ),
         )
     }
 
-    public deleteVehicle (vehicle: VehicleModel): Observable<void> {
-        return this.api.deleteVehicleById( undefined, vehicle.id ).pipe(
+    public hardDeleteVehicle (vehicle: VehicleModel): Observable<void> {
+        return this.api.hardDeleteVehicleById( undefined, vehicle.id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (): void => this.onCommandSuccess( 'delete', vehicle ) ),
+            tap( (): void => this.onCommandSuccess( 'hardDelete', vehicle ) ),
         )
     }
 

@@ -24,7 +24,7 @@ describe('GroupActions', () => {
 
     beforeEach(() => {
         authorities = signal(['p1_REGISTRY_PROJECT_GROUP_U', 'p1_REGISTRY_PROJECT_GROUP_D', 'p1_REGISTRY_PROJECT_GROUP_R'])
-        facade = { disableGroup: vi.fn(() => of(undefined)), enableGroup: vi.fn(() => of(undefined)), deleteGroup: vi.fn(() => of(undefined)) }
+        facade = { softDeleteGroup: vi.fn(() => of(undefined)), restoreGroup: vi.fn(() => of(undefined)), hardDeleteGroup: vi.fn(() => of(undefined)) }
         confirm = vi.fn()
         navigateByUrl = vi.fn(() => Promise.resolve(true))
         TestBed.configureTestingModule({
@@ -56,7 +56,7 @@ describe('GroupActions', () => {
         const shown: string[] = ids(element)
 
         // Assert
-        expect(shown).toEqual(['members', 'edit', 'disable', 'delete'])
+        expect(shown).toEqual(['members', 'edit', 'softDelete', 'hardDelete'])
     })
 
     it('offers show instead of hide for a hidden element', () => {
@@ -67,15 +67,16 @@ describe('GroupActions', () => {
         const shown: string[] = ids(element)
 
         // Assert
-        expect(shown).toEqual(['members', 'edit', 'enable', 'delete'])
+        expect(shown).toEqual(['members', 'edit', 'restore', 'hardDelete'])
     })
+
 
     it('disables the commands the user has no authority for', () => {
         // Arrange
         authorities.set(['p1_REGISTRY_PROJECT_GROUP_U'])
 
         // Act
-        const flags: boolean[] = ['members', 'edit', 'delete'].map((id: string): boolean => find(VISIBLE, id).disabled)
+        const flags: boolean[] = ['members', 'edit', 'hardDelete'].map((id: string): boolean => find(VISIBLE, id).disabled)
 
         // Assert
         expect(flags).toEqual([true, false, true])
@@ -96,9 +97,9 @@ describe('GroupActions', () => {
     })
 
     it.each([
-        ['disable', 'disableGroup', SeverityEnum.WARNING, VISIBLE, 'x1'],
-        ['enable', 'enableGroup', SeverityEnum.INFO, HIDDEN, 'x1'],
-        ['delete', 'deleteGroup', SeverityEnum.DANGER, VISIBLE, VISIBLE],
+        ['softDelete', 'softDeleteGroup', SeverityEnum.WARNING, VISIBLE, 'x1'],
+        ['restore', 'restoreGroup', SeverityEnum.INFO, HIDDEN, 'x1'],
+        ['hardDelete', 'hardDeleteGroup', SeverityEnum.DANGER, VISIBLE, VISIBLE],
     ])('asks for a confirmation before running %s, then calls the facade', (id: string, call: string, severity: SeverityEnum, element: GroupModel, argument: unknown) => {
         // Arrange
         const action: ElementActionModel = find(element, id)

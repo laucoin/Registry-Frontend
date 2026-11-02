@@ -17,8 +17,8 @@ describe( 'ActivityFacade', () => {
     let facade: ActivityFacade
     let findActivities: Mock<ActivityApi['findActivities']>
     let createActivity: Mock<ActivityApi['createActivity']>
-    let disableActivityById: Mock<ActivityApi['disableActivityById']>
-    let deleteActivityById: Mock<ActivityApi['deleteActivityById']>
+    let softDeleteActivityById: Mock<ActivityApi['softDeleteActivityById']>
+    let hardDeleteActivityById: Mock<ActivityApi['hardDeleteActivityById']>
     let api: Record<string, Mock>
     let notify: Mock<(message: unknown) => void>
 
@@ -26,15 +26,15 @@ describe( 'ActivityFacade', () => {
         provideTestConfig()
         findActivities = vi.fn( () => of( pageOf<ActivityModel>( [], 2 ) ) )
         createActivity = vi.fn()
-        disableActivityById = vi.fn()
-        deleteActivityById = vi.fn()
-        api = { findActivityStatistics: vi.fn( () => of( { participantCount: 1, projectParticipantCount: 2, participantRate: 0.5, movementSeconds: 60, manSeconds: 120 } ) ), findActivityById: vi.fn(), updateActivityById: vi.fn(), enableActivityById: vi.fn() }
+        softDeleteActivityById = vi.fn()
+        hardDeleteActivityById = vi.fn()
+        api = { findActivityStatistics: vi.fn( () => of( { participantCount: 1, projectParticipantCount: 2, participantRate: 0.5, movementSeconds: 60, manSeconds: 120 } ) ), findActivityById: vi.fn(), updateActivityById: vi.fn(), restoreActivityById: vi.fn() }
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 ActivityFacade,
                 ActivityStore,
-                { provide: ActivityApi, useValue: { findActivities, createActivity, disableActivityById, deleteActivityById, ...api } },
+                { provide: ActivityApi, useValue: { findActivities, createActivity, softDeleteActivityById, hardDeleteActivityById, ...api } },
                 { provide: MovementApi, useValue: { findMovementsContents: vi.fn( () => of( [] ) ) } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ) } },
                 { provide: UiFacade, useValue: { notify } },
@@ -119,11 +119,11 @@ describe( 'ActivityFacade', () => {
 
     it( 'notifies a failed command instead of rethrowing it', () => {
         // Arrange
-        disableActivityById.mockReturnValue( failing( ERROR_500 ) )
+        softDeleteActivityById.mockReturnValue( failing( ERROR_500 ) )
         let completed: boolean = false
 
         // Act
-        facade.disableActivity( 'a1' ).subscribe( { complete: (): void => { completed = true } } )
+        facade.softDeleteActivity( 'a1' ).subscribe( { complete: (): void => { completed = true } } )
 
         // Assert
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
@@ -132,14 +132,14 @@ describe( 'ActivityFacade', () => {
 
     it( 'announces the deletion on the command channel', () => {
         // Arrange
-        deleteActivityById.mockReturnValue( of( undefined ) )
+        hardDeleteActivityById.mockReturnValue( of( undefined ) )
 
         // Act
-        facade.deleteActivity( { id: 'a1', name: 'Hike' } as ActivityModel ).subscribe()
+        facade.hardDeleteActivity( { id: 'a1', name: 'Hike' } as ActivityModel ).subscribe()
 
         // Assert
-        expect( deleteActivityById ).toHaveBeenCalledWith( undefined, 'a1' )
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'activities.notifications.delete.title' } ) )
+        expect( hardDeleteActivityById ).toHaveBeenCalledWith( undefined, 'a1' )
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'activities.notifications.hardDelete.title' } ) )
     } )
 
     it( 'reloads every shown batch of the movements of an activity in one request', () => {
@@ -195,13 +195,13 @@ describe( 'ActivityFacade', () => {
 
     it( 'notifies and refreshes the page after the activity is enabled', () => {
         // Arrange
-        api[ 'enableActivityById' ].mockReturnValue( of( { id: 'a1', name: 'Hike' } as ActivityModel ) )
+        api[ 'restoreActivityById' ].mockReturnValue( of( { id: 'a1', name: 'Hike' } as ActivityModel ) )
 
         // Act
-        facade.enableActivity( 'a1' ).subscribe()
+        facade.restoreActivity( 'a1' ).subscribe()
 
         // Assert
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'activities.notifications.enable.title' } ) )
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'activities.notifications.restore.title' } ) )
         expect( findActivities ).toHaveBeenCalledTimes( 1 )
     } )
 

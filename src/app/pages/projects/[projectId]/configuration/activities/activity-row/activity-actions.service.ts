@@ -24,9 +24,9 @@ export class ActivityActions extends ElementActionsBase<ActivityModel> {
         return [
             this.historySpec(activity),
             this.editSpec(activity),
-            this.hideSpec(activity),
-            this.showSpec(activity),
-            this.deleteSpec(activity),
+            this.softDeleteSpec(activity),
+            this.restoreSpec(activity),
+            this.hardDeleteSpec(activity),
         ]
     }
 
@@ -50,33 +50,33 @@ export class ActivityActions extends ElementActionsBase<ActivityModel> {
         }
     }
 
-    private hideSpec(activity: ActivityModel): ElementActionSpec {
+    private softDeleteSpec(activity: ActivityModel): ElementActionSpec {
         return {
-            id: 'disable',
+            id: 'softDelete',
             icon: 'eye-slash',
             shown: activity.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_U),
-            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.disableActivity(activity.id)) },
+            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.softDeleteActivity(activity.id)) },
         }
     }
 
-    private showSpec(activity: ActivityModel): ElementActionSpec {
+    private restoreSpec(activity: ActivityModel): ElementActionSpec {
         return {
-            id: 'enable',
+            id: 'restore',
             icon: 'rotate-right',
             shown: !activity.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_D),
-            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.enableActivity(activity.id)) },
+            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.restoreActivity(activity.id)) },
         }
     }
 
-    private deleteSpec(activity: ActivityModel): ElementActionSpec {
+    private hardDeleteSpec(activity: ActivityModel): ElementActionSpec {
         return {
-            id: 'delete',
+            id: 'hardDelete',
             icon: 'trash',
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_D),
-            confirmation: { severity: SeverityEnum.DANGER, accept: (): void => this.run(this.facade.deleteActivity(activity)) },
+            confirmation: { severity: SeverityEnum.DANGER, accept: (): void => this.run(this.facade.hardDeleteActivity(activity)) },
         }
     }
 

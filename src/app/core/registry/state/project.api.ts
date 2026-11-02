@@ -67,13 +67,13 @@ export class ProjectApi extends GenericApi {
         )
     }
 
-    public disableProjectById(id: string): Observable<ProjectModel> {
+    public softDeleteProjectById(id: string): Observable<ProjectModel> {
         return this.http.post<ProjectResponseDto>(`${this.baseUrl}/${id}/disable`, null).pipe(
             map( ProjectMapper.toModel ),
         )
     }
 
-    public enableProjectById(id: string): Observable<ProjectModel> {
+    public restoreProjectById(id: string): Observable<ProjectModel> {
         return this.http.post<ProjectResponseDto>(`${this.baseUrl}/${id}/enable`, null).pipe(
             map( ProjectMapper.toModel ),
         )
@@ -85,7 +85,7 @@ export class ProjectApi extends GenericApi {
             : this.http.delete<void>(`${this.baseUrl}/${id}/favorite`)
     }
 
-    public deleteProjectById(id: string): Observable<void> {
+    public hardDeleteProjectById(id: string): Observable<void> {
         return this.http.delete<void>(`${this.baseUrl}/${id}`)
     }
 }

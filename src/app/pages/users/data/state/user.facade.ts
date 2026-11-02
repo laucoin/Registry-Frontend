@@ -109,7 +109,7 @@ export class UserFacade extends GenericFacade {
         this.api.blockUserById( id ).pipe(
             this.trackUserLoader,
             notifyOnError( this.uiFacade ),
-            tap( (user: UserModel): void => this.onCommandSuccess( 'disable', user ) ),
+            tap( (user: UserModel): void => this.onCommandSuccess( 'block', user ) ),
         ).subscribe()
     }
 
@@ -117,7 +117,7 @@ export class UserFacade extends GenericFacade {
         this.api.unblockUserById( id ).pipe(
             this.trackUserLoader,
             notifyOnError( this.uiFacade ),
-            tap( (user: UserModel): void => this.onCommandSuccess( 'enable', user ) ),
+            tap( (user: UserModel): void => this.onCommandSuccess( 'unblock', user ) ),
         ).subscribe()
     }
 

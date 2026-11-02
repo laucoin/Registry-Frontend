@@ -68,10 +68,10 @@ describe( 'MovementElementComponent', () => {
         const ids: string[] = labelsOf( component )
 
         // Assert
-        expect( ids ).toEqual( [ 'edit', 'disable', 'delete' ] )
+        expect( ids ).toEqual( [ 'edit', 'softDelete', 'hardDelete' ] )
     } )
 
-    it( 'offers enable instead of disable for a hidden element', () => {
+    it( 'offers restore instead of softDelete for a hidden element', () => {
         // Arrange
         const component: MovementElementComponent = create( { ...ELEMENT, visible: false } )
 
@@ -79,8 +79,8 @@ describe( 'MovementElementComponent', () => {
         const ids: string[] = labelsOf( component )
 
         // Assert
-        expect( ids ).toContain( 'enable' )
-        expect( ids ).not.toContain( 'disable' )
+        expect( ids ).toContain( 'restore' )
+        expect( ids ).not.toContain( 'softDelete' )
     } )
 
     it( 'disables the host of a hidden element only', () => {
@@ -103,12 +103,12 @@ describe( 'MovementElementComponent', () => {
         const component: MovementElementComponent = create( ELEMENT )
 
         // Act
-        actionOf( component, 'delete' ).run()
+        actionOf( component, 'hardDelete' ).run()
         confirm.mock.calls[ 0 ][ 0 ].accept()
 
         // Assert
         expect( confirm ).toHaveBeenCalledTimes( 1 )
-        expect( facade[ 'deleteMovement' ] ).toHaveBeenCalledTimes( 1 )
+        expect( facade[ 'hardDeleteMovement' ] ).toHaveBeenCalledTimes( 1 )
     } )
 
     it( 'closes the participantsLayerOpened drawer when the drawer itself asks for it', () => {

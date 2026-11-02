@@ -24,9 +24,9 @@ export class GroupActions extends ElementActionsBase<GroupModel> {
         return [
             this.membersSpec(group),
             this.editSpec(group),
-            this.hideSpec(group),
-            this.showSpec(group),
-            this.deleteSpec(group),
+            this.softDeleteSpec(group),
+            this.restoreSpec(group),
+            this.hardDeleteSpec(group),
         ]
     }
 
@@ -50,33 +50,33 @@ export class GroupActions extends ElementActionsBase<GroupModel> {
         }
     }
 
-    private hideSpec(group: GroupModel): ElementActionSpec {
+    private softDeleteSpec(group: GroupModel): ElementActionSpec {
         return {
-            id: 'disable',
+            id: 'softDelete',
             icon: 'eye-slash',
             shown: group.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U),
-            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.disableGroup(group.id)) },
+            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.softDeleteGroup(group.id)) },
         }
     }
 
-    private showSpec(group: GroupModel): ElementActionSpec {
+    private restoreSpec(group: GroupModel): ElementActionSpec {
         return {
-            id: 'enable',
+            id: 'restore',
             icon: 'rotate-right',
             shown: !group.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_D),
-            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.enableGroup(group.id)) },
+            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.restoreGroup(group.id)) },
         }
     }
 
-    private deleteSpec(group: GroupModel): ElementActionSpec {
+    private hardDeleteSpec(group: GroupModel): ElementActionSpec {
         return {
-            id: 'delete',
+            id: 'hardDelete',
             icon: 'trash',
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_D),
-            confirmation: { severity: SeverityEnum.DANGER, accept: (): void => this.run(this.facade.deleteGroup(group)) },
+            confirmation: { severity: SeverityEnum.DANGER, accept: (): void => this.run(this.facade.hardDeleteGroup(group)) },
         }
     }
 

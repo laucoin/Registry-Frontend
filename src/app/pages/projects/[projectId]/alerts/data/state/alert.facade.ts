@@ -149,24 +149,24 @@ export class AlertFacade extends GenericProjectElementFacade {
         )
     }
 
-    public disableAlert (id: string): Observable<AlertModel> {
-        return this.api.disableAlertById( this.selectedProjectId(), id ).pipe(
+    public softDeleteAlert (id: string): Observable<AlertModel> {
+        return this.api.softDeleteAlertById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (disabled: AlertModel): void => this.onCommandSuccess( 'disable', disabled ) ),
+            tap( (disabled: AlertModel): void => this.onCommandSuccess( 'softDelete', disabled ) ),
         )
     }
 
-    public enableAlert (id: string): Observable<AlertModel> {
-        return this.api.enableAlertById( this.selectedProjectId(), id ).pipe(
+    public restoreAlert (id: string): Observable<AlertModel> {
+        return this.api.restoreAlertById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (enabled: AlertModel): void => this.onCommandSuccess( 'enable', enabled ) ),
+            tap( (enabled: AlertModel): void => this.onCommandSuccess( 'restore', enabled ) ),
         )
     }
 
-    public deleteAlert (alert: AlertModel): Observable<void> {
-        return this.api.deleteAlertById( undefined, alert.id ).pipe(
+    public hardDeleteAlert (alert: AlertModel): Observable<void> {
+        return this.api.hardDeleteAlertById( undefined, alert.id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (): void => this.onCommandSuccess( 'delete', alert ) ),
+            tap( (): void => this.onCommandSuccess( 'hardDelete', alert ) ),
         )
     }
 

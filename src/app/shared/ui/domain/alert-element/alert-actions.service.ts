@@ -22,9 +22,9 @@ export class AlertActions extends ElementActionsBase<AlertModel> {
             this.statusSpec(alert, 'resolve', 'check', AlertStatusEnum.RESOLVED),
             this.statusSpec(alert, 'cancel', 'xmark', AlertStatusEnum.CANCELED),
             this.statusSpec(alert, 'reopen', 'rotate-right', AlertStatusEnum.IN_PROGRESS),
-            this.hideSpec(alert),
-            this.showSpec(alert),
-            this.deleteSpec(alert),
+            this.softDeleteSpec(alert),
+            this.restoreSpec(alert),
+            this.hardDeleteSpec(alert),
         ]
     }
 
@@ -43,33 +43,33 @@ export class AlertActions extends ElementActionsBase<AlertModel> {
         }
     }
 
-    private hideSpec(alert: AlertModel): ElementActionSpec {
+    private softDeleteSpec(alert: AlertModel): ElementActionSpec {
         return {
-            id: 'disable',
+            id: 'softDelete',
             icon: 'eye-slash',
             shown: alert.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_U),
-            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.disableAlert(alert.id)) },
+            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.softDeleteAlert(alert.id)) },
         }
     }
 
-    private showSpec(alert: AlertModel): ElementActionSpec {
+    private restoreSpec(alert: AlertModel): ElementActionSpec {
         return {
-            id: 'enable',
+            id: 'restore',
             icon: 'rotate-right',
             shown: !alert.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_D),
-            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.enableAlert(alert.id)) },
+            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.restoreAlert(alert.id)) },
         }
     }
 
-    private deleteSpec(alert: AlertModel): ElementActionSpec {
+    private hardDeleteSpec(alert: AlertModel): ElementActionSpec {
         return {
-            id: 'delete',
+            id: 'hardDelete',
             icon: 'trash',
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_D),
-            confirmation: { severity: SeverityEnum.DANGER, accept: (): void => this.run(this.facade.deleteAlert(alert)) },
+            confirmation: { severity: SeverityEnum.DANGER, accept: (): void => this.run(this.facade.hardDeleteAlert(alert)) },
         }
     }
 }

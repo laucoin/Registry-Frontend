@@ -21,7 +21,7 @@ export class MovementActions extends ElementActionsBase<MovementModel> {
     private readonly router: Router = inject(Router)
 
     protected specsFor(movement: MovementModel): ElementActionSpec[] {
-        return [this.editSpec(movement), this.hideSpec(movement), this.showSpec(movement), this.deleteSpec(movement)]
+        return [this.editSpec(movement), this.softDeleteSpec(movement), this.restoreSpec(movement), this.hardDeleteSpec(movement)]
     }
 
     private editSpec(movement: MovementModel): ElementActionSpec {
@@ -34,33 +34,33 @@ export class MovementActions extends ElementActionsBase<MovementModel> {
         }
     }
 
-    private hideSpec(movement: MovementModel): ElementActionSpec {
+    private softDeleteSpec(movement: MovementModel): ElementActionSpec {
         return {
-            id: 'disable',
+            id: 'softDelete',
             icon: 'eye-slash',
             shown: movement.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_U),
-            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.disableMovement(movement.id)) },
+            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.softDeleteMovement(movement.id)) },
         }
     }
 
-    private showSpec(movement: MovementModel): ElementActionSpec {
+    private restoreSpec(movement: MovementModel): ElementActionSpec {
         return {
-            id: 'enable',
+            id: 'restore',
             icon: 'rotate-right',
             shown: !movement.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_D),
-            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.enableMovement(movement.id)) },
+            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.restoreMovement(movement.id)) },
         }
     }
 
-    private deleteSpec(movement: MovementModel): ElementActionSpec {
+    private hardDeleteSpec(movement: MovementModel): ElementActionSpec {
         return {
-            id: 'delete',
+            id: 'hardDelete',
             icon: 'trash',
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_D),
-            confirmation: { severity: SeverityEnum.DANGER, accept: (): void => this.run(this.facade.deleteMovement(movement)) },
+            confirmation: { severity: SeverityEnum.DANGER, accept: (): void => this.run(this.facade.hardDeleteMovement(movement)) },
         }
     }
 

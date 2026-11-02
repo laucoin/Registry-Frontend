@@ -174,11 +174,11 @@ export class ParticipantFacade extends GenericProjectElementFacade {
     }
 
     public handleParticipantFirstPageReload (): Observable<unknown> {
-        return this.commandEvents.on( 'participant', 'create', 'delete' )
+        return this.commandEvents.on( 'participant', 'create', 'hardDelete' )
     }
 
     public handleParticipantCurrentPageReload (): Observable<unknown> {
-        return this.commandEvents.on( 'participant', 'update', 'disable', 'enable' )
+        return this.commandEvents.on( 'participant', 'update', 'softDelete', 'restore' )
     }
 
     public fetchParticipant (id: string): Observable<ParticipantModel> {
@@ -199,17 +199,17 @@ export class ParticipantFacade extends GenericProjectElementFacade {
         )
     }
 
-    public disableParticipant (id: string): Observable<ParticipantModel> {
-        return this.api.disableParticipantById( this.selectedProjectId(), id ).pipe(
+    public softDeleteParticipant (id: string): Observable<ParticipantModel> {
+        return this.api.softDeleteParticipantById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (disabled: ParticipantModel): void => this.onCommandSuccess( 'disable', disabled ) ),
+            tap( (disabled: ParticipantModel): void => this.onCommandSuccess( 'softDelete', disabled ) ),
         )
     }
 
-    public enableParticipant (id: string): Observable<ParticipantModel> {
-        return this.api.enableParticipantById( this.selectedProjectId(), id ).pipe(
+    public restoreParticipant (id: string): Observable<ParticipantModel> {
+        return this.api.restoreParticipantById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (enabled: ParticipantModel): void => this.onCommandSuccess( 'enable', enabled ) ),
+            tap( (enabled: ParticipantModel): void => this.onCommandSuccess( 'restore', enabled ) ),
         )
     }
 
@@ -220,10 +220,10 @@ export class ParticipantFacade extends GenericProjectElementFacade {
         )
     }
 
-    public deleteParticipant (participant: ParticipantModel): Observable<void> {
-        return this.api.deleteParticipantById( undefined, participant.id ).pipe(
+    public hardDeleteParticipant (participant: ParticipantModel): Observable<void> {
+        return this.api.hardDeleteParticipantById( undefined, participant.id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (): void => this.onCommandSuccess( 'delete', participant ) ),
+            tap( (): void => this.onCommandSuccess( 'hardDelete', participant ) ),
         )
     }
 

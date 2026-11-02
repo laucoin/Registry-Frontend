@@ -93,19 +93,19 @@ export class AlertApi extends GenericProjectApi {
         )
     }
 
-    public disableAlertById(projectId: string | undefined, id: string): Observable<AlertModel> {
+    public softDeleteAlertById(projectId: string | undefined, id: string): Observable<AlertModel> {
         return this.http.post<AlertResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
             map( AlertMapper.toModel ),
         )
     }
 
-    public enableAlertById(projectId: string | undefined, id: string): Observable<AlertModel> {
+    public restoreAlertById(projectId: string | undefined, id: string): Observable<AlertModel> {
         return this.http.post<AlertResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
             map( AlertMapper.toModel ),
         )
     }
 
-    public deleteAlertById(projectId: string | undefined, id: string): Observable<void> {
+    public hardDeleteAlertById(projectId: string | undefined, id: string): Observable<void> {
         return this.http.delete<void>(`${this.buildRequestBaseUrl(projectId)}/${id}`)
     }
 }

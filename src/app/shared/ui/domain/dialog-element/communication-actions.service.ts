@@ -17,7 +17,7 @@ export class CommunicationActions extends ElementActionsBase<CommunicationModel>
     private readonly facade: CommunicationFacade = inject(CommunicationFacade)
 
     protected specsFor(communication: CommunicationModel): ElementActionSpec[] {
-        return [this.editSpec(communication), this.hideSpec(communication), this.showSpec(communication), this.deleteSpec(communication)]
+        return [this.editSpec(communication), this.softDeleteSpec(communication), this.restoreSpec(communication), this.hardDeleteSpec(communication)]
     }
 
     private editSpec(communication: CommunicationModel): ElementActionSpec {
@@ -30,33 +30,33 @@ export class CommunicationActions extends ElementActionsBase<CommunicationModel>
         }
     }
 
-    private hideSpec(communication: CommunicationModel): ElementActionSpec {
+    private softDeleteSpec(communication: CommunicationModel): ElementActionSpec {
         return {
-            id: 'disable',
+            id: 'softDelete',
             icon: 'eye-slash',
             shown: communication.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_U),
-            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.disableCommunication(communication.id)) },
+            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.softDeleteCommunication(communication.id)) },
         }
     }
 
-    private showSpec(communication: CommunicationModel): ElementActionSpec {
+    private restoreSpec(communication: CommunicationModel): ElementActionSpec {
         return {
-            id: 'enable',
+            id: 'restore',
             icon: 'rotate-right',
             shown: !communication.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_D),
-            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.enableCommunication(communication.id)) },
+            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.restoreCommunication(communication.id)) },
         }
     }
 
-    private deleteSpec(communication: CommunicationModel): ElementActionSpec {
+    private hardDeleteSpec(communication: CommunicationModel): ElementActionSpec {
         return {
-            id: 'delete',
+            id: 'hardDelete',
             icon: 'trash',
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_D),
-            confirmation: { severity: SeverityEnum.DANGER, accept: (): void => this.run(this.facade.deleteCommunication(communication)) },
+            confirmation: { severity: SeverityEnum.DANGER, accept: (): void => this.run(this.facade.hardDeleteCommunication(communication)) },
         }
     }
 }

@@ -17,7 +17,7 @@ describe( 'ProjectFacade', () => {
     let findProjects: Mock<ProjectApi['findProjects']>
     let createProject: Mock<ProjectApi['createProject']>
     let updateProjectById: Mock<ProjectApi['updateProjectById']>
-    let disableProjectById: Mock<ProjectApi['disableProjectById']>
+    let softDeleteProjectById: Mock<ProjectApi['softDeleteProjectById']>
     let setFavoriteById: Mock<ProjectApi['setFavoriteById']>
     let fetchCurrentUser: Mock<SessionFacade['fetchCurrentUser']>
     let notify: Mock<(message: unknown) => void>
@@ -30,18 +30,18 @@ describe( 'ProjectFacade', () => {
         findProjects = vi.fn( () => of( pageOf<ProjectModel>( [], 1 ) ) )
         createProject = vi.fn()
         updateProjectById = vi.fn()
-        disableProjectById = vi.fn()
+        softDeleteProjectById = vi.fn()
         setFavoriteById = vi.fn( () => of( undefined ) )
         fetchCurrentUser = vi.fn( () => of( undefined ) )
         notify = vi.fn()
         refreshCurrentProject = vi.fn()
-        api = { enableProjectById: vi.fn(), deleteProjectById: vi.fn(), getAvailableProjectOptions: vi.fn( () => of( [] ) ) }
+        api = { restoreProjectById: vi.fn(), hardDeleteProjectById: vi.fn(), getAvailableProjectOptions: vi.fn( () => of( [] ) ) }
         currentProjectId = signal<string | undefined>( undefined )
         TestBed.configureTestingModule( {
             providers: [
                 ProjectFacade,
                 ProjectStore,
-                { provide: ProjectApi, useValue: { findProjects, createProject, updateProjectById, disableProjectById, setFavoriteById, ...api } },
+                { provide: ProjectApi, useValue: { findProjects, createProject, updateProjectById, softDeleteProjectById, setFavoriteById, ...api } },
                 { provide: SessionFacade, useValue: { currentProjectId, fetchCurrentUser, refreshCurrentProject } },
                 { provide: UiFacade, useValue: { notify } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}` } },
@@ -202,23 +202,23 @@ describe( 'ProjectFacade', () => {
 
     it( 'reloads the user and the page after disabling a project', () => {
         // Arrange
-        disableProjectById.mockReturnValue( of( { id: 'p1', name: 'Camp' } as ProjectModel ) )
+        softDeleteProjectById.mockReturnValue( of( { id: 'p1', name: 'Camp' } as ProjectModel ) )
 
         // Act
-        facade.disableProject( 'p1' )
+        facade.softDeleteProject( 'p1' )
 
         // Assert
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'projects.notifications.disable.title' } ) )
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'projects.notifications.softDelete.title' } ) )
         expect( fetchCurrentUser ).toHaveBeenCalledTimes( 1 )
         expect( findProjects ).toHaveBeenCalledTimes( 1 )
     } )
 
     it( 'reloads every batch shown in one request after a command', () => {
         // Arrange
-        disableProjectById.mockReturnValue( of( { id: 'p1', name: 'Camp' } as ProjectModel ) )
+        softDeleteProjectById.mockReturnValue( of( { id: 'p1', name: 'Camp' } as ProjectModel ) )
 
         // Act
-        facade.disableProject( 'p1' )
+        facade.softDeleteProject( 'p1' )
 
         // Assert
         expect( findProjects ).toHaveBeenCalledWith( 0, 20, expect.anything() )
@@ -238,39 +238,39 @@ describe( 'ProjectFacade', () => {
     it( 'reloads the current project after enabling it', () => {
         // Arrange
         currentProjectId.set( 'p1' )
-        api[ 'enableProjectById' ].mockReturnValue( of( { id: 'p1', name: 'Camp' } as ProjectModel ) )
+        api[ 'restoreProjectById' ].mockReturnValue( of( { id: 'p1', name: 'Camp' } as ProjectModel ) )
 
         // Act
-        facade.enableProject( 'p1' )
+        facade.restoreProject( 'p1' )
 
         // Assert
         expect( refreshCurrentProject ).toHaveBeenCalledTimes( 1 )
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'projects.notifications.enable.title' } ) )
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'projects.notifications.restore.title' } ) )
     } )
 
     it( 'does not reload another project after enabling it', () => {
         // Arrange
         currentProjectId.set( 'other' )
-        api[ 'enableProjectById' ].mockReturnValue( of( { id: 'p1', name: 'Camp' } as ProjectModel ) )
+        api[ 'restoreProjectById' ].mockReturnValue( of( { id: 'p1', name: 'Camp' } as ProjectModel ) )
 
         // Act
-        facade.enableProject( 'p1' )
+        facade.restoreProject( 'p1' )
 
         // Assert
         expect( refreshCurrentProject ).not.toHaveBeenCalled()
     } )
 
-    it.each( [ 'disable', 'delete' ] as const )( 'leaves the current project for the projects list after the project is %sd', (command: 'disable' | 'delete') => {
+    it.each( [ 'softDelete', 'hardDelete' ] as const )( 'leaves the current project for the projects list after the project is %sd', (command: 'softDelete' | 'hardDelete') => {
         // Arrange
         const navigateByUrl: MockInstance = vi.spyOn( TestBed.inject( Router ), 'navigateByUrl' ).mockResolvedValue( true )
         currentProjectId.set( 'p1' )
         const project: ProjectModel = { id: 'p1', name: 'Camp' } as ProjectModel
-        disableProjectById.mockReturnValue( of( project ) )
-        api[ 'deleteProjectById' ].mockReturnValue( of( undefined ) )
+        softDeleteProjectById.mockReturnValue( of( project ) )
+        api[ 'hardDeleteProjectById' ].mockReturnValue( of( undefined ) )
 
         // Act
-        if (command === 'disable') facade.disableProject( 'p1' )
-        else facade.deleteProject( project )
+        if (command === 'softDelete') facade.softDeleteProject( 'p1' )
+        else facade.hardDeleteProject( project )
 
         // Assert
         expect( navigateByUrl ).toHaveBeenCalledTimes( 1 )
@@ -280,10 +280,10 @@ describe( 'ProjectFacade', () => {
         // Arrange
         vi.spyOn( TestBed.inject( Router ), 'navigateByUrl' ).mockRejectedValue( new Error( 'refused' ) )
         currentProjectId.set( 'p1' )
-        api[ 'deleteProjectById' ].mockReturnValue( of( undefined ) )
+        api[ 'hardDeleteProjectById' ].mockReturnValue( of( undefined ) )
 
         // Act
-        facade.deleteProject( { id: 'p1', name: 'Camp' } as ProjectModel )
+        facade.hardDeleteProject( { id: 'p1', name: 'Camp' } as ProjectModel )
         await Promise.resolve()
 
         // Assert
@@ -292,10 +292,10 @@ describe( 'ProjectFacade', () => {
 
     it( 'does not reload the page when a deletion fails', () => {
         // Arrange
-        api[ 'deleteProjectById' ].mockReturnValue( failing( ERROR_500 ) )
+        api[ 'hardDeleteProjectById' ].mockReturnValue( failing( ERROR_500 ) )
 
         // Act
-        facade.deleteProject( { id: 'p1' } as ProjectModel )
+        facade.hardDeleteProject( { id: 'p1' } as ProjectModel )
 
         // Assert
         expect( findProjects ).not.toHaveBeenCalled()

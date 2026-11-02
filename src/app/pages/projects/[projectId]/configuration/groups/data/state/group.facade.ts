@@ -163,24 +163,24 @@ export class GroupFacade extends GenericProjectElementFacade {
         )
     }
 
-    public disableGroup (id: string): Observable<GroupModel> {
-        return this.api.disableGroupById( this.selectedProjectId(), id ).pipe(
+    public softDeleteGroup (id: string): Observable<GroupModel> {
+        return this.api.softDeleteGroupById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (disabled: GroupModel): void => this.onCommandSuccess( 'disable', disabled ) ),
+            tap( (disabled: GroupModel): void => this.onCommandSuccess( 'softDelete', disabled ) ),
         )
     }
 
-    public enableGroup (id: string): Observable<GroupModel> {
-        return this.api.enableGroupById( this.selectedProjectId(), id ).pipe(
+    public restoreGroup (id: string): Observable<GroupModel> {
+        return this.api.restoreGroupById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (enabled: GroupModel): void => this.onCommandSuccess( 'enable', enabled ) ),
+            tap( (enabled: GroupModel): void => this.onCommandSuccess( 'restore', enabled ) ),
         )
     }
 
-    public deleteGroup (group: GroupModel): Observable<void> {
-        return this.api.deleteGroupById( undefined, group.id ).pipe(
+    public hardDeleteGroup (group: GroupModel): Observable<void> {
+        return this.api.hardDeleteGroupById( undefined, group.id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (): void => this.onCommandSuccess( 'delete', group ) ),
+            tap( (): void => this.onCommandSuccess( 'hardDelete', group ) ),
         )
     }
 

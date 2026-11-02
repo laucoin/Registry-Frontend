@@ -31,7 +31,7 @@ describe( 'MovementFacade', () => {
     let createGuestsMovement: Mock<MovementApi['createGuestsMovement']>
     let updateMovementById: Mock<MovementApi['updateMovementById']>
     let updateGuestsMovementById: Mock<MovementApi['updateGuestsMovementById']>
-    let disableMovementById: Mock<MovementApi['disableMovementById']>
+    let softDeleteMovementById: Mock<MovementApi['softDeleteMovementById']>
     let getMovementsTypes: Mock<MetadataApi['getMovementsTypes']>
     let notify: Mock<(message: unknown) => void>
     let api: Record<string, Mock>
@@ -43,18 +43,18 @@ describe( 'MovementFacade', () => {
         createGuestsMovement = vi.fn( () => of( MOVEMENT ) )
         updateMovementById = vi.fn( () => of( MOVEMENT ) )
         updateGuestsMovementById = vi.fn( () => of( MOVEMENT ) )
-        disableMovementById = vi.fn()
+        softDeleteMovementById = vi.fn()
         getMovementsTypes = vi.fn( () => of( [] ) ) as unknown as Mock<MetadataApi['getMovementsTypes']>
         notify = vi.fn()
         api = {
-            findMovementById: vi.fn(), enableMovementById: vi.fn(), deleteMovementById: vi.fn(), findMovementCommunications: vi.fn( () => of( pageOf<never>( [], 0 ) ) ),
+            findMovementById: vi.fn(), restoreMovementById: vi.fn(), hardDeleteMovementById: vi.fn(), findMovementCommunications: vi.fn( () => of( pageOf<never>( [], 0 ) ) ),
             searchReasonsAndActivities: vi.fn( () => of( [] ) ), searchParticipantsAndGroups: vi.fn( () => of( { participants: [], groups: [] } ) ), searchVehicles: vi.fn( () => of( [] ) ),
         }
         TestBed.configureTestingModule( {
             providers: [
                 MovementFacade,
                 MovementStore,
-                { provide: MovementApi, useValue: { findMovements, createMovement, createGuestsMovement, updateMovementById, updateGuestsMovementById, disableMovementById, ...api, findMovementsContents: vi.fn( () => of( [] ) ) } },
+                { provide: MovementApi, useValue: { findMovements, createMovement, createGuestsMovement, updateMovementById, updateGuestsMovementById, softDeleteMovementById, ...api, findMovementsContents: vi.fn( () => of( [] ) ) } },
                 { provide: MetadataApi, useValue: { getMovementsTypes, getParticipantsTypes: vi.fn( () => of( [] ) ) } },
                 { provide: DateFormatPipe, useValue: { transform: (): string => '01/01' } },
                 { provide: PluralTranslationPipe, useValue: { transform: (key: string, count: unknown[]): string => `${key}:${count?.length}` } },
@@ -228,15 +228,15 @@ describe( 'MovementFacade', () => {
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
     } )
 
-    it.each( [ 'disable', 'enable' ] as const )( 'announces the movement %s on the current-page reload channel', (command: 'disable' | 'enable') => {
+    it.each( [ 'softDelete', 'restore' ] as const )( 'announces the movement %s on the current-page reload channel', (command: 'softDelete' | 'restore') => {
         // Arrange
-        disableMovementById.mockReturnValue( of( MOVEMENT ) )
-        api[ 'enableMovementById' ].mockReturnValue( of( MOVEMENT ) )
+        softDeleteMovementById.mockReturnValue( of( MOVEMENT ) )
+        api[ 'restoreMovementById' ].mockReturnValue( of( MOVEMENT ) )
         const reloaded: Mock = vi.fn()
         facade.handleMovementCurrentPageReload().subscribe( reloaded )
 
         // Act
-        const run$: Observable<MovementModel> = command === 'disable' ? facade.disableMovement( 'm1' ) : facade.enableMovement( 'm1' )
+        const run$: Observable<MovementModel> = command === 'softDelete' ? facade.softDeleteMovement( 'm1' ) : facade.restoreMovement( 'm1' )
         run$.subscribe()
 
         // Assert
@@ -246,25 +246,25 @@ describe( 'MovementFacade', () => {
 
     it( 'announces a deletion on the first-page reload channel and refreshes the page', () => {
         // Arrange
-        api[ 'deleteMovementById' ].mockReturnValue( of( undefined ) )
+        api[ 'hardDeleteMovementById' ].mockReturnValue( of( undefined ) )
         const reloaded: Mock = vi.fn()
         facade.handleMovementFirstPageReload().subscribe( reloaded )
 
         // Act
-        facade.deleteMovement( MOVEMENT ).subscribe()
+        facade.hardDeleteMovement( MOVEMENT ).subscribe()
 
         // Assert
-        expect( api[ 'deleteMovementById' ] ).toHaveBeenCalledWith( undefined, 'm1' )
+        expect( api[ 'hardDeleteMovementById' ] ).toHaveBeenCalledWith( undefined, 'm1' )
         expect( reloaded ).toHaveBeenCalledTimes( 1 )
         expect( findMovements ).toHaveBeenCalledTimes( 1 )
     } )
 
     it( 'does not refresh the page when a deletion fails', () => {
         // Arrange
-        api[ 'deleteMovementById' ].mockReturnValue( failing( ERROR_500 ) )
+        api[ 'hardDeleteMovementById' ].mockReturnValue( failing( ERROR_500 ) )
 
         // Act
-        facade.deleteMovement( MOVEMENT ).subscribe( { error: (): void => undefined } )
+        facade.hardDeleteMovement( MOVEMENT ).subscribe( { error: (): void => undefined } )
 
         // Assert
         expect( findMovements ).not.toHaveBeenCalled()
@@ -361,10 +361,10 @@ describe( 'MovementFacade', () => {
 
     it( 'counts no participant in the notification of a movement without content', () => {
         // Arrange
-        disableMovementById.mockReturnValue( of( { ...MOVEMENT, content: undefined } as unknown as MovementModel ) )
+        softDeleteMovementById.mockReturnValue( of( { ...MOVEMENT, content: undefined } as unknown as MovementModel ) )
 
         // Act
-        facade.disableMovement( 'm1' ).subscribe()
+        facade.softDeleteMovement( 'm1' ).subscribe()
 
         // Assert
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { data: expect.objectContaining( { participants: 0 } ) } ) )

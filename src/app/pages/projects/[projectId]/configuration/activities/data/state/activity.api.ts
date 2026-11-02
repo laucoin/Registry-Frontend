@@ -97,19 +97,19 @@ export class ActivityApi extends GenericProjectApi {
         )
     }
 
-    public disableActivityById(projectId: string | undefined, id: string): Observable<ActivityModel> {
+    public softDeleteActivityById(projectId: string | undefined, id: string): Observable<ActivityModel> {
         return this.http.post<ActivityResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
             map( ActivityMapper.toModel ),
         )
     }
 
-    public enableActivityById(projectId: string | undefined, id: string): Observable<ActivityModel> {
+    public restoreActivityById(projectId: string | undefined, id: string): Observable<ActivityModel> {
         return this.http.post<ActivityResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
             map( ActivityMapper.toModel ),
         )
     }
 
-    public deleteActivityById(projectId: string | undefined, id: string): Observable<void> {
+    public hardDeleteActivityById(projectId: string | undefined, id: string): Observable<void> {
         return this.http.delete<void>(`${this.buildRequestBaseUrl(projectId)}/${id}`)
     }
 }

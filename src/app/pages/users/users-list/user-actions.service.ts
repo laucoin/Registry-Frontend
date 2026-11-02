@@ -44,7 +44,7 @@ export class UserActions extends ElementActionsBase<UserModel> {
 
     private blockSpec(user: UserModel, others: boolean): ElementActionSpec {
         return {
-            id: 'disable',
+            id: 'block',
             icon: 'ban',
             shown: others && user.visible,
             allowed: this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_U),
@@ -54,7 +54,7 @@ export class UserActions extends ElementActionsBase<UserModel> {
 
     private unblockSpec(user: UserModel, others: boolean): ElementActionSpec {
         return {
-            id: 'enable',
+            id: 'unblock',
             icon: 'rotate-right',
             shown: others && !user.visible,
             allowed: this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_U),

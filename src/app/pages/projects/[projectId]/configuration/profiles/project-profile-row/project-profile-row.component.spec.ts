@@ -105,6 +105,7 @@ describe('ProjectProfileRowComponent', () => {
         expect(star?.getAttribute('aria-pressed')).toBe('true')
     })
 
+
     it('should toggle the favorite of the project when the star is clicked', async () => {
         // Arrange
         await render(INVITATION)

@@ -150,14 +150,14 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
     public blockProjectProfile (profile: ProjectProfileModel): Observable<ProjectProfileModel> {
         return this.api.blockProjectProfileById( this.selectedProjectId(), profile.id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (): void => this.onCommandSuccess( 'disable', profile ) ),
+            tap( (): void => this.onCommandSuccess( 'block', profile ) ),
         )
     }
 
     public unblockProjectProfile (profile: ProjectProfileModel): Observable<ProjectProfileModel> {
         return this.api.unblockProjectProfileById( this.selectedProjectId(), profile.id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (): void => this.onCommandSuccess( 'enable', profile ) ),
+            tap( (): void => this.onCommandSuccess( 'unblock', profile ) ),
         )
     }
 

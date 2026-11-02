@@ -18,7 +18,7 @@ describe( 'VehicleFacade', () => {
     let facade: VehicleFacade
     let findVehicles: Mock<VehicleApi['findVehicles']>
     let createVehicle: Mock<VehicleApi['createVehicle']>
-    let enableVehicleById: Mock<VehicleApi['enableVehicleById']>
+    let restoreVehicleById: Mock<VehicleApi['restoreVehicleById']>
     let api: Record<string, Mock>
     let notify: Mock<(message: unknown) => void>
 
@@ -26,14 +26,14 @@ describe( 'VehicleFacade', () => {
         provideTestConfig()
         findVehicles = vi.fn( () => of( pageOf<VehicleModel>( [], 2 ) ) )
         createVehicle = vi.fn()
-        enableVehicleById = vi.fn()
-        api = { findVehicleTimeline: vi.fn( () => of( { planned: [], actual: [], outSeconds: 0, usageRate: undefined } ) ), findVehicleById: vi.fn(), updateVehicleById: vi.fn(), disableVehicleById: vi.fn(), deleteVehicleById: vi.fn() }
+        restoreVehicleById = vi.fn()
+        api = { findVehicleTimeline: vi.fn( () => of( { planned: [], actual: [], outSeconds: 0, usageRate: undefined } ) ), findVehicleById: vi.fn(), updateVehicleById: vi.fn(), softDeleteVehicleById: vi.fn(), hardDeleteVehicleById: vi.fn() }
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 VehicleFacade,
                 VehicleStore,
-                { provide: VehicleApi, useValue: { findVehicles, createVehicle, enableVehicleById, ...api } },
+                { provide: VehicleApi, useValue: { findVehicles, createVehicle, restoreVehicleById, ...api } },
                 { provide: MovementApi, useValue: { findMovementsContents: vi.fn( () => of( [] ) ) } },
                 { provide: MetadataApi, useValue: { getPresencesStatus: vi.fn( () => of( [] ) ) } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ) } },
@@ -118,11 +118,11 @@ describe( 'VehicleFacade', () => {
 
     it( 'notifies a failed enable instead of rethrowing it', () => {
         // Arrange
-        enableVehicleById.mockReturnValue( failing( ERROR_500 ) )
+        restoreVehicleById.mockReturnValue( failing( ERROR_500 ) )
         let completed: boolean = false
 
         // Act
-        facade.enableVehicle( 'v1' ).subscribe( { complete: (): void => { completed = true } } )
+        facade.restoreVehicle( 'v1' ).subscribe( { complete: (): void => { completed = true } } )
 
         // Assert
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
@@ -180,14 +180,14 @@ describe( 'VehicleFacade', () => {
         expect( findVehicles ).toHaveBeenCalledTimes( 1 )
     } )
 
-    it.each( [ 'disable', 'delete' ] as const )( 'notifies and refreshes the page after the vehicle is %sd', (command: 'disable' | 'delete') => {
+    it.each( [ 'softDelete', 'hardDelete' ] as const )( 'notifies and refreshes the page after the vehicle is %sd', (command: 'softDelete' | 'hardDelete') => {
         // Arrange
         const vehicle: VehicleModel = { id: 'v1', licensePlate: 'AB-123' } as VehicleModel
-        api[ 'disableVehicleById' ].mockReturnValue( of( vehicle ) )
-        api[ 'deleteVehicleById' ].mockReturnValue( of( undefined ) )
+        api[ 'softDeleteVehicleById' ].mockReturnValue( of( vehicle ) )
+        api[ 'hardDeleteVehicleById' ].mockReturnValue( of( undefined ) )
 
         // Act
-        const run$: Observable<unknown> = command === 'disable' ? facade.disableVehicle( 'v1' ) : facade.deleteVehicle( vehicle )
+        const run$: Observable<unknown> = command === 'softDelete' ? facade.softDeleteVehicle( 'v1' ) : facade.hardDeleteVehicle( vehicle )
         run$.subscribe()
 
         // Assert
@@ -197,10 +197,10 @@ describe( 'VehicleFacade', () => {
 
     it( 'does not refresh the page when a deletion fails', () => {
         // Arrange
-        api[ 'deleteVehicleById' ].mockReturnValue( failing( ERROR_500 ) )
+        api[ 'hardDeleteVehicleById' ].mockReturnValue( failing( ERROR_500 ) )
 
         // Act
-        facade.deleteVehicle( { id: 'v1' } as VehicleModel ).subscribe( { error: (): void => undefined } )
+        facade.hardDeleteVehicle( { id: 'v1' } as VehicleModel ).subscribe( { error: (): void => undefined } )
 
         // Assert
         expect( findVehicles ).not.toHaveBeenCalled()

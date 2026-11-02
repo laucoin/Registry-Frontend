@@ -27,11 +27,11 @@ export class ParticipantActions extends ElementActionsBase<ParticipantModel, str
         return [
             this.historySpec(participant),
             this.editSpec(participant),
-            this.hideSpec(participant),
-            this.showSpec(participant),
+            this.softDeleteSpec(participant),
+            this.restoreSpec(participant),
             this.removeMemberSpec(participant, groupId),
             this.exportSpec(participant),
-            this.deleteSpec(participant),
+            this.hardDeleteSpec(participant),
         ]
     }
 
@@ -55,23 +55,23 @@ export class ParticipantActions extends ElementActionsBase<ParticipantModel, str
         }
     }
 
-    private hideSpec(participant: ParticipantModel): ElementActionSpec {
+    private softDeleteSpec(participant: ParticipantModel): ElementActionSpec {
         return {
-            id: 'disable',
+            id: 'softDelete',
             icon: 'eye-slash',
             shown: participant.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U),
-            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.disableParticipant(participant.id)) },
+            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.softDeleteParticipant(participant.id)) },
         }
     }
 
-    private showSpec(participant: ParticipantModel): ElementActionSpec {
+    private restoreSpec(participant: ParticipantModel): ElementActionSpec {
         return {
-            id: 'enable',
+            id: 'restore',
             icon: 'rotate-right',
             shown: !participant.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_D),
-            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.enableParticipant(participant.id)) },
+            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.restoreParticipant(participant.id)) },
         }
     }
 
@@ -99,13 +99,13 @@ export class ParticipantActions extends ElementActionsBase<ParticipantModel, str
         return participant.user !== undefined && participant.user.id === this.sessionFacade.currentUser()?.id
     }
 
-    private deleteSpec(participant: ParticipantModel): ElementActionSpec {
+    private hardDeleteSpec(participant: ParticipantModel): ElementActionSpec {
         return {
-            id: 'delete',
+            id: 'hardDelete',
             icon: 'trash',
             shown: participant.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_D),
-            confirmation: { severity: SeverityEnum.DANGER, accept: (): void => this.run(this.facade.deleteParticipant(participant)) },
+            confirmation: { severity: SeverityEnum.DANGER, accept: (): void => this.run(this.facade.hardDeleteParticipant(participant)) },
         }
     }
 

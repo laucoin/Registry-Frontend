@@ -174,27 +174,27 @@ export class ProjectFacade extends GenericFacade {
         )
     }
 
-    public disableProject (id: string): void {
-        this.api.disableProjectById( id ).pipe(
+    public softDeleteProject (id: string): void {
+        this.api.softDeleteProjectById( id ).pipe(
             this.trackProjectLoader,
             notifyOnError( this.uiFacade ),
-            tap( (project: ProjectModel): void => this.onCommandSuccess( 'disable', project, true ) ),
+            tap( (project: ProjectModel): void => this.onCommandSuccess( 'softDelete', project, true ) ),
         ).subscribe()
     }
 
-    public enableProject (id: string): void {
-        this.api.enableProjectById( id ).pipe(
+    public restoreProject (id: string): void {
+        this.api.restoreProjectById( id ).pipe(
             this.trackProjectLoader,
             notifyOnError( this.uiFacade ),
-            tap( (project: ProjectModel): void => this.onCommandSuccess( 'enable', project, true ) ),
+            tap( (project: ProjectModel): void => this.onCommandSuccess( 'restore', project, true ) ),
         ).subscribe()
     }
 
-    public deleteProject (element: ProjectModel): void {
-        this.api.deleteProjectById( element.id ).pipe(
+    public hardDeleteProject (element: ProjectModel): void {
+        this.api.hardDeleteProjectById( element.id ).pipe(
             this.trackProjectLoader,
             notifyOnError( this.uiFacade ),
-            tap( (): void => this.onCommandSuccess( 'delete', element, true ) ),
+            tap( (): void => this.onCommandSuccess( 'hardDelete', element, true ) ),
         ).subscribe()
     }
 
@@ -216,8 +216,8 @@ export class ProjectFacade extends GenericFacade {
         }
 
         if (this.sessionFacade.currentProjectId() === project.id) {
-            if (command === 'delete' || command === 'disable') this.router.navigateByUrl( RegistryRouteEnum.PROJECTS ).catch( (): void => undefined )
-            else if (command === 'enable') this.sessionFacade.refreshCurrentProject()
+            if (command === 'hardDelete' || command === 'softDelete') this.router.navigateByUrl( RegistryRouteEnum.PROJECTS ).catch( (): void => undefined )
+            else if (command === 'restore') this.sessionFacade.refreshCurrentProject()
         }
 
         this.store.fetchProjectsPage( CumulativePageHelper.reloadRequest( this.projectsPage() ) )

@@ -97,19 +97,19 @@ export class VehicleApi extends GenericProjectApi {
         )
     }
 
-    public disableVehicleById(projectId: string | undefined, id: string): Observable<VehicleModel> {
+    public softDeleteVehicleById(projectId: string | undefined, id: string): Observable<VehicleModel> {
         return this.http.post<VehicleResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
             map( VehicleMapper.toModel ),
         )
     }
 
-    public enableVehicleById(projectId: string | undefined, id: string): Observable<VehicleModel> {
+    public restoreVehicleById(projectId: string | undefined, id: string): Observable<VehicleModel> {
         return this.http.post<VehicleResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
             map( VehicleMapper.toModel ),
         )
     }
 
-    public deleteVehicleById(projectId: string | undefined, id: string): Observable<void> {
+    public hardDeleteVehicleById(projectId: string | undefined, id: string): Observable<void> {
         return this.http.delete<void>(`${this.buildRequestBaseUrl(projectId)}/${id}`)
     }
 }

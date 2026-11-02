@@ -16,9 +16,9 @@ const CASES: ApiCase<ProjectApi>[] = [
         call: (api: ProjectApi) => api.createProject( { name: 'Camp' } as never ), response: PROJECT_DTO, verify: expectMapped },
     { name: 'updates a project', method: 'PATCH', url: `${BASE}/p1`, body: { name: 'Camp 2' },
         call: (api: ProjectApi) => api.updateProjectById( 'p1', { name: 'Camp 2' } as never ), response: PROJECT_DTO, verify: expectMapped },
-    { name: 'disables a project', method: 'POST', url: `${BASE}/p1/disable`, call: (api: ProjectApi) => api.disableProjectById( 'p1' ), response: PROJECT_DTO, verify: expectMapped },
-    { name: 'enables a project', method: 'POST', url: `${BASE}/p1/enable`, call: (api: ProjectApi) => api.enableProjectById( 'p1' ), response: PROJECT_DTO, verify: expectMapped },
-    { name: 'deletes a project', method: 'DELETE', url: `${BASE}/p1`, call: (api: ProjectApi) => api.deleteProjectById( 'p1' ) },
+    { name: 'disables a project', method: 'POST', url: `${BASE}/p1/disable`, call: (api: ProjectApi) => api.softDeleteProjectById( 'p1' ), response: PROJECT_DTO, verify: expectMapped },
+    { name: 'enables a project', method: 'POST', url: `${BASE}/p1/enable`, call: (api: ProjectApi) => api.restoreProjectById( 'p1' ), response: PROJECT_DTO, verify: expectMapped },
+    { name: 'deletes a project', method: 'DELETE', url: `${BASE}/p1`, call: (api: ProjectApi) => api.hardDeleteProjectById( 'p1' ) },
 ]
 
 describeApi( 'ProjectApi', ProjectApi, CASES )

@@ -36,24 +36,24 @@ export class ProjectDangerZoneComponent {
 
 	protected readonly project: Signal<ProjectModel | undefined> = this.sessionFacade.selectedProject
 
-	protected readonly canDisable: Signal<boolean> = computed((): boolean =>
+	protected readonly canSoftDelete: Signal<boolean> = computed((): boolean =>
 		(this.project()?.visible ?? false) && this.allowed(ProjectAuthorityEnum.REGISTRY_PROJECT_U))
-	protected readonly canEnable: Signal<boolean> = computed((): boolean =>
+	protected readonly canRestore: Signal<boolean> = computed((): boolean =>
 		this.project()?.visible === false && this.allowed(ProjectAuthorityEnum.REGISTRY_PROJECT_D))
-	protected readonly canDelete: Signal<boolean> = computed((): boolean =>
+	protected readonly canHardDelete: Signal<boolean> = computed((): boolean =>
 		this.allowed(ProjectAuthorityEnum.REGISTRY_PROJECT_D))
-	protected readonly shown: Signal<boolean> = computed((): boolean => this.canDisable() || this.canEnable() || this.canDelete())
+	protected readonly shown: Signal<boolean> = computed((): boolean => this.canSoftDelete() || this.canRestore() || this.canHardDelete())
 
-	protected disable(): void {
-		this.ask('disable', SeverityEnum.WARNING, (project: ProjectModel): void => this.projectFacade.disableProject(project.id))
+	protected softDelete(): void {
+		this.ask('softDelete', SeverityEnum.WARNING, (project: ProjectModel): void => this.projectFacade.softDeleteProject(project.id))
 	}
 
-	protected enable(): void {
-		this.ask('enable', SeverityEnum.INFO, (project: ProjectModel): void => this.projectFacade.enableProject(project.id))
+	protected restore(): void {
+		this.ask('restore', SeverityEnum.INFO, (project: ProjectModel): void => this.projectFacade.restoreProject(project.id))
 	}
 
-	protected delete(): void {
-		this.ask('delete', SeverityEnum.DANGER, (project: ProjectModel): void => this.projectFacade.deleteProject(project), true)
+	protected hardDelete(): void {
+		this.ask('hardDelete', SeverityEnum.DANGER, (project: ProjectModel): void => this.projectFacade.hardDeleteProject(project), true)
 	}
 
 	private ask(id: string, severity: SeverityEnum, accept: (project: ProjectModel) => void, typed: boolean = false): void {

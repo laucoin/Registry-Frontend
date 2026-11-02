@@ -186,15 +186,15 @@
     "actions": {
       "copy-email": "Copier l’adresse email de {{element.firstName}} {{element.lastName}}",
       "update-role": "Changer son rôle",
-      "enable": "Débloquer",
-      "disable": "Bloquer",
+      "unblock": "Débloquer",
+      "block": "Bloquer",
       "delete": "Supprimer",
       "confirmations": {
-        "disable": {
+        "block": {
           "title": "Bloquer l’utilisateur",
           "message": "Attention ! Tu vas bloquer un utilisateur. Tant qu’il est bloqué, {{element.firstName}} {{element.lastName}} ne pourra plus se connecter. Ce changement peut mettre quelques instants à être appliqué partout."
         },
-        "enable": {
+        "unblock": {
           "title": "Débloquer l’utilisateur",
           "message": "Attention ! Tu vas débloquer un utilisateur. {{element.firstName}} {{element.lastName}} pourra à nouveau se connecter. Ce changement peut mettre quelques instants à être appliqué partout."
         },
@@ -209,11 +209,11 @@
         "title": "✏️ Role modifié",
         "message": "Le rôle de {{firstName}} {{lastName}} a été modifié."
       },
-      "disable": {
+      "block": {
         "title": "⛔️ Utilisateur bloqué",
         "message": "{{firstName}} {{lastName}} a été bloqué"
       },
-      "enable": {
+      "unblock": {
         "title": "⛓️‍💥 Utilisateur débloqué",
         "message": "{{firstName}} {{lastName}} a été débloqué, il peut à nouveau se connecter."
       },
@@ -315,23 +315,23 @@
       "create-support": "Profil support",
       "select": "Rejoindre",
       "edit": "Modifier",
-      "enable": "Démasquer",
-      "disable": "Masquer",
-      "delete": "Supprimer",
+      "restore": "Démasquer",
+      "softDelete": "Masquer",
+      "hardDelete": "Supprimer",
       "confirmations": {
         "create-support": {
           "title": "Créer un profil de support",
           "message": "En poursuivant, tu crées un profil support ayant une validité de 1 heure pour venir en soutien au projet “{{element.name}}”."
         },
-        "disable": {
+        "softDelete": {
           "title": "Masquer le projet",
           "message": "Attention ! Tu vas masquer le projet “{{element.name}}”. Tant qu’il est masqué, il ne sera plus possible d’y créer des profils, entrées/sorties, participants, etc."
         },
-        "enable": {
+        "restore": {
           "title": "Afficher à nouveau le projet",
           "message": "Attention ! Tu vas à nouveau rendre le projet “{{element.name}}” visible. Il sera de nouveau possible d’y créer des profils, entrées/sorties, participant, etc."
         },
-        "delete": {
+        "hardDelete": {
           "title": "Supprimer le projet",
           "phrase": "supprimer le projet",
           "message": "Attention ! Tu vas définitivement supprimer le projet “{{element.name}}” ainsi que tous les éléments qui lui sont liés (profils, entrées/sorties, participants, etc.). La suppression du projet peut prendre un certain temps en fonction de sa taille. Tu peux continuer à utiliser l’application, mais il est préférable de ne pas quitter cette page avant que la suppression soit terminée."
@@ -355,15 +355,15 @@
         "title": "✏️ Projet modifié",
         "message": "Le projet “{{name}}” a été modifié."
       },
-      "disable": {
+      "softDelete": {
         "title": "🙈 Projet masqué",
         "message": "Le projet “{{name}}” a été masqué."
       },
-      "enable": {
+      "restore": {
         "title": "👀 Projet visible",
         "message": "Le projet “{{name}}” est à nouveau visible."
       },
-      "delete": {
+      "hardDelete": {
         "title": "🗑️ Projet supprimé",
         "message": "Le projet “{{name}}” a été supprimé."
       },
@@ -457,8 +457,8 @@
       "create-project": "Créer un projet",
       "projects": "Voir mes projets",
       "edit": "Modifier",
-      "enable": "Débloquer",
-      "disable": "Bloquer",
+      "unblock": "Débloquer",
+      "block": "Bloquer",
       "accept": "Accepter",
       "reject": "Refuser",
       "delete": "Supprimer",
@@ -471,11 +471,11 @@
           "title": "Refuser l’invitation",
           "message": "En refusant définitivement l’invitation, tu ne pourras pas utiliser ce profil. Tu devras te faire réinviter pour accéder au projet “{{element.project.name}}”"
         },
-        "disable": {
+        "block": {
           "title": "Bloquer le profil",
           "message": "Attention ! Tu vas bloquer un profil pour le projet “{{element.project.name}}”. Tant qu’il est bloqué, {{element.user.firstName}} {{element.user.lastName}} ne pourra plus l’utiliser. Ce changement peut mettre quelques instants à être appliqué partout."
         },
-        "enable": {
+        "unblock": {
           "title": "Débloquer le profil",
           "message": "Attention ! Tu vas débloquer un profil pour le projet “{{element.project.name}}”. {{element.user.firstName}} {{element.user.lastName}} pourra à nouveau l’utiliser s’il est toujours valable. Ce changement peut mettre quelques instants à être appliqué partout."
         },
@@ -529,11 +529,11 @@
         "title": "✏️ Profil modifié",
         "message": "Le profil de {{firstName}} {{lastName}} pour le projet {{name}} a été modifié."
       },
-      "disable": {
+      "block": {
         "title": "⛔️ Profil bloqué",
         "message": "Le profil de {{firstName}} {{lastName}} pour le projet {{name}} a été bloqué."
       },
-      "enable": {
+      "unblock": {
         "title": "⛓️‍💥 Profil débloqué",
         "message": "Le profil de {{firstName}} {{lastName}} pour le projet {{name}} a été débloqué."
       },
@@ -715,19 +715,19 @@
     "actions": {
       "communications": "Communications",
       "edit": "Modifier",
-      "disable": "Masquer",
-      "enable": "Démasquer",
-      "delete": "Supprimer",
+      "softDelete": "Masquer",
+      "restore": "Démasquer",
+      "hardDelete": "Supprimer",
       "confirmations": {
-        "disable": {
+        "softDelete": {
           "title": "Masquer l'entrée/sortie",
           "message": "Attention ! Tu vas masquer l'entrée/sortie. Tant qu’elle est masquée, c’est comme si elle n’avait jamais eu lieu."
         },
-        "enable": {
+        "restore": {
           "title": "Afficher à nouveau l'entrée/sortie",
           "message": "Attention ! Tu vas à nouveau rendre l'entrée/sortie visible. Elle sera de nouveau considérée dans l’historique."
         },
-        "delete": {
+        "hardDelete": {
           "title": "Supprimer l'entrée/sortie",
           "message": "Attention ! Tu vas définitivement supprimer l'entrée/sortie. Elle ne sera plus récupérable ni tracée."
         }
@@ -760,7 +760,7 @@
           "message": "La sortie du {{datetime}} a été modifiée."
         }
       },
-      "disable": {
+      "softDelete": {
         "IN": {
           "title": "🙈 Entrée masquée",
           "message": "L’entrée du {{datetime}} a été masquée."
@@ -770,7 +770,7 @@
           "message": "La sortie du {{datetime}} a été masquée."
         }
       },
-      "enable": {
+      "restore": {
         "IN": {
           "title": "👀 Entrée visible",
           "message": "L’entrée du {{datetime}} est à nouveau visible."
@@ -780,7 +780,7 @@
           "message": "La sortie du {{datetime}} est à nouveau visible."
         }
       },
-      "delete": {
+      "hardDelete": {
         "IN": {
           "title": "🗑️ Entrée supprimée",
           "message": "L’entrée du {{datetime}} a été supprimée."
@@ -892,24 +892,24 @@
       "movements-history": "Historique des entrées/sorties",
       "remove-member": "Retirer du groupe",
       "edit": "Modifier",
-      "disable": "Masquer",
-      "enable": "Démasquer",
+      "softDelete": "Masquer",
+      "restore": "Démasquer",
       "export": "Exporter les données",
-      "delete": "Supprimer",
+      "hardDelete": "Supprimer",
       "confirmations": {
         "remove-member": {
           "title": "Retirer du groupe",
           "message": "Attention ! Tu vas retirer “{{element.firstName}} {{element.lastName}}” du groupe."
         },
-        "disable": {
+        "softDelete": {
           "title": "Masquer la personne",
           "message": "Attention ! Tu vas masquer “{{element.firstName}} {{element.lastName}}”. Tant qu’elle est masquée, la personne ne pourra plus être intégrée dans les entrées/sorties."
         },
-        "enable": {
+        "restore": {
           "title": "Afficher à nouveau la personne",
           "message": "Attention ! Tu vas à nouveau rendre “{{element.firstName}} {{element.lastName}}” visible. Il sera de nouveau possible de l’intégrer dans les entrées/sorties."
         },
-        "delete": {
+        "hardDelete": {
           "title": "Supprimer la personne",
           "message": "Attention ! Tu vas définitivement supprimer “{{element.firstName}} {{element.lastName}}”. Cette suppression est possible uniquement si aucune entrée/sortie ne lui est associée."
         }
@@ -924,15 +924,15 @@
         "title": "✏️ Informations d’une personne modifiées",
         "message": "Les informations de “{{firstName}} {{lastName}}” ont été modifiées."
       },
-      "disable": {
+      "softDelete": {
         "title": "🙈 Participant masqué",
         "message": "“{{firstName}} {{lastName}}” a été masqué."
       },
-      "enable": {
+      "restore": {
         "title": "👀 Participant visible",
         "message": "“{{firstName}} {{lastName}}” est à nouveau visible."
       },
-      "delete": {
+      "hardDelete": {
         "title": "🗑️ Participant supprimé",
         "message": "“{{firstName}} {{lastName}}” a été supprimé."
       },
@@ -1033,19 +1033,19 @@
       "members": "Gestion des membres",
       "edit": "Modifier",
       "add": "Ajouter",
-      "disable": "Masquer",
-      "enable": "Démasquer",
-      "delete": "Supprimer",
+      "softDelete": "Masquer",
+      "restore": "Démasquer",
+      "hardDelete": "Supprimer",
       "confirmations": {
-        "disable": {
+        "softDelete": {
           "title": "Masquer le groupe",
           "message": "Attention ! Tu vas masquer le groupe “{{element.name}}”. Tant qu’il est masqué, le groupe ne pourra plus être intégré dans les entrées/sorties."
         },
-        "enable": {
+        "restore": {
           "title": "Afficher à nouveau le groupe",
           "message": "Attention ! Tu vas à nouveau rendre le groupe “{{element.name}}” visible. Il sera de nouveau possible de l’intégrer dans les entrées/sorties."
         },
-        "delete": {
+        "hardDelete": {
           "title": "Supprimer le groupe",
           "message": "Attention ! Tu vas définitivement supprimer le groupe “{{element.name}}”. Elle sera donc définitivement dissociée des entrées/sorties et autres éléments."
         }
@@ -1084,15 +1084,15 @@
         "title": "✏️ Groupe modifié",
         "message": "Le groupe “{{name}}” a été modifié."
       },
-      "disable": {
+      "softDelete": {
         "title": "🙈 Groupe masqué",
         "message": "Le groupe “{{name}}” a été masqué."
       },
-      "enable": {
+      "restore": {
         "title": "👀 Groupe visible",
         "message": "Le groupe “{{name}}” est à nouveau visible."
       },
-      "delete": {
+      "hardDelete": {
         "title": "🗑️ Groupe supprimé",
         "message": "Le groupe “{{name}}” a été supprimé."
       },
@@ -1183,19 +1183,19 @@
     "actions": {
       "movements-history": "Historique des utilisations",
       "edit": "Modifier",
-      "disable": "Masquer",
-      "enable": "Démasquer",
-      "delete": "Supprimer",
+      "softDelete": "Masquer",
+      "restore": "Démasquer",
+      "hardDelete": "Supprimer",
       "confirmations": {
-        "disable": {
+        "softDelete": {
           "title": "Masquer le véhicule",
           "message": "Attention ! Tu vas masquer le véhicule “{{element.brand}} {{element.model}} ({{element.licensePlate}})”. Tant qu’il est masqué, il ne sera plus possible de l’utiliser."
         },
-        "enable": {
+        "restore": {
           "title": "Afficher à nouveau le véhicule",
           "message": "Attention ! Tu vas à nouveau rendre le véhicule “{{element.brand}} {{element.model}} ({{element.licensePlate}})” visible. Il sera de nouveau possible de l’utiliser."
         },
-        "delete": {
+        "hardDelete": {
           "title": "Supprimer le véhicule",
           "message": "Attention ! Tu vas définitivement supprimer le véhicule “{{element.brand}} {{element.model}} ({{element.licensePlate}})”. Cette suppression est possible uniquement si aucune entrée/sortie ne lui est associée."
         }
@@ -1210,15 +1210,15 @@
         "title": "✏️ Informations d’un véhicule modifiées",
         "message": "Les informations du véhicule {{brand}} {{model}} ({{registration}}) ont été modifiées."
       },
-      "disable": {
+      "softDelete": {
         "title": "🙈 Véhicule masqué",
         "message": "Le véhicule {{brand}} {{model}} ({{registration}}) a été masqué."
       },
-      "enable": {
+      "restore": {
         "title": "👀 Véhicule visible",
         "message": "Le véhicule {{brand}} {{model}} ({{registration}}) est à nouveau visible."
       },
-      "delete": {
+      "hardDelete": {
         "title": "🗑️ Véhicule supprimé",
         "message": "Le véhicule {{brand}} {{model}} ({{registration}}) a été supprimé."
       },
@@ -1328,19 +1328,19 @@
     "actions": {
       "movements-history": "Historique des entrées/sorties",
       "edit": "Modifier",
-      "disable": "Masquer",
-      "enable": "Démasquer",
-      "delete": "Supprimer",
+      "softDelete": "Masquer",
+      "restore": "Démasquer",
+      "hardDelete": "Supprimer",
       "confirmations": {
-        "disable": {
+        "softDelete": {
           "title": "Masquer l’activité",
           "message": "Attention ! Tu vas masquer l’activité “{{element.name}}”. Tant qu’elle est masquée, elle ne pourra plus être utilisé."
         },
-        "enable": {
+        "restore": {
           "title": "Afficher à nouveau l’activité",
           "message": "Attention ! Tu vas à nouveau rendre l’activité “{{element.name}}” visible. Elle sera de nouveau possible de l’utiliser."
         },
-        "delete": {
+        "hardDelete": {
           "title": "Supprimer l’activité",
           "message": "Attention ! Tu vas définitivement supprimer l’activité “{{element.name}}”. Elle sera donc définitivement dissociée des entrées/sorties et autres éléments."
         }
@@ -1355,15 +1355,15 @@
         "title": "✏️ Activité modifiée",
         "message": "L’activité {{name}} a été modifiée."
       },
-      "disable": {
+      "softDelete": {
         "title": "🙈 Activité masquée",
         "message": "L’activité {{name}} a été masquée."
       },
-      "enable": {
+      "restore": {
         "title": "👀 Activité visible",
         "message": "L’activité {{name}} est à nouveau visible."
       },
-      "delete": {
+      "hardDelete": {
         "title": "🗑️ Activité supprimée",
         "message": "L’activité {{name}} a été supprimée."
       },
@@ -1429,34 +1429,34 @@
     },
     "actions": {
       "edit": "Modifier",
-      "disable": "Masquer",
-      "enable": "Démasquer",
-      "delete": "Supprimer",
+      "softDelete": "Masquer",
+      "restore": "Démasquer",
+      "hardDelete": "Supprimer",
       "confirmations": {
-        "disable": {
+        "softDelete": {
           "title": "Masquer la communication",
           "message": "Attention ! Tu vas masquer la communication. Tant qu’elle est masquée, elle ne pourra plus être consultée via les éléments qui pourrait lui être liée."
         },
-        "enable": {
+        "restore": {
           "title": "Afficher à nouveau la communication",
           "message": "Attention ! Tu vas à nouveau rendre la communication visible. Il sera de nouveau possible de la consulter via les éléments qui pourrait lui être liée."
         },
-        "delete": {
+        "hardDelete": {
           "title": "Supprimer la communication",
           "message": "Attention ! Tu vas définitivement supprimer la communication. Elle sera donc définitivement dissociée des entrées/sorties et autres éléments."
         }
       }
     },
     "notifications": {
-      "disable": {
+      "softDelete": {
         "title": "🙈 Communication masquée",
         "message": "La communication du {{datetime}} a été masquée."
       },
-      "enable": {
+      "restore": {
         "title": "👀 Communication visible",
         "message": "La communication du {{datetime}} est à nouveau visible."
       },
-      "delete": {
+      "hardDelete": {
         "title": "🗑️ Communication supprimée",
         "message": "La communication du {{datetime}} a été supprimée."
       },
@@ -1533,9 +1533,9 @@
       "reopen": "Rouvrir",
       "add-communication": "Ajouter du détail",
       "communications": "Communications",
-      "disable": "Masquer",
-      "enable": "Démasquer",
-      "delete": "Supprimer",
+      "softDelete": "Masquer",
+      "restore": "Démasquer",
+      "hardDelete": "Supprimer",
       "confirmations": {
         "status": {
           "IN_PROGRESS": {
@@ -1551,15 +1551,15 @@
             "message": "Tu vas annuler l'alerte. Elle ne sera plus visible sur l'écran d'accueil du projet."
           }
         },
-        "disable": {
+        "softDelete": {
           "title": "Masquer l'alerte",
           "message": "Attention ! Tu vas masquer l'alerte. Tant qu’elle est masquée, elle ne pourra plus être consultée notamment sur l'écran d'accueil du projet."
         },
-        "enable": {
+        "restore": {
           "title": "Afficher à nouveau l'alerte",
           "message": "Attention ! Tu vas à nouveau rendre l'alerte à nouveau visible. Il sera de nouveau possible de la consulter notamment via l'écran d'accueil si elle est en cours."
         },
-        "delete": {
+        "hardDelete": {
           "title": "Supprimer l'alerte",
           "message": "Attention ! Tu vas définitivement supprimer l'alerte. Elle sera donc définitivement supprimée et irrécupérable."
         }
@@ -1578,15 +1578,15 @@
         "title": "✏️ Statut de l'alerte modifié",
         "message": "Le statut de l'alerte “{{title}}” est maintenant “{{status}}”."
       },
-      "disable": {
+      "softDelete": {
         "title": "🙈 Alerte masquée",
         "message": "L'alerte “{{title}}” a été masquée."
       },
-      "enable": {
+      "restore": {
         "title": "👀 Alerte visible",
         "message": "L'alerte “{{title}}” est à nouveau visible."
       },
-      "delete": {
+      "hardDelete": {
         "title": "🗑️ Alerte supprimée",
         "message": "L'alerte “{{name}}” a été supprimée."
       },

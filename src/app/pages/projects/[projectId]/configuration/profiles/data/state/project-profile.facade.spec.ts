@@ -140,7 +140,7 @@ describe( 'ProjectProfileFacade', () => {
 
         // Assert
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( {
-            summary: 'project-profiles.notifications.disable.title',
+            summary: 'project-profiles.notifications.block.title',
             data: { firstName: 'Ada', lastName: 'L', name: 'Camp' },
         } ) )
         expect( findProjectProfiles ).toHaveBeenCalledWith( 'p1', 0, 30, expect.anything() )
@@ -202,7 +202,7 @@ describe( 'ProjectProfileFacade', () => {
         facade.unblockProjectProfile( PROFILE ).subscribe()
 
         // Assert
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'project-profiles.notifications.enable.title' } ) )
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'project-profiles.notifications.unblock.title' } ) )
         expect( findProjectProfiles ).toHaveBeenCalledTimes( 1 )
     } )
 

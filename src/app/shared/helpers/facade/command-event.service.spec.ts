@@ -12,14 +12,14 @@ describe( 'CommandEventService', () => {
     it( 'delivers an event to the listeners of its scope and command', () => {
         // Arrange
         const received: CommandEvent[] = []
-        service.on( 'group', 'create', 'delete' ).subscribe( (event: { command: CommandEvent }): number => received.push( event.command ) )
+        service.on( 'group', 'create', 'hardDelete' ).subscribe( (event: { command: CommandEvent }): number => received.push( event.command ) )
 
         // Act
         service.emit( 'group', 'create' )
-        service.emit( 'group', 'delete' )
+        service.emit( 'group', 'hardDelete' )
 
         // Assert
-        expect( received ).toEqual( [ 'create', 'delete' ] )
+        expect( received ).toEqual( [ 'create', 'hardDelete' ] )
     } )
 
     it( 'ignores the commands a listener did not ask for', () => {

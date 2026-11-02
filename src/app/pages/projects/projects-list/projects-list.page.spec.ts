@@ -163,6 +163,7 @@ describe('ProjectsListPage', () => {
         expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith(undefined, undefined, undefined, undefined, undefined)
     })
 
+
     it('reads the creation right from the session', () => {
         // Arrange
         const page: ProjectsListApi = create()

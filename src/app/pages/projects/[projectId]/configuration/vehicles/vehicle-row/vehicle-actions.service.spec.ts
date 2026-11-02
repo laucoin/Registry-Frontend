@@ -24,7 +24,7 @@ describe('VehicleActions', () => {
 
     beforeEach(() => {
         authorities = signal(['p1_REGISTRY_PROJECT_VEHICLE_U', 'p1_REGISTRY_PROJECT_VEHICLE_D', 'p1_REGISTRY_PROJECT_VEHICLE_HISTORY_R'])
-        facade = { disableVehicle: vi.fn(() => of(undefined)), enableVehicle: vi.fn(() => of(undefined)), deleteVehicle: vi.fn(() => of(undefined)) }
+        facade = { softDeleteVehicle: vi.fn(() => of(undefined)), restoreVehicle: vi.fn(() => of(undefined)), hardDeleteVehicle: vi.fn(() => of(undefined)) }
         confirm = vi.fn()
         navigateByUrl = vi.fn(() => Promise.resolve(true))
         TestBed.configureTestingModule({
@@ -56,7 +56,7 @@ describe('VehicleActions', () => {
         const shown: string[] = ids(element)
 
         // Assert
-        expect(shown).toEqual(['movements-history', 'edit', 'disable', 'delete'])
+        expect(shown).toEqual(['movements-history', 'edit', 'softDelete', 'hardDelete'])
     })
 
     it('offers show instead of hide for a hidden element', () => {
@@ -67,15 +67,16 @@ describe('VehicleActions', () => {
         const shown: string[] = ids(element)
 
         // Assert
-        expect(shown).toEqual(['movements-history', 'edit', 'enable', 'delete'])
+        expect(shown).toEqual(['movements-history', 'edit', 'restore', 'hardDelete'])
     })
+
 
     it('disables the commands the user has no authority for', () => {
         // Arrange
         authorities.set(['p1_REGISTRY_PROJECT_VEHICLE_U'])
 
         // Act
-        const flags: boolean[] = ['movements-history', 'edit', 'delete'].map((id: string): boolean => find(VISIBLE, id).disabled)
+        const flags: boolean[] = ['movements-history', 'edit', 'hardDelete'].map((id: string): boolean => find(VISIBLE, id).disabled)
 
         // Assert
         expect(flags).toEqual([true, false, true])
@@ -96,9 +97,9 @@ describe('VehicleActions', () => {
     })
 
     it.each([
-        ['disable', 'disableVehicle', SeverityEnum.WARNING, VISIBLE, 'x1'],
-        ['enable', 'enableVehicle', SeverityEnum.INFO, HIDDEN, 'x1'],
-        ['delete', 'deleteVehicle', SeverityEnum.DANGER, VISIBLE, VISIBLE],
+        ['softDelete', 'softDeleteVehicle', SeverityEnum.WARNING, VISIBLE, 'x1'],
+        ['restore', 'restoreVehicle', SeverityEnum.INFO, HIDDEN, 'x1'],
+        ['hardDelete', 'hardDeleteVehicle', SeverityEnum.DANGER, VISIBLE, VISIBLE],
     ])('asks for a confirmation before running %s, then calls the facade', (id: string, call: string, severity: SeverityEnum, element: VehicleModel, argument: unknown) => {
         // Arrange
         const action: ElementActionModel = find(element, id)

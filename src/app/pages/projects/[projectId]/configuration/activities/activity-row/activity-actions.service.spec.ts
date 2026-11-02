@@ -24,7 +24,7 @@ describe('ActivityActions', () => {
 
     beforeEach(() => {
         authorities = signal(['p1_REGISTRY_PROJECT_ACTIVITY_U', 'p1_REGISTRY_PROJECT_ACTIVITY_D', 'p1_REGISTRY_PROJECT_ACTIVITY_HISTORY_R'])
-        facade = { disableActivity: vi.fn(() => of(undefined)), enableActivity: vi.fn(() => of(undefined)), deleteActivity: vi.fn(() => of(undefined)) }
+        facade = { softDeleteActivity: vi.fn(() => of(undefined)), restoreActivity: vi.fn(() => of(undefined)), hardDeleteActivity: vi.fn(() => of(undefined)) }
         confirm = vi.fn()
         navigateByUrl = vi.fn(() => Promise.resolve(true))
         TestBed.configureTestingModule({
@@ -56,7 +56,7 @@ describe('ActivityActions', () => {
         const shown: string[] = ids(element)
 
         // Assert
-        expect(shown).toEqual(['movements-history', 'edit', 'disable', 'delete'])
+        expect(shown).toEqual(['movements-history', 'edit', 'softDelete', 'hardDelete'])
     })
 
     it('offers show instead of hide for a hidden element', () => {
@@ -67,15 +67,16 @@ describe('ActivityActions', () => {
         const shown: string[] = ids(element)
 
         // Assert
-        expect(shown).toEqual(['movements-history', 'edit', 'enable', 'delete'])
+        expect(shown).toEqual(['movements-history', 'edit', 'restore', 'hardDelete'])
     })
+
 
     it('disables the commands the user has no authority for', () => {
         // Arrange
         authorities.set(['p1_REGISTRY_PROJECT_ACTIVITY_U'])
 
         // Act
-        const flags: boolean[] = ['movements-history', 'edit', 'delete'].map((id: string): boolean => find(VISIBLE, id).disabled)
+        const flags: boolean[] = ['movements-history', 'edit', 'hardDelete'].map((id: string): boolean => find(VISIBLE, id).disabled)
 
         // Assert
         expect(flags).toEqual([true, false, true])
@@ -96,9 +97,9 @@ describe('ActivityActions', () => {
     })
 
     it.each([
-        ['disable', 'disableActivity', SeverityEnum.WARNING, VISIBLE, 'x1'],
-        ['enable', 'enableActivity', SeverityEnum.INFO, HIDDEN, 'x1'],
-        ['delete', 'deleteActivity', SeverityEnum.DANGER, VISIBLE, VISIBLE],
+        ['softDelete', 'softDeleteActivity', SeverityEnum.WARNING, VISIBLE, 'x1'],
+        ['restore', 'restoreActivity', SeverityEnum.INFO, HIDDEN, 'x1'],
+        ['hardDelete', 'hardDeleteActivity', SeverityEnum.DANGER, VISIBLE, VISIBLE],
     ])('asks for a confirmation before running %s, then calls the facade', (id: string, call: string, severity: SeverityEnum, element: ActivityModel, argument: unknown) => {
         // Arrange
         const action: ElementActionModel = find(element, id)

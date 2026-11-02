@@ -63,11 +63,11 @@ export class CommunicationFacade extends GenericProjectElementFacade {
     }
 
     public handleCommunicationFirstPageReload (): Observable<unknown> {
-        return this.commandEvents.on( 'communication', 'create', 'delete' )
+        return this.commandEvents.on( 'communication', 'create', 'hardDelete' )
     }
 
     public handleCommunicationCurrentPageReload (): Observable<unknown> {
-        return this.commandEvents.on( 'communication', 'update', 'disable', 'enable' )
+        return this.commandEvents.on( 'communication', 'update', 'softDelete', 'restore' )
     }
 
     public createCommunication (communication: CommunicationDto): Observable<CommunicationModel> {
@@ -82,24 +82,24 @@ export class CommunicationFacade extends GenericProjectElementFacade {
         )
     }
 
-    public disableCommunication (id: string): Observable<CommunicationModel> {
-        return this.api.disableCommunicationById( this.selectedProjectId(), id ).pipe(
+    public softDeleteCommunication (id: string): Observable<CommunicationModel> {
+        return this.api.softDeleteCommunicationById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (disabled: CommunicationModel): void => this.onCommandSuccess( 'disable', disabled ) ),
+            tap( (disabled: CommunicationModel): void => this.onCommandSuccess( 'softDelete', disabled ) ),
         )
     }
 
-    public enableCommunication (id: string): Observable<CommunicationModel> {
-        return this.api.enableCommunicationById( this.selectedProjectId(), id ).pipe(
+    public restoreCommunication (id: string): Observable<CommunicationModel> {
+        return this.api.restoreCommunicationById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (enabled: CommunicationModel): void => this.onCommandSuccess( 'enable', enabled ) ),
+            tap( (enabled: CommunicationModel): void => this.onCommandSuccess( 'restore', enabled ) ),
         )
     }
 
-    public deleteCommunication (communication: CommunicationModel): Observable<void> {
-        return this.api.deleteCommunicationById( undefined, communication.id ).pipe(
+    public hardDeleteCommunication (communication: CommunicationModel): Observable<void> {
+        return this.api.hardDeleteCommunicationById( undefined, communication.id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (): void => this.onCommandSuccess( 'delete', communication ) ),
+            tap( (): void => this.onCommandSuccess( 'hardDelete', communication ) ),
         )
     }
 

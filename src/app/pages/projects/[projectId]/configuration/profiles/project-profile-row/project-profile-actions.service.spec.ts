@@ -68,7 +68,7 @@ describe('ProjectProfileActions', () => {
         const shown: string[] = ids(profile)
 
         // Assert
-        expect(shown).toEqual(['edit', 'disable', 'delete'])
+        expect(shown).toEqual(['edit', 'block', 'delete'])
     })
 
     it('offers unblock instead of block for a blocked profile', () => {
@@ -79,7 +79,7 @@ describe('ProjectProfileActions', () => {
         const shown: string[] = ids(profile)
 
         // Assert
-        expect(shown).toEqual(['edit', 'enable', 'delete'])
+        expect(shown).toEqual(['edit', 'unblock', 'delete'])
     })
 
     it('offers to select the project of an own profile, unless it is already the selected one', () => {
@@ -95,6 +95,7 @@ describe('ProjectProfileActions', () => {
         expect(whenAnotherIsSelected).toEqual(['select', 'delete'])
         expect(whenSelected).toEqual(['delete'])
     })
+
 
     it('disables the commands the user has no authority for', () => {
         // Arrange
@@ -121,8 +122,8 @@ describe('ProjectProfileActions', () => {
     })
 
     it.each([
-        ['disable', 'blockProjectProfile', SeverityEnum.WARNING, OTHER],
-        ['enable', 'unblockProjectProfile', SeverityEnum.INFO, BLOCKED],
+        ['block', 'blockProjectProfile', SeverityEnum.WARNING, OTHER],
+        ['unblock', 'unblockProjectProfile', SeverityEnum.INFO, BLOCKED],
         ['delete', 'deleteProjectProfile', SeverityEnum.DANGER, OTHER],
     ])('asks for a confirmation before running %s, then calls the facade', (id: string, call: string, severity: SeverityEnum, profile: ProjectProfileModel) => {
         // Arrange
@@ -190,7 +191,7 @@ describe('ProjectProfileActions', () => {
         // Assert
         expect(shown).toContain('select')
         expect(shown).not.toContain('edit')
-        expect(shown).not.toContain('disable')
+        expect(shown).not.toContain('block')
         expect(shown).toContain('delete')
     })
 

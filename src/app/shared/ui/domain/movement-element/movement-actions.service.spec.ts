@@ -25,7 +25,7 @@ describe('MovementActions', () => {
 
     beforeEach(() => {
         authorities = signal(['p1_REGISTRY_PROJECT_MOVEMENT_U', 'p1_REGISTRY_PROJECT_MOVEMENT_D'])
-        facade = { disableMovement: vi.fn(() => of(undefined)), enableMovement: vi.fn(() => of(undefined)), deleteMovement: vi.fn(() => of(undefined)) }
+        facade = { softDeleteMovement: vi.fn(() => of(undefined)), restoreMovement: vi.fn(() => of(undefined)), hardDeleteMovement: vi.fn(() => of(undefined)) }
         confirm = vi.fn()
         navigateByUrl = vi.fn(() => Promise.resolve(true))
         TestBed.configureTestingModule({
@@ -48,7 +48,7 @@ describe('MovementActions', () => {
         const ids: string[] = actions.actionsFor(element).map((action: ElementActionModel): string => action.id)
 
         // Assert
-        expect(ids).toEqual(['edit', 'disable', 'delete'])
+        expect(ids).toEqual(['edit', 'softDelete', 'hardDelete'])
     })
 
     it('offers the show command instead of hide for a hidden element', () => {
@@ -59,12 +59,12 @@ describe('MovementActions', () => {
         const ids: string[] = actions.actionsFor(element).map((action: ElementActionModel): string => action.id)
 
         // Assert
-        expect(ids).toEqual(['edit', 'enable', 'delete'])
+        expect(ids).toEqual(['edit', 'restore', 'hardDelete'])
     })
 
     it.each([
-        ['disable', 'disableMovement', VISIBLE],
-        ['enable', 'enableMovement', HIDDEN],
+        ['softDelete', 'softDeleteMovement', VISIBLE],
+        ['restore', 'restoreMovement', HIDDEN],
     ])('asks for a confirmation before running %s, then calls the facade with the identifier', (id: string, call: string, element: MovementModel) => {
         // Arrange
         const action: ElementActionModel = find(element, id)
@@ -79,15 +79,16 @@ describe('MovementActions', () => {
 
     it('asks for a confirmation before deleting, then deletes the element', () => {
         // Arrange
-        const action: ElementActionModel = find(VISIBLE, 'delete')
+        const action: ElementActionModel = find(VISIBLE, 'hardDelete')
 
         // Act
         action.run()
         confirm.mock.calls[0][3]()
 
         // Assert
-        expect(facade['deleteMovement']).toHaveBeenCalledWith(VISIBLE)
+        expect(facade['hardDeleteMovement']).toHaveBeenCalledWith(VISIBLE)
     })
+
 
     it('disables the commands the user has no authority for', () => {
         // Arrange

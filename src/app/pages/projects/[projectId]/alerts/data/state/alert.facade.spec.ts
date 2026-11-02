@@ -22,9 +22,9 @@ describe( 'AlertFacade', () => {
     let findAlertStatistics: Mock<AlertApi['findAlertStatistics']>
     let createAlert: Mock<AlertApi['createAlert']>
     let updateAlertStatusById: Mock<AlertApi['updateAlertStatusById']>
-    let disableAlertById: Mock<AlertApi['disableAlertById']>
-    let enableAlertById: Mock<AlertApi['enableAlertById']>
-    let deleteAlertById: Mock<AlertApi['deleteAlertById']>
+    let softDeleteAlertById: Mock<AlertApi['softDeleteAlertById']>
+    let restoreAlertById: Mock<AlertApi['restoreAlertById']>
+    let hardDeleteAlertById: Mock<AlertApi['hardDeleteAlertById']>
     let notify: Mock<(message: unknown) => void>
 
     beforeEach( () => {
@@ -34,15 +34,15 @@ describe( 'AlertFacade', () => {
         findAlertStatistics = vi.fn( () => of( { resolvedCount: 3, canceledCount: 1, averageResolutionSeconds: 60, realAlertRate: 0.75 } ) )
         createAlert = vi.fn()
         updateAlertStatusById = vi.fn()
-        disableAlertById = vi.fn()
-        enableAlertById = vi.fn()
-        deleteAlertById = vi.fn()
+        softDeleteAlertById = vi.fn()
+        restoreAlertById = vi.fn()
+        hardDeleteAlertById = vi.fn()
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 AlertFacade,
                 AlertStore,
-                { provide: AlertApi, useValue: { findAlerts, findAlertCommunications, findAlertStatistics, createAlert, updateAlertStatusById, disableAlertById, enableAlertById, deleteAlertById } },
+                { provide: AlertApi, useValue: { findAlerts, findAlertCommunications, findAlertStatistics, createAlert, updateAlertStatusById, softDeleteAlertById, restoreAlertById, hardDeleteAlertById } },
                 { provide: MetadataApi, useValue: { getAlertsStatus: vi.fn( () => of( [] ) ), getAlertCriticality: vi.fn( () => of( { levels: [], rule: 'Aging rule' } ) ) } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ) } },
                 { provide: UiFacade, useValue: { notify } },
@@ -136,11 +136,11 @@ describe( 'AlertFacade', () => {
         expect( facade.alertsPage()?.content.map( (it: AlertModel): string => it.id ) ).toEqual( [ 'a', 'b' ] )
     } )
 
-    it.each( [ 'disable', 'enable' ] as const )( 'notifies and reloads the alerts after the alert is %sd', (command: 'disable' | 'enable') => {
+    it.each( [ 'softDelete', 'restore' ] as const )( 'notifies and reloads the alerts after the alert is %sd', (command: 'softDelete' | 'restore') => {
         // Arrange
-        const api: Mock = command === 'disable' ? disableAlertById : enableAlertById
+        const api: Mock = command === 'softDelete' ? softDeleteAlertById : restoreAlertById
         api.mockReturnValue( of( { id: 'al1', title: 'Fire' } as AlertModel ) )
-        const call: (id: string) => Observable<AlertModel> = command === 'disable' ? facade.disableAlert.bind( facade ) : facade.enableAlert.bind( facade )
+        const call: (id: string) => Observable<AlertModel> = command === 'softDelete' ? facade.softDeleteAlert.bind( facade ) : facade.restoreAlert.bind( facade )
 
         // Act
         call( 'al1' ).subscribe()
@@ -153,13 +153,13 @@ describe( 'AlertFacade', () => {
 
     it( 'deletes an alert whatever the selected project and then reloads the alerts', () => {
         // Arrange
-        deleteAlertById.mockReturnValue( of( undefined ) )
+        hardDeleteAlertById.mockReturnValue( of( undefined ) )
 
         // Act
-        facade.deleteAlert( { id: 'al1', title: 'Fire' } as AlertModel ).subscribe()
+        facade.hardDeleteAlert( { id: 'al1', title: 'Fire' } as AlertModel ).subscribe()
 
         // Assert
-        expect( deleteAlertById ).toHaveBeenCalledWith( undefined, 'al1' )
+        expect( hardDeleteAlertById ).toHaveBeenCalledWith( undefined, 'al1' )
         expect( notify ).toHaveBeenCalledTimes( 1 )
         expect( findAlerts ).toHaveBeenCalledTimes( 1 )
     } )
@@ -202,10 +202,10 @@ describe( 'AlertFacade', () => {
 
     it( 'reports a failed command once and does not reload the alerts', () => {
         // Arrange
-        disableAlertById.mockReturnValue( failing( ERROR_503 ) )
+        softDeleteAlertById.mockReturnValue( failing( ERROR_503 ) )
 
         // Act
-        facade.disableAlert( 'al1' ).subscribe( { error: (): void => undefined } )
+        facade.softDeleteAlert( 'al1' ).subscribe( { error: (): void => undefined } )
 
         // Assert
         expect( notify ).toHaveBeenCalledTimes( 1 )

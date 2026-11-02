@@ -17,7 +17,7 @@ describe( 'CommunicationFacade', () => {
     let facade: CommunicationFacade
     let createCommunication: Mock<CommunicationApi['createCommunication']>
     let updateCommunicationById: Mock<CommunicationApi['updateCommunicationById']>
-    let disableCommunicationById: Mock<CommunicationApi['disableCommunicationById']>
+    let softDeleteCommunicationById: Mock<CommunicationApi['softDeleteCommunicationById']>
     let notify: Mock<(message: unknown) => void>
     let api: Record<string, Mock>
 
@@ -25,14 +25,14 @@ describe( 'CommunicationFacade', () => {
         provideTestConfig()
         createCommunication = vi.fn()
         updateCommunicationById = vi.fn()
-        disableCommunicationById = vi.fn()
+        softDeleteCommunicationById = vi.fn()
         notify = vi.fn()
-        api = { enableCommunicationById: vi.fn(), deleteCommunicationById: vi.fn(), searchMovements: vi.fn( () => of( [] ) ), searchAlerts: vi.fn( () => of( [] ) ) }
+        api = { restoreCommunicationById: vi.fn(), hardDeleteCommunicationById: vi.fn(), searchMovements: vi.fn( () => of( [] ) ), searchAlerts: vi.fn( () => of( [] ) ) }
         TestBed.configureTestingModule( {
             providers: [
                 CommunicationFacade,
                 CommunicationStore,
-                { provide: CommunicationApi, useValue: { createCommunication, updateCommunicationById, disableCommunicationById, ...api } },
+                { provide: CommunicationApi, useValue: { createCommunication, updateCommunicationById, softDeleteCommunicationById, ...api } },
                 { provide: DateFormatPipe, useValue: { transform: (): string => '01/01' } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ) } },
                 { provide: UiFacade, useValue: { notify } },
@@ -72,13 +72,13 @@ describe( 'CommunicationFacade', () => {
 
     it( 'notifies the other commands with the formatted date', () => {
         // Arrange
-        disableCommunicationById.mockReturnValue( of( { id: 'c1', dateTime: new Date() } as CommunicationModel ) )
+        softDeleteCommunicationById.mockReturnValue( of( { id: 'c1', dateTime: new Date() } as CommunicationModel ) )
 
         // Act
-        facade.disableCommunication( 'c1' ).subscribe()
+        facade.softDeleteCommunication( 'c1' ).subscribe()
 
         // Assert
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'communications.notifications.disable.title', data: { datetime: '01/01' } } ) )
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'communications.notifications.softDelete.title', data: { datetime: '01/01' } } ) )
     } )
 
     it( 'lets the form handle a creation error other than 503', () => {
@@ -104,14 +104,14 @@ describe( 'CommunicationFacade', () => {
         expect( facade.communicationError()?.summary ).toBe( 'Title' )
     } )
 
-    it.each( [ 'enable', 'delete' ] as const )( 'notifies and announces the communication %s', (command: 'enable' | 'delete') => {
+    it.each( [ 'restore', 'hardDelete' ] as const )( 'notifies and announces the communication %s', (command: 'restore' | 'hardDelete') => {
         // Arrange
         const communication: CommunicationModel = { id: 'c1', message: 'Hello' } as CommunicationModel
-        api[ 'enableCommunicationById' ].mockReturnValue( of( communication ) )
-        api[ 'deleteCommunicationById' ].mockReturnValue( of( undefined ) )
+        api[ 'restoreCommunicationById' ].mockReturnValue( of( communication ) )
+        api[ 'hardDeleteCommunicationById' ].mockReturnValue( of( undefined ) )
 
         // Act
-        const run$: Observable<unknown> = command === 'enable' ? facade.enableCommunication( 'c1' ) : facade.deleteCommunication( communication )
+        const run$: Observable<unknown> = command === 'restore' ? facade.restoreCommunication( 'c1' ) : facade.hardDeleteCommunication( communication )
         run$.subscribe()
 
         // Assert
@@ -120,12 +120,12 @@ describe( 'CommunicationFacade', () => {
 
     it( 'notifies a failed deletion and announces nothing', () => {
         // Arrange
-        api[ 'deleteCommunicationById' ].mockReturnValue( failing( ERROR_500 ) )
+        api[ 'hardDeleteCommunicationById' ].mockReturnValue( failing( ERROR_500 ) )
         const received: unknown[] = []
         facade.handleCommunicationFirstPageReload().subscribe( (event: unknown): number => received.push( event ) )
 
         // Act
-        facade.deleteCommunication( { id: 'c1' } as CommunicationModel ).subscribe( { error: (): void => undefined } )
+        facade.hardDeleteCommunication( { id: 'c1' } as CommunicationModel ).subscribe( { error: (): void => undefined } )
 
         // Assert
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )

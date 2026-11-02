@@ -252,19 +252,19 @@ export class MovementApi extends GenericProjectApi {
         )
     }
 
-    public disableMovementById(projectId: string | undefined, id: string): Observable<MovementModel> {
+    public softDeleteMovementById(projectId: string | undefined, id: string): Observable<MovementModel> {
         return this.http.post<MovementResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
             map( MovementMapper.toModel ),
         )
     }
 
-    public enableMovementById(projectId: string | undefined, id: string): Observable<MovementModel> {
+    public restoreMovementById(projectId: string | undefined, id: string): Observable<MovementModel> {
         return this.http.post<MovementResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
             map( MovementMapper.toModel ),
         )
     }
 
-    public deleteMovementById(projectId: string | undefined, id: string): Observable<void> {
+    public hardDeleteMovementById(projectId: string | undefined, id: string): Observable<void> {
         return this.http.delete<void>(`${this.buildRequestBaseUrl(projectId)}/${id}`)
     }
 }

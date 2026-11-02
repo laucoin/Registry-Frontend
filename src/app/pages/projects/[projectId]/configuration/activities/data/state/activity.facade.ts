@@ -159,24 +159,24 @@ export class ActivityFacade extends GenericProjectElementFacade {
         )
     }
 
-    public disableActivity (id: string): Observable<ActivityModel> {
-        return this.api.disableActivityById( this.selectedProjectId(), id ).pipe(
+    public softDeleteActivity (id: string): Observable<ActivityModel> {
+        return this.api.softDeleteActivityById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (disabled: ActivityModel): void => this.onCommandSuccess( 'disable', disabled ) ),
+            tap( (disabled: ActivityModel): void => this.onCommandSuccess( 'softDelete', disabled ) ),
         )
     }
 
-    public enableActivity (id: string): Observable<ActivityModel> {
-        return this.api.enableActivityById( this.selectedProjectId(), id ).pipe(
+    public restoreActivity (id: string): Observable<ActivityModel> {
+        return this.api.restoreActivityById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (enabled: ActivityModel): void => this.onCommandSuccess( 'enable', enabled ) ),
+            tap( (enabled: ActivityModel): void => this.onCommandSuccess( 'restore', enabled ) ),
         )
     }
 
-    public deleteActivity (activity: ActivityModel): Observable<void> {
-        return this.api.deleteActivityById( undefined, activity.id ).pipe(
+    public hardDeleteActivity (activity: ActivityModel): Observable<void> {
+        return this.api.hardDeleteActivityById( undefined, activity.id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (): void => this.onCommandSuccess( 'delete', activity ) ),
+            tap( (): void => this.onCommandSuccess( 'hardDelete', activity ) ),
         )
     }
 

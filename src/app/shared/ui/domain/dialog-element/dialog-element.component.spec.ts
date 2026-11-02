@@ -56,10 +56,10 @@ describe( 'DialogElementComponent', () => {
         const ids: string[] = labelsOf( component )
 
         // Assert
-        expect( ids ).toEqual( [ 'edit', 'disable', 'delete' ] )
+        expect( ids ).toEqual( [ 'edit', 'softDelete', 'hardDelete' ] )
     } )
 
-    it( 'offers enable instead of disable for a hidden element', () => {
+    it( 'offers restore instead of softDelete for a hidden element', () => {
         // Arrange
         const component: DialogElementComponent = create( { ...ELEMENT, visible: false } )
 
@@ -67,8 +67,8 @@ describe( 'DialogElementComponent', () => {
         const ids: string[] = labelsOf( component )
 
         // Assert
-        expect( ids ).toContain( 'enable' )
-        expect( ids ).not.toContain( 'disable' )
+        expect( ids ).toContain( 'restore' )
+        expect( ids ).not.toContain( 'softDelete' )
     } )
 
     it( 'asks for a confirmation before deleting, then deletes the element', () => {
@@ -76,12 +76,12 @@ describe( 'DialogElementComponent', () => {
         const component: DialogElementComponent = create( ELEMENT )
 
         // Act
-        actionOf( component, 'delete' ).run()
+        actionOf( component, 'hardDelete' ).run()
         confirm.mock.calls[ 0 ][ 0 ].accept()
 
         // Assert
         expect( confirm ).toHaveBeenCalledTimes( 1 )
-        expect( facade[ 'deleteCommunication' ] ).toHaveBeenCalledTimes( 1 )
+        expect( facade[ 'hardDeleteCommunication' ] ).toHaveBeenCalledTimes( 1 )
     } )
 
     it( 'loads the communication in the form when the user edits it', () => {
@@ -100,11 +100,11 @@ describe( 'DialogElementComponent', () => {
         const component: DialogElementComponent = create( ELEMENT )
 
         // Act
-        actionOf( component, 'disable' ).run()
+        actionOf( component, 'softDelete' ).run()
         confirm.mock.calls[ 0 ][ 0 ].accept()
 
         // Assert
-        expect( facade[ 'disableCommunication' ] ).toHaveBeenCalledWith( 'e1' )
+        expect( facade[ 'softDeleteCommunication' ] ).toHaveBeenCalledWith( 'e1' )
     } )
 
     it( 'disables the commands the user has no authority for', () => {

@@ -24,9 +24,9 @@ export class VehicleActions extends ElementActionsBase<VehicleModel> {
         return [
             this.historySpec(vehicle),
             this.editSpec(vehicle),
-            this.hideSpec(vehicle),
-            this.showSpec(vehicle),
-            this.deleteSpec(vehicle),
+            this.softDeleteSpec(vehicle),
+            this.restoreSpec(vehicle),
+            this.hardDeleteSpec(vehicle),
         ]
     }
 
@@ -50,33 +50,33 @@ export class VehicleActions extends ElementActionsBase<VehicleModel> {
         }
     }
 
-    private hideSpec(vehicle: VehicleModel): ElementActionSpec {
+    private softDeleteSpec(vehicle: VehicleModel): ElementActionSpec {
         return {
-            id: 'disable',
+            id: 'softDelete',
             icon: 'eye-slash',
             shown: vehicle.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_U),
-            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.disableVehicle(vehicle.id)) },
+            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.softDeleteVehicle(vehicle.id)) },
         }
     }
 
-    private showSpec(vehicle: VehicleModel): ElementActionSpec {
+    private restoreSpec(vehicle: VehicleModel): ElementActionSpec {
         return {
-            id: 'enable',
+            id: 'restore',
             icon: 'rotate-right',
             shown: !vehicle.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_D),
-            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.enableVehicle(vehicle.id)) },
+            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.restoreVehicle(vehicle.id)) },
         }
     }
 
-    private deleteSpec(vehicle: VehicleModel): ElementActionSpec {
+    private hardDeleteSpec(vehicle: VehicleModel): ElementActionSpec {
         return {
-            id: 'delete',
+            id: 'hardDelete',
             icon: 'trash',
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_D),
-            confirmation: { severity: SeverityEnum.DANGER, accept: (): void => this.run(this.facade.deleteVehicle(vehicle)) },
+            confirmation: { severity: SeverityEnum.DANGER, accept: (): void => this.run(this.facade.hardDeleteVehicle(vehicle)) },
         }
     }
 

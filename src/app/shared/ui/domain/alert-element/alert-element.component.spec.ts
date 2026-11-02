@@ -67,10 +67,10 @@ describe( 'AlertElementComponent', () => {
         const ids: string[] = labelsOf( component )
 
         // Assert
-        expect( ids ).toEqual( [ 'resolve', 'cancel', 'disable', 'delete' ] )
+        expect( ids ).toEqual( [ 'resolve', 'cancel', 'softDelete', 'hardDelete' ] )
     } )
 
-    it( 'offers enable instead of disable for a hidden element', () => {
+    it( 'offers restore instead of softDelete for a hidden element', () => {
         // Arrange
         const component: AlertElementComponent = create( { ...ELEMENT, visible: false } )
 
@@ -78,8 +78,8 @@ describe( 'AlertElementComponent', () => {
         const ids: string[] = labelsOf( component )
 
         // Assert
-        expect( ids ).toContain( 'enable' )
-        expect( ids ).not.toContain( 'disable' )
+        expect( ids ).toContain( 'restore' )
+        expect( ids ).not.toContain( 'softDelete' )
     } )
 
     it( 'disables the host of a hidden element only', () => {
@@ -102,12 +102,12 @@ describe( 'AlertElementComponent', () => {
         const component: AlertElementComponent = create( ELEMENT )
 
         // Act
-        actionOf( component, 'delete' ).run()
+        actionOf( component, 'hardDelete' ).run()
         confirm.mock.calls[ 0 ][ 0 ].accept()
 
         // Assert
         expect( confirm ).toHaveBeenCalledTimes( 1 )
-        expect( facade[ 'deleteAlert' ] ).toHaveBeenCalledTimes( 1 )
+        expect( facade[ 'hardDeleteAlert' ] ).toHaveBeenCalledTimes( 1 )
     } )
 
     it( 'closes the communicationsLayerOpened drawer when the drawer itself asks for it', () => {

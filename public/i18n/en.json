@@ -186,15 +186,15 @@
     "actions": {
       "copy-email": "Copy the email address of {{element.firstName}} {{element.lastName}}",
       "update-role": "Change role",
-      "enable": "Unblock",
-      "disable": "Block",
+      "unblock": "Unblock",
+      "block": "Block",
       "delete": "Delete",
       "confirmations": {
-        "disable": {
+        "block": {
           "title": "Block the user",
           "message": "Warning! You are about to block a user. While blocked, {{element.firstName}} {{element.lastName}} will no longer be able to sign in. This change may take a few moments to be applied everywhere."
         },
-        "enable": {
+        "unblock": {
           "title": "Unblock the user",
           "message": "Warning! You are about to unblock a user. {{element.firstName}} {{element.lastName}} will be able to sign in again. This change may take a few moments to be applied everywhere."
         },
@@ -209,11 +209,11 @@
         "title": "✏️ Role updated",
         "message": "The role of {{firstName}} {{lastName}} has been updated."
       },
-      "disable": {
+      "block": {
         "title": "⛔️ User blocked",
         "message": "{{firstName}} {{lastName}} has been blocked."
       },
-      "enable": {
+      "unblock": {
         "title": "⛓️‍💥 User unblocked",
         "message": "{{firstName}} {{lastName}} has been unblocked and can sign in again."
       },
@@ -315,23 +315,23 @@
       "create-support": "Support profile",
       "select": "Join",
       "edit": "Edit",
-      "enable": "Unhide",
-      "disable": "Hide",
-      "delete": "Delete",
+      "restore": "Unhide",
+      "softDelete": "Hide",
+      "hardDelete": "Delete",
       "confirmations": {
         "create-support": {
           "title": "Create a support profile",
           "message": "By continuing, you create a support profile valid for 1 hour to support the project “{{element.name}}”."
         },
-        "disable": {
+        "softDelete": {
           "title": "Hide the project",
           "message": "Warning! You are about to hide the project “{{element.name}}”. While it is hidden, it will no longer be possible to create profiles, check-ins/check-outs, participants, etc. in it."
         },
-        "enable": {
+        "restore": {
           "title": "Show the project again",
           "message": "Warning! You are about to make the project “{{element.name}}” visible again. It will be possible again to create profiles, check-ins/check-outs, participants, etc. in it."
         },
-        "delete": {
+        "hardDelete": {
           "title": "Delete the project",
           "phrase": "delete the project",
           "message": "Warning! You are about to permanently delete the project “{{element.name}}” along with all the items linked to it (profiles, check-ins/check-outs, participants, etc.). Deleting the project may take some time depending on its size. You can keep using the application, but it is best not to leave this page until the deletion is complete."
@@ -355,15 +355,15 @@
         "title": "✏️ Project updated",
         "message": "The project “{{name}}” has been updated."
       },
-      "disable": {
+      "softDelete": {
         "title": "🙈 Project hidden",
         "message": "The project “{{name}}” has been hidden."
       },
-      "enable": {
+      "restore": {
         "title": "👀 Project visible",
         "message": "The project “{{name}}” is visible again."
       },
-      "delete": {
+      "hardDelete": {
         "title": "🗑️ Project deleted",
         "message": "The project “{{name}}” has been deleted."
       },
@@ -457,8 +457,8 @@
       "create-project": "Create a project",
       "projects": "See my projects",
       "edit": "Edit",
-      "enable": "Unblock",
-      "disable": "Block",
+      "unblock": "Unblock",
+      "block": "Block",
       "accept": "Accept",
       "reject": "Decline",
       "delete": "Delete",
@@ -471,11 +471,11 @@
           "title": "Decline the invitation",
           "message": "By permanently declining the invitation, you will not be able to use this profile. You will need to be invited again to access the project “{{element.project.name}}”."
         },
-        "disable": {
+        "block": {
           "title": "Block the profile",
           "message": "Warning! You are about to block a profile for the project “{{element.project.name}}”. While blocked, {{element.user.firstName}} {{element.user.lastName}} will no longer be able to use it. This change may take a few moments to be applied everywhere."
         },
-        "enable": {
+        "unblock": {
           "title": "Unblock the profile",
           "message": "Warning! You are about to unblock a profile for the project “{{element.project.name}}”. {{element.user.firstName}} {{element.user.lastName}} will be able to use it again if it is still valid. This change may take a few moments to be applied everywhere."
         },
@@ -529,11 +529,11 @@
         "title": "✏️ Profile updated",
         "message": "The profile of {{firstName}} {{lastName}} for the project {{name}} has been updated."
       },
-      "disable": {
+      "block": {
         "title": "⛔️ Profile blocked",
         "message": "The profile of {{firstName}} {{lastName}} for the project {{name}} has been blocked."
       },
-      "enable": {
+      "unblock": {
         "title": "⛓️‍💥 Profile unblocked",
         "message": "The profile of {{firstName}} {{lastName}} for the project {{name}} has been unblocked."
       },
@@ -715,19 +715,19 @@
     "actions": {
       "communications": "Communications",
       "edit": "Edit",
-      "disable": "Hide",
-      "enable": "Unhide",
-      "delete": "Delete",
+      "softDelete": "Hide",
+      "restore": "Unhide",
+      "hardDelete": "Delete",
       "confirmations": {
-        "disable": {
+        "softDelete": {
           "title": "Hide the check-in/check-out",
           "message": "Warning! You are about to hide the check-in/check-out. While it is hidden, it is as if it never happened."
         },
-        "enable": {
+        "restore": {
           "title": "Show the check-in/check-out again",
           "message": "Warning! You are about to make the check-in/check-out visible again. It will be taken into account in the history again."
         },
-        "delete": {
+        "hardDelete": {
           "title": "Delete the check-in/check-out",
           "message": "Warning! You are about to permanently delete the check-in/check-out. It will no longer be recoverable or traceable."
         }
@@ -760,7 +760,7 @@
           "message": "The check-out of {{datetime}} has been updated."
         }
       },
-      "disable": {
+      "softDelete": {
         "IN": {
           "title": "🙈 Check-in hidden",
           "message": "The check-in of {{datetime}} has been hidden."
@@ -770,7 +770,7 @@
           "message": "The check-out of {{datetime}} has been hidden."
         }
       },
-      "enable": {
+      "restore": {
         "IN": {
           "title": "👀 Check-in visible",
           "message": "The check-in of {{datetime}} is visible again."
@@ -780,7 +780,7 @@
           "message": "The check-out of {{datetime}} is visible again."
         }
       },
-      "delete": {
+      "hardDelete": {
         "IN": {
           "title": "🗑️ Check-in deleted",
           "message": "The check-in of {{datetime}} has been deleted."
@@ -892,24 +892,24 @@
       "movements-history": "Check-in/check-out history",
       "remove-member": "Remove from group",
       "edit": "Edit",
-      "disable": "Hide",
-      "enable": "Unhide",
+      "softDelete": "Hide",
+      "restore": "Unhide",
       "export": "Export data",
-      "delete": "Delete",
+      "hardDelete": "Delete",
       "confirmations": {
         "remove-member": {
           "title": "Remove from group",
           "message": "Warning! You are about to remove “{{element.firstName}} {{element.lastName}}” from the group."
         },
-        "disable": {
+        "softDelete": {
           "title": "Hide the person",
           "message": "Warning! You are about to hide “{{element.firstName}} {{element.lastName}}”. While hidden, the person can no longer be included in check-ins/check-outs."
         },
-        "enable": {
+        "restore": {
           "title": "Show the person again",
           "message": "Warning! You are about to make “{{element.firstName}} {{element.lastName}}” visible again. It will be possible again to include them in check-ins/check-outs."
         },
-        "delete": {
+        "hardDelete": {
           "title": "Delete the person",
           "message": "Warning! You are about to permanently delete “{{element.firstName}} {{element.lastName}}”. This deletion is only possible if no check-in/check-out is associated with them."
         }
@@ -924,15 +924,15 @@
         "title": "✏️ Person’s information updated",
         "message": "The information of “{{firstName}} {{lastName}}” has been updated."
       },
-      "disable": {
+      "softDelete": {
         "title": "🙈 Participant hidden",
         "message": "“{{firstName}} {{lastName}}” has been hidden."
       },
-      "enable": {
+      "restore": {
         "title": "👀 Participant visible",
         "message": "“{{firstName}} {{lastName}}” is visible again."
       },
-      "delete": {
+      "hardDelete": {
         "title": "🗑️ Participant deleted",
         "message": "“{{firstName}} {{lastName}}” has been deleted."
       },
@@ -1033,19 +1033,19 @@
       "members": "Member management",
       "edit": "Edit",
       "add": "Add",
-      "disable": "Hide",
-      "enable": "Unhide",
-      "delete": "Delete",
+      "softDelete": "Hide",
+      "restore": "Unhide",
+      "hardDelete": "Delete",
       "confirmations": {
-        "disable": {
+        "softDelete": {
           "title": "Hide the group",
           "message": "Warning! You are about to hide the group “{{element.name}}”. While hidden, the group can no longer be included in check-ins/check-outs."
         },
-        "enable": {
+        "restore": {
           "title": "Show the group again",
           "message": "Warning! You are about to make the group “{{element.name}}” visible again. It will be possible again to include it in check-ins/check-outs."
         },
-        "delete": {
+        "hardDelete": {
           "title": "Delete the group",
           "message": "Warning! You are about to permanently delete the group “{{element.name}}”. It will therefore be permanently detached from check-ins/check-outs and other items."
         }
@@ -1084,15 +1084,15 @@
         "title": "✏️ Group updated",
         "message": "The group “{{name}}” has been updated."
       },
-      "disable": {
+      "softDelete": {
         "title": "🙈 Group hidden",
         "message": "The group “{{name}}” has been hidden."
       },
-      "enable": {
+      "restore": {
         "title": "👀 Group visible",
         "message": "The group “{{name}}” is visible again."
       },
-      "delete": {
+      "hardDelete": {
         "title": "🗑️ Group deleted",
         "message": "The group “{{name}}” has been deleted."
       },
@@ -1183,19 +1183,19 @@
     "actions": {
       "movements-history": "Usage history",
       "edit": "Edit",
-      "disable": "Hide",
-      "enable": "Unhide",
-      "delete": "Delete",
+      "softDelete": "Hide",
+      "restore": "Unhide",
+      "hardDelete": "Delete",
       "confirmations": {
-        "disable": {
+        "softDelete": {
           "title": "Hide the vehicle",
           "message": "Warning! You are about to hide the vehicle “{{element.brand}} {{element.model}} ({{element.licensePlate}})”. While hidden, it can no longer be used."
         },
-        "enable": {
+        "restore": {
           "title": "Show the vehicle again",
           "message": "Warning! You are about to make the vehicle “{{element.brand}} {{element.model}} ({{element.licensePlate}})” visible again. It will be possible to use it again."
         },
-        "delete": {
+        "hardDelete": {
           "title": "Delete the vehicle",
           "message": "Warning! You are about to permanently delete the vehicle “{{element.brand}} {{element.model}} ({{element.licensePlate}})”. This deletion is only possible if no check-in/check-out is associated with it."
         }
@@ -1210,15 +1210,15 @@
         "title": "✏️ Vehicle information updated",
         "message": "The information of the vehicle {{brand}} {{model}} ({{registration}}) has been updated."
       },
-      "disable": {
+      "softDelete": {
         "title": "🙈 Vehicle hidden",
         "message": "The vehicle {{brand}} {{model}} ({{registration}}) has been hidden."
       },
-      "enable": {
+      "restore": {
         "title": "👀 Vehicle visible",
         "message": "The vehicle {{brand}} {{model}} ({{registration}}) is visible again."
       },
-      "delete": {
+      "hardDelete": {
         "title": "🗑️ Vehicle deleted",
         "message": "The vehicle {{brand}} {{model}} ({{registration}}) has been deleted."
       },
@@ -1328,19 +1328,19 @@
     "actions": {
       "movements-history": "Check-in/check-out history",
       "edit": "Edit",
-      "disable": "Hide",
-      "enable": "Unhide",
-      "delete": "Delete",
+      "softDelete": "Hide",
+      "restore": "Unhide",
+      "hardDelete": "Delete",
       "confirmations": {
-        "disable": {
+        "softDelete": {
           "title": "Hide the activity",
           "message": "Warning! You are about to hide the activity “{{element.name}}”. While hidden, it can no longer be used."
         },
-        "enable": {
+        "restore": {
           "title": "Show the activity again",
           "message": "Warning! You are about to make the activity “{{element.name}}” visible again. It will be possible to use it again."
         },
-        "delete": {
+        "hardDelete": {
           "title": "Delete the activity",
           "message": "Warning! You are about to permanently delete the activity “{{element.name}}”. It will therefore be permanently detached from check-ins/check-outs and other items."
         }
@@ -1355,15 +1355,15 @@
         "title": "✏️ Activity updated",
         "message": "The activity {{name}} has been updated."
       },
-      "disable": {
+      "softDelete": {
         "title": "🙈 Activity hidden",
         "message": "The activity {{name}} has been hidden."
       },
-      "enable": {
+      "restore": {
         "title": "👀 Activity visible",
         "message": "The activity {{name}} is visible again."
       },
-      "delete": {
+      "hardDelete": {
         "title": "🗑️ Activity deleted",
         "message": "The activity {{name}} has been deleted."
       },
@@ -1429,34 +1429,34 @@
     },
     "actions": {
       "edit": "Edit",
-      "disable": "Hide",
-      "enable": "Unhide",
-      "delete": "Delete",
+      "softDelete": "Hide",
+      "restore": "Unhide",
+      "hardDelete": "Delete",
       "confirmations": {
-        "disable": {
+        "softDelete": {
           "title": "Hide the communication",
           "message": "Warning! You are about to hide the communication. While hidden, it can no longer be viewed through the items that may be linked to it."
         },
-        "enable": {
+        "restore": {
           "title": "Show the communication again",
           "message": "Warning! You are about to make the communication visible again. It will be possible again to view it through the items that may be linked to it."
         },
-        "delete": {
+        "hardDelete": {
           "title": "Delete the communication",
           "message": "Warning! You are about to permanently delete the communication. It will therefore be permanently detached from check-ins/check-outs and other items."
         }
       }
     },
     "notifications": {
-      "disable": {
+      "softDelete": {
         "title": "🙈 Communication hidden",
         "message": "The communication of {{datetime}} has been hidden."
       },
-      "enable": {
+      "restore": {
         "title": "👀 Communication visible",
         "message": "The communication of {{datetime}} is visible again."
       },
-      "delete": {
+      "hardDelete": {
         "title": "🗑️ Communication deleted",
         "message": "The communication of {{datetime}} has been deleted."
       },
@@ -1533,9 +1533,9 @@
       "reopen": "Reopen",
       "add-communication": "Add detail",
       "communications": "Communications",
-      "disable": "Hide",
-      "enable": "Unhide",
-      "delete": "Delete",
+      "softDelete": "Hide",
+      "restore": "Unhide",
+      "hardDelete": "Delete",
       "confirmations": {
         "status": {
           "IN_PROGRESS": {
@@ -1551,15 +1551,15 @@
             "message": "You are about to cancel the alert. It will no longer be visible on the project home screen."
           }
         },
-        "disable": {
+        "softDelete": {
           "title": "Hide the alert",
           "message": "Warning! You are about to hide the alert. While hidden, it can no longer be viewed, notably on the project home screen."
         },
-        "enable": {
+        "restore": {
           "title": "Show the alert again",
           "message": "Warning! You are about to make the alert visible again. It will be possible again to view it, notably via the home screen if it is ongoing."
         },
-        "delete": {
+        "hardDelete": {
           "title": "Delete the alert",
           "message": "Warning! You are about to permanently delete the alert. It will therefore be permanently deleted and unrecoverable."
         }
@@ -1578,15 +1578,15 @@
         "title": "✏️ Alert status updated",
         "message": "The status of the alert “{{title}}” is now “{{status}}”."
       },
-      "disable": {
+      "softDelete": {
         "title": "🙈 Alert hidden",
         "message": "The alert “{{title}}” has been hidden."
       },
-      "enable": {
+      "restore": {
         "title": "👀 Alert visible",
         "message": "The alert “{{title}}” is visible again."
       },
-      "delete": {
+      "hardDelete": {
         "title": "🗑️ Alert deleted",
         "message": "The alert “{{name}}” has been deleted."
       },

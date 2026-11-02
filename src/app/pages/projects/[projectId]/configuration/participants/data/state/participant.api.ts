@@ -143,13 +143,13 @@ export class ParticipantApi extends GenericProjectApi {
         )
     }
 
-    public disableParticipantById(projectId: string | undefined, id: string): Observable<ParticipantModel> {
+    public softDeleteParticipantById(projectId: string | undefined, id: string): Observable<ParticipantModel> {
         return this.http.post<ParticipantResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
             map( ParticipantMapper.toModel ),
         )
     }
 
-    public enableParticipantById(projectId: string | undefined, id: string): Observable<ParticipantModel> {
+    public restoreParticipantById(projectId: string | undefined, id: string): Observable<ParticipantModel> {
         return this.http.post<ParticipantResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
             map( ParticipantMapper.toModel ),
         )
@@ -159,7 +159,7 @@ export class ParticipantApi extends GenericProjectApi {
         return this.http.get<unknown>(`${this.buildRequestBaseUrl(projectId)}/${id}/export`)
     }
 
-    public deleteParticipantById(projectId: string | undefined, id: string): Observable<void> {
+    public hardDeleteParticipantById(projectId: string | undefined, id: string): Observable<void> {
         return this.http.delete<void>(`${this.buildRequestBaseUrl(projectId)}/${id}`)
     }
 }

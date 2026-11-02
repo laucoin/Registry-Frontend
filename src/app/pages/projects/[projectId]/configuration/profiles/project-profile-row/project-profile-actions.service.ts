@@ -71,7 +71,7 @@ export class ProjectProfileActions extends ElementActionsBase<ListedProfileModel
 
     private blockSpec(profile: ListedProfileModel, own: boolean): ElementActionSpec {
         return {
-            id: 'disable',
+            id: 'block',
             icon: 'ban',
             shown: !own && profile.visible && profile.status?.value === ProfileStatusEnum.ACCEPTED,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U),
@@ -81,7 +81,7 @@ export class ProjectProfileActions extends ElementActionsBase<ListedProfileModel
 
     private unblockSpec(profile: ListedProfileModel, own: boolean): ElementActionSpec {
         return {
-            id: 'enable',
+            id: 'unblock',
             icon: 'rotate-right',
             shown: !own && !profile.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U),
