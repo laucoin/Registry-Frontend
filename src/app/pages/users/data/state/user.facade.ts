@@ -121,6 +121,13 @@ export class UserFacade extends GenericFacade {
         ).subscribe()
     }
 
+    public exportUser (user: UserModel): Observable<unknown> {
+        return this.api.exportUserById( user.id ).pipe(
+            notifyOnError( this.uiFacade ),
+            tap( (data: unknown): void => this.browser.downloadJson( data, `registry-user-${ user.id }.json` ) ),
+        )
+    }
+
     public deleteUser (user: UserModel): void {
         this.api.deleteUserById( user.id ).pipe(
             this.trackUserLoader,

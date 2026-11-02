@@ -15,9 +15,11 @@
             @if (user().role; as role) {
                 <sgdf-tag appearance="outlined" pill>{{ role.label }}</sgdf-tag>
             }
-            <sgdf-tag appearance="soft" pill [variant]="user().visible ? 'success' : 'warning'">
-                {{ user() | visibilityName: 'users' | transloco }}
-            </sgdf-tag>
+            @if (!user().visible) {
+                <sgdf-tag appearance="soft" pill variant="warning">
+                    {{ user() | visibilityName: 'users' | transloco }}
+                </sgdf-tag>
+            }
         </span>
     </sgdf-list-item>
 </sgdf-list>

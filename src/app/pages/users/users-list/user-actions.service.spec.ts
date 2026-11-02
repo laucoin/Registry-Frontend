@@ -2,6 +2,7 @@ import { signal, WritableSignal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
+import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
@@ -25,7 +26,7 @@ describe('UserActions', () => {
     beforeEach(() => {
         authorities = signal(['REGISTRY_USER_U', 'REGISTRY_USER_D'])
         currentUserId = signal('u1')
-        facade = { blockUser: vi.fn(), unblockUser: vi.fn(), deleteUser: vi.fn() }
+        facade = { blockUser: vi.fn(), unblockUser: vi.fn(), deleteUser: vi.fn(), exportUser: vi.fn(() => of(undefined)) }
         confirm = vi.fn()
         navigateByUrl = vi.fn(() => Promise.resolve(true))
         TestBed.configureTestingModule({
@@ -53,7 +54,7 @@ describe('UserActions', () => {
         const ids: string[] = actions.actionsFor(user).map((action: ElementActionModel): string => action.id)
 
         // Assert
-        expect(ids).toEqual(['update-role', 'block', 'delete'])
+        expect(ids).toEqual(['update-role', 'export', 'block', 'delete'])
     })
 
     it('offers unblock instead of block for a blocked user', () => {
@@ -64,7 +65,7 @@ describe('UserActions', () => {
         const ids: string[] = actions.actionsFor(user).map((action: ElementActionModel): string => action.id)
 
         // Assert
-        expect(ids).toEqual(['update-role', 'unblock', 'delete'])
+        expect(ids).toEqual(['update-role', 'export', 'unblock', 'delete'])
     })
 
     it('offers nothing on the account of the signed-in user', () => {
@@ -118,6 +119,7 @@ describe('UserActions', () => {
 
     it.each([
         ['block', 'blockUser', SeverityEnum.WARNING, ACTIVE, 'u2'],
+        ['export', 'exportUser', SeverityEnum.INFO, ACTIVE, ACTIVE],
         ['unblock', 'unblockUser', SeverityEnum.INFO, BLOCKED, 'u2'],
         ['delete', 'deleteUser', SeverityEnum.DANGER, ACTIVE, ACTIVE],
     ])('asks for a confirmation before running %s, then calls the facade', (id: string, call: string, severity: SeverityEnum, user: UserModel, argument: unknown) => {

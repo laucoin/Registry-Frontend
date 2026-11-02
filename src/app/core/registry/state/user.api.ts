@@ -64,6 +64,10 @@ export class UserApi extends GenericApi {
         )
     }
 
+    public exportUserById(id: string): Observable<unknown> {
+        return this.http.get<unknown>(`${this.baseUrl}/${id}/export`)
+    }
+
     public exportCurrentUser(): Observable<unknown> {
         return this.http.get<unknown>(`${this.baseUrl}/current/export`)
     }

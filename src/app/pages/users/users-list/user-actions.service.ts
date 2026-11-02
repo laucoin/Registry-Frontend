@@ -10,7 +10,7 @@ import { UserModel } from '@shared/models/model/user.model'
 
 /**
  * Purpose: Indique quelles commandes un utilisateur de la liste offre à l'utilisateur connecté et les exécute.
- * Scope: Construit le menu d'actions (changer le rôle, bloquer, débloquer, supprimer) avec ses confirmations ; personne ne peut agir sur son propre compte.
+ * Scope: Construit le menu d'actions (changer le rôle, exporter les données, bloquer, débloquer, supprimer) avec ses confirmations ; personne ne peut agir sur son propre compte.
  * Limits: Ne détient aucun état ; lit seulement la session et appelle la facade des utilisateurs. Le backend vérifie toujours chaque commande.
  */
 @Injectable()
@@ -24,6 +24,7 @@ export class UserActions extends ElementActionsBase<UserModel> {
         const others: boolean = this.sessionFacade.currentUser()?.id !== user.id
         return [
             this.updateRoleSpec(user, others),
+            this.exportSpec(user, others),
             this.blockSpec(user, others),
             this.unblockSpec(user, others),
             this.deleteSpec(user, others),
@@ -39,6 +40,16 @@ export class UserActions extends ElementActionsBase<UserModel> {
             run: (): void => {
                 this.router.navigateByUrl(RegistryRouteEnum.USERS_EDITION.replace(':userId', user.id)).catch((): void => undefined)
             },
+        }
+    }
+
+    private exportSpec(user: UserModel, others: boolean): ElementActionSpec {
+        return {
+            id: 'export',
+            icon: 'file-export',
+            shown: others,
+            allowed: this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_R),
+            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.exportUser(user)) },
         }
     }
 

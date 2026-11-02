@@ -62,7 +62,7 @@ describe('UserElementComponent', () => {
         expect(initials).toBe('A')
     })
 
-    it('should show the email, the birthday, the role and the visibility', async () => {
+    it('should show the email, the birthday and the role without a visibility tag', async () => {
         // Arrange
         await render(USER)
 
@@ -72,7 +72,7 @@ describe('UserElementComponent', () => {
         // Assert
         expect(description).toContain('ada@example.org')
         expect(description).toContain('date')
-        expect(tags()).toEqual(['Administrator', 'users.visible.true'])
+        expect(tags()).toEqual(['Administrator'])
     })
 
     it('should leave out the birthday and the role the user does not have and mark a blocked user', async () => {

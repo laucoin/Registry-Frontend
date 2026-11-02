@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing'
 import { TranslocoService } from '@jsverse/transloco'
 import { of } from 'rxjs'
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
+import { beforeEach, describe, expect, it, Mock, MockInstance, vi } from 'vitest'
+import { BrowserService } from '@core/browser/browser.service'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { UserApi } from '@core/registry/state/user.api'
 import { UserFacade } from '@pages/users/data/state/user.facade'
@@ -14,6 +15,7 @@ describe( 'UserFacade', () => {
     let blockUserById: Mock<UserApi['blockUserById']>
     let updateUserRole: Mock<UserApi['updateUserRole']>
     let deleteUserById: Mock<UserApi['deleteUserById']>
+    let exportUserById: Mock<UserApi['exportUserById']>
     let notify: Mock<(message: unknown) => void>
 
     beforeEach( () => {
@@ -22,11 +24,12 @@ describe( 'UserFacade', () => {
         blockUserById = vi.fn()
         updateUserRole = vi.fn()
         deleteUserById = vi.fn()
+        exportUserById = vi.fn()
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 UserFacade,
-                { provide: UserApi, useValue: { findUsers, blockUserById, updateUserRole, deleteUserById } },
+                { provide: UserApi, useValue: { findUsers, blockUserById, updateUserRole, deleteUserById, exportUserById } },
                 { provide: UiFacade, useValue: { notify } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}` } },
             ],
@@ -130,6 +133,33 @@ describe( 'UserFacade', () => {
         // Assert
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'users.notifications.delete.title' } ) )
         expect( findUsers ).toHaveBeenCalledTimes( 1 )
+    } )
+
+    it( 'downloads the exported data of a user', () => {
+        // Arrange
+        const data: object = { id: 'u1' }
+        exportUserById.mockReturnValue( of( data ) )
+        const downloadJson: MockInstance = vi.spyOn( TestBed.inject( BrowserService ), 'downloadJson' ).mockImplementation( (): void => undefined )
+
+        // Act
+        facade.exportUser( { id: 'u1', firstName: 'Ada', lastName: 'L' } as UserModel ).subscribe()
+
+        // Assert
+        expect( exportUserById ).toHaveBeenCalledWith( 'u1' )
+        expect( downloadJson ).toHaveBeenCalledWith( data, 'registry-user-u1.json' )
+    } )
+
+    it( 'notifies the failure of an export without downloading', () => {
+        // Arrange
+        exportUserById.mockReturnValue( failing( ERROR_500 ) )
+        const downloadJson: MockInstance = vi.spyOn( TestBed.inject( BrowserService ), 'downloadJson' ).mockImplementation( (): void => undefined )
+
+        // Act
+        facade.exportUser( { id: 'u1' } as UserModel ).subscribe( { error: (): void => undefined } )
+
+        // Assert
+        expect( downloadJson ).not.toHaveBeenCalled()
+        expect( notify ).toHaveBeenCalledTimes( 1 )
     } )
 
     it( 'exposes the failure of the user fetch', () => {
