@@ -37,16 +37,21 @@ export class RegistrySchemas {
             StringHelper.isBlank( ctx.value() ) ? registryError( 'blank' ) : null )
     }
 
+    public static nonBlankIfFilled (path: SchemaPath<string>): void {
+        validate( path, (ctx: FieldContext<string>): RegistryError | null =>
+            ctx.value().length > 0 && StringHelper.isBlank( ctx.value() ) ? registryError( 'blank' ) : null )
+    }
+
     public static requiredText (path: SchemaPath<string>, max: number): void {
         required( path )
         maxLength( path, max )
         RegistrySchemas.nonBlank( path )
     }
 
-    public static notInTheFuture (path: SchemaPath<Date | null>, now: () => Date = (): Date => new Date()): void {
+    public static notInTheFuture (path: SchemaPath<Date | null>, now: () => Date = (): Date => new Date(), kind: string = 'maxDate'): void {
         validate( path, (ctx: FieldContext<Date | null>): RegistryError | null => {
             const value: Date | null = ctx.value()
-            return value && value.getTime() > now().getTime() ? registryError( 'maxDate', { max: undefined } ) : null
+            return value && value.getTime() > now().getTime() ? registryError( kind, { max: undefined } ) : null
         } )
     }
 

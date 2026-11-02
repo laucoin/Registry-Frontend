@@ -68,6 +68,10 @@
                     }
                     <div>
                         <h2 class="section-title">{{ 'movements.form.content.registered' | pluralTranslation: model().content.participants | transloco }}</h2>
+                        <sgdf-switch data-testid="registered-movement-form-all-participants-switch" class="mb-[0.5rem]"
+                                     [checked]="allParticipants()" (change)="handleAllParticipantsChange($event)">
+                            {{ 'movements.form.content.registered.all' | transloco }}
+                        </sgdf-switch>
                         <app-select-elements-field data-testid="registered-movement-form-participants-field" [formField]="form.content.participants" [appFieldError]="form.content.participants" translationPrefix="movements.form.error.participantContent"
                                                    [label]="'movements.form.content.registered.search' | transloco"
                                                    [suggestions]="suggestions()"

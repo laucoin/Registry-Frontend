@@ -1,5 +1,5 @@
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, model, ModelSignal, Signal, signal, WritableSignal } from '@angular/core'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, effect, inject, model, ModelSignal, Signal, signal, untracked, WritableSignal } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import { TranslocoPipe } from '@jsverse/transloco'
 import '@sgdf/ui/card'
@@ -12,6 +12,7 @@ import '@sgdf/ui/option'
 import '@sgdf/ui/select'
 import '@sgdf/ui/step'
 import '@sgdf/ui/stepper'
+import '@sgdf/ui/switch'
 import '@sgdf/ui/tag'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import { MovementDto } from '@pages/projects/[projectId]/movements/data/dto/movement.dto'
@@ -103,6 +104,8 @@ export class RegisteredMovementFormPage extends BaseFormComponent {
     } )
 
     protected readonly activeTab: ModelSignal<number> = model<number>( 1 )
+    protected readonly allParticipants: WritableSignal<boolean> = signal( false )
+    private lastParticipantsQuery: string | undefined = undefined
 
     protected readonly reasonRequired: Signal<boolean> = computed( (): boolean => isRegisteredReasonRequired( this.model().information ) )
     protected readonly reasonOptions: Signal<MovementReasonModel[]> = computed(
@@ -140,6 +143,11 @@ export class RegisteredMovementFormPage extends BaseFormComponent {
         this.loadData()
 
         this.handleLoadedElement()
+
+        effect( (): void => {
+            const at: Date | null = this.model().information.dateTime
+            untracked( (): void => this.refreshParticipantsOnDateChange( at ) )
+        } )
     }
 
     protected override loadData (): void {
@@ -184,7 +192,21 @@ export class RegisteredMovementFormPage extends BaseFormComponent {
     }
 
     protected handleParticipantsAndGroupsSearch (searched: { query: string }): void {
-        this.facade.searchParticipantsAndGroups( ParticipantTypeEnum.REGISTERED, searched.query )
+        this.lastParticipantsQuery = searched.query
+        this.searchParticipantsAndGroups()
+    }
+
+    protected handleAllParticipantsChange (event: Event): void {
+        this.allParticipants.set( (event.target as HTMLElement & { checked: boolean }).checked )
+        this.searchParticipantsAndGroups()
+    }
+
+    private refreshParticipantsOnDateChange (at: Date | null): void {
+        if (this.lastParticipantsQuery !== undefined) this.searchParticipantsAndGroups( at )
+    }
+
+    private searchParticipantsAndGroups (at: Date | null = this.model().information.dateTime): void {
+        if (at) this.facade.searchParticipantsAndGroups( ParticipantTypeEnum.REGISTERED, this.lastParticipantsQuery, at, this.allParticipants() )
     }
 
     protected handleVehicleSearch (query: string): void {

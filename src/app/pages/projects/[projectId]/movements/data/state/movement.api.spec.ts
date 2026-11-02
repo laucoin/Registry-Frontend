@@ -31,8 +31,8 @@ const CASES: ApiCase<MovementApi>[] = [
         call: (api: MovementApi) => api.searchReasonsAndActivities( 'p1', 'arr', 'IN', 'REGISTERED' as never ), response: [ { label: 'Arrival', value: 'r1', kind: 'REASON' } ], verify: expectMappedList },
     { name: 'searches reasons and activities without a text', method: 'GET', url: `${BASE}/search/reasons?type=IN&contentType=GUEST`,
         call: (api: MovementApi) => api.searchReasonsAndActivities( 'p1', undefined, 'IN', 'GUEST' as never ), response: [ { label: 'Arrival', value: 'r1', kind: 'REASON' } ], verify: expectMappedList },
-    { name: 'searches participants and groups and maps both lists', method: 'GET', url: new RegExp( `${BASE}/search/participants-and-groups\\?` ),
-        call: (api: MovementApi) => api.searchParticipantsAndGroups( 'p1', 'REGISTERED' as never, 'ad' ), response: { participants: [ PARTICIPANT_DTO ], groups: [ GROUP_DTO ] },
+    { name: 'searches participants and groups and maps both lists', method: 'GET', url: new RegExp( `${BASE}/search/participants-and-groups\\?contentType=REGISTERED&at=2026-01-01T10:00:00.000Z&all=true&q=ad` ),
+        call: (api: MovementApi) => api.searchParticipantsAndGroups( 'p1', 'REGISTERED' as never, 'ad', new Date( '2026-01-01T10:00:00Z' ), true ), response: { participants: [ PARTICIPANT_DTO ], groups: [ GROUP_DTO ] },
         verify: (result: unknown, response: unknown): void => {
             const found: { participants: unknown[], groups: unknown[] } = result as { participants: unknown[], groups: unknown[] }
             expect( found ).toEqual( response )

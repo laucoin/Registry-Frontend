@@ -157,7 +157,7 @@ describe( 'MovementStore', () => {
         } ) )
 
         // Act
-        store.searchParticipantsAndGroups( { projectId: 'p1', contentType: ParticipantTypeEnum.REGISTERED, q: 'a' } )
+        store.searchParticipantsAndGroups( { projectId: 'p1', contentType: ParticipantTypeEnum.REGISTERED, q: 'a', at: new Date(), all: false } )
 
         // Assert
         const labels: (string | undefined)[] = store.metadata.searchedParticipantsAndGroups().map( (group: { label?: string }): string | undefined => group.label )
@@ -172,7 +172,7 @@ describe( 'MovementStore', () => {
         searchParticipantsAndGroups.mockReturnValue( of( { participants: [], groups: [] } ) )
 
         // Act
-        store.searchParticipantsAndGroups( { projectId: 'p1', contentType: ParticipantTypeEnum.REGISTERED, q: 'a' } )
+        store.searchParticipantsAndGroups( { projectId: 'p1', contentType: ParticipantTypeEnum.REGISTERED, q: 'a', at: new Date(), all: false } )
 
         // Assert
         expect( store.metadata.searchedParticipantsAndGroups() ).toEqual( [] )

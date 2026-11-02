@@ -192,8 +192,10 @@ export class MovementApi extends GenericProjectApi {
         projectId: string | undefined,
         type: ParticipantTypeEnum,
         q: string | undefined,
+        at: Date,
+        all: boolean,
     ): Observable<MovementParticipantsAndGroupsModel> {
-        let params: HttpParams = new HttpParams().set('contentType', type.toString())
+        let params: HttpParams = new HttpParams().set('contentType', type.toString()).set('at', at.toISOString()).set('all', all)
 
         if (GenericHelper.nonNull(q)) params = params.set('q', q!)
 

@@ -164,7 +164,7 @@ export class GuestMovementFormPage extends BaseFormComponent {
     }
 
     protected handleGuestsSearch (searched: { query: string }): void {
-        this.facade.searchParticipantsAndGroups( ParticipantTypeEnum.GUEST, searched.query )
+        this.facade.searchParticipantsAndGroups( ParticipantTypeEnum.GUEST, searched.query, this.model().information.dateTime ?? new Date() )
     }
 
     protected addGuest (): void {

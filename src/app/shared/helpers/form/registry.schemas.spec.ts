@@ -31,6 +31,18 @@ describe( 'RegistrySchemas', () => {
             expect( errors ).toEqual( expected )
         } )
 
+    it.each( [ [ '   ', [ { kind: 'blank' } ] ], [ '', [] ], [ 'text', [] ] ] )(
+        'nonBlankIfFilled judges %j as %j', (value: string, expected: object[]) => {
+            // Arrange
+            const rule: (path: SchemaPath<string>) => void = RegistrySchemas.nonBlankIfFilled
+
+            // Act
+            const errors: object[] = errorsOf( value, rule )
+
+            // Assert
+            expect( errors ).toEqual( expected )
+        } )
+
     it( 'withinProject refuses a date outside the project bounds and formats the bound', () => {
         // Arrange
         const project: ProjectModel = { begin: JUNE, end: AUGUST } as ProjectModel
@@ -231,5 +243,17 @@ describe( 'RegistrySchemas', () => {
 
         // Assert
         expect( errors ).toEqual( [ [ { kind: 'maxDate', max: undefined } ], [], [], [] ] )
+    } )
+
+    it( 'notInTheFuture reports the given error kind', () => {
+        // Arrange
+        const now: Date = new Date( 2026, 5, 15 )
+        const rule = (path: SchemaPath<Date | null>): void => RegistrySchemas.notInTheFuture( path, () => now, 'future' )
+
+        // Act
+        const errors: object[] = errorsOf( new Date( 2026, 5, 16 ), rule )
+
+        // Assert
+        expect( errors ).toEqual( [ { kind: 'future', max: undefined } ] )
     } )
 } )

@@ -180,7 +180,7 @@ describe( 'GuestMovementFormPage', () => {
 
             // Assert
             expect( facade[ 'searchReasonsAndActivities' ] ).toHaveBeenCalledWith( 'vis', 'IN', ParticipantTypeEnum.GUEST )
-            expect( facade[ 'searchParticipantsAndGroups' ] ).toHaveBeenCalledWith( ParticipantTypeEnum.GUEST, 'ad' )
+            expect( facade[ 'searchParticipantsAndGroups' ] ).toHaveBeenCalledWith( ParticipantTypeEnum.GUEST, 'ad', expect.any( Date ) )
         } )
     } )
 

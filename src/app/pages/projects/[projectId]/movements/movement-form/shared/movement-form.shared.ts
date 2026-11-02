@@ -23,6 +23,7 @@ interface MovementReasonFields {
 
 export function informationRules (path: SchemaPathTree<MovementInformationModel>, context: MovementFormContext): void {
     required( path.dateTime )
+    RegistrySchemas.notInTheFuture( path.dateTime, undefined, 'future' )
     RegistrySchemas.withinProject( path.dateTime, context.project, context.formatDate )
     required( path.type )
     disabled( path.type, { when: context.editing } )

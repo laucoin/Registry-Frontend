@@ -17,6 +17,8 @@ import { MovementTypeEnum } from '@shared/models/enumeration/movement-type.enum'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 
+const SEARCHED_AT: Date = new Date( '2026-01-01T10:00:00Z' )
+
 const MOVEMENT: MovementModel = {
     id: 'm1',
     dateTime: new Date(),
@@ -313,12 +315,12 @@ describe( 'MovementFacade', () => {
 
         // Act
         facade.searchReasonsAndActivities( query, 'IN', ParticipantTypeEnum.REGISTERED )
-        facade.searchParticipantsAndGroups( ParticipantTypeEnum.REGISTERED, query )
+        facade.searchParticipantsAndGroups( ParticipantTypeEnum.REGISTERED, query, SEARCHED_AT, true )
         facade.searchVehicles( query )
 
         // Assert
         expect( api[ 'searchReasonsAndActivities' ] ).toHaveBeenCalledWith( 'p1', 'ada', 'IN', ParticipantTypeEnum.REGISTERED )
-        expect( api[ 'searchParticipantsAndGroups' ] ).toHaveBeenCalledWith( 'p1', ParticipantTypeEnum.REGISTERED, 'ada' )
+        expect( api[ 'searchParticipantsAndGroups' ] ).toHaveBeenCalledWith( 'p1', ParticipantTypeEnum.REGISTERED, 'ada', SEARCHED_AT, true )
         expect( api[ 'searchVehicles' ] ).toHaveBeenCalledWith( 'p1', 'ada' )
     } )
 

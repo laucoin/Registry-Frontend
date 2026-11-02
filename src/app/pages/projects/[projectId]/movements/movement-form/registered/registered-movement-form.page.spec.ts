@@ -41,6 +41,7 @@ interface PageApi {
     handleReasonChoice: (event: unknown) => void
     handleReasonSearch: (query: string) => void
     handleParticipantsAndGroupsSearch: (searched: { query: string }) => void
+    handleAllParticipantsChange: (event: Event) => void
     handleVehicleSearch: (query: string) => void
     handleVehicleChoice: (event: unknown) => void
     handleDriverChoice: (index: number, event: unknown) => void
@@ -304,6 +305,46 @@ describe( 'RegisteredMovementFormPage', () => {
             expect( facade[ 'createRegisteredMovement' ] ).not.toHaveBeenCalled()
         } )
 
+        it( 'searches the participants again when the date of the movement changes', () => {
+            // Arrange
+            const page: PageApi = create()
+            page.handleParticipantsAndGroupsSearch( { query: 'ad' } )
+            TestBed.tick()
+            facade[ 'searchParticipantsAndGroups' ].mockClear()
+            const newDate: Date = new Date( '2026-03-01T10:00:00Z' )
+
+            // Act
+            page.model.update( (value: ModelApi): ModelApi => ({ ...value, information: { ...value.information, dateTime: newDate } }) )
+            TestBed.tick()
+
+            // Assert
+            expect( facade[ 'searchParticipantsAndGroups' ] ).toHaveBeenCalledWith( ParticipantTypeEnum.REGISTERED, 'ad', newDate, false )
+        } )
+
+        it( 'does not search before the user has searched', () => {
+            // Arrange
+            const page: PageApi = create()
+
+            // Act
+            TestBed.tick()
+
+            // Assert
+            expect( facade[ 'searchParticipantsAndGroups' ] ).not.toHaveBeenCalled()
+            expect( page.model().information.dateTime ).not.toBeNull()
+        } )
+
+    it( 'searches again with the toggle when the participants are widened to the whole project', () => {
+            // Arrange
+            const page: PageApi = create()
+            page.handleParticipantsAndGroupsSearch( { query: 'ad' } )
+
+            // Act
+            page.handleAllParticipantsChange( { target: { checked: true } } as unknown as Event )
+
+            // Assert
+            expect( facade[ 'searchParticipantsAndGroups' ] ).toHaveBeenLastCalledWith( ParticipantTypeEnum.REGISTERED, 'ad', expect.any( Date ), true )
+        } )
+
         it( 'searches reasons with the chosen type, then participants, groups and vehicles', () => {
             // Arrange
             const page: PageApi = create()
@@ -316,7 +357,7 @@ describe( 'RegisteredMovementFormPage', () => {
 
             // Assert
             expect( facade[ 'searchReasonsAndActivities' ] ).toHaveBeenCalledWith( 'arr', 'OUT', ParticipantTypeEnum.REGISTERED )
-            expect( facade[ 'searchParticipantsAndGroups' ] ).toHaveBeenCalledWith( ParticipantTypeEnum.REGISTERED, 'ad' )
+            expect( facade[ 'searchParticipantsAndGroups' ] ).toHaveBeenCalledWith( ParticipantTypeEnum.REGISTERED, 'ad', expect.any( Date ), false )
             expect( facade[ 'searchVehicles' ] ).toHaveBeenCalledWith( 'ab' )
         } )
     } )

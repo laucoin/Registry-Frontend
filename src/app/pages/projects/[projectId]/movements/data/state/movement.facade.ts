@@ -149,12 +149,16 @@ export class MovementFacade extends GenericProjectElementFacade {
 
     public searchParticipantsAndGroups (
         contentType: ParticipantTypeEnum,
-        q: string | undefined = undefined,
+        q: string | undefined,
+        at: Date,
+        all: boolean = false,
     ): void {
         this.store.searchParticipantsAndGroups( {
             projectId: this.selectedProjectId(),
             contentType: contentType,
             q: q,
+            at: at,
+            all: all,
         } )
     }
 

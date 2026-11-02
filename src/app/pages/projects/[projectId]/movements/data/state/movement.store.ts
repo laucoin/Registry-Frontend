@@ -53,6 +53,8 @@ interface SearchParticipantsAndGroupsRequest {
     projectId: string | undefined
     contentType: ParticipantTypeEnum
     q: string | undefined
+    at: Date
+    all: boolean
 }
 
 interface SearchVehiclesRequest {
@@ -156,7 +158,7 @@ export const MovementStore = signalStore(
     withMethods( (store, api = inject( MovementApi ), translateService = inject( TranslocoService ), plural = inject( PluralTranslationPipe )) => ({
         searchParticipantsAndGroups: metadataFetcher<MovementStoreModel, 'searchedParticipantsAndGroups', SearchParticipantsAndGroupsRequest, MovementParticipantsAndGroupsModel>(
             store, 'searchedParticipantsAndGroups', (request: SearchParticipantsAndGroupsRequest) =>
-                api.searchParticipantsAndGroups( request.projectId, request.contentType, request.q ),
+                api.searchParticipantsAndGroups( request.projectId, request.contentType, request.q, request.at, request.all ),
             (result: MovementParticipantsAndGroupsModel): SelectOptionGroupModel<ParticipantModel | GroupModel>[] =>
                 toSearchedSections( result, (key: string, items: unknown[]): string => translateService.translate( plural.transform( key, items ) ) ),
         ),
