@@ -25,6 +25,7 @@ import {
 } from '@pages/projects/projects-list/projects-list.search'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
+import { toBooleanChoice } from '@shared/helpers/form/boolean-choice'
 import { createSearchForm } from '@shared/helpers/form/search.form'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
@@ -126,7 +127,7 @@ export class ProjectsListPage {
             at: null,
             isVisible: '',
             isFavorite: '',
-            withProfile: '',
+            withProfile: toBooleanChoice(true),
         }))
         this.search()
     }

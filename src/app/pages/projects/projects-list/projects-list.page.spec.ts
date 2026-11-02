@@ -98,8 +98,8 @@ describe('ProjectsListPage', () => {
         page.resetFilters()
 
         // Assert
-        expect(page.model()).toEqual({ q: '', at: null, isVisible: '', isFavorite: '', withProfile: '' })
-        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith(undefined, undefined, undefined, undefined, undefined)
+        expect(page.model()).toEqual({ q: '', at: null, isVisible: '', isFavorite: '', withProfile: 'true' })
+        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith(undefined, undefined, undefined, undefined, true)
     })
 
     it('toggles the favorite of a project through the facade', () => {

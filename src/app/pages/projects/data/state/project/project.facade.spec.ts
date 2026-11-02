@@ -89,7 +89,7 @@ describe( 'ProjectFacade', () => {
 
     it( 'keeps the requested page when the search criteria are the same', () => {
         // Arrange
-        facade.inputPageSearchParameters( undefined, undefined, undefined )
+        facade.inputPageSearchParameters( undefined, undefined, undefined, undefined, true )
 
         // Act
         facade.fetchProjectsPage( 3, 10 )
