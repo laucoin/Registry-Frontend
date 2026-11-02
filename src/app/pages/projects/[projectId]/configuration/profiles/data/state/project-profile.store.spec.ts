@@ -41,6 +41,17 @@ describe( 'ProjectProfileStore', () => {
         store = TestBed.inject( ProjectProfileStore )
     } )
 
+    it( 'leaves the blocked status out of the status options', () => {
+        // Arrange
+        getProfilesStatus.mockReturnValue( of( [ { label: 'Invited', value: ProfileStatusEnum.INVITED }, { label: 'Blocked', value: ProfileStatusEnum.BLOCKED } ] ) )
+
+        // Act
+        langChanges.next( 'fr' )
+
+        // Assert
+        expect( store.metadata.status().map( (item: { value: unknown }): unknown => item.value ) ).toEqual( [ undefined, ProfileStatusEnum.INVITED ] )
+    } )
+
     it( 'loads the profile statuses on init with an empty option first', () => {
         // Arrange
         const expectedFirst: unknown = { label: '-', value: undefined }

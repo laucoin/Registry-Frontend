@@ -5,6 +5,7 @@ interface ProjectProfilesListSearch {
     at: Date | undefined
     status: string | undefined
     isAvailable: boolean | undefined
+    isVisible: boolean | undefined
 }
 
 export interface ProjectProfilesListSearchModel {
@@ -12,6 +13,7 @@ export interface ProjectProfilesListSearchModel {
     at: Date | null
     status: string
     isAvailable: BooleanChoice
+    isVisible: BooleanChoice
 }
 
 /**
@@ -25,6 +27,7 @@ export function toProjectProfilesListSearchModel (params: ProjectProfilesListSea
         at: params.at ?? null,
         status: params.status ?? '',
         isAvailable: toBooleanChoice( params.isAvailable ),
+        isVisible: toBooleanChoice( params.isVisible ),
     }
 }
 
@@ -39,5 +42,6 @@ export function toProjectProfilesListSearchParams (model: ProjectProfilesListSea
         at: model.at ?? undefined,
         status: model.status === '' ? undefined : model.status,
         isAvailable: fromBooleanChoice( model.isAvailable ),
+        isVisible: fromBooleanChoice( model.isVisible ),
     }
 }

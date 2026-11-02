@@ -14,6 +14,7 @@ export interface ProjectProfileStoreModel extends SectionErrorsState {
         status: SelectOptionModel<ProfileStatusEnum | undefined>[]
         searched: SelectOptionModel<UserModel>[]
         availabilities: SelectOptionModel<boolean | undefined>[]
+    visibilities: SelectOptionModel<boolean | undefined>[]
         features: FeaturesModel
     }
 }

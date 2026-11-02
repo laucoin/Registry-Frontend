@@ -25,11 +25,16 @@ interface SearchUsersRequest {
     q: string | undefined
 }
 
+function withoutBlockedOption (items: SelectOptionModel<ProfileStatusEnum>[]): SelectOptionModel<ProfileStatusEnum | undefined>[] {
+    return withEmptyOption( items.filter( (item: SelectOptionModel<ProfileStatusEnum>): boolean => item.value !== ProfileStatusEnum.BLOCKED ) )
+}
+
 const defaultProjectProfileStore: ProjectProfileStoreModel = {
     sectionErrors: {},
     projectProfiles: PageStateHelper.initial<ProjectProfilePageParamsModel, ProjectProfileModel>( {
         resetSearch: false,
         isAvailable: undefined,
+        isVisible: undefined,
         status: undefined,
         q: undefined,
         at: undefined,
@@ -39,6 +44,11 @@ const defaultProjectProfileStore: ProjectProfileStoreModel = {
         status: [],
         searched: [],
         availabilities: [
+            { label: '-', value: undefined },
+            { label: 'project-profiles.available.true', value: true },
+            { label: 'project-profiles.available.false', value: false },
+        ],
+        visibilities: [
             { label: '-', value: undefined },
             { label: 'project-profiles.visible.true', value: true },
             { label: 'project-profiles.visible.false', value: false },
@@ -56,7 +66,7 @@ export const ProjectProfileStore = signalStore(
     withState<ProjectProfileStoreModel>( defaultProjectProfileStore ),
     withMethods( (store, api = inject( ProjectProfileApi ), metadataApi = inject( MetadataApi ), errors = inject( ErrorReporter )) => ({
         fetchProfileStatus: metadataFetcher<ProjectProfileStoreModel, 'status', void, SelectOptionModel<ProfileStatusEnum>[]>(
-            store, 'status', () => metadataApi.getProfilesStatus(), withEmptyOption,
+            store, 'status', () => metadataApi.getProfilesStatus(), withoutBlockedOption,
         ),
         fetchProjectProfilesPage: pageFetcher( store, 'projectProfiles', (request: ProjectProfilesPageRequest, params: ProjectProfilePageParamsModel) =>
             api.findProjectProfiles( request.projectId, request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),

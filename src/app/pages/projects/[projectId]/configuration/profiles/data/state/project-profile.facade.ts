@@ -42,6 +42,7 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
         DateHelper.buildDate( this.store.projectProfiles.params.at() ),
     )
     public readonly projectProfilesPageIsAvailableParam: Signal<boolean | undefined> = this.store.projectProfiles.params.isAvailable
+    public readonly projectProfilesPageIsVisibleParam: Signal<boolean | undefined> = this.store.projectProfiles.params.isVisible
     public readonly projectProfilesPageStatusParam: Signal<string | undefined> = this.store.projectProfiles.params.status
 
     public readonly searchedUsersMetadata: Signal<SelectOptionModel<UserModel>[]> = this.store.metadata.searched
@@ -52,6 +53,13 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
         this.store.metadata.availabilities().map( (status: SelectOptionModel<boolean | undefined>): SelectOptionModel<boolean | undefined> => ({
             ...status,
             label: this.translateLabel( status.label! ),
+        }) ),
+    )
+
+    public readonly projectProfilesVisibilitiesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed( (): SelectOptionModel<boolean | undefined>[] =>
+        this.store.metadata.visibilities().map( (visibility: SelectOptionModel<boolean | undefined>): SelectOptionModel<boolean | undefined> => ({
+            ...visibility,
+            label: this.translateLabel( visibility.label! ),
         }) ),
     )
 
@@ -68,17 +76,20 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
         at: Date | undefined,
         status: ProfileStatusEnum | undefined,
         isAvailable: boolean | undefined,
+        isVisible: boolean | undefined,
     ): void {
         const resetSearch: boolean = this.projectProfilesPageQueryParam() != q
                                      || this.projectProfilesPageAtParam()?.toISOString() != at?.toISOString()
                                      || this.projectProfilesPageStatusParam() != status
                                      || this.projectProfilesPageIsAvailableParam() != isAvailable
+                                     || this.projectProfilesPageIsVisibleParam() != isVisible
 
         if (resetSearch) {
             this.store.updateProjectProfilesPageSearchParams( {
                 resetSearch: resetSearch,
                 status: status,
                 isAvailable: isAvailable,
+                isVisible: isVisible,
                 q: q,
                 at: at?.toISOString(),
             } )

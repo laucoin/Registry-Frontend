@@ -4,6 +4,7 @@ export interface ProjectProfilePageParamsModel {
     resetSearch: boolean
     q: string | undefined
     isAvailable: boolean | undefined
+    isVisible: boolean | undefined
     status: ProfileStatusEnum | undefined
     at: string | undefined
 }

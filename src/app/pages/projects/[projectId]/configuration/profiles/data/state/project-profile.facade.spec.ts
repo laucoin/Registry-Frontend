@@ -65,7 +65,7 @@ describe( 'ProjectProfileFacade', () => {
 
     it( 'restarts from the first page when the search changed', () => {
         // Arrange
-        facade.inputPageSearchParameters( 'ada', undefined, undefined, undefined )
+        facade.inputPageSearchParameters( 'ada', undefined, undefined, undefined, undefined )
 
         // Act
         facade.fetchProjectProfilesPage( 4, 10 )
@@ -263,20 +263,21 @@ describe( 'ProjectProfileFacade', () => {
         const at: Date = new Date( '2026-01-01T00:00:00.000Z' )
 
         // Act
-        facade.inputPageSearchParameters( 'ada', at, 'ACCEPTED' as never, true )
+        facade.inputPageSearchParameters( 'ada', at, 'ACCEPTED' as never, true, false )
 
         // Assert
         expect( facade.projectProfilesPageAtParam()?.toISOString() ).toBe( at.toISOString() )
         expect( facade.projectProfilesPageStatusParam() ).toBe( 'ACCEPTED' )
         expect( facade.projectProfilesPageIsAvailableParam() ).toBe( true )
+        expect( facade.projectProfilesPageIsVisibleParam() ).toBe( false )
     } )
 
     it( 'keeps the search when the same values are input again', () => {
         // Arrange
-        facade.inputPageSearchParameters( 'ada', undefined, undefined, undefined )
+        facade.inputPageSearchParameters( 'ada', undefined, undefined, undefined, undefined )
 
         // Act
-        facade.inputPageSearchParameters( 'ada', undefined, undefined, undefined )
+        facade.inputPageSearchParameters( 'ada', undefined, undefined, undefined, undefined )
 
         // Assert
         expect( facade.projectProfilesPageQueryParam() ).toBe( 'ada' )
@@ -288,6 +289,17 @@ describe( 'ProjectProfileFacade', () => {
 
         // Act
         const labels: (string | undefined)[] = facade.projectProfilesAvailabilitiesMetadata().map( (item: { label?: string }): string | undefined => item.label )
+
+        // Assert
+        expect( labels.filter( Boolean ).every( (it: string | undefined): boolean => it === '-' || it!.startsWith( expectedPrefix ) ) ).toBe( true )
+    } )
+
+    it( 'translates the visibility options', () => {
+        // Arrange
+        const expectedPrefix: string = 't:'
+
+        // Act
+        const labels: (string | undefined)[] = facade.projectProfilesVisibilitiesMetadata().map( (item: { label?: string }): string | undefined => item.label )
 
         // Assert
         expect( labels.filter( Boolean ).every( (it: string | undefined): boolean => it === '-' || it!.startsWith( expectedPrefix ) ) ).toBe( true )

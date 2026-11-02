@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core'
 import { RegistryConfig } from '@core/config/registry.config'
 import { Observable, map } from 'rxjs'
-import {
-    ProjectProfilePageParamsModel,
-} from '@shared/models/model/project-profile-page-params.model'
+import { UserProjectProfilePageParamsModel } from '@shared/models/model/user-project-profile-page-params.model'
 import {UserInvitationModel} from '@shared/models/model/user-invitation.model'
 import {ProjectModel} from '@shared/models/model/project.model'
 import {PageModel} from '@shared/models/model/page.model'
@@ -32,7 +30,7 @@ export class UserProjectProfileApi extends GenericApi {
     public findUserProjectProfiles(
         page: number | undefined,
         size: number | undefined,
-        params: ProjectProfilePageParamsModel,
+        params: UserProjectProfilePageParamsModel,
     ): Observable<PageModel<UserInvitationModel>> {
         return this.http.get<PageResponseDto<UserInvitationResponseDto>>(
             `${this.baseUrl}?${QueryHelper.buildQueryParams(page, size, params).toString()}`,

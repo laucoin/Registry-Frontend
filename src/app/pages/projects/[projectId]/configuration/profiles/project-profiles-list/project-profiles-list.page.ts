@@ -20,6 +20,7 @@ import {
     toProjectProfilesListSearchModel,
     toProjectProfilesListSearchParams,
 } from '@pages/projects/[projectId]/configuration/profiles/project-profiles-list/project-profiles-list.search'
+import { IfProjectAuthorityDirective } from '@shared/directives/if-project-authority.directive'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
@@ -39,6 +40,7 @@ import { ListComponent } from '@shared/ui/common/list/list.component'
     selector: 'app-project-profiles-list',
     imports: [
         ListComponent,
+        IfProjectAuthorityDirective,
         ProjectProfileRowComponent,
         RegistryTemplateDirective,
         SgdfFieldDirective,
@@ -57,6 +59,7 @@ export class ProjectProfilesListPage {
     private readonly sessionFacade: SessionFacade = inject(SessionFacade)
 
     protected readonly inviteRoute: ProjectProfileRoutesEnum = ProjectProfileRoutesEnum.INVITE
+    protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_RESTORE
 
     protected readonly canInvite: Signal<boolean> = computed((): boolean => CurrentUserHelper.hasProjectAuthority(
         this.sessionFacade.currentUser(),
@@ -69,6 +72,7 @@ export class ProjectProfilesListPage {
         this.facade.projectProfilesPageAtParam() !== undefined,
         this.facade.projectProfilesPageStatusParam() !== undefined,
         this.facade.projectProfilesPageIsAvailableParam() !== undefined,
+        this.facade.projectProfilesPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<ProjectProfilesListSearchModel> = signal(toProjectProfilesListSearchModel({
@@ -76,6 +80,7 @@ export class ProjectProfilesListPage {
         at: this.facade.projectProfilesPageAtParam(),
         status: this.facade.projectProfilesPageStatusParam(),
         isAvailable: this.facade.projectProfilesPageIsAvailableParam(),
+        isVisible: this.facade.projectProfilesPageIsVisibleParam(),
     }))
     protected readonly form: FieldTree<ProjectProfilesListSearchModel> = createSearchForm(this.model)
 
@@ -90,12 +95,13 @@ export class ProjectProfilesListPage {
             search.at,
             search.status as ProfileStatusEnum | undefined,
             search.isAvailable,
+            search.isVisible,
         )
         this.facade.fetchProjectProfilesPage(0, undefined)
     }
 
     protected resetFilters(): void {
-        this.model.set({ q: '', at: null, status: '', isAvailable: '' })
+        this.model.set({ q: '', at: null, status: '', isAvailable: '', isVisible: '' })
         this.search()
     }
 

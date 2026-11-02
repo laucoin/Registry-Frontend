@@ -33,9 +33,15 @@
                     <sgdf-option [value]="item.value ?? ''">{{ item.label }}</sgdf-option>
                 }
             </sgdf-select>
-            <sgdf-select data-testid="project-profiles-list-is-available-select" appSgdfField [label]="'project-profiles.search-and-filter.visibility' | transloco"
+            <sgdf-select data-testid="project-profiles-list-is-available-select" appSgdfField [label]="'project-profiles.search-and-filter.availability' | transloco"
                          [formField]="form.isAvailable">
                 @for (item of facade.projectProfilesAvailabilitiesMetadata(); track item.label) {
+                    <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+                }
+            </sgdf-select>
+            <sgdf-select *appIfProjectAuthority="hiddenAuthority" data-testid="project-profiles-list-is-visible-select" appSgdfField [label]="'project-profiles.search-and-filter.blocked' | transloco"
+                         [formField]="form.isVisible">
+                @for (item of facade.projectProfilesVisibilitiesMetadata(); track item.label) {
                     <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
                 }
             </sgdf-select>
