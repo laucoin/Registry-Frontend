@@ -1422,7 +1422,7 @@
     }
   },
   "communications": {
-    "no-author": "Unknown or deleted author",
+    "no-author": "Deleted user",
     "visible": {
       "true": "Visible",
       "false": "Deleted"

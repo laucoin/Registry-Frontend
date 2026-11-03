@@ -1422,7 +1422,7 @@
     }
   },
   "communications": {
-    "no-author": "Auteur inconnu ou supprimé",
+    "no-author": "Utilisateur supprimé",
     "visible": {
       "true": "Visible",
       "false": "Supprimée"
