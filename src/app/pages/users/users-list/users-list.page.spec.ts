@@ -1,5 +1,7 @@
 import { WritableSignal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
+import { ActivatedRoute, convertToParamMap, Params, provideRouter } from '@angular/router'
+import { of } from 'rxjs'
 import { Mock, beforeEach, describe, expect, it } from 'vitest'
 import { UserFacade } from '@pages/users/data/state/user.facade'
 import { UserActions } from '@pages/users/users-list/user-actions.service'
@@ -18,12 +20,14 @@ interface UsersListApi {
 describe('UsersListPage', () => {
     let facade: Record<string, Mock>
 
-    function create(): UsersListApi {
+    function create(query: Params = {}): UsersListApi {
         facade = autoMock()
         facade['usersPageQueryParam'].mockReturnValue(undefined)
         facade['actualUsersPageIsVisibleParam'].mockReturnValue(undefined)
         TestBed.configureTestingModule({
             providers: [
+                provideRouter([]),
+                ...(Object.keys(query).length > 0 ? [{ provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap(query) }, queryParamMap: of(convertToParamMap(query)) } }] : []),
                 { provide: UserFacade, useValue: facade },
                 { provide: UserActions, useValue: {} },
             ],
@@ -36,17 +40,26 @@ describe('UsersListPage', () => {
         TestBed.resetTestingModule()
     })
 
-    it('starts from the search parameters kept by the facade', () => {
+    it('starts from the default filters when the url carries none', () => {
         // Arrange
-        facade = autoMock()
         const page: UsersListApi = create()
-        facade['usersPageQueryParam'].mockReturnValue('ada')
 
         // Act
         const model: UsersListSearchModel = page.model()
 
         // Assert
         expect(model).toEqual({ q: '', isVisible: '' })
+    })
+
+    it('starts from the filters carried by the url', () => {
+        // Arrange
+        // Act
+        const page: UsersListApi = create({ q: 'ada', isVisible: 'false' })
+
+        // Assert
+        expect(page.model()).toEqual({ q: 'ada', isVisible: 'false' })
+        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith('ada', false)
+        expect(facade['fetchUsersPage']).toHaveBeenCalledWith(undefined, undefined)
     })
 
     it('counts the filters applied by the facade', () => {

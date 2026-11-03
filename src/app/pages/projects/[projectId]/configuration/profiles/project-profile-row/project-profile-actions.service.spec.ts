@@ -45,7 +45,7 @@ describe('ProjectProfileActions', () => {
                 { provide: UserProfileFacade, useValue: userProfileFacade },
                 { provide: SessionFacade, useValue: { currentUser: (): unknown => ({ id: 'u1', authorities: authorities() }), selectedProject, currentProjectId: (): string => 'p1' } },
                 { provide: UiFacade, useValue: { confirm } },
-                { provide: Router, useValue: { navigateByUrl } },
+                { provide: Router, useValue: { navigateByUrl, url: '/profiles?status=ACTIVE' } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
             ],
         })
@@ -132,8 +132,8 @@ describe('ProjectProfileActions', () => {
         find(OWN, 'select').run()
 
         // Assert
-        expect(navigateByUrl).toHaveBeenNthCalledWith(1, expect.stringContaining('pp1'))
-        expect(navigateByUrl).toHaveBeenNthCalledWith(2, expect.stringContaining('p1'))
+        expect(navigateByUrl).toHaveBeenNthCalledWith(1, expect.stringMatching(/pp1.*\?status=ACTIVE$/))
+        expect(navigateByUrl).toHaveBeenNthCalledWith(2, expect.stringMatching(/p1[^?]*$/))
     })
 
     it.each([

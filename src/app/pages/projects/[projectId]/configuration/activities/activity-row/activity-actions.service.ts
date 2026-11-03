@@ -1,4 +1,5 @@
 import { inject, Injectable } from '@angular/core'
+import { RouteHelper } from '@shared/helpers/route.helper'
 import { Router } from '@angular/router'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { ActivityFacade } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
@@ -46,7 +47,7 @@ export class ActivityActions extends ElementActionsBase<ActivityModel> {
             icon: 'pen-to-square',
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_U),
-            run: (): void => this.navigate(RegistryRouteEnum.PROJECTS_CONFIGURATION_ACTIVITIES_EDITION, activity),
+            run: (): void => this.navigate(RegistryRouteEnum.PROJECTS_CONFIGURATION_ACTIVITIES_EDITION, activity, true),
         }
     }
 
@@ -80,9 +81,10 @@ export class ActivityActions extends ElementActionsBase<ActivityModel> {
         }
     }
 
-    private navigate(route: RegistryRouteEnum, activity: ActivityModel): void {
+    private navigate(route: RegistryRouteEnum, activity: ActivityModel, keepQuery: boolean = false): void {
+        const url: string = route.replace(':activityId', activity.id).replace(':projectId', this.sessionFacade.currentProjectId() ?? '')
         this.router.navigateByUrl(
-            route.replace(':activityId', activity.id).replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
+            keepQuery ? RouteHelper.preservingQuery(url, this.router.url) : url,
         ).catch((): void => undefined)
     }
 }

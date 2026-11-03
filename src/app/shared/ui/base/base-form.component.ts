@@ -59,7 +59,7 @@ export abstract class BaseFormComponent extends GenericComponent {
 
     protected navigateToRedirectUri (route: RegistryRouteEnum | undefined = undefined): void {
         if (GenericHelper.nonNull( route )) this.router.navigateByUrl( route! ).catch( (): void => this.location.back() )
-        else if (this.closesToParentRoute) this.router.navigate( this.parentRouteCommands(), { relativeTo: this.route } ).catch( (): void => undefined )
+        else if (this.closesToParentRoute) this.router.navigate( this.parentRouteCommands(), { relativeTo: this.route, queryParamsHandling: 'preserve' } ).catch( (): void => undefined )
         else this.location.back()
     }
 

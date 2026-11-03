@@ -24,11 +24,15 @@ import {
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
 import { StringHelper } from '@shared/helpers/string.helper'
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
+
+const GROUPS_LIST_DEFAULTS: GroupsListSearchModel = toGroupsListSearchModel({ q: undefined, at: undefined, isPresent: undefined, isVisible: undefined })
+const GROUPS_LIST_QUERY_SCHEMA: SearchQuerySchema<GroupsListSearchModel> = { q: 'text', at: 'date', isPresent: 'choice', isVisible: 'choice' }
 
 /**
  * Purpose: Page listant les groupes du projet sélectionné avec recherche et déclencheur « charger plus ».
@@ -73,27 +77,32 @@ export class GroupsListPage {
         this.facade.groupsPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
-    protected readonly model: WritableSignal<GroupsListSearchModel> = signal(toGroupsListSearchModel({
-        q: this.facade.groupsPageQueryParam(),
-        at: this.facade.groupsPageAtParam(),
-        isPresent: this.facade.groupsPageIsPresentParam(),
-        isVisible: this.facade.groupsPageIsVisibleParam(),
-    }))
+    protected readonly model: WritableSignal<GroupsListSearchModel> = signal(GROUPS_LIST_DEFAULTS)
     protected readonly form: FieldTree<GroupsListSearchModel> = createSearchForm(this.model)
-
-    public constructor() {
-        this.facade.fetchGroupsPage(undefined, undefined)
-    }
+    private readonly searchQuery: SearchQuery = injectSearchQuery({
+        schema: GROUPS_LIST_QUERY_SCHEMA,
+        defaults: GROUPS_LIST_DEFAULTS,
+        model: this.model,
+        apply: (model: GroupsListSearchModel): void => {
+            this.inputSearch(model)
+            this.facade.fetchGroupsPage(undefined, undefined)
+        },
+    })
 
     protected search(): void {
-        const search: ReturnType<typeof toGroupsListSearchParams> = toGroupsListSearchParams(this.model())
-        this.facade.inputPageSearchParameters(search.q, search.at, search.isPresent, search.isVisible)
+        this.inputSearch(this.model())
         this.facade.fetchGroupsPage(0, undefined)
+        this.searchQuery.write()
     }
 
     protected resetFilters(): void {
-        this.model.set({ q: '', at: null, isPresent: '', isVisible: '' })
+        this.model.set(GROUPS_LIST_DEFAULTS)
         this.search()
+    }
+
+    private inputSearch(model: GroupsListSearchModel): void {
+        const search: ReturnType<typeof toGroupsListSearchParams> = toGroupsListSearchParams(model)
+        this.facade.inputPageSearchParameters(search.q, search.at, search.isPresent, search.isVisible)
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {

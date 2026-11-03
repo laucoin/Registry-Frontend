@@ -23,11 +23,15 @@ import {
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
 import { StringHelper } from '@shared/helpers/string.helper'
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
+
+const PARTICIPANTS_LIST_DEFAULTS: ParticipantsListSearchModel = toParticipantsListSearchModel({ q: undefined, status: undefined, isVisible: undefined })
+const PARTICIPANTS_LIST_QUERY_SCHEMA: SearchQuerySchema<ParticipantsListSearchModel> = { q: 'text', status: 'text', isVisible: 'choice' }
 
 /**
  * Purpose: Page listant les participants du projet sélectionné avec recherche et déclencheur « charger plus ».
@@ -71,26 +75,32 @@ export class ParticipantsListPage {
         this.facade.participantsPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
-    protected readonly model: WritableSignal<ParticipantsListSearchModel> = signal(toParticipantsListSearchModel({
-        q: this.facade.participantsPageQueryParam(),
-        status: this.facade.participantsPageStatusParam(),
-        isVisible: this.facade.participantsPageIsVisibleParam(),
-    }))
+    protected readonly model: WritableSignal<ParticipantsListSearchModel> = signal(PARTICIPANTS_LIST_DEFAULTS)
     protected readonly form: FieldTree<ParticipantsListSearchModel> = createSearchForm(this.model)
-
-    public constructor() {
-        this.facade.fetchParticipantsPage(undefined, undefined)
-    }
+    private readonly searchQuery: SearchQuery = injectSearchQuery({
+        schema: PARTICIPANTS_LIST_QUERY_SCHEMA,
+        defaults: PARTICIPANTS_LIST_DEFAULTS,
+        model: this.model,
+        apply: (model: ParticipantsListSearchModel): void => {
+            this.inputSearch(model)
+            this.facade.fetchParticipantsPage(undefined, undefined)
+        },
+    })
 
     protected search(): void {
-        const search: ReturnType<typeof toParticipantsListSearchParams> = toParticipantsListSearchParams(this.model())
-        this.facade.inputPageSearchParameters(search.q, search.status, search.isVisible)
+        this.inputSearch(this.model())
         this.facade.fetchParticipantsPage(0, undefined)
+        this.searchQuery.write()
     }
 
     protected resetFilters(): void {
-        this.model.set({ q: '', status: '', isVisible: '' })
+        this.model.set(PARTICIPANTS_LIST_DEFAULTS)
         this.search()
+    }
+
+    private inputSearch(model: ParticipantsListSearchModel): void {
+        const search: ReturnType<typeof toParticipantsListSearchParams> = toParticipantsListSearchParams(model)
+        this.facade.inputPageSearchParameters(search.q, search.status, search.isVisible)
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {

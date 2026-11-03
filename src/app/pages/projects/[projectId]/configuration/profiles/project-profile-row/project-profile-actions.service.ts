@@ -1,4 +1,5 @@
 import { inject, Injectable } from '@angular/core'
+import { RouteHelper } from '@shared/helpers/route.helper'
 import { Router } from '@angular/router'
 import { UserProfileFacade } from '@core/registry/state/user-profile.facade'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
@@ -61,11 +62,12 @@ export class ProjectProfileActions extends ElementActionsBase<ListedProfileModel
             icon: 'pen-to-square',
             shown: !own,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U),
-            run: (): void => this.navigate(
+            run: (): void => this.navigate(RouteHelper.preservingQuery(
                 RegistryRouteEnum.PROJECTS_CONFIGURATION_PROFILES_EDITION
                     .replace(':profileId', profile.id)
                     .replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
-            ),
+                this.router.url,
+            )),
         }
     }
 

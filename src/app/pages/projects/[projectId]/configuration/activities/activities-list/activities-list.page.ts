@@ -24,11 +24,15 @@ import {
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
 import { StringHelper } from '@shared/helpers/string.helper'
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
+
+const ACTIVITIES_LIST_DEFAULTS: ActivitiesListSearchModel = toActivitiesListSearchModel({ q: undefined, at: undefined, isAvailable: undefined, isVisible: undefined })
+const ACTIVITIES_LIST_QUERY_SCHEMA: SearchQuerySchema<ActivitiesListSearchModel> = { q: 'text', at: 'date', isAvailable: 'choice', isVisible: 'choice' }
 
 /**
  * Purpose: Page listant les activités du projet sélectionné avec recherche et déclencheur « charger plus ».
@@ -74,27 +78,32 @@ export class ActivitiesListPage {
         this.facade.activitiesPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
-    protected readonly model: WritableSignal<ActivitiesListSearchModel> = signal(toActivitiesListSearchModel({
-        q: this.facade.activitiesPageQueryParam(),
-        at: this.facade.activitiesPageAtParam(),
-        isAvailable: this.facade.activitiesPageIsAvailableParam(),
-        isVisible: this.facade.activitiesPageIsVisibleParam(),
-    }))
+    protected readonly model: WritableSignal<ActivitiesListSearchModel> = signal(ACTIVITIES_LIST_DEFAULTS)
     protected readonly form: FieldTree<ActivitiesListSearchModel> = createSearchForm(this.model)
-
-    public constructor() {
-        this.facade.fetchActivitiesPage(undefined, undefined)
-    }
+    private readonly searchQuery: SearchQuery = injectSearchQuery({
+        schema: ACTIVITIES_LIST_QUERY_SCHEMA,
+        defaults: ACTIVITIES_LIST_DEFAULTS,
+        model: this.model,
+        apply: (model: ActivitiesListSearchModel): void => {
+            this.inputSearch(model)
+            this.facade.fetchActivitiesPage(undefined, undefined)
+        },
+    })
 
     protected search(): void {
-        const search: ReturnType<typeof toActivitiesListSearchParams> = toActivitiesListSearchParams(this.model())
-        this.facade.inputPageSearchParameters(search.q, search.at, search.isAvailable, search.isVisible)
+        this.inputSearch(this.model())
         this.facade.fetchActivitiesPage(0, undefined)
+        this.searchQuery.write()
     }
 
     protected resetFilters(): void {
-        this.model.set({ q: '', at: null, isAvailable: '', isVisible: '' })
+        this.model.set(ACTIVITIES_LIST_DEFAULTS)
         this.search()
+    }
+
+    private inputSearch(model: ActivitiesListSearchModel): void {
+        const search: ReturnType<typeof toActivitiesListSearchParams> = toActivitiesListSearchParams(model)
+        this.facade.inputPageSearchParameters(search.q, search.at, search.isAvailable, search.isVisible)
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {

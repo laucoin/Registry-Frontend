@@ -1,4 +1,5 @@
 import { inject, Injectable } from '@angular/core'
+import { RouteHelper } from '@shared/helpers/route.helper'
 import { Router } from '@angular/router'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { VehicleFacade } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.facade'
@@ -46,7 +47,7 @@ export class VehicleActions extends ElementActionsBase<VehicleModel> {
             icon: 'pen-to-square',
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_U),
-            run: (): void => this.navigate(RegistryRouteEnum.PROJECTS_CONFIGURATION_VEHICLES_EDITION, vehicle),
+            run: (): void => this.navigate(RegistryRouteEnum.PROJECTS_CONFIGURATION_VEHICLES_EDITION, vehicle, true),
         }
     }
 
@@ -80,9 +81,10 @@ export class VehicleActions extends ElementActionsBase<VehicleModel> {
         }
     }
 
-    private navigate(route: RegistryRouteEnum, vehicle: VehicleModel): void {
+    private navigate(route: RegistryRouteEnum, vehicle: VehicleModel, keepQuery: boolean = false): void {
+        const url: string = route.replace(':vehicleId', vehicle.id).replace(':projectId', this.sessionFacade.currentProjectId() ?? '')
         this.router.navigateByUrl(
-            route.replace(':vehicleId', vehicle.id).replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
+            keepQuery ? RouteHelper.preservingQuery(url, this.router.url) : url,
         ).catch((): void => undefined)
     }
 }

@@ -21,6 +21,7 @@ import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
 import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
 import { VisibilityNamePipe } from '@shared/helpers/pipe/visibility.pipe'
+import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { StringHelper } from '@shared/helpers/string.helper'
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { UserModel } from '@shared/models/model/user.model'
@@ -29,6 +30,8 @@ import { ListComponent } from '@shared/ui/common/list/list.component'
 import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 
 const INITIALS_LENGTH: number = 2
+const USERS_LIST_DEFAULTS: UsersListSearchModel = toUsersListSearchModel({ q: undefined, isVisible: undefined })
+const USERS_LIST_QUERY_SCHEMA: SearchQuerySchema<UsersListSearchModel> = { q: 'text', isVisible: 'choice' }
 
 /**
  * Purpose: Page listant les utilisateurs avec recherche et déclencheur « charger plus ».
@@ -62,25 +65,32 @@ export class UsersListPage {
         this.facade.actualUsersPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
-    protected readonly model: WritableSignal<UsersListSearchModel> = signal(toUsersListSearchModel({
-        q: this.facade.usersPageQueryParam(),
-        isVisible: this.facade.actualUsersPageIsVisibleParam(),
-    }))
+    protected readonly model: WritableSignal<UsersListSearchModel> = signal(USERS_LIST_DEFAULTS)
     protected readonly form: FieldTree<UsersListSearchModel> = createSearchForm(this.model)
-
-    public constructor() {
-        this.facade.fetchUsersPage(undefined, undefined)
-    }
+    private readonly searchQuery: SearchQuery = injectSearchQuery({
+        schema: USERS_LIST_QUERY_SCHEMA,
+        defaults: USERS_LIST_DEFAULTS,
+        model: this.model,
+        apply: (model: UsersListSearchModel): void => {
+            this.inputSearch(model)
+            this.facade.fetchUsersPage(undefined, undefined)
+        },
+    })
 
     protected search(): void {
-        const search: ReturnType<typeof toUsersListSearchParams> = toUsersListSearchParams(this.model())
-        this.facade.inputPageSearchParameters(search.q, search.isVisible)
+        this.inputSearch(this.model())
         this.facade.fetchUsersPage(0, undefined)
+        this.searchQuery.write()
     }
 
     protected resetFilters(): void {
-        this.model.set({ q: '', isVisible: '' })
+        this.model.set(USERS_LIST_DEFAULTS)
         this.search()
+    }
+
+    private inputSearch(model: UsersListSearchModel): void {
+        const search: ReturnType<typeof toUsersListSearchParams> = toUsersListSearchParams(model)
+        this.facade.inputPageSearchParameters(search.q, search.isVisible)
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {

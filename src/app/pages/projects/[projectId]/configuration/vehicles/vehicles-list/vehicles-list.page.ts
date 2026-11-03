@@ -24,11 +24,15 @@ import {
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
 import { StringHelper } from '@shared/helpers/string.helper'
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
+
+const VEHICLES_LIST_DEFAULTS: VehiclesListSearchModel = toVehiclesListSearchModel({ q: undefined, at: undefined, status: undefined, isVisible: undefined })
+const VEHICLES_LIST_QUERY_SCHEMA: SearchQuerySchema<VehiclesListSearchModel> = { q: 'text', at: 'date', status: 'text', isVisible: 'choice' }
 
 /**
  * Purpose: Page listant les véhicules du projet sélectionné avec recherche et déclencheur « charger plus ».
@@ -74,27 +78,32 @@ export class VehiclesListPage {
         this.facade.vehiclesPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
-    protected readonly model: WritableSignal<VehiclesListSearchModel> = signal(toVehiclesListSearchModel({
-        q: this.facade.vehiclesPageQueryParam(),
-        at: this.facade.vehiclesPageAtParam(),
-        status: this.facade.vehiclesPageStatusParam(),
-        isVisible: this.facade.vehiclesPageIsVisibleParam(),
-    }))
+    protected readonly model: WritableSignal<VehiclesListSearchModel> = signal(VEHICLES_LIST_DEFAULTS)
     protected readonly form: FieldTree<VehiclesListSearchModel> = createSearchForm(this.model)
-
-    public constructor() {
-        this.facade.fetchVehiclesPage(undefined, undefined)
-    }
+    private readonly searchQuery: SearchQuery = injectSearchQuery({
+        schema: VEHICLES_LIST_QUERY_SCHEMA,
+        defaults: VEHICLES_LIST_DEFAULTS,
+        model: this.model,
+        apply: (model: VehiclesListSearchModel): void => {
+            this.inputSearch(model)
+            this.facade.fetchVehiclesPage(undefined, undefined)
+        },
+    })
 
     protected search(): void {
-        const search: ReturnType<typeof toVehiclesListSearchParams> = toVehiclesListSearchParams(this.model())
-        this.facade.inputPageSearchParameters(search.q, search.at, search.status, search.isVisible)
+        this.inputSearch(this.model())
         this.facade.fetchVehiclesPage(0, undefined)
+        this.searchQuery.write()
     }
 
     protected resetFilters(): void {
-        this.model.set({ q: '', at: null, status: '', isVisible: '' })
+        this.model.set(VEHICLES_LIST_DEFAULTS)
         this.search()
+    }
+
+    private inputSearch(model: VehiclesListSearchModel): void {
+        const search: ReturnType<typeof toVehiclesListSearchParams> = toVehiclesListSearchParams(model)
+        this.facade.inputPageSearchParameters(search.q, search.at, search.status, search.isVisible)
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {

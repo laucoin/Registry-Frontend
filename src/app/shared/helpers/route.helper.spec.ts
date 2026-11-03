@@ -24,4 +24,18 @@ describe( 'RouteHelper', () => {
         // Assert
         expect( url ).toBe( `/${RegistryRouteEnum.MY_ACCOUNT_INVITATIONS}` )
     } )
+
+    it.each( [
+        [ '/users/u1/edit', '/users?q=ada&isVisible=false', '/users/u1/edit?q=ada&isVisible=false' ],
+        [ '/users/u1/edit', '/users?q=ada#top', '/users/u1/edit?q=ada' ],
+        [ '/users/u1/edit', '/users', '/users/u1/edit' ],
+        [ '/users/u1/edit', undefined, '/users/u1/edit' ],
+    ] )( 'carries the query string of the current url over to %s from %s', (url: string, currentUrl: string | undefined, expected: string) => {
+        // Arrange
+        // Act
+        const target: string = RouteHelper.preservingQuery( url, currentUrl )
+
+        // Assert
+        expect( target ).toBe( expected )
+    } )
 } )

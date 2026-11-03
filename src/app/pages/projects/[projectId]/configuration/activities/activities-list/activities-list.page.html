@@ -1,7 +1,7 @@
 <sgdf-page-title [eyebrow]="'projectEyebrow.configuration' | transloco" [lede]="'activities.list.subtitle' | transloco">
     {{ 'activities.list.title' | transloco }}
     @if (canCreate()) {
-        <sgdf-button data-testid="activities-list-create-button" slot="actions" variant="primary" [routerLink]="createRoute">
+        <sgdf-button data-testid="activities-list-create-button" slot="actions" variant="primary" [routerLink]="createRoute" queryParamsHandling="preserve">
             <sgdf-icon slot="prefix" name="plus" library="solid"/>
             {{ 'global.actions.create' | transloco }}
         </sgdf-button>

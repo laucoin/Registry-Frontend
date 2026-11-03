@@ -33,7 +33,7 @@ describe('ActivityActions', () => {
                 { provide: ActivityFacade, useValue: facade },
                 { provide: SessionFacade, useValue: { currentUser: (): unknown => ({ authorities: authorities() }), selectedProject: (): unknown => ({ id: 'p1' }), currentProjectId: (): string => 'p1' } },
                 { provide: UiFacade, useValue: { confirm } },
-                { provide: Router, useValue: { navigateByUrl } },
+                { provide: Router, useValue: { navigateByUrl, url: '/list?q=ada' } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
             ],
         })
@@ -107,8 +107,8 @@ describe('ActivityActions', () => {
         edit.run()
 
         // Assert
-        expect(navigateByUrl).toHaveBeenNthCalledWith(1, expect.stringContaining('x1'))
-        expect(navigateByUrl).toHaveBeenNthCalledWith(2, expect.stringContaining('x1'))
+        expect(navigateByUrl).toHaveBeenNthCalledWith(1, expect.stringMatching(/x1[^?]*$/))
+        expect(navigateByUrl).toHaveBeenNthCalledWith(2, expect.stringMatching(/x1.*\?q=ada$/))
     })
 
     it.each([

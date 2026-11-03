@@ -35,7 +35,7 @@ describe('UserActions', () => {
                 { provide: UserFacade, useValue: facade },
                 { provide: SessionFacade, useValue: { currentUser: (): unknown => ({ id: currentUserId(), authorities: authorities() }) } },
                 { provide: UiFacade, useValue: { confirm } },
-                { provide: Router, useValue: { navigateByUrl } },
+                { provide: Router, useValue: { navigateByUrl, url: '/users?q=ada' } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
             ],
         })
@@ -114,7 +114,7 @@ describe('UserActions', () => {
         updateRole.run()
 
         // Assert
-        expect(navigateByUrl).toHaveBeenCalledWith(expect.stringContaining('u2'))
+        expect(navigateByUrl).toHaveBeenCalledWith(expect.stringMatching(/u2.*\?q=ada$/))
     })
 
     it.each([

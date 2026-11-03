@@ -24,12 +24,16 @@ import { IfProjectAuthorityDirective } from '@shared/directives/if-project-autho
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
 import { StringHelper } from '@shared/helpers/string.helper'
 import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
+
+const PROJECT_PROFILES_LIST_DEFAULTS: ProjectProfilesListSearchModel = toProjectProfilesListSearchModel({ q: undefined, at: undefined, status: undefined, isAvailable: undefined, isVisible: undefined })
+const PROJECT_PROFILES_LIST_QUERY_SCHEMA: SearchQuerySchema<ProjectProfilesListSearchModel> = { q: 'text', at: 'date', status: 'text', isAvailable: 'choice', isVisible: 'choice' }
 
 /**
  * Purpose: Page listant les profils de projet du projet sélectionné avec recherche et déclencheur « charger plus ».
@@ -75,21 +79,31 @@ export class ProjectProfilesListPage {
         this.facade.projectProfilesPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
-    protected readonly model: WritableSignal<ProjectProfilesListSearchModel> = signal(toProjectProfilesListSearchModel({
-        q: this.facade.projectProfilesPageQueryParam(),
-        at: this.facade.projectProfilesPageAtParam(),
-        status: this.facade.projectProfilesPageStatusParam(),
-        isAvailable: this.facade.projectProfilesPageIsAvailableParam(),
-        isVisible: this.facade.projectProfilesPageIsVisibleParam(),
-    }))
+    protected readonly model: WritableSignal<ProjectProfilesListSearchModel> = signal(PROJECT_PROFILES_LIST_DEFAULTS)
     protected readonly form: FieldTree<ProjectProfilesListSearchModel> = createSearchForm(this.model)
-
-    public constructor() {
-        this.facade.fetchProjectProfilesPage(undefined, undefined)
-    }
+    private readonly searchQuery: SearchQuery = injectSearchQuery({
+        schema: PROJECT_PROFILES_LIST_QUERY_SCHEMA,
+        defaults: PROJECT_PROFILES_LIST_DEFAULTS,
+        model: this.model,
+        apply: (model: ProjectProfilesListSearchModel): void => {
+            this.inputSearch(model)
+            this.facade.fetchProjectProfilesPage(undefined, undefined)
+        },
+    })
 
     protected search(): void {
-        const search: ReturnType<typeof toProjectProfilesListSearchParams> = toProjectProfilesListSearchParams(this.model())
+        this.inputSearch(this.model())
+        this.facade.fetchProjectProfilesPage(0, undefined)
+        this.searchQuery.write()
+    }
+
+    protected resetFilters(): void {
+        this.model.set(PROJECT_PROFILES_LIST_DEFAULTS)
+        this.search()
+    }
+
+    private inputSearch(model: ProjectProfilesListSearchModel): void {
+        const search: ReturnType<typeof toProjectProfilesListSearchParams> = toProjectProfilesListSearchParams(model)
         this.facade.inputPageSearchParameters(
             search.q,
             search.at,
@@ -97,12 +111,6 @@ export class ProjectProfilesListPage {
             search.isAvailable,
             search.isVisible,
         )
-        this.facade.fetchProjectProfilesPage(0, undefined)
-    }
-
-    protected resetFilters(): void {
-        this.model.set({ q: '', at: null, status: '', isAvailable: '', isVisible: '' })
-        this.search()
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {

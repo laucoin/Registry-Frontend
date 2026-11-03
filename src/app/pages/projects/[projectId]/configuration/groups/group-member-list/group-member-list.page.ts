@@ -2,6 +2,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { IfProjectAuthorityDirective } from '@shared/directives/if-project-authority.directive'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { GroupMemberListSearchModel, toGroupMemberListSearchModel, toGroupMemberListSearchParams } from './group-member-list.search'
 import { NgTemplateOutlet } from '@angular/common'
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, signal, Signal, WritableSignal, model, ModelSignal, DestroyRef } from '@angular/core'
@@ -41,6 +42,9 @@ import { EventHelper } from '@shared/helpers/event.helper'
 import { FormActionsComponent } from '@shared/ui/common/form-actions/form-actions.component'
 import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import { ParticipantFormComponent } from '@pages/projects/[projectId]/configuration/participants/participant-form/participant-form.component'
+
+const GROUP_MEMBER_LIST_DEFAULTS: GroupMemberListSearchModel = toGroupMemberListSearchModel( { q: undefined, status: undefined, isVisible: undefined } )
+const GROUP_MEMBER_LIST_QUERY_SCHEMA: SearchQuerySchema<GroupMemberListSearchModel> = { q: 'text', status: 'text', isVisible: 'choice' }
 
 /**
  * Purpose: Page listant les membres d'un groupe avec recherche et déclencheur « charger plus », et les formulaires d'ajout ou de création de membres.
@@ -96,12 +100,17 @@ export class GroupMemberListPage {
         this.facade.groupMembersPageIsVisibleParam() !== undefined,
     ].filter( Boolean ).length )
 
-    protected readonly model: WritableSignal<GroupMemberListSearchModel> = signal( toGroupMemberListSearchModel( {
-        q: this.facade.groupMembersPageQueryParam(),
-        status: this.facade.groupMembersPageStatusParam(),
-        isVisible: this.facade.groupMembersPageIsVisibleParam(),
-    } ) )
+    protected readonly model: WritableSignal<GroupMemberListSearchModel> = signal( GROUP_MEMBER_LIST_DEFAULTS )
     protected readonly form: FieldTree<GroupMemberListSearchModel> = createSearchForm( this.model )
+    private readonly searchQuery: SearchQuery = injectSearchQuery( {
+        schema: GROUP_MEMBER_LIST_QUERY_SCHEMA,
+        defaults: GROUP_MEMBER_LIST_DEFAULTS,
+        model: this.model,
+        apply: (model: GroupMemberListSearchModel): void => {
+            this.inputSearch( model )
+            this.facade.fetchGroupMembersPage( this.groupId(), undefined, undefined )
+        },
+    } )
 
     public constructor () {
         this.loadData()
@@ -113,7 +122,6 @@ export class GroupMemberListPage {
         this.facade.fetchGroup( id! ).pipe(
                 withLoading( this.groupLoading ),
             ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe( (group: GroupModel): void => this.group.set( group ) )
-        this.facade.fetchGroupMembersPage( id!, undefined, undefined )
     }
 
     private handleParticipantActions (): void {
@@ -147,14 +155,19 @@ export class GroupMemberListPage {
     }
 
     protected search (): void {
-        const search: ReturnType<typeof toGroupMemberListSearchParams> = toGroupMemberListSearchParams( this.model() )
-        this.facade.inputMembersPageSearchParameters( search.q, search.status, search.isVisible )
+        this.inputSearch( this.model() )
         this.facade.fetchGroupMembersPage( this.groupId(), 0, undefined )
+        this.searchQuery.write()
     }
 
     protected resetFilters (): void {
-        this.model.set( { q: '', status: '', isVisible: '' } )
+        this.model.set( GROUP_MEMBER_LIST_DEFAULTS )
         this.search()
+    }
+
+    private inputSearch (model: GroupMemberListSearchModel): void {
+        const search: ReturnType<typeof toGroupMemberListSearchParams> = toGroupMemberListSearchParams( model )
+        this.facade.inputMembersPageSearchParameters( search.q, search.status, search.isVisible )
     }
 
     protected loadBatch (pageEvent: PageEventModel): void {

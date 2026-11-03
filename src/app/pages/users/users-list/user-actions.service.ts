@@ -1,4 +1,5 @@
 import { inject, Injectable } from '@angular/core'
+import { RouteHelper } from '@shared/helpers/route.helper'
 import { Router } from '@angular/router'
 import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
@@ -38,7 +39,7 @@ export class UserActions extends ElementActionsBase<UserModel> {
             shown: others,
             allowed: this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_U),
             run: (): void => {
-                this.router.navigateByUrl(RegistryRouteEnum.USERS_EDITION.replace(':userId', user.id)).catch((): void => undefined)
+                this.router.navigateByUrl(RouteHelper.preservingQuery(RegistryRouteEnum.USERS_EDITION.replace(':userId', user.id), this.router.url)).catch((): void => undefined)
             },
         }
     }

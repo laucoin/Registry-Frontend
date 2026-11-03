@@ -16,9 +16,13 @@ import { InvitationsListSearchModel, toInvitationsListSearchModel, toInvitations
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { StringHelper } from '@shared/helpers/string.helper'
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
+
+const INVITATIONS_LIST_DEFAULTS: InvitationsListSearchModel = toInvitationsListSearchModel({ q: undefined, at: undefined })
+const INVITATIONS_LIST_QUERY_SCHEMA: SearchQuerySchema<InvitationsListSearchModel> = { q: 'text', at: 'date' }
 
 /**
  * Purpose: Page listant les invitations de l'utilisateur connecté avec recherche et déclencheur « charger plus ».
@@ -52,25 +56,32 @@ export class InvitationsListPage {
         this.userProfileFacade.userProjectProfileInvitationsPageAtParam() !== undefined,
     ].filter(Boolean).length)
 
-    protected readonly model: WritableSignal<InvitationsListSearchModel> = signal(toInvitationsListSearchModel({
-        q: this.userProfileFacade.userProjectProfileInvitationsPageQueryParam(),
-        at: this.userProfileFacade.userProjectProfileInvitationsPageAtParam(),
-    }))
+    protected readonly model: WritableSignal<InvitationsListSearchModel> = signal(INVITATIONS_LIST_DEFAULTS)
     protected readonly form: FieldTree<InvitationsListSearchModel> = createSearchForm(this.model)
-
-    public constructor() {
-        this.userProfileFacade.fetchProjectProfileInvitationPage(undefined, undefined)
-    }
+    private readonly searchQuery: SearchQuery = injectSearchQuery({
+        schema: INVITATIONS_LIST_QUERY_SCHEMA,
+        defaults: INVITATIONS_LIST_DEFAULTS,
+        model: this.model,
+        apply: (model: InvitationsListSearchModel): void => {
+            this.inputSearch(model)
+            this.userProfileFacade.fetchProjectProfileInvitationPage(undefined, undefined)
+        },
+    })
 
     protected search(): void {
-        const search: ReturnType<typeof toInvitationsListSearchParams> = toInvitationsListSearchParams(this.model())
-        this.userProfileFacade.inputInvitationsPageSearchParameters(search.q, search.at)
+        this.inputSearch(this.model())
         this.userProfileFacade.fetchProjectProfileInvitationPage(0, undefined)
+        this.searchQuery.write()
     }
 
     protected resetFilters(): void {
-        this.model.set({ q: '', at: null })
+        this.model.set(INVITATIONS_LIST_DEFAULTS)
         this.search()
+    }
+
+    private inputSearch(model: InvitationsListSearchModel): void {
+        const search: ReturnType<typeof toInvitationsListSearchParams> = toInvitationsListSearchParams(model)
+        this.userProfileFacade.inputInvitationsPageSearchParameters(search.q, search.at)
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {
