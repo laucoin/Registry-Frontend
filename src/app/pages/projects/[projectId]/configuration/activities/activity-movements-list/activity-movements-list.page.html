@@ -49,7 +49,7 @@
           (filtersReset)="resetFilters()">
     <ng-template appTemplate="search">
         <form data-testid="activity-movements-list-search-form" class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
-              (submit)="$event.preventDefault(); search()">
+              (submit)="$event.preventDefault()">
             <sgdf-date-time-picker data-testid="activity-movements-list-from-picker" appSgdfField with-time
                                    [label]="'movements.search-and-filter.start-datetime' | transloco"
                                    [formField]="form.from"/>
@@ -69,13 +69,6 @@
                 }
             </sgdf-select>
             <app-sort-fields [sortBy]="form.sortBy" [sortDirection]="form.sortDirection" [fields]="sortFields"/>
-            <div class="flex justify-end md:col-span-2">
-                <sgdf-button data-testid="activity-movements-list-search-submit" variant="primary" appearance="outlined" submit
-                             [loading]="facade.activityMovementsPageLoading()">
-                    <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
-                    {{ 'global.actions.search' | transloco }}
-                </sgdf-button>
-            </div>
         </form>
     </ng-template>
 

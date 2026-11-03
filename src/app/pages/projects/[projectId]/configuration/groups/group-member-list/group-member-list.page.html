@@ -31,8 +31,8 @@
           (filtersReset)="resetFilters()">
     <ng-template appTemplate="search">
         <form data-testid="group-member-list-search-form" class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-3"
-              (submit)="$event.preventDefault(); search()">
-            <sgdf-input data-testid="group-member-list-q-input" appSgdfField [label]="'participants.search-and-filter.text' | transloco"
+              (submit)="$event.preventDefault()">
+            <sgdf-input data-testid="group-member-list-q-input" enterkeyhint="search" (keydown.enter)="searchQuery.submit()" (focusout)="searchQuery.submit()" appSgdfField [label]="'participants.search-and-filter.text' | transloco"
                         [formField]="form.q"/>
             <sgdf-select data-testid="group-member-list-status-select" appSgdfField [label]="'participants.search-and-filter.status' | transloco"
                          [formField]="form.status">
@@ -47,13 +47,6 @@
                 }
             </sgdf-select>
             <app-sort-fields [sortBy]="form.sortBy" [sortDirection]="form.sortDirection" [fields]="sortFields"/>
-            <div class="flex justify-end md:col-span-3">
-                <sgdf-button data-testid="group-member-list-search-submit" variant="primary" appearance="outlined" submit
-                             [loading]="facade.groupMembersPageLoading()">
-                    <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
-                    {{ 'global.actions.search' | transloco }}
-                </sgdf-button>
-            </div>
         </form>
     </ng-template>
 

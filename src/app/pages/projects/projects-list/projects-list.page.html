@@ -20,8 +20,8 @@
           (filtersReset)="resetFilters()">
     <ng-template appTemplate="search">
         <form data-testid="projects-list-search-form" class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-4"
-              (submit)="$event.preventDefault(); search()">
-            <sgdf-input data-testid="projects-list-q-input" appSgdfField [label]="'projects.search-and-filter.text' | transloco"
+              (submit)="$event.preventDefault()">
+            <sgdf-input data-testid="projects-list-q-input" enterkeyhint="search" (keydown.enter)="searchQuery.submit()" (focusout)="searchQuery.submit()" appSgdfField [label]="'projects.search-and-filter.text' | transloco"
                         [formField]="form.q"/>
             <sgdf-date-time-picker data-testid="projects-list-at-picker" appSgdfField with-time
                                    [label]="'projects.search-and-filter.datetime' | transloco"
@@ -49,13 +49,6 @@
                 </sgdf-select>
             }
             <app-sort-fields [sortBy]="form.sortBy" [sortDirection]="form.sortDirection" [fields]="sortFields"/>
-            <div class="flex flex-wrap items-center justify-between gap-(--spacing--in-block) md:col-span-4">
-                <sgdf-button data-testid="projects-list-search-submit" class="ms-auto" variant="primary" appearance="outlined" submit
-                             [loading]="facade.projectsPageLoading()">
-                    <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
-                    {{ 'global.actions.search' | transloco }}
-                </sgdf-button>
-            </div>
         </form>
     </ng-template>
 
