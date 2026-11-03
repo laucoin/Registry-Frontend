@@ -5,7 +5,7 @@ import '@sgdf/ui/button'
 import '@sgdf/ui/skeleton'
 import '@sgdf/ui/relative-time'
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, Signal } from '@angular/core'
-import { Router, RouterLink } from '@angular/router'
+import { Params, Router, RouterLink } from '@angular/router'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { provideTranslocoScope, TranslocoPipe, TranslocoService } from '@jsverse/transloco'
 import { HomeFacade } from '@pages/home/data/state/home.facade'
@@ -42,6 +42,7 @@ export class HomeFavoriteProjectsComponent implements OnInit {
 	protected readonly loading: Signal<boolean> = this.facade.favoritesLoading
 	protected readonly error: Signal<NotificationModel | undefined> = this.facade.favoritesError
 	protected readonly projectsLink: string = RegistryRouteEnum.PROJECTS
+	protected readonly favoritesQuery: Params = { isFavorite: true }
 	protected readonly skeletonCards: readonly number[] = [1, 2, 3]
 	protected readonly showSkeleton: Signal<boolean> = computed((): boolean => this.loading() && this.total() === undefined)
 

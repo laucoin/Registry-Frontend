@@ -25,11 +25,11 @@ import {
 } from '@pages/projects/projects-list/projects-list.search'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
-import { toBooleanChoice } from '@shared/helpers/form/boolean-choice'
 import { createSearchForm } from '@shared/helpers/form/search.form'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
+import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { StringHelper } from '@shared/helpers/string.helper'
 import { AvailabilityStatusEnum } from '@shared/models/enumeration/availability-status.enum'
 import { UserAuthorityEnum } from '@shared/models/enumeration/user-authority.enum'
@@ -42,6 +42,12 @@ import { injectAutoRefresh } from '@shared/helpers/refresh/inject-auto-refresh'
 import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 
 const INITIALS_LENGTH: number = 2
+const PROJECTS_LIST_DEFAULTS: ProjectsListSearchModel = toProjectsListSearchModel({
+    q: undefined, at: undefined, isVisible: undefined, isFavorite: undefined, withProfile: true,
+})
+const PROJECTS_LIST_QUERY_SCHEMA: SearchQuerySchema<ProjectsListSearchModel> = {
+    q: 'text', at: 'date', isVisible: 'choice', isFavorite: 'choice', withProfile: 'choice',
+}
 
 /**
  * Purpose: Page listant les projets que l'utilisateur peut voir, avec recherche et déclencheur « charger plus ».
@@ -95,21 +101,26 @@ export class ProjectsListPage {
         this.canReadAll() && this.facade.projectsPageWithProfileParam() !== undefined,
     ].filter(Boolean).length)
 
-    protected readonly model: WritableSignal<ProjectsListSearchModel> = signal(toProjectsListSearchModel({
-        q: this.facade.projectsPageQueryParam(),
-        at: this.facade.projectsPageAtParam(),
-        isVisible: this.facade.projectsPageIsVisibleParam(),
-        isFavorite: this.facade.projectsPageIsFavoriteParam(),
-        withProfile: this.facade.projectsPageWithProfileParam(),
-    }))
+    protected readonly model: WritableSignal<ProjectsListSearchModel> = signal(PROJECTS_LIST_DEFAULTS)
     protected readonly form: FieldTree<ProjectsListSearchModel> = createSearchForm(this.model)
-
-    public constructor() {
-        this.facade.fetchProjectsPage(undefined, undefined)
-    }
+    private readonly searchQuery: SearchQuery = injectSearchQuery({
+        schema: PROJECTS_LIST_QUERY_SCHEMA,
+        defaults: PROJECTS_LIST_DEFAULTS,
+        model: this.model,
+        apply: (model: ProjectsListSearchModel): void => {
+            this.inputSearch(model)
+            this.facade.fetchProjectsPage(undefined, undefined)
+        },
+    })
 
     protected search(): void {
-        const search: ReturnType<typeof toProjectsListSearchParams> = toProjectsListSearchParams(this.model())
+        this.inputSearch(this.model())
+        this.facade.fetchProjectsPage(0, undefined)
+        this.searchQuery.write()
+    }
+
+    private inputSearch(model: ProjectsListSearchModel): void {
+        const search: ReturnType<typeof toProjectsListSearchParams> = toProjectsListSearchParams(model)
         this.facade.inputPageSearchParameters(
             search.q,
             search.at,
@@ -117,18 +128,10 @@ export class ProjectsListPage {
             search.isFavorite,
             this.canReadAll() ? search.withProfile : undefined,
         )
-        this.facade.fetchProjectsPage(0, undefined)
     }
 
     protected resetFilters(): void {
-        this.model.update((model: ProjectsListSearchModel): ProjectsListSearchModel => ({
-            ...model,
-            q: '',
-            at: null,
-            isVisible: '',
-            isFavorite: '',
-            withProfile: toBooleanChoice(true),
-        }))
+        this.model.set(PROJECTS_LIST_DEFAULTS)
         this.search()
     }
 

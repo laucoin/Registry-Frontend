@@ -1,5 +1,7 @@
 import { signal, WritableSignal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
+import { ActivatedRoute, convertToParamMap, Params, provideRouter, Router, NavigationEnd } from '@angular/router'
+import { filter, firstValueFrom, of } from 'rxjs'
 import { Mock, beforeEach, describe, expect, it } from 'vitest'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { ProjectFacade } from '@pages/projects/data/state/project/project.facade'
@@ -31,7 +33,7 @@ describe('ProjectsListPage', () => {
     let facade: Record<string, Mock>
     let authorities: WritableSignal<string[]>
 
-    function create(): ProjectsListApi {
+    function create(query: Params = {}): ProjectsListApi {
         facade = autoMock()
         facade['projectsPageQueryParam'].mockReturnValue(undefined)
         facade['projectsPageAtParam'].mockReturnValue(undefined)
@@ -41,6 +43,8 @@ describe('ProjectsListPage', () => {
         authorities = signal(['REGISTRY_PROJECT_C', 'REGISTRY_PROJECT_R'])
         TestBed.configureTestingModule({
             providers: [
+                provideRouter([]),
+                ...(Object.keys(query).length > 0 ? [{ provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap(query) }, queryParamMap: of(convertToParamMap(query)) } }] : []),
                 REFRESH_SERVICE_STUB,
                 { provide: ProjectFacade, useValue: facade },
                 { provide: ProjectActions, useValue: {} },
@@ -64,7 +68,7 @@ describe('ProjectsListPage', () => {
         expect(facade['fetchProjectsPage']).toHaveBeenCalledWith(undefined, undefined)
     })
 
-    it('starts from the search parameters kept by the facade', () => {
+    it('starts from the default filters when the url carries none', () => {
         // Arrange
         const page: ProjectsListApi = create()
 
@@ -72,7 +76,33 @@ describe('ProjectsListPage', () => {
         const model: ProjectsListSearchModel = page.model()
 
         // Assert
-        expect(model).toEqual({ q: '', at: null, isVisible: '', isFavorite: '', withProfile: '' })
+        expect(model).toEqual({ q: '', at: null, isVisible: '', isFavorite: '', withProfile: 'true' })
+    })
+
+    it('starts from the filters carried by the url', () => {
+        // Arrange
+        // Act
+        const page: ProjectsListApi = create({ q: 'camp', isFavorite: 'true' })
+
+        // Assert
+        expect(page.model()).toEqual({ q: 'camp', at: null, isVisible: '', isFavorite: 'true', withProfile: 'true' })
+        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith('camp', undefined, undefined, true, true)
+    })
+
+    it('writes the submitted filters in the url', async () => {
+        // Arrange
+        const page: ProjectsListApi = create()
+        const router: Router = TestBed.inject(Router)
+        page.model.set({ q: 'camp', at: null, isVisible: '', isFavorite: 'true', withProfile: 'true' })
+
+        const navigated: Promise<unknown> = firstValueFrom(router.events.pipe(filter((event: unknown): boolean => event instanceof NavigationEnd)))
+
+        // Act
+        page.search()
+        await navigated
+
+        // Assert
+        expect(router.url).toBe('/?q=camp&isFavorite=true')
     })
 
     it('sends the typed filters to the facade and restarts from the first batch', () => {
@@ -117,6 +147,8 @@ describe('ProjectsListPage', () => {
     it('asks the facade for the requested batch without touching the search parameters', () => {
         // Arrange
         const page: ProjectsListApi = create()
+
+        facade['inputPageSearchParameters'].mockClear()
 
         // Act
         page.loadBatch({ page: 2, size: 20 })

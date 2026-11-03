@@ -1,6 +1,6 @@
 import { Type } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
-import { ActivatedRoute, Router } from '@angular/router'
+import { ActivatedRoute, convertToParamMap, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
 import { of } from 'rxjs'
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -83,8 +83,8 @@ describe( 'batch list pages', () => {
                 ...types.map( (facade: Type<unknown>) => ({ provide: facade, useValue: mocks.get( facade ) }) ),
                 ...item.services.map( (service: Type<unknown>) => ({ provide: service, useValue: {} }) ),
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
-                { provide: Router, useValue: { navigateByUrl: vi.fn( () => Promise.resolve( true ) ) } },
-                { provide: ActivatedRoute, useValue: { snapshot: { params: new Proxy( {}, { get: (): string => 'id1' } ) }, paramMap: of( { get: (): string => 'id1' } ) } },
+                { provide: Router, useValue: { navigateByUrl: vi.fn( () => Promise.resolve( true ) ), navigate: vi.fn( () => Promise.resolve( true ) ) } },
+                { provide: ActivatedRoute, useValue: { snapshot: { params: new Proxy( {}, { get: (): string => 'id1' } ), queryParamMap: convertToParamMap( {} ) }, paramMap: of( { get: (): string => 'id1' } ), queryParamMap: of( convertToParamMap( {} ) ) } },
             ],
         } )
         TestBed.overrideComponent( item.type, { set: { template: '', imports: [], providers: [] } } )

@@ -5,7 +5,7 @@
             <small class="opacity-80">{{ 'home.favorites.summary' | pluralTranslation: total() | transloco: { count: total() } }}</small>
         }
     </div>
-    <sgdf-button data-testid="home-favorite-projects-see-all-button" size="small" appearance="text" [routerLink]="projectsLink">{{ 'home.favorites.seeAll' | transloco }}</sgdf-button>
+    <sgdf-button data-testid="home-favorite-projects-see-all-button" size="small" appearance="text" [routerLink]="projectsLink" [queryParams]="favoritesQuery">{{ 'home.favorites.seeAll' | transloco }}</sgdf-button>
 </div>
 
 @if (error(); as failure) {
