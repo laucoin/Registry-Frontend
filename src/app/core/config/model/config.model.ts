@@ -16,6 +16,10 @@ export interface ConfigModel {
 			issuesUrl?: string
 		}
 	}
+	list: {
+		searchDebounce: number
+		searchMinLength: number
+	}
 	notification: {
 		duration: {
 			info: number | undefined
@@ -27,3 +31,5 @@ export interface ConfigModel {
 		}
 	}
 }
+
+export const DEFAULT_LIST_CONFIG: ConfigModel['list'] = { searchDebounce: 400, searchMinLength: 3 }

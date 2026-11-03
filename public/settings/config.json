@@ -17,6 +17,10 @@
       "issuesUrl": "https://github.com/laucoin/Registry-Frontend/issues"
     }
   },
+  "list": {
+    "searchDebounce": 400,
+    "searchMinLength": 3
+  },
   "notification": {
     "duration": {
       "info": 5000,

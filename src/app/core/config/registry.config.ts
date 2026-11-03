@@ -1,6 +1,6 @@
 import { EnvironmentProviders, inject, Injectable, Injector, provideAppInitializer, Provider } from '@angular/core'
 import { BrowserService, PREFERENCE_COOKIE_MAX_AGE_SECONDS } from '@core/browser/browser.service'
-import { ConfigModel } from '@core/config/model/config.model';
+import { ConfigModel, DEFAULT_LIST_CONFIG } from '@core/config/model/config.model';
 import { EnvironmentModel } from '@core/config/model/environment.model'
 import { RegistryTranslationLoader } from '@core/config/registry-translation.loader'
 import { UiFacade } from '@core/registry/state/ui.facade'
@@ -43,6 +43,7 @@ export class RegistryConfig {
 		defaultLanguage: 'fr',
 		languages: ['fr'],
 		application: { name: 'Registry', organization: '', creator: { name: '', email: '', website: '' }, support: {} },
+		list: DEFAULT_LIST_CONFIG,
 		notification: { duration: { info: undefined, success: undefined, warn: undefined, error: undefined, secondary: undefined, contrast: undefined } },
 	}
 	private static readonly FALLBACK_ENVIRONMENT: EnvironmentModel = {
