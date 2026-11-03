@@ -1,7 +1,9 @@
 import { signal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
+import { ActivatedRoute, convertToParamMap, ParamMap, Router } from '@angular/router'
 import { TranslocoPipe } from '@jsverse/transloco'
 import { MockBuilder, ngMocks } from 'ng-mocks'
+import { BehaviorSubject } from 'rxjs'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { VehicleFacade } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.facade'
 import { VEHICLE_DTO } from '@shared/helpers/testing/response-fixtures'
@@ -13,8 +15,10 @@ import { VehiclesMonitoringPage } from './vehicles-monitoring.page'
 describe( 'VehiclesMonitoringPage', () => {
     let fixture: ComponentFixture<VehiclesMonitoringPage>
     let facade: Record<string, unknown>
+    let queryParams: BehaviorSubject<ParamMap>
 
     beforeEach( async () => {
+        queryParams = new BehaviorSubject<ParamMap>( convertToParamMap( {} ) )
         facade = {
             vehiclesPage: signal( undefined ), vehiclesPageLoading: signal( false ), vehiclesPageSilentLoading: signal( false ), vehiclesPageError: signal( undefined ),
             vehiclesPageQueryParam: signal( undefined ), vehiclesPageStatusParam: signal( undefined ), vehiclesPageAtParam: signal( undefined ),
@@ -23,6 +27,8 @@ describe( 'VehiclesMonitoringPage', () => {
         await MockBuilder( VehiclesMonitoringPage )
             .mock( TranslocoPipe, (key: string): string => key )
             .provide( { provide: VehicleFacade, useValue: facade } )
+            .provide( { provide: ActivatedRoute, useValue: { queryParamMap: queryParams.asObservable(), snapshot: { get queryParamMap (): ParamMap { return queryParams.value } } } } )
+            .provide( { provide: Router, useValue: { navigate: vi.fn( () => Promise.resolve( true ) ) } } )
         fixture = TestBed.createComponent( VehiclesMonitoringPage )
         fixture.detectChanges()
     } )
@@ -106,5 +112,32 @@ describe( 'VehiclesMonitoringPage', () => {
         // Assert
         expect( row.title ).toBe( 'Ford T' )
         expect( row.statusVariant ).toBe( 'success' )
+    } )
+
+    it( 'reloads the vehicles from the filters of the url when they change', () => {
+        // Arrange
+        (facade[ 'fetchVehiclesPage' ] as ReturnType<typeof vi.fn>).mockClear()
+
+        // Act
+        queryParams.next( convertToParamMap( { q: 'van', status: 'OUT' } ) )
+        TestBed.tick()
+
+        // Assert
+        expect( fixture.componentInstance[ 'model' ]() ).toEqual( { q: 'van', at: null, status: 'OUT', isVisible: '' } )
+        expect( facade[ 'inputPageSearchParameters' ] ).toHaveBeenLastCalledWith( 'van', undefined, 'OUT', undefined )
+        expect( facade[ 'fetchVehiclesPage' ] ).toHaveBeenCalledWith( undefined, 20 )
+    } )
+
+    it( 'writes the submitted filters in the url', () => {
+        // Arrange
+        fixture.componentInstance[ 'model' ].set( { q: 'van', at: null, status: '', isVisible: '' } )
+        const navigate: ReturnType<typeof vi.fn> = TestBed.inject( Router ).navigate as ReturnType<typeof vi.fn>
+
+        // Act
+        fixture.componentInstance[ 'search' ]()
+
+        // Assert
+        expect( facade[ 'fetchVehiclesPage' ] ).toHaveBeenLastCalledWith( 0, 20 )
+        expect( navigate ).toHaveBeenCalledWith( [], expect.objectContaining( { queryParams: { q: 'van', at: null, status: null } } ) )
     } )
 } )

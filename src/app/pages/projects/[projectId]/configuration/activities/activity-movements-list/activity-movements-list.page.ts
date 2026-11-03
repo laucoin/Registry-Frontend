@@ -27,6 +27,7 @@ import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { DurationHelper } from '@shared/helpers/duration.helper'
 import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
 import { withLoading } from '@shared/helpers/rx.helper'
@@ -35,6 +36,9 @@ import { ActivityModel } from '@shared/models/model/activity.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
 import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
 import { MovementElementComponent } from '@shared/ui/domain/movement-element/movement-element.component'
+
+const ACTIVITY_MOVEMENTS_LIST_DEFAULTS: ActivityMovementsListSearchModel = toActivityMovementsListSearchModel({ type: undefined, from: undefined, to: undefined, isVisible: undefined })
+const ACTIVITY_MOVEMENTS_LIST_QUERY_SCHEMA: SearchQuerySchema<ActivityMovementsListSearchModel> = { type: 'text', from: 'date', to: 'date', isVisible: 'choice' }
 
 /**
  * Purpose: Page listant les mouvements d'une activité avec recherche et déclencheur « charger plus ».
@@ -92,13 +96,19 @@ export class ActivityMovementsListPage {
         this.facade.activityMovementsPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
-    protected readonly model: WritableSignal<ActivityMovementsListSearchModel> = signal(toActivityMovementsListSearchModel({
-        type: this.facade.activityMovementsPageTypeParam(),
-        from: this.facade.activityMovementsPageFromParam(),
-        to: this.facade.activityMovementsPageToParam(),
-        isVisible: this.facade.activityMovementsPageIsVisibleParam(),
-    }))
+    protected readonly model: WritableSignal<ActivityMovementsListSearchModel> = signal(ACTIVITY_MOVEMENTS_LIST_DEFAULTS)
     protected readonly form: FieldTree<ActivityMovementsListSearchModel> = createSearchForm(this.model)
+    private readonly searchQuery: SearchQuery = injectSearchQuery({
+        schema: ACTIVITY_MOVEMENTS_LIST_QUERY_SCHEMA,
+        defaults: ACTIVITY_MOVEMENTS_LIST_DEFAULTS,
+        model: this.model,
+        apply: (model: ActivityMovementsListSearchModel, initial: boolean): void => {
+            this.inputSearch(model)
+            if (!initial) {
+                this.facade.fetchActivityMovementsPage(this.id(), undefined, undefined)
+            }
+        },
+    })
 
     public constructor() {
         this.route.paramMap.pipe(
@@ -128,19 +138,19 @@ export class ActivityMovementsListPage {
     }
 
     protected search(): void {
-        const search: ReturnType<typeof toActivityMovementsListSearchParams> = toActivityMovementsListSearchParams(this.model())
-        this.facade.inputMovementsPageSearchParameters(
-            search.type,
-            search.from,
-            search.to,
-            search.isVisible,
-        )
+        this.inputSearch(this.model())
         this.facade.fetchActivityMovementsPage(this.id(), 0, undefined)
+        this.searchQuery.write()
     }
 
     protected resetFilters(): void {
-        this.model.set({ type: '', from: null, to: null, isVisible: '' })
+        this.model.set(ACTIVITY_MOVEMENTS_LIST_DEFAULTS)
         this.search()
+    }
+
+    private inputSearch(model: ActivityMovementsListSearchModel): void {
+        const search: ReturnType<typeof toActivityMovementsListSearchParams> = toActivityMovementsListSearchParams(model)
+        this.facade.inputMovementsPageSearchParameters(search.type, search.from, search.to, search.isVisible)
     }
 
     protected retryStatistics(): void {

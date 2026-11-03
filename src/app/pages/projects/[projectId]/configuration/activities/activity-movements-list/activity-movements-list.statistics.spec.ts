@@ -50,7 +50,7 @@ describe( 'ActivityMovementsListPage statistics', () => {
             .mock( TranslocoPipe, (key: string, params?: object): string => params ? `${key}:${JSON.stringify( params )}` : key )
             .provide( { provide: ActivityFacade, useValue: facade } )
             .provide( { provide: MovementFacade, useValue: { handleMovementFirstPageReload: (): Subject<void> => new Subject<void>(), handleMovementCurrentPageReload: (): Subject<void> => new Subject<void>(), movementTypesMetadata: signal( [] ), visibilitiesMetadata: signal( [] ) } } )
-            .provide( { provide: ActivatedRoute, useValue: { paramMap: new BehaviorSubject( convertToParamMap( { activityId: 'a1' } ) ), snapshot: { params: { activityId: 'a1' } } } } )
+            .provide( { provide: ActivatedRoute, useValue: { paramMap: new BehaviorSubject( convertToParamMap( { activityId: 'a1' } ) ), queryParamMap: of( convertToParamMap( {} ) ), snapshot: { params: { activityId: 'a1' }, queryParamMap: convertToParamMap( {} ) } } } )
         fixture = TestBed.createComponent( ActivityMovementsListPage )
         fixture.detectChanges()
     } )

@@ -28,6 +28,7 @@ import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { DurationHelper } from '@shared/helpers/duration.helper'
 import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
 import { withLoading } from '@shared/helpers/rx.helper'
@@ -36,6 +37,9 @@ import { VehicleModel } from '@shared/models/model/vehicle.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
 import { PresenceTimelineComponent } from '@shared/ui/common/presence-timeline/presence-timeline.component'
 import { MovementElementComponent } from '@shared/ui/domain/movement-element/movement-element.component'
+
+const VEHICLE_MOVEMENTS_LIST_DEFAULTS: VehicleMovementsListSearchModel = toVehicleMovementsListSearchModel({ type: undefined, from: undefined, to: undefined, isVisible: undefined })
+const VEHICLE_MOVEMENTS_LIST_QUERY_SCHEMA: SearchQuerySchema<VehicleMovementsListSearchModel> = { type: 'text', from: 'date', to: 'date', isVisible: 'choice' }
 
 /**
  * Purpose: Page listant les mouvements d'un véhicule avec recherche et déclencheur « charger plus ».
@@ -88,13 +92,19 @@ export class VehicleMovementsListPage {
         this.facade.vehicleMovementsPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
-    protected readonly model: WritableSignal<VehicleMovementsListSearchModel> = signal(toVehicleMovementsListSearchModel({
-        type: this.facade.vehicleMovementsPageTypeParam(),
-        from: this.facade.vehicleMovementsPageFromParam(),
-        to: this.facade.vehicleMovementsPageToParam(),
-        isVisible: this.facade.vehicleMovementsPageIsVisibleParam(),
-    }))
+    protected readonly model: WritableSignal<VehicleMovementsListSearchModel> = signal(VEHICLE_MOVEMENTS_LIST_DEFAULTS)
     protected readonly form: FieldTree<VehicleMovementsListSearchModel> = createSearchForm(this.model)
+    private readonly searchQuery: SearchQuery = injectSearchQuery({
+        schema: VEHICLE_MOVEMENTS_LIST_QUERY_SCHEMA,
+        defaults: VEHICLE_MOVEMENTS_LIST_DEFAULTS,
+        model: this.model,
+        apply: (model: VehicleMovementsListSearchModel, initial: boolean): void => {
+            this.inputSearch(model)
+            if (!initial) {
+                this.facade.fetchVehicleMovementsPage(this.id(), undefined, undefined)
+            }
+        },
+    })
 
     public constructor() {
         this.route.paramMap.pipe(
@@ -124,19 +134,19 @@ export class VehicleMovementsListPage {
     }
 
     protected search(): void {
-        const search: ReturnType<typeof toVehicleMovementsListSearchParams> = toVehicleMovementsListSearchParams(this.model())
-        this.facade.inputMovementsPageSearchParameters(
-            search.type,
-            search.from,
-            search.to,
-            search.isVisible,
-        )
+        this.inputSearch(this.model())
         this.facade.fetchVehicleMovementsPage(this.id(), 0, undefined)
+        this.searchQuery.write()
     }
 
     protected resetFilters(): void {
-        this.model.set({ type: '', from: null, to: null, isVisible: '' })
+        this.model.set(VEHICLE_MOVEMENTS_LIST_DEFAULTS)
         this.search()
+    }
+
+    private inputSearch(model: VehicleMovementsListSearchModel): void {
+        const search: ReturnType<typeof toVehicleMovementsListSearchParams> = toVehicleMovementsListSearchParams(model)
+        this.facade.inputMovementsPageSearchParameters(search.type, search.from, search.to, search.isVisible)
     }
 
     protected retryTimeline(): void {

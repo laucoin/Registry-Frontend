@@ -1,6 +1,8 @@
 import { signal, WritableSignal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
+import { ActivatedRoute, convertToParamMap, Router } from '@angular/router'
 import { TranslocoPipe } from '@jsverse/transloco'
+import { of } from 'rxjs'
 import { MockBuilder, ngMocks } from 'ng-mocks'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
@@ -43,6 +45,7 @@ describe( 'AlertsListPage statistics', () => {
         await MockBuilder( AlertsListPage )
             .mock( TranslocoPipe, (key: string, params?: object): string => params ? `${key}:${JSON.stringify( params )}` : key )
             .provide( { provide: AlertFacade, useValue: facade } )
+            .provide( { provide: ActivatedRoute, useValue: { queryParamMap: of( convertToParamMap( {} ) ), snapshot: { queryParamMap: convertToParamMap( {} ) } } } )
         fixture = TestBed.createComponent( AlertsListPage )
         fixture.detectChanges()
     } )
@@ -142,5 +145,19 @@ describe( 'AlertsListPage statistics', () => {
         // Assert
         expect( stat( 'alerts-list-resolution-stat' ) ).toBeNull()
         expect( facade[ 'fetchAlertStatistics' ] ).toHaveBeenCalledTimes( 2 )
+    } )
+
+    it( 'writes the submitted filters in the url and restarts from the first batch', () => {
+        // Arrange
+        const navigate: ReturnType<typeof vi.fn> = vi.spyOn( TestBed.inject( Router ), 'navigate' ).mockResolvedValue( true )
+        fixture.componentInstance[ 'model' ].set( { q: 'sos', status: '', isVisible: '', from: null, to: null } )
+
+        // Act
+        fixture.componentInstance[ 'search' ]()
+
+        // Assert
+        expect( facade[ 'inputPageSearchParameters' ] ).toHaveBeenLastCalledWith( 'sos', undefined, undefined, undefined, undefined )
+        expect( facade[ 'fetchAlertsPage' ] ).toHaveBeenLastCalledWith( 0, undefined )
+        expect( navigate ).toHaveBeenCalledWith( [], expect.objectContaining( { queryParams: { q: 'sos', status: null, isVisible: null, from: null, to: null } } ) )
     } )
 } )

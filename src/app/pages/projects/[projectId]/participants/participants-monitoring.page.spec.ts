@@ -53,7 +53,7 @@ describe( 'ParticipantsMonitoringPage', () => {
         }
         participants = {
             participantsPage, participantsPageLoading: signal( false ), participantsPageSilentLoading: signal( false ), participantsPageError: signal( undefined ),
-            participantsPageQueryParam: signal( undefined ), participantsPageStatusParam: signal( undefined ),
+            participantsPageResetSearch: signal( false ), participantsPageQueryParam: signal( undefined ), participantsPageStatusParam: signal( undefined ),
             presencesStatusMetadata: signal( [] ), fetchParticipantsPage: vi.fn(), inputPageSearchParameters: vi.fn(),
         }
         await MockBuilder( ParticipantsMonitoringPage )
@@ -180,7 +180,7 @@ describe( 'ParticipantsMonitoringPage', () => {
         create( undefined, 1, true, status )
 
         // Assert
-        expect( participants[ 'inputPageSearchParameters' ] ).not.toHaveBeenCalled()
+        expect( participants[ 'inputPageSearchParameters' ] ).toHaveBeenCalledWith( undefined, undefined, undefined )
         expect( fixture.componentInstance[ 'model' ]().status ).toBe( '' )
     } )
 
@@ -427,14 +427,44 @@ describe( 'ParticipantsMonitoringPage', () => {
         expect( fixture.componentInstance[ 'model' ]().status ).toBe( 'OVERDUE' )
     } )
 
-    it( 'leaves the filters alone when the url asks for no status', () => {
+    it( 'starts from the default filters when the url asks for none', () => {
         // Arrange
-        const expected: number = 0
+        const expected: number = 1
 
         // Act
         create( 'individual' )
 
         // Assert
         expect( (participants[ 'inputPageSearchParameters' ] as MockInstance).mock.calls.length ).toBe( expected )
+        expect( participants[ 'inputPageSearchParameters' ] ).toHaveBeenCalledWith( undefined, undefined, undefined )
+    } )
+
+    it( 'writes the submitted filters in the url next to the tab', () => {
+        // Arrange
+        create()
+        fixture.componentInstance[ 'model' ].set( { q: 'ada', status: 'OUT', isVisible: '' } )
+        const navigate: MockInstance = TestBed.inject( Router ).navigate as unknown as MockInstance
+
+        // Act
+        fixture.componentInstance[ 'search' ]()
+
+        // Assert
+        expect( participants[ 'fetchParticipantsPage' ] ).toHaveBeenLastCalledWith( 0, 20 )
+        expect( navigate ).toHaveBeenCalledWith( [], expect.objectContaining( { queryParams: { q: 'ada', status: 'OUT' }, queryParamsHandling: 'merge' } ) )
+    } )
+
+    it( 'reloads the participants from the first batch when the filters of the url change', () => {
+        // Arrange
+        create()
+        ;(participants[ 'fetchParticipantsPage' ] as MockInstance).mockClear()
+
+        // Act
+        queryParams.next( convertToParamMap( { q: 'ada' } ) )
+        TestBed.tick()
+
+        // Assert
+        expect( fixture.componentInstance[ 'model' ]().q ).toBe( 'ada' )
+        expect( participants[ 'inputPageSearchParameters' ] ).toHaveBeenLastCalledWith( 'ada', undefined, undefined )
+        expect( participants[ 'fetchParticipantsPage' ] ).toHaveBeenCalledWith( 0, 20 )
     } )
 } )

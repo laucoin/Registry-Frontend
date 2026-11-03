@@ -50,7 +50,7 @@ describe( 'VehicleMovementsListPage statistics', () => {
             .provide( { provide: VehicleFacade, useValue: facade } )
             .provide( { provide: MovementFacade, useValue: { handleMovementFirstPageReload: (): Subject<void> => new Subject<void>(), handleMovementCurrentPageReload: (): Subject<void> => new Subject<void>(), movementTypesMetadata: signal( [] ), visibilitiesMetadata: signal( [] ) } } )
             .provide( { provide: SessionFacade, useValue: { selectedProject: signal( undefined ) } } )
-            .provide( { provide: ActivatedRoute, useValue: { paramMap: new BehaviorSubject( convertToParamMap( { vehicleId: 'v1' } ) ), snapshot: { params: { vehicleId: 'v1' } } } } )
+            .provide( { provide: ActivatedRoute, useValue: { paramMap: new BehaviorSubject( convertToParamMap( { vehicleId: 'v1' } ) ), queryParamMap: of( convertToParamMap( {} ) ), snapshot: { params: { vehicleId: 'v1' }, queryParamMap: convertToParamMap( {} ) } } } )
         fixture = TestBed.createComponent( VehicleMovementsListPage )
         fixture.detectChanges()
     } )

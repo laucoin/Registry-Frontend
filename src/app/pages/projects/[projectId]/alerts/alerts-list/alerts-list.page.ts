@@ -23,6 +23,7 @@ import {
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { DurationHelper } from '@shared/helpers/duration.helper'
 import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
 import { AlertStatisticsModel } from '@shared/models/model/alert-statistics.model'
@@ -30,6 +31,9 @@ import { PageEventModel } from '@shared/models/model/page-event.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
 import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
 import { AlertElementComponent } from '@shared/ui/domain/alert-element/alert-element.component'
+
+const ALERTS_LIST_DEFAULTS: AlertsListSearchModel = toAlertsListSearchModel({ q: undefined, status: undefined, isVisible: undefined, from: undefined, to: undefined })
+const ALERTS_LIST_QUERY_SCHEMA: SearchQuerySchema<AlertsListSearchModel> = { q: 'text', status: 'text', isVisible: 'choice', from: 'date', to: 'date' }
 
 /**
  * Purpose: Page listant les alertes du projet sélectionné avec recherche et déclencheur « charger plus ».
@@ -77,22 +81,35 @@ export class AlertsListPage {
         return (statistics?.resolvedCount ?? 0) + (statistics?.canceledCount ?? 0)
     })
 
-    protected readonly model: WritableSignal<AlertsListSearchModel> = signal(toAlertsListSearchModel({
-        q: this.facade.alertsPageQueryParam(),
-        status: this.facade.alertsPageStatusParam(),
-        isVisible: this.facade.alertsPageIsVisibleParam(),
-        from: this.facade.alertsPageFromParam(),
-        to: this.facade.alertsPageToParam(),
-    }))
+    protected readonly model: WritableSignal<AlertsListSearchModel> = signal(ALERTS_LIST_DEFAULTS)
     protected readonly form: FieldTree<AlertsListSearchModel> = createSearchForm(this.model)
+    private readonly searchQuery: SearchQuery = injectSearchQuery({
+        schema: ALERTS_LIST_QUERY_SCHEMA,
+        defaults: ALERTS_LIST_DEFAULTS,
+        model: this.model,
+        apply: (model: AlertsListSearchModel): void => {
+            this.inputSearch(model)
+            this.facade.fetchAlertsPage(undefined, undefined)
+        },
+    })
 
     public constructor() {
         this.facade.fetchAlertStatistics()
-        this.facade.fetchAlertsPage(undefined, undefined)
     }
 
     protected search(): void {
-        const search: ReturnType<typeof toAlertsListSearchParams> = toAlertsListSearchParams(this.model())
+        this.inputSearch(this.model())
+        this.facade.fetchAlertsPage(0, undefined)
+        this.searchQuery.write()
+    }
+
+    protected resetFilters(): void {
+        this.model.set(ALERTS_LIST_DEFAULTS)
+        this.search()
+    }
+
+    private inputSearch(model: AlertsListSearchModel): void {
+        const search: ReturnType<typeof toAlertsListSearchParams> = toAlertsListSearchParams(model)
         this.facade.inputPageSearchParameters(
             search.q,
             search.status,
@@ -100,12 +117,6 @@ export class AlertsListPage {
             search.from,
             search.to,
         )
-        this.facade.fetchAlertsPage(0, undefined)
-    }
-
-    protected resetFilters(): void {
-        this.model.set({ q: '', status: '', isVisible: '', from: null, to: null })
-        this.search()
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {

@@ -1,6 +1,6 @@
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
-import { ActivatedRoute, convertToParamMap, ParamMap } from '@angular/router'
+import { ActivatedRoute, convertToParamMap, ParamMap, Router } from '@angular/router'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { BehaviorSubject, of, Subject } from 'rxjs'
 import { ActivityFacade } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
@@ -22,6 +22,7 @@ describe('ActivityMovementsListPage', () => {
     let fetchStatistics: Mock
     let reloadStatistics: Mock
     let inputSearch: Mock
+    let query: BehaviorSubject<ParamMap>
     let page: ActivityMovementsListPage
 
     function routeTo(id: string): void {
@@ -32,6 +33,7 @@ describe('ActivityMovementsListPage', () => {
     beforeEach(() => {
         snapshotParams = { [ID_PARAM]: 'activity1' }
         params = new BehaviorSubject<ParamMap>(convertToParamMap(snapshotParams))
+        query = new BehaviorSubject<ParamMap>(convertToParamMap({}))
         firstPageReload = new Subject<void>()
         currentPageReload = new Subject<void>()
         fetchEntity = vi.fn(() => of(ENTITY))
@@ -42,7 +44,7 @@ describe('ActivityMovementsListPage', () => {
         inputSearch = vi.fn()
         TestBed.configureTestingModule({
             providers: [
-                { provide: ActivatedRoute, useValue: { paramMap: params, get snapshot(): object { return { params: snapshotParams } } } },
+                { provide: ActivatedRoute, useValue: { paramMap: params, queryParamMap: query, get snapshot(): object { return { params: snapshotParams, queryParamMap: convertToParamMap({}) } } } },
                 {
                     provide: MovementFacade,
                     useValue: { handleMovementFirstPageReload: (): Subject<void> => firstPageReload, handleMovementCurrentPageReload: (): Subject<void> => currentPageReload },
@@ -111,8 +113,34 @@ describe('ActivityMovementsListPage', () => {
         page['search']()
 
         // Assert
-        expect(inputSearch).toHaveBeenCalledTimes(1)
+        expect(inputSearch).toHaveBeenLastCalledWith('IN', undefined, undefined, undefined)
         expect(fetchMovements).toHaveBeenLastCalledWith('activity1', 0, undefined)
+    })
+
+    it('reloads the movements when the filters of the url change', () => {
+        // Arrange
+        fetchMovements.mockClear()
+
+        // Act
+        query.next(convertToParamMap({ type: 'IN' }))
+        TestBed.tick()
+
+        // Assert
+        expect(page['model']()).toEqual({ type: 'IN', from: null, to: null, isVisible: '' })
+        expect(inputSearch).toHaveBeenLastCalledWith('IN', undefined, undefined, undefined)
+        expect(fetchMovements).toHaveBeenCalledWith('activity1', undefined, undefined)
+    })
+
+    it('writes the submitted filters in the url', () => {
+        // Arrange
+        const navigate: Mock = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true)
+        page['model'].set({ type: 'IN', from: null, to: null, isVisible: '' })
+
+        // Act
+        page['search']()
+
+        // Assert
+        expect(navigate).toHaveBeenCalledWith([], expect.objectContaining({ queryParams: { type: 'IN', from: null, to: null, isVisible: null } }))
     })
 
     it('clears the filters then searches from the first batch', () => {

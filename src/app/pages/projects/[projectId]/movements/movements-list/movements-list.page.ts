@@ -22,11 +22,15 @@ import {
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
 import { MovementElementComponent } from '@shared/ui/domain/movement-element/movement-element.component'
+
+const MOVEMENTS_LIST_DEFAULTS: MovementsListSearchModel = toMovementsListSearchModel({ type: undefined, from: undefined, to: undefined, isVisible: undefined })
+const MOVEMENTS_LIST_QUERY_SCHEMA: SearchQuerySchema<MovementsListSearchModel> = { type: 'text', from: 'date', to: 'date', isVisible: 'choice' }
 
 /**
  * Purpose: Page listant les mouvements du projet sélectionné avec recherche et déclencheur « charger plus ».
@@ -71,27 +75,32 @@ export class MovementsListPage {
         this.facade.movementsPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
-    protected readonly model: WritableSignal<MovementsListSearchModel> = signal(toMovementsListSearchModel({
-        type: this.facade.movementsPageTypeParam(),
-        from: this.facade.movementsPageFromParam(),
-        to: this.facade.movementsPageToParam(),
-        isVisible: this.facade.movementsPageIsVisibleParam(),
-    }))
+    protected readonly model: WritableSignal<MovementsListSearchModel> = signal(MOVEMENTS_LIST_DEFAULTS)
     protected readonly form: FieldTree<MovementsListSearchModel> = createSearchForm(this.model)
-
-    public constructor() {
-        this.facade.fetchMovementsPage(undefined, undefined)
-    }
+    private readonly searchQuery: SearchQuery = injectSearchQuery({
+        schema: MOVEMENTS_LIST_QUERY_SCHEMA,
+        defaults: MOVEMENTS_LIST_DEFAULTS,
+        model: this.model,
+        apply: (model: MovementsListSearchModel): void => {
+            this.inputSearch(model)
+            this.facade.fetchMovementsPage(undefined, undefined)
+        },
+    })
 
     protected search(): void {
-        const search: ReturnType<typeof toMovementsListSearchParams> = toMovementsListSearchParams(this.model())
-        this.facade.inputPageSearchParameters(search.type, search.from, search.to, search.isVisible)
+        this.inputSearch(this.model())
         this.facade.fetchMovementsPage(0, undefined)
+        this.searchQuery.write()
     }
 
     protected resetFilters(): void {
-        this.model.set({ type: '', from: null, to: null, isVisible: '' })
+        this.model.set(MOVEMENTS_LIST_DEFAULTS)
         this.search()
+    }
+
+    private inputSearch(model: MovementsListSearchModel): void {
+        const search: ReturnType<typeof toMovementsListSearchParams> = toMovementsListSearchParams(model)
+        this.facade.inputPageSearchParameters(search.type, search.from, search.to, search.isVisible)
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {

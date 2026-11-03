@@ -24,6 +24,7 @@ import { GroupStatusFacade } from '@pages/projects/[projectId]/participants/data
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { MonitoringRowHelper } from '@shared/helpers/monitoring-row.helper'
 import { MonitoringRowModel } from '@shared/models/model/monitoring-row.model'
 import { PageEventModel } from '@shared/models/model/page-event.model'
@@ -40,7 +41,8 @@ type ParticipantsTabKey = 'mine' | 'groups' | 'individual'
 
 const PAGE_SIZE: number = 20
 const TAB_PARAM: string = 'tab'
-const STATUS_PARAM: string = 'status'
+const PARTICIPANTS_MONITORING_DEFAULTS: ParticipantsListSearchModel = toParticipantsListSearchModel( { q: undefined, status: undefined, isVisible: undefined } )
+const PARTICIPANTS_MONITORING_QUERY_SCHEMA: SearchQuerySchema<ParticipantsListSearchModel> = { q: 'text', status: Object.values( PresenceStatusEnum ) }
 
 /**
  * Purpose: Page de suivi de l'endroit où se trouvent les participants : par mes groupes, par tous les groupes, ou un par un.
@@ -97,16 +99,19 @@ export class ParticipantsMonitoringPage implements OnInit {
         this.participants.participantsPageStatusParam() !== undefined,
     ].filter( Boolean ).length )
 
-    protected readonly model: WritableSignal<ParticipantsListSearchModel> = signal( toParticipantsListSearchModel( {
-        q: this.participants.participantsPageQueryParam(),
-        status: this.participants.participantsPageStatusParam(),
-        isVisible: undefined,
-    } ) )
+    protected readonly model: WritableSignal<ParticipantsListSearchModel> = signal( PARTICIPANTS_MONITORING_DEFAULTS )
     protected readonly form: FieldTree<ParticipantsListSearchModel> = createSearchForm( this.model )
-
-    public constructor () {
-        this.presetStatusFromUrl()
-    }
+    private readonly searchQuery: SearchQuery = injectSearchQuery( {
+        schema: PARTICIPANTS_MONITORING_QUERY_SCHEMA,
+        defaults: PARTICIPANTS_MONITORING_DEFAULTS,
+        model: this.model,
+        apply: (model: ParticipantsListSearchModel, initial: boolean): void => {
+            this.inputSearch( model )
+            if (!initial) {
+                this.participants.fetchParticipantsPage( 0, PAGE_SIZE )
+            }
+        },
+    } )
 
     public ngOnInit (): void {
         this.fetchFirstMyGroups()
@@ -157,22 +162,19 @@ export class ParticipantsMonitoringPage implements OnInit {
     }
 
     protected search (): void {
-        const search: ReturnType<typeof toParticipantsListSearchParams> = toParticipantsListSearchParams( this.model() )
-        this.participants.inputPageSearchParameters( search.q, search.status, undefined )
+        this.inputSearch( this.model() )
         this.participants.fetchParticipantsPage( 0, PAGE_SIZE )
+        this.searchQuery.write()
     }
 
     protected resetFilters (): void {
-        this.model.set( { q: '', status: '', isVisible: '' } )
+        this.model.set( PARTICIPANTS_MONITORING_DEFAULTS )
         this.search()
     }
 
-    private presetStatusFromUrl (): void {
-        const status: string | null = this.route.snapshot.queryParamMap.get( STATUS_PARAM )
-        if (status && Object.values( PresenceStatusEnum ).includes( status as PresenceStatusEnum )) {
-            this.participants.inputPageSearchParameters( undefined, status, undefined )
-            this.model.update( (current: ParticipantsListSearchModel): ParticipantsListSearchModel => ({ ...current, status }) )
-        }
+    private inputSearch (model: ParticipantsListSearchModel): void {
+        const search: ReturnType<typeof toParticipantsListSearchParams> = toParticipantsListSearchParams( model )
+        this.participants.inputPageSearchParameters( search.q, search.status, undefined )
     }
 
     private settled (page: unknown, loading: boolean, error: unknown): boolean {
@@ -183,7 +185,8 @@ export class ParticipantsMonitoringPage implements OnInit {
         if (!this.groups.groupsPage() && !this.groups.groupsPageLoading()) {
             this.groups.fetchGroupsPage( undefined, PAGE_SIZE )
         }
-        if (!this.participants.participantsPage() && !this.participants.participantsPageLoading()) {
+        const missing: boolean = !this.participants.participantsPage() && !this.participants.participantsPageLoading()
+        if (missing || this.participants.participantsPageResetSearch()) {
             this.participants.fetchParticipantsPage( undefined, PAGE_SIZE )
         }
     }
