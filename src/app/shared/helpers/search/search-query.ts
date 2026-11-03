@@ -1,7 +1,10 @@
 import { effect, inject, Signal, untracked, WritableSignal } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router'
+import { DEFAULT_LIST_CONFIG } from '@core/config/model/config.model'
+import { RegistryConfig } from '@core/config/registry.config'
 import { BooleanChoice } from '@shared/helpers/form/boolean-choice'
+import { debounceTime } from 'rxjs'
 
 export type SearchQueryFieldKind = 'text' | 'choice' | 'date' | readonly string[]
 
@@ -70,28 +73,79 @@ export interface SearchQueryOptions<T extends object> {
     defaults: T
     model: WritableSignal<T>
     apply: (model: T, initial: boolean) => void
+    search: (model: T) => void
     extra?: SearchQueryExtra<T>
 }
 
-export interface SearchQuery {
-    write (): void
+export interface SearchQuery<T extends object = object> {
+    write (model?: T): void
+    submit (): void
 }
+
+interface AppliedSearch<T extends object> {
+    model: T
+    key: string | undefined
+}
+
+const TEXT_SEARCH_KEY: string = 'q'
 
 /**
  * Purpose: Garde le formulaire de recherche d'une liste et l'URL alignés, l'URL faisant foi.
- * Scope: Charge le formulaire depuis les query params à la création, le réaligne à chaque changement d'URL (retour arrière, lien modifié) et écrit le formulaire dans l'URL à la demande, sans empiler d'historique.
- * Limits: Doit être appelé dans un contexte d'injection ; `extra` ajoute les query params qui ne correspondent pas champ à champ au formulaire (tri). `apply` porte l'application des valeurs au store et le chargement (`initial` vaut true à la création), il n'est pas rappelé quand l'URL reflète déjà le formulaire.
+ * Scope: Charge le formulaire depuis les query params à la création, le réaligne à chaque changement d'URL (retour arrière, lien modifié), écrit la recherche appliquée dans l'URL à la demande, sans empiler d'historique, et lance `search` après un délai quand le formulaire change ; `submit` lance `search` tout de suite avec le formulaire tel quel.
+ * Limits: Doit être appelé dans un contexte d'injection ; `extra` ajoute les query params qui ne correspondent pas champ à champ au formulaire (tri). `apply` porte l'application des valeurs au store et le chargement (`initial` vaut true à la création), il n'est pas rappelé quand l'URL reflète déjà la recherche appliquée. `search` reçoit le modèle recherché et doit le passer à `write` : lors d'une recherche automatique, un texte `q` plus court que le seuil configuré garde sa dernière valeur appliquée. Aucune recherche n'est lancée si le modèle recherché égale la dernière recherche appliquée.
  */
-export function injectSearchQuery<T extends object> (options: SearchQueryOptions<T>): SearchQuery {
+export function injectSearchQuery<T extends object> (options: SearchQueryOptions<T>): SearchQuery<T> {
     const route: ActivatedRoute = inject(ActivatedRoute)
     const router: Router = inject(Router)
     const query: Signal<ParamMap> = toSignal(route.queryParamMap, { initialValue: route.snapshot.queryParamMap })
 
     options.model.set(readQuery(options, route.snapshot.queryParamMap))
     options.apply(options.model(), true)
-    effect((): void => realign(options, readQuery(options, query())))
+    const applied: AppliedSearch<T> = { model: options.model(), key: safeQueryKey(options, options.model()) }
+    effect((): void => realign(options, readQuery(options, query()), applied))
+    searchOnChange(options, applied)
 
-    return { write: (): void => writeQuery(options, router, route) }
+    return {
+        write: (model: T = options.model()): void => {
+            applied.model = model
+            applied.key = safeQueryKey(options, model)
+            writeQuery(options, router, route, model)
+        },
+        submit: (): void => searchIfChanged(options, applied, true),
+    }
+}
+
+function searchOnChange<T extends object> (options: SearchQueryOptions<T>, applied: AppliedSearch<T>): void {
+    toObservable(options.model).pipe(
+        debounceTime((RegistryConfig.config?.list ?? DEFAULT_LIST_CONFIG).searchDebounce),
+        takeUntilDestroyed(),
+    ).subscribe((): void => searchIfChanged(options, applied, false))
+}
+
+function searchIfChanged<T extends object> (options: SearchQueryOptions<T>, applied: AppliedSearch<T>, forced: boolean): void {
+    const model: T = forced || isTextSearchable(options.model()) ? options.model() : withAppliedText(options.model(), applied.model)
+    const key: string | undefined = safeQueryKey(options, model)
+    if (key !== undefined && key !== applied.key) {
+        options.search(model)
+    }
+}
+
+function isTextSearchable (model: object): boolean {
+    const text: unknown = (model as Record<string, unknown>)[TEXT_SEARCH_KEY]
+    const minLength: number = (RegistryConfig.config?.list ?? DEFAULT_LIST_CONFIG).searchMinLength
+    return typeof text !== 'string' || text.length === 0 || text.length >= minLength
+}
+
+function withAppliedText<T extends object> (model: T, appliedModel: T): T {
+    return { ...model, [TEXT_SEARCH_KEY]: (appliedModel as Record<string, unknown>)[TEXT_SEARCH_KEY] }
+}
+
+function safeQueryKey<T extends object> (options: SearchQueryOptions<T>, model: T): string | undefined {
+    try {
+        return queryKey(options, model)
+    } catch {
+        return undefined
+    }
 }
 
 function readQuery<T extends object> (options: SearchQueryOptions<T>, query: ParamMap): T {
@@ -107,19 +161,21 @@ function queryKey<T extends object> (options: SearchQueryOptions<T>, model: T): 
     return JSON.stringify(queryParamsOf(options, model))
 }
 
-function realign<T extends object> (options: SearchQueryOptions<T>, fromUrl: T): void {
+function realign<T extends object> (options: SearchQueryOptions<T>, fromUrl: T, applied: AppliedSearch<T>): void {
     untracked((): void => {
-        if (queryKey(options, fromUrl) !== queryKey(options, options.model())) {
+        if (queryKey(options, fromUrl) !== applied.key) {
             options.model.set(fromUrl)
+            applied.model = fromUrl
+            applied.key = safeQueryKey(options, fromUrl)
             options.apply(fromUrl, false)
         }
     })
 }
 
-function writeQuery<T extends object> (options: SearchQueryOptions<T>, router: Router, route: ActivatedRoute): void {
+function writeQuery<T extends object> (options: SearchQueryOptions<T>, router: Router, route: ActivatedRoute, model: T): void {
     router.navigate([], {
         relativeTo: route,
-        queryParams: queryParamsOf(options, options.model()),
+        queryParams: queryParamsOf(options, model),
         queryParamsHandling: 'merge',
         replaceUrl: true,
     }).then()

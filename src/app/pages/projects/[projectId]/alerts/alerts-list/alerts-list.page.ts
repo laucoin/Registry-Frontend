@@ -87,11 +87,12 @@ export class AlertsListPage {
     protected readonly sortFields: readonly string[] = ALERTS_LIST_SORT_FIELDS
     protected readonly model: WritableSignal<AlertsListSearchModel> = signal(ALERTS_LIST_DEFAULTS)
     protected readonly form: FieldTree<AlertsListSearchModel> = createSearchForm(this.model)
-    private readonly searchQuery: SearchQuery = injectSearchQuery({
+    protected readonly searchQuery: SearchQuery<AlertsListSearchModel> = injectSearchQuery({
         schema: ALERTS_LIST_QUERY_SCHEMA,
         defaults: ALERTS_LIST_DEFAULTS,
         model: this.model,
         extra: sortQueryCodec<AlertsListSearchModel>( ALERTS_LIST_SORT_FIELDS ),
+        search: (model: AlertsListSearchModel): void => this.search(model),
         apply: (model: AlertsListSearchModel): void => {
             this.inputSearch(model)
             this.facade.fetchAlertsPage(undefined, undefined)
@@ -102,10 +103,10 @@ export class AlertsListPage {
         this.facade.fetchAlertStatistics()
     }
 
-    protected search(): void {
-        this.inputSearch(this.model())
+    protected search(model: AlertsListSearchModel = this.model()): void {
+        this.inputSearch(model)
         this.facade.fetchAlertsPage(0, undefined)
-        this.searchQuery.write()
+        this.searchQuery.write(model)
     }
 
     protected resetFilters(): void {

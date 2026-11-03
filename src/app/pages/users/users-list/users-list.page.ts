@@ -71,21 +71,22 @@ export class UsersListPage {
     protected readonly sortFields: readonly string[] = USERS_LIST_SORT_FIELDS
     protected readonly model: WritableSignal<UsersListSearchModel> = signal(USERS_LIST_DEFAULTS)
     protected readonly form: FieldTree<UsersListSearchModel> = createSearchForm(this.model)
-    private readonly searchQuery: SearchQuery = injectSearchQuery({
+    protected readonly searchQuery: SearchQuery<UsersListSearchModel> = injectSearchQuery({
         schema: USERS_LIST_QUERY_SCHEMA,
         defaults: USERS_LIST_DEFAULTS,
         model: this.model,
         extra: sortQueryCodec<UsersListSearchModel>( USERS_LIST_SORT_FIELDS ),
+        search: (model: UsersListSearchModel): void => this.search(model),
         apply: (model: UsersListSearchModel): void => {
             this.inputSearch(model)
             this.facade.fetchUsersPage(undefined, undefined)
         },
     })
 
-    protected search(): void {
-        this.inputSearch(this.model())
+    protected search(model: UsersListSearchModel = this.model()): void {
+        this.inputSearch(model)
         this.facade.fetchUsersPage(0, undefined)
-        this.searchQuery.write()
+        this.searchQuery.write(model)
     }
 
     protected resetFilters(): void {

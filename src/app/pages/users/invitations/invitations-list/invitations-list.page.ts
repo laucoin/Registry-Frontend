@@ -62,21 +62,22 @@ export class InvitationsListPage {
     protected readonly sortFields: readonly string[] = INVITATIONS_LIST_SORT_FIELDS
     protected readonly model: WritableSignal<InvitationsListSearchModel> = signal(INVITATIONS_LIST_DEFAULTS)
     protected readonly form: FieldTree<InvitationsListSearchModel> = createSearchForm(this.model)
-    private readonly searchQuery: SearchQuery = injectSearchQuery({
+    protected readonly searchQuery: SearchQuery<InvitationsListSearchModel> = injectSearchQuery({
         schema: INVITATIONS_LIST_QUERY_SCHEMA,
         defaults: INVITATIONS_LIST_DEFAULTS,
         model: this.model,
         extra: sortQueryCodec<InvitationsListSearchModel>( INVITATIONS_LIST_SORT_FIELDS ),
+        search: (model: InvitationsListSearchModel): void => this.search(model),
         apply: (model: InvitationsListSearchModel): void => {
             this.inputSearch(model)
             this.userProfileFacade.fetchProjectProfileInvitationPage(undefined, undefined)
         },
     })
 
-    protected search(): void {
-        this.inputSearch(this.model())
+    protected search(model: InvitationsListSearchModel = this.model()): void {
+        this.inputSearch(model)
         this.userProfileFacade.fetchProjectProfileInvitationPage(0, undefined)
-        this.searchQuery.write()
+        this.searchQuery.write(model)
     }
 
     protected resetFilters(): void {

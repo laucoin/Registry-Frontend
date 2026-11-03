@@ -88,11 +88,12 @@ export class ParticipantMovementsListPage {
     protected readonly sortFields: readonly string[] = PARTICIPANT_MOVEMENTS_LIST_SORT_FIELDS
     protected readonly model: WritableSignal<ParticipantMovementsListSearchModel> = signal(PARTICIPANT_MOVEMENTS_LIST_DEFAULTS)
     protected readonly form: FieldTree<ParticipantMovementsListSearchModel> = createSearchForm(this.model)
-    private readonly searchQuery: SearchQuery = injectSearchQuery({
+    protected readonly searchQuery: SearchQuery<ParticipantMovementsListSearchModel> = injectSearchQuery({
         schema: PARTICIPANT_MOVEMENTS_LIST_QUERY_SCHEMA,
         defaults: PARTICIPANT_MOVEMENTS_LIST_DEFAULTS,
         model: this.model,
         extra: sortQueryCodec<ParticipantMovementsListSearchModel>( PARTICIPANT_MOVEMENTS_LIST_SORT_FIELDS ),
+        search: (model: ParticipantMovementsListSearchModel): void => this.search(model),
         apply: (model: ParticipantMovementsListSearchModel, initial: boolean): void => {
             this.inputSearch(model)
             if (!initial) {
@@ -128,10 +129,10 @@ export class ParticipantMovementsListPage {
             ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe()
     }
 
-    protected search(): void {
-        this.inputSearch(this.model())
+    protected search(model: ParticipantMovementsListSearchModel = this.model()): void {
+        this.inputSearch(model)
         this.facade.fetchParticipantMovementsPage(this.id(), 0, undefined)
-        this.searchQuery.write()
+        this.searchQuery.write(model)
     }
 
     protected resetFilters(): void {

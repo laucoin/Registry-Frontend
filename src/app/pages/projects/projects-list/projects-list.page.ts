@@ -108,21 +108,22 @@ export class ProjectsListPage {
 
     protected readonly model: WritableSignal<ProjectsListSearchModel> = signal(PROJECTS_LIST_DEFAULTS)
     protected readonly form: FieldTree<ProjectsListSearchModel> = createSearchForm(this.model)
-    private readonly searchQuery: SearchQuery = injectSearchQuery({
+    protected readonly searchQuery: SearchQuery<ProjectsListSearchModel> = injectSearchQuery({
         schema: PROJECTS_LIST_QUERY_SCHEMA,
         defaults: PROJECTS_LIST_DEFAULTS,
         model: this.model,
         extra: sortQueryCodec<ProjectsListSearchModel>(PROJECTS_SORT_FIELDS),
+        search: (model: ProjectsListSearchModel): void => this.search(model),
         apply: (model: ProjectsListSearchModel): void => {
             this.inputSearch(model)
             this.facade.fetchProjectsPage(undefined, undefined)
         },
     })
 
-    protected search(): void {
-        this.inputSearch(this.model())
+    protected search(model: ProjectsListSearchModel = this.model()): void {
+        this.inputSearch(model)
         this.facade.fetchProjectsPage(0, undefined)
-        this.searchQuery.write()
+        this.searchQuery.write(model)
     }
 
     private inputSearch(model: ProjectsListSearchModel): void {

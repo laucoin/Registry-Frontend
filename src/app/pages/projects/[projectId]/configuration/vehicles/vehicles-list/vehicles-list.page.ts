@@ -84,21 +84,22 @@ export class VehiclesListPage {
     protected readonly sortFields: readonly string[] = VEHICLES_LIST_SORT_FIELDS
     protected readonly model: WritableSignal<VehiclesListSearchModel> = signal(VEHICLES_LIST_DEFAULTS)
     protected readonly form: FieldTree<VehiclesListSearchModel> = createSearchForm(this.model)
-    private readonly searchQuery: SearchQuery = injectSearchQuery({
+    protected readonly searchQuery: SearchQuery<VehiclesListSearchModel> = injectSearchQuery({
         schema: VEHICLES_LIST_QUERY_SCHEMA,
         defaults: VEHICLES_LIST_DEFAULTS,
         model: this.model,
         extra: sortQueryCodec<VehiclesListSearchModel>( VEHICLES_LIST_SORT_FIELDS ),
+        search: (model: VehiclesListSearchModel): void => this.search(model),
         apply: (model: VehiclesListSearchModel): void => {
             this.inputSearch(model)
             this.facade.fetchVehiclesPage(undefined, undefined)
         },
     })
 
-    protected search(): void {
-        this.inputSearch(this.model())
+    protected search(model: VehiclesListSearchModel = this.model()): void {
+        this.inputSearch(model)
         this.facade.fetchVehiclesPage(0, undefined)
-        this.searchQuery.write()
+        this.searchQuery.write(model)
     }
 
     protected resetFilters(): void {

@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
 import { of } from 'rxjs'
-import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
+import { Mock, afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { UserProfileFacade } from '@core/registry/state/user-profile.facade'
@@ -99,6 +99,10 @@ describe( 'batch list pages', () => {
         TestBed.resetTestingModule()
     } )
 
+    afterEach( () => {
+        vi.useRealTimers()
+    } )
+
     it.each( CASES )( 'loads the first $name batch when it opens', (item: BatchListCase) => {
         // Arrange
         const expectedArguments: unknown[] = item.withId ? [ 'id1', undefined, undefined ] : [ undefined, undefined ]
@@ -151,6 +155,22 @@ describe( 'batch list pages', () => {
         const calls: unknown[][] = [ ...mocks.values() ].flatMap( (mock: Record<string, Mock>): unknown[][] =>
             Object.entries( mock ).filter( ([ name ]: [ string, Mock ]): boolean => /^input\w*SearchParameters$/.test( name ) ).flatMap( ([ , fn ]: [ string, Mock ]): unknown[][] => fn.mock.calls ) )
         expect( calls.at( -1 )!.at( -1 ) ).toBe( '-x' )
+        expect( TestBed.inject( Router ).navigate ).toHaveBeenCalledWith( [], expect.objectContaining( { queryParams: expect.objectContaining( { sort: '-x' } ) } ) )
+    } )
+
+    it.each( CASES )( 'searches the $name page by itself once the sort changed and the debounce elapsed', (item: BatchListCase) => {
+        // Arrange
+        vi.useFakeTimers()
+        const page: BatchListApi = create( item )
+        fetched( item ).mockClear()
+
+        // Act
+        page.model.set( { ...page.model(), sortBy: 'x', sortDirection: 'desc' } )
+        TestBed.tick()
+        vi.advanceTimersByTime( 400 )
+
+        // Assert
+        expect( fetched( item ).mock.calls[ 0 ].slice( -2 ) ).toEqual( [ 0, undefined ] )
         expect( TestBed.inject( Router ).navigate ).toHaveBeenCalledWith( [], expect.objectContaining( { queryParams: expect.objectContaining( { sort: '-x' } ) } ) )
     } )
 

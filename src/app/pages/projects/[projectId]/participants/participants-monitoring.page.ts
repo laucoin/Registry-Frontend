@@ -106,11 +106,12 @@ export class ParticipantsMonitoringPage implements OnInit {
     protected readonly sortFields: readonly string[] = PARTICIPANTS_MONITORING_SORT_FIELDS
     protected readonly model: WritableSignal<ParticipantsListSearchModel> = signal( PARTICIPANTS_MONITORING_DEFAULTS )
     protected readonly form: FieldTree<ParticipantsListSearchModel> = createSearchForm( this.model )
-    private readonly searchQuery: SearchQuery = injectSearchQuery( {
+    protected readonly searchQuery: SearchQuery<ParticipantsListSearchModel> = injectSearchQuery( {
         schema: PARTICIPANTS_MONITORING_QUERY_SCHEMA,
         defaults: PARTICIPANTS_MONITORING_DEFAULTS,
         model: this.model,
         extra: sortQueryCodec<ParticipantsListSearchModel>( PARTICIPANTS_MONITORING_SORT_FIELDS ),
+        search: (model: ParticipantsListSearchModel): void => this.search(model),
         apply: (model: ParticipantsListSearchModel, initial: boolean): void => {
             this.inputSearch( model )
             if (!initial) {
@@ -167,10 +168,10 @@ export class ParticipantsMonitoringPage implements OnInit {
         this.participants.fetchParticipantsPage( event.page, event.size )
     }
 
-    protected search (): void {
-        this.inputSearch( this.model() )
+    protected search (model: ParticipantsListSearchModel = this.model()): void {
+        this.inputSearch(model)
         this.participants.fetchParticipantsPage( 0, PAGE_SIZE )
-        this.searchQuery.write()
+        this.searchQuery.write(model)
     }
 
     protected resetFilters (): void {

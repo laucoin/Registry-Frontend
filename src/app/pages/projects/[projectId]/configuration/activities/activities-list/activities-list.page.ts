@@ -84,21 +84,22 @@ export class ActivitiesListPage {
     protected readonly sortFields: readonly string[] = ACTIVITIES_LIST_SORT_FIELDS
     protected readonly model: WritableSignal<ActivitiesListSearchModel> = signal(ACTIVITIES_LIST_DEFAULTS)
     protected readonly form: FieldTree<ActivitiesListSearchModel> = createSearchForm(this.model)
-    private readonly searchQuery: SearchQuery = injectSearchQuery({
+    protected readonly searchQuery: SearchQuery<ActivitiesListSearchModel> = injectSearchQuery({
         schema: ACTIVITIES_LIST_QUERY_SCHEMA,
         defaults: ACTIVITIES_LIST_DEFAULTS,
         model: this.model,
         extra: sortQueryCodec<ActivitiesListSearchModel>( ACTIVITIES_LIST_SORT_FIELDS ),
+        search: (model: ActivitiesListSearchModel): void => this.search(model),
         apply: (model: ActivitiesListSearchModel): void => {
             this.inputSearch(model)
             this.facade.fetchActivitiesPage(undefined, undefined)
         },
     })
 
-    protected search(): void {
-        this.inputSearch(this.model())
+    protected search(model: ActivitiesListSearchModel = this.model()): void {
+        this.inputSearch(model)
         this.facade.fetchActivitiesPage(0, undefined)
-        this.searchQuery.write()
+        this.searchQuery.write(model)
     }
 
     protected resetFilters(): void {

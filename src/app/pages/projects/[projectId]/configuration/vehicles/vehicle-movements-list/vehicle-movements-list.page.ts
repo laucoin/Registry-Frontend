@@ -98,11 +98,12 @@ export class VehicleMovementsListPage {
     protected readonly sortFields: readonly string[] = VEHICLE_MOVEMENTS_LIST_SORT_FIELDS
     protected readonly model: WritableSignal<VehicleMovementsListSearchModel> = signal(VEHICLE_MOVEMENTS_LIST_DEFAULTS)
     protected readonly form: FieldTree<VehicleMovementsListSearchModel> = createSearchForm(this.model)
-    private readonly searchQuery: SearchQuery = injectSearchQuery({
+    protected readonly searchQuery: SearchQuery<VehicleMovementsListSearchModel> = injectSearchQuery({
         schema: VEHICLE_MOVEMENTS_LIST_QUERY_SCHEMA,
         defaults: VEHICLE_MOVEMENTS_LIST_DEFAULTS,
         model: this.model,
         extra: sortQueryCodec<VehicleMovementsListSearchModel>( VEHICLE_MOVEMENTS_LIST_SORT_FIELDS ),
+        search: (model: VehicleMovementsListSearchModel): void => this.search(model),
         apply: (model: VehicleMovementsListSearchModel, initial: boolean): void => {
             this.inputSearch(model)
             if (!initial) {
@@ -138,10 +139,10 @@ export class VehicleMovementsListPage {
             ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe()
     }
 
-    protected search(): void {
-        this.inputSearch(this.model())
+    protected search(model: VehicleMovementsListSearchModel = this.model()): void {
+        this.inputSearch(model)
         this.facade.fetchVehicleMovementsPage(this.id(), 0, undefined)
-        this.searchQuery.write()
+        this.searchQuery.write(model)
     }
 
     protected resetFilters(): void {

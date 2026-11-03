@@ -106,11 +106,12 @@ export class GroupMemberListPage {
     protected readonly sortFields: readonly string[] = GROUP_MEMBER_LIST_SORT_FIELDS
     protected readonly model: WritableSignal<GroupMemberListSearchModel> = signal( GROUP_MEMBER_LIST_DEFAULTS )
     protected readonly form: FieldTree<GroupMemberListSearchModel> = createSearchForm( this.model )
-    private readonly searchQuery: SearchQuery = injectSearchQuery( {
+    protected readonly searchQuery: SearchQuery<GroupMemberListSearchModel> = injectSearchQuery( {
         schema: GROUP_MEMBER_LIST_QUERY_SCHEMA,
         defaults: GROUP_MEMBER_LIST_DEFAULTS,
         model: this.model,
         extra: sortQueryCodec<GroupMemberListSearchModel>( GROUP_MEMBER_LIST_SORT_FIELDS ),
+        search: (model: GroupMemberListSearchModel): void => this.search(model),
         apply: (model: GroupMemberListSearchModel): void => {
             this.inputSearch( model )
             this.facade.fetchGroupMembersPage( this.groupId(), undefined, undefined )
@@ -159,10 +160,10 @@ export class GroupMemberListPage {
         this.createMemberFormLayerOpened.set( true )
     }
 
-    protected search (): void {
-        this.inputSearch( this.model() )
+    protected search (model: GroupMemberListSearchModel = this.model()): void {
+        this.inputSearch(model)
         this.facade.fetchGroupMembersPage( this.groupId(), 0, undefined )
-        this.searchQuery.write()
+        this.searchQuery.write(model)
     }
 
     protected resetFilters (): void {

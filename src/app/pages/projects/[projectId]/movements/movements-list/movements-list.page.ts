@@ -81,21 +81,22 @@ export class MovementsListPage {
     protected readonly sortFields: readonly string[] = MOVEMENTS_LIST_SORT_FIELDS
     protected readonly model: WritableSignal<MovementsListSearchModel> = signal(MOVEMENTS_LIST_DEFAULTS)
     protected readonly form: FieldTree<MovementsListSearchModel> = createSearchForm(this.model)
-    private readonly searchQuery: SearchQuery = injectSearchQuery({
+    protected readonly searchQuery: SearchQuery<MovementsListSearchModel> = injectSearchQuery({
         schema: MOVEMENTS_LIST_QUERY_SCHEMA,
         defaults: MOVEMENTS_LIST_DEFAULTS,
         model: this.model,
         extra: sortQueryCodec<MovementsListSearchModel>( MOVEMENTS_LIST_SORT_FIELDS ),
+        search: (model: MovementsListSearchModel): void => this.search(model),
         apply: (model: MovementsListSearchModel): void => {
             this.inputSearch(model)
             this.facade.fetchMovementsPage(undefined, undefined)
         },
     })
 
-    protected search(): void {
-        this.inputSearch(this.model())
+    protected search(model: MovementsListSearchModel = this.model()): void {
+        this.inputSearch(model)
         this.facade.fetchMovementsPage(0, undefined)
-        this.searchQuery.write()
+        this.searchQuery.write(model)
     }
 
     protected resetFilters(): void {

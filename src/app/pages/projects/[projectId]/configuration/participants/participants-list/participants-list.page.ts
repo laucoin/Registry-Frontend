@@ -81,21 +81,22 @@ export class ParticipantsListPage {
     protected readonly sortFields: readonly string[] = PARTICIPANTS_LIST_SORT_FIELDS
     protected readonly model: WritableSignal<ParticipantsListSearchModel> = signal(PARTICIPANTS_LIST_DEFAULTS)
     protected readonly form: FieldTree<ParticipantsListSearchModel> = createSearchForm(this.model)
-    private readonly searchQuery: SearchQuery = injectSearchQuery({
+    protected readonly searchQuery: SearchQuery<ParticipantsListSearchModel> = injectSearchQuery({
         schema: PARTICIPANTS_LIST_QUERY_SCHEMA,
         defaults: PARTICIPANTS_LIST_DEFAULTS,
         model: this.model,
         extra: sortQueryCodec<ParticipantsListSearchModel>( PARTICIPANTS_LIST_SORT_FIELDS ),
+        search: (model: ParticipantsListSearchModel): void => this.search(model),
         apply: (model: ParticipantsListSearchModel): void => {
             this.inputSearch(model)
             this.facade.fetchParticipantsPage(undefined, undefined)
         },
     })
 
-    protected search(): void {
-        this.inputSearch(this.model())
+    protected search(model: ParticipantsListSearchModel = this.model()): void {
+        this.inputSearch(model)
         this.facade.fetchParticipantsPage(0, undefined)
-        this.searchQuery.write()
+        this.searchQuery.write(model)
     }
 
     protected resetFilters(): void {

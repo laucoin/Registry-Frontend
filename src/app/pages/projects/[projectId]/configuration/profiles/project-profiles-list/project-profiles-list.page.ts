@@ -85,21 +85,22 @@ export class ProjectProfilesListPage {
     protected readonly sortFields: readonly string[] = PROJECT_PROFILES_LIST_SORT_FIELDS
     protected readonly model: WritableSignal<ProjectProfilesListSearchModel> = signal(PROJECT_PROFILES_LIST_DEFAULTS)
     protected readonly form: FieldTree<ProjectProfilesListSearchModel> = createSearchForm(this.model)
-    private readonly searchQuery: SearchQuery = injectSearchQuery({
+    protected readonly searchQuery: SearchQuery<ProjectProfilesListSearchModel> = injectSearchQuery({
         schema: PROJECT_PROFILES_LIST_QUERY_SCHEMA,
         defaults: PROJECT_PROFILES_LIST_DEFAULTS,
         model: this.model,
         extra: sortQueryCodec<ProjectProfilesListSearchModel>( PROJECT_PROFILES_LIST_SORT_FIELDS ),
+        search: (model: ProjectProfilesListSearchModel): void => this.search(model),
         apply: (model: ProjectProfilesListSearchModel): void => {
             this.inputSearch(model)
             this.facade.fetchProjectProfilesPage(undefined, undefined)
         },
     })
 
-    protected search(): void {
-        this.inputSearch(this.model())
+    protected search(model: ProjectProfilesListSearchModel = this.model()): void {
+        this.inputSearch(model)
         this.facade.fetchProjectProfilesPage(0, undefined)
-        this.searchQuery.write()
+        this.searchQuery.write(model)
     }
 
     protected resetFilters(): void {
