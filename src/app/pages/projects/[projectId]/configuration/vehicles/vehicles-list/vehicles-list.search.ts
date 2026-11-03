@@ -1,13 +1,17 @@
+import { formatSort, parseSort, SortFields } from '@shared/helpers/search/sort-query'
 import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice'
+
+export const VEHICLES_LIST_SORT_FIELDS: readonly string[] = [ 'licensePlate', 'brand', 'model', 'status', 'startAvailability', 'endAvailability' ]
 
 interface VehiclesListSearch {
     q: string | undefined
     at: Date | undefined
     status: string | undefined
     isVisible: boolean | undefined
+    sort: string | undefined
 }
 
-export interface VehiclesListSearchModel {
+export interface VehiclesListSearchModel extends SortFields {
     q: string
     at: Date | null
     status: string
@@ -25,6 +29,7 @@ export function toVehiclesListSearchModel (params: VehiclesListSearch): Vehicles
         at: params.at ?? null,
         status: params.status ?? '',
         isVisible: toBooleanChoice( params.isVisible ),
+        ...parseSort( params.sort, VEHICLES_LIST_SORT_FIELDS ),
     }
 }
 
@@ -39,5 +44,6 @@ export function toVehiclesListSearchParams (model: VehiclesListSearchModel): Veh
         at: model.at ?? undefined,
         status: model.status === '' ? undefined : model.status,
         isVisible: fromBooleanChoice( model.isVisible ),
+        sort: formatSort( model ),
     }
 }

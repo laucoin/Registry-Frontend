@@ -4,4 +4,5 @@ export interface VehiclePageParamsModel {
     q: string | undefined
     status: string | undefined
     at: string | undefined
+    sort: string | undefined
 }

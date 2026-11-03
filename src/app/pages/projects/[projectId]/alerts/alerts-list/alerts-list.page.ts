@@ -15,7 +15,7 @@ import '@sgdf/ui/page-title'
 import '@sgdf/ui/select'
 import '@sgdf/ui/stat'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
-import {
+import { ALERTS_LIST_SORT_FIELDS,
     AlertsListSearchModel,
     toAlertsListSearchModel,
     toAlertsListSearchParams,
@@ -23,6 +23,8 @@ import {
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { sortQueryCodec } from '@shared/helpers/search/sort-query'
+import { SortFieldsComponent } from '@shared/ui/common/sort-fields/sort-fields.component'
 import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { DurationHelper } from '@shared/helpers/duration.helper'
 import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
@@ -32,7 +34,7 @@ import { ListComponent } from '@shared/ui/common/list/list.component'
 import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
 import { AlertElementComponent } from '@shared/ui/domain/alert-element/alert-element.component'
 
-const ALERTS_LIST_DEFAULTS: AlertsListSearchModel = toAlertsListSearchModel({ q: undefined, status: undefined, isVisible: undefined, from: undefined, to: undefined })
+const ALERTS_LIST_DEFAULTS: AlertsListSearchModel = toAlertsListSearchModel({ q: undefined, status: undefined, isVisible: undefined, from: undefined, to: undefined, sort: undefined })
 const ALERTS_LIST_QUERY_SCHEMA: SearchQuerySchema<AlertsListSearchModel> = { q: 'text', status: 'text', isVisible: 'choice', from: 'date', to: 'date' }
 
 /**
@@ -43,6 +45,7 @@ const ALERTS_LIST_QUERY_SCHEMA: SearchQuerySchema<AlertsListSearchModel> = { q: 
 @Component({
     selector: 'app-alerts-list',
     imports: [
+        SortFieldsComponent,
         IfProjectAuthorityDirective,
         ListComponent,
         SectionErrorComponent,
@@ -81,12 +84,14 @@ export class AlertsListPage {
         return (statistics?.resolvedCount ?? 0) + (statistics?.canceledCount ?? 0)
     })
 
+    protected readonly sortFields: readonly string[] = ALERTS_LIST_SORT_FIELDS
     protected readonly model: WritableSignal<AlertsListSearchModel> = signal(ALERTS_LIST_DEFAULTS)
     protected readonly form: FieldTree<AlertsListSearchModel> = createSearchForm(this.model)
     private readonly searchQuery: SearchQuery = injectSearchQuery({
         schema: ALERTS_LIST_QUERY_SCHEMA,
         defaults: ALERTS_LIST_DEFAULTS,
         model: this.model,
+        extra: sortQueryCodec<AlertsListSearchModel>( ALERTS_LIST_SORT_FIELDS ),
         apply: (model: AlertsListSearchModel): void => {
             this.inputSearch(model)
             this.facade.fetchAlertsPage(undefined, undefined)
@@ -116,6 +121,7 @@ export class AlertsListPage {
             search.isVisible,
             search.from,
             search.to,
+            search.sort,
         )
     }
 

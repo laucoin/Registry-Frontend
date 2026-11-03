@@ -20,6 +20,7 @@ import { ProjectRoutesEnum } from '@pages/projects/project-routes.enum'
 import { ProjectActions } from '@pages/projects/projects-list/project-actions.service'
 import {
     ProjectsListSearchModel,
+    PROJECTS_SORT_FIELDS,
     toProjectsListSearchModel,
     toProjectsListSearchParams,
 } from '@pages/projects/projects-list/projects-list.search'
@@ -29,6 +30,7 @@ import { createSearchForm } from '@shared/helpers/form/search.form'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
+import { sortQueryCodec } from '@shared/helpers/search/sort-query'
 import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { StringHelper } from '@shared/helpers/string.helper'
 import { AvailabilityStatusEnum } from '@shared/models/enumeration/availability-status.enum'
@@ -36,6 +38,7 @@ import { UserAuthorityEnum } from '@shared/models/enumeration/user-authority.enu
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { ProjectModel } from '@shared/models/model/project.model'
 import { ElementActionsComponent } from '@shared/ui/common/element-actions/element-actions.component'
+import { SortFieldsComponent } from '@shared/ui/common/sort-fields/sort-fields.component'
 import { InfoComponent } from '@shared/ui/common/info/info.component'
 import { ListComponent } from '@shared/ui/common/list/list.component'
 import { injectAutoRefresh } from '@shared/helpers/refresh/inject-auto-refresh'
@@ -43,7 +46,7 @@ import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 
 const INITIALS_LENGTH: number = 2
 const PROJECTS_LIST_DEFAULTS: ProjectsListSearchModel = toProjectsListSearchModel({
-    q: undefined, at: undefined, isVisible: undefined, isFavorite: undefined, withProfile: true,
+    q: undefined, at: undefined, isVisible: undefined, isFavorite: undefined, withProfile: true, sort: undefined,
 })
 const PROJECTS_LIST_QUERY_SCHEMA: SearchQuerySchema<ProjectsListSearchModel> = {
     q: 'text', at: 'date', isVisible: 'choice', isFavorite: 'choice', withProfile: 'choice',
@@ -70,6 +73,7 @@ const PROJECTS_LIST_QUERY_SCHEMA: SearchQuerySchema<ProjectsListSearchModel> = {
         PluralTranslationPipe,
         BooleanChoicePipe,
         FavoriteToggleComponent,
+        SortFieldsComponent,
     ],
     providers: [ProjectActions],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -82,6 +86,7 @@ export class ProjectsListPage {
     private readonly sessionFacade: SessionFacade = inject(SessionFacade)
     private readonly autoRefresh: void = injectAutoRefresh('projects/list', 'counts', (): void => this.facade.refreshProjectsPage())
 
+    protected readonly sortFields: readonly string[] = PROJECTS_SORT_FIELDS
     protected readonly createRoute: typeof ProjectRoutesEnum.CREATE = ProjectRoutesEnum.CREATE
     protected readonly optionsProject: WritableSignal<ProjectModel | undefined> = signal(undefined)
     protected readonly hiddenProject: WritableSignal<ProjectModel | undefined> = signal(undefined)
@@ -107,6 +112,7 @@ export class ProjectsListPage {
         schema: PROJECTS_LIST_QUERY_SCHEMA,
         defaults: PROJECTS_LIST_DEFAULTS,
         model: this.model,
+        extra: sortQueryCodec<ProjectsListSearchModel>(PROJECTS_SORT_FIELDS),
         apply: (model: ProjectsListSearchModel): void => {
             this.inputSearch(model)
             this.facade.fetchProjectsPage(undefined, undefined)
@@ -127,6 +133,7 @@ export class ProjectsListPage {
             search.isVisible,
             search.isFavorite,
             this.canReadAll() ? search.withProfile : undefined,
+            search.sort,
         )
     }
 

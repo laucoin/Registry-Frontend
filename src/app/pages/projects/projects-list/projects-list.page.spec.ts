@@ -76,7 +76,7 @@ describe('ProjectsListPage', () => {
         const model: ProjectsListSearchModel = page.model()
 
         // Assert
-        expect(model).toEqual({ q: '', at: null, isVisible: '', isFavorite: '', withProfile: 'true' })
+        expect(model).toEqual({ q: '', at: null, isVisible: '', isFavorite: '', withProfile: 'true', sortBy: '', sortDirection: 'asc' })
     })
 
     it('starts from the filters carried by the url', () => {
@@ -85,15 +85,41 @@ describe('ProjectsListPage', () => {
         const page: ProjectsListApi = create({ q: 'camp', isFavorite: 'true' })
 
         // Assert
-        expect(page.model()).toEqual({ q: 'camp', at: null, isVisible: '', isFavorite: 'true', withProfile: 'true' })
-        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith('camp', undefined, undefined, true, true)
+        expect(page.model()).toEqual({ q: 'camp', at: null, isVisible: '', isFavorite: 'true', withProfile: 'true', sortBy: '', sortDirection: 'asc' })
+        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith('camp', undefined, undefined, true, true, undefined)
+    })
+
+    it('starts from the sort carried by the url and sends it to the facade', () => {
+        // Arrange
+        // Act
+        const page: ProjectsListApi = create({ sort: '-begin' })
+
+        // Assert
+        expect(page.model()).toMatchObject({ sortBy: 'begin', sortDirection: 'desc' })
+        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith(undefined, undefined, undefined, undefined, true, '-begin')
+    })
+
+    it('writes the submitted sort in the url', async () => {
+        // Arrange
+        const page: ProjectsListApi = create()
+        const router: Router = TestBed.inject(Router)
+        page.model.set({ ...page.model(), sortBy: 'name', sortDirection: 'desc' })
+        const navigated: Promise<unknown> = firstValueFrom(router.events.pipe(filter((event: unknown): boolean => event instanceof NavigationEnd)))
+
+        // Act
+        page.search()
+        await navigated
+
+        // Assert
+        expect(facade['inputPageSearchParameters']).toHaveBeenLastCalledWith(undefined, undefined, undefined, undefined, true, '-name')
+        expect(router.url).toBe('/?sort=-name')
     })
 
     it('writes the submitted filters in the url', async () => {
         // Arrange
         const page: ProjectsListApi = create()
         const router: Router = TestBed.inject(Router)
-        page.model.set({ q: 'camp', at: null, isVisible: '', isFavorite: 'true', withProfile: 'true' })
+        page.model.set({ q: 'camp', at: null, isVisible: '', isFavorite: 'true', withProfile: 'true', sortBy: '', sortDirection: 'asc' })
 
         const navigated: Promise<unknown> = firstValueFrom(router.events.pipe(filter((event: unknown): boolean => event instanceof NavigationEnd)))
 
@@ -109,27 +135,27 @@ describe('ProjectsListPage', () => {
         // Arrange
         const page: ProjectsListApi = create()
         const when: Date = new Date(2026, 9, 3)
-        page.model.set({ q: 'camp', at: when, isVisible: 'false', isFavorite: 'true', withProfile: '' })
+        page.model.set({ q: 'camp', at: when, isVisible: 'false', isFavorite: 'true', withProfile: '', sortBy: '', sortDirection: 'asc' })
 
         // Act
         page.search()
 
         // Assert
-        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith('camp', when, false, true, undefined)
+        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith('camp', when, false, true, undefined, undefined)
         expect(facade['fetchProjectsPage']).toHaveBeenLastCalledWith(0, undefined)
     })
 
     it('clears the filters when they are reset, then searches again', () => {
         // Arrange
         const page: ProjectsListApi = create()
-        page.model.set({ q: 'camp', at: new Date(), isVisible: 'true', isFavorite: 'false', withProfile: '' })
+        page.model.set({ q: 'camp', at: new Date(), isVisible: 'true', isFavorite: 'false', withProfile: '', sortBy: '', sortDirection: 'asc' })
 
         // Act
         page.resetFilters()
 
         // Assert
-        expect(page.model()).toEqual({ q: '', at: null, isVisible: '', isFavorite: '', withProfile: 'true' })
-        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith(undefined, undefined, undefined, undefined, true)
+        expect(page.model()).toEqual({ q: '', at: null, isVisible: '', isFavorite: '', withProfile: 'true', sortBy: '', sortDirection: 'asc' })
+        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith(undefined, undefined, undefined, undefined, true, undefined)
     })
 
     it('toggles the favorite of a project through the facade', () => {
@@ -174,26 +200,26 @@ describe('ProjectsListPage', () => {
     it('sends the profile filter when the user has the global read authority', () => {
         // Arrange
         const page: ProjectsListApi = create()
-        page.model.set({ q: '', at: null, isVisible: '', isFavorite: '', withProfile: 'true' })
+        page.model.set({ q: '', at: null, isVisible: '', isFavorite: '', withProfile: 'true', sortBy: '', sortDirection: 'asc' })
 
         // Act
         page.search()
 
         // Assert
-        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith(undefined, undefined, undefined, undefined, true)
+        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith(undefined, undefined, undefined, undefined, true, undefined)
     })
 
     it('never sends the profile filter without the global read authority', () => {
         // Arrange
         const page: ProjectsListApi = create()
         authorities.set(['REGISTRY_PROJECT_C'])
-        page.model.set({ q: '', at: null, isVisible: '', isFavorite: '', withProfile: 'true' })
+        page.model.set({ q: '', at: null, isVisible: '', isFavorite: '', withProfile: 'true', sortBy: '', sortDirection: 'asc' })
 
         // Act
         page.search()
 
         // Assert
-        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith(undefined, undefined, undefined, undefined, undefined)
+        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith(undefined, undefined, undefined, undefined, undefined, undefined)
     })
 
     it('offers the visibility filter only to users who can restore a project', () => {

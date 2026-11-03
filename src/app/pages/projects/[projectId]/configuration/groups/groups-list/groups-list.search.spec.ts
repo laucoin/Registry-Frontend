@@ -4,19 +4,19 @@ import { toGroupsListSearchModel, toGroupsListSearchParams } from '@pages/projec
 describe('groups-list search mapping', () => {
     it('turns absent parameters into empty form values', () => {
         // Arrange
-        const params: Parameters<typeof toGroupsListSearchModel>[0] = { q: undefined, at: undefined, isPresent: undefined, isVisible: undefined }
+        const params: Parameters<typeof toGroupsListSearchModel>[0] = { q: undefined, at: undefined, isPresent: undefined, isVisible: undefined, sort: undefined }
 
         // Act
         const model: ReturnType<typeof toGroupsListSearchModel> = toGroupsListSearchModel(params)
 
         // Assert
-        expect(model).toEqual({ q: '', at: null, isPresent: '', isVisible: '' })
+        expect(model).toEqual({ q: '', at: null, isPresent: '', isVisible: '', sortBy: '', sortDirection: 'asc' })
     })
 
     it('turns the filled parameters into form values and back', () => {
         // Arrange
         const when: Date = new Date(2026, 9, 3)
-        const params: Parameters<typeof toGroupsListSearchModel>[0] = { q: 'camp', at: when, isPresent: false, isVisible: false }
+        const params: Parameters<typeof toGroupsListSearchModel>[0] = { q: 'camp', at: when, isPresent: false, isVisible: false, sort: undefined }
 
         // Act
         const model: ReturnType<typeof toGroupsListSearchModel> = toGroupsListSearchModel(params)
@@ -28,7 +28,7 @@ describe('groups-list search mapping', () => {
 
     it('turns empty form values into absent parameters', () => {
         // Arrange
-        const model: ReturnType<typeof toGroupsListSearchModel> = { q: '', at: null, isPresent: '', isVisible: '' }
+        const model: ReturnType<typeof toGroupsListSearchModel> = { q: '', at: null, isPresent: '', isVisible: '', sortBy: '', sortDirection: 'asc' }
 
         // Act
         const params: ReturnType<typeof toGroupsListSearchParams> = toGroupsListSearchParams(model)

@@ -19,7 +19,7 @@ import '@sgdf/ui/stat'
 import { distinctUntilChanged, map, tap } from 'rxjs'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { VehicleFacade } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.facade'
-import {
+import { VEHICLE_MOVEMENTS_LIST_SORT_FIELDS,
     VehicleMovementsListSearchModel,
     toVehicleMovementsListSearchModel,
     toVehicleMovementsListSearchParams,
@@ -28,6 +28,8 @@ import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { sortQueryCodec } from '@shared/helpers/search/sort-query'
+import { SortFieldsComponent } from '@shared/ui/common/sort-fields/sort-fields.component'
 import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { DurationHelper } from '@shared/helpers/duration.helper'
 import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
@@ -38,7 +40,7 @@ import { ListComponent } from '@shared/ui/common/list/list.component'
 import { PresenceTimelineComponent } from '@shared/ui/common/presence-timeline/presence-timeline.component'
 import { MovementElementComponent } from '@shared/ui/domain/movement-element/movement-element.component'
 
-const VEHICLE_MOVEMENTS_LIST_DEFAULTS: VehicleMovementsListSearchModel = toVehicleMovementsListSearchModel({ type: undefined, from: undefined, to: undefined, isVisible: undefined })
+const VEHICLE_MOVEMENTS_LIST_DEFAULTS: VehicleMovementsListSearchModel = toVehicleMovementsListSearchModel({ type: undefined, from: undefined, to: undefined, isVisible: undefined, sort: undefined })
 const VEHICLE_MOVEMENTS_LIST_QUERY_SCHEMA: SearchQuerySchema<VehicleMovementsListSearchModel> = { type: 'text', from: 'date', to: 'date', isVisible: 'choice' }
 
 /**
@@ -49,6 +51,7 @@ const VEHICLE_MOVEMENTS_LIST_QUERY_SCHEMA: SearchQuerySchema<VehicleMovementsLis
 @Component({
     selector: 'app-vehicle-movements-list',
     imports: [
+        SortFieldsComponent,
         IfProjectAuthorityDirective,
         ListComponent,
         PresenceTimelineComponent,
@@ -92,12 +95,14 @@ export class VehicleMovementsListPage {
         this.facade.vehicleMovementsPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
+    protected readonly sortFields: readonly string[] = VEHICLE_MOVEMENTS_LIST_SORT_FIELDS
     protected readonly model: WritableSignal<VehicleMovementsListSearchModel> = signal(VEHICLE_MOVEMENTS_LIST_DEFAULTS)
     protected readonly form: FieldTree<VehicleMovementsListSearchModel> = createSearchForm(this.model)
     private readonly searchQuery: SearchQuery = injectSearchQuery({
         schema: VEHICLE_MOVEMENTS_LIST_QUERY_SCHEMA,
         defaults: VEHICLE_MOVEMENTS_LIST_DEFAULTS,
         model: this.model,
+        extra: sortQueryCodec<VehicleMovementsListSearchModel>( VEHICLE_MOVEMENTS_LIST_SORT_FIELDS ),
         apply: (model: VehicleMovementsListSearchModel, initial: boolean): void => {
             this.inputSearch(model)
             if (!initial) {
@@ -146,7 +151,7 @@ export class VehicleMovementsListPage {
 
     private inputSearch(model: VehicleMovementsListSearchModel): void {
         const search: ReturnType<typeof toVehicleMovementsListSearchParams> = toVehicleMovementsListSearchParams(model)
-        this.facade.inputMovementsPageSearchParameters(search.type, search.from, search.to, search.isVisible)
+        this.facade.inputMovementsPageSearchParameters(search.type, search.from, search.to, search.isVisible, search.sort)
     }
 
     protected retryTimeline(): void {

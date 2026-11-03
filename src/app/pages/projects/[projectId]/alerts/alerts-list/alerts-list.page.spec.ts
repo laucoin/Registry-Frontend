@@ -150,14 +150,14 @@ describe( 'AlertsListPage statistics', () => {
     it( 'writes the submitted filters in the url and restarts from the first batch', () => {
         // Arrange
         const navigate: ReturnType<typeof vi.fn> = vi.spyOn( TestBed.inject( Router ), 'navigate' ).mockResolvedValue( true )
-        fixture.componentInstance[ 'model' ].set( { q: 'sos', status: '', isVisible: '', from: null, to: null } )
+        fixture.componentInstance[ 'model' ].set( { q: 'sos', status: '', isVisible: '', from: null, to: null, sortBy: '', sortDirection: 'asc' } )
 
         // Act
         fixture.componentInstance[ 'search' ]()
 
         // Assert
-        expect( facade[ 'inputPageSearchParameters' ] ).toHaveBeenLastCalledWith( 'sos', undefined, undefined, undefined, undefined )
+        expect( facade[ 'inputPageSearchParameters' ] ).toHaveBeenLastCalledWith( 'sos', undefined, undefined, undefined, undefined , undefined)
         expect( facade[ 'fetchAlertsPage' ] ).toHaveBeenLastCalledWith( 0, undefined )
-        expect( navigate ).toHaveBeenCalledWith( [], expect.objectContaining( { queryParams: { q: 'sos', status: null, isVisible: null, from: null, to: null } } ) )
+        expect( navigate ).toHaveBeenCalledWith( [], expect.objectContaining( { queryParams: { q: 'sos', status: null, isVisible: null, from: null, to: null, sort: null } } ) )
     } )
 } )

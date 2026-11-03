@@ -37,6 +37,8 @@ export class UserProfileFacade {
     public readonly userProjectProfileInvitationsPageError: Signal<NotificationModel | undefined> = this.store.invitations.error
     public readonly userProjectProfileInvitationsPageResetSearch: Signal<boolean> = this.store.invitations.params.resetSearch
     public readonly userProjectProfileInvitationsPageQueryParam: Signal<string | undefined> = this.store.invitations.params.q
+
+    public readonly userProjectProfileInvitationsPageSortParam: Signal<string | undefined> = this.store.invitations.params.sort
     public readonly userProjectProfileInvitationsPageAtParam: Signal<Date | undefined> = computed((): Date | undefined =>
         DateHelper.buildDate(this.store.invitations.params.at()),
     )
@@ -59,15 +61,18 @@ export class UserProfileFacade {
     public inputInvitationsPageSearchParameters(
         q: string | undefined,
         at: Date | undefined,
+        sort: string | undefined = undefined,
     ): void {
         const resetSearch: boolean = this.userProjectProfileInvitationsPageQueryParam() != q
             || this.userProjectProfileInvitationsPageAtParam()?.toISOString() != at?.toISOString()
+                                     || this.userProjectProfileInvitationsPageSortParam() != sort
 
         if (resetSearch) {
             this.store.updateInvitationsPageSearchParams({
                 resetSearch: resetSearch,
                 q: q,
                 at: at?.toISOString(),
+                sort: sort,
             })
         }
     }

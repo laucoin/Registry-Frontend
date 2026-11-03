@@ -16,7 +16,7 @@ import '@sgdf/ui/select'
 import { VehicleFacade } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.facade'
 import { VehicleRoutesEnum } from '@pages/projects/[projectId]/configuration/vehicles/vehicle-routes.enum'
 import { VehicleRowComponent } from '@pages/projects/[projectId]/configuration/vehicles/vehicle-row/vehicle-row.component'
-import {
+import { VEHICLES_LIST_SORT_FIELDS,
     VehiclesListSearchModel,
     toVehiclesListSearchModel,
     toVehiclesListSearchParams,
@@ -24,6 +24,8 @@ import {
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { sortQueryCodec } from '@shared/helpers/search/sort-query'
+import { SortFieldsComponent } from '@shared/ui/common/sort-fields/sort-fields.component'
 import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
 import { StringHelper } from '@shared/helpers/string.helper'
@@ -31,7 +33,7 @@ import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authori
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
 
-const VEHICLES_LIST_DEFAULTS: VehiclesListSearchModel = toVehiclesListSearchModel({ q: undefined, at: undefined, status: undefined, isVisible: undefined })
+const VEHICLES_LIST_DEFAULTS: VehiclesListSearchModel = toVehiclesListSearchModel({ q: undefined, at: undefined, status: undefined, isVisible: undefined, sort: undefined })
 const VEHICLES_LIST_QUERY_SCHEMA: SearchQuerySchema<VehiclesListSearchModel> = { q: 'text', at: 'date', status: 'text', isVisible: 'choice' }
 
 /**
@@ -42,6 +44,7 @@ const VEHICLES_LIST_QUERY_SCHEMA: SearchQuerySchema<VehiclesListSearchModel> = {
 @Component({
     selector: 'app-vehicles-list',
     imports: [
+        SortFieldsComponent,
         IfProjectAuthorityDirective,
         ListComponent,
         VehicleRowComponent,
@@ -78,12 +81,14 @@ export class VehiclesListPage {
         this.facade.vehiclesPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
+    protected readonly sortFields: readonly string[] = VEHICLES_LIST_SORT_FIELDS
     protected readonly model: WritableSignal<VehiclesListSearchModel> = signal(VEHICLES_LIST_DEFAULTS)
     protected readonly form: FieldTree<VehiclesListSearchModel> = createSearchForm(this.model)
     private readonly searchQuery: SearchQuery = injectSearchQuery({
         schema: VEHICLES_LIST_QUERY_SCHEMA,
         defaults: VEHICLES_LIST_DEFAULTS,
         model: this.model,
+        extra: sortQueryCodec<VehiclesListSearchModel>( VEHICLES_LIST_SORT_FIELDS ),
         apply: (model: VehiclesListSearchModel): void => {
             this.inputSearch(model)
             this.facade.fetchVehiclesPage(undefined, undefined)
@@ -103,7 +108,7 @@ export class VehiclesListPage {
 
     private inputSearch(model: VehiclesListSearchModel): void {
         const search: ReturnType<typeof toVehiclesListSearchParams> = toVehiclesListSearchParams(model)
-        this.facade.inputPageSearchParameters(search.q, search.at, search.status, search.isVisible)
+        this.facade.inputPageSearchParameters(search.q, search.at, search.status, search.isVisible, search.sort)
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {

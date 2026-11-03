@@ -31,6 +31,8 @@ export class ActivityFacade extends GenericProjectElementFacade {
     public readonly activitiesPageError: Signal<NotificationModel | undefined> = this.store.activities.error
     private readonly activitiesPageResetSearch: Signal<boolean> = this.store.activities.params.resetSearch
     public readonly activitiesPageQueryParam: Signal<string | undefined> = this.store.activities.params.q
+
+    public readonly activitiesPageSortParam: Signal<string | undefined> = this.store.activities.params.sort
     public readonly activitiesPageAtParam: Signal<Date | undefined> = computed( (): Date | undefined =>
         DateHelper.buildDate( this.store.activities.params.at() ),
     )
@@ -46,6 +48,8 @@ export class ActivityFacade extends GenericProjectElementFacade {
     public readonly activityStatisticsError: Signal<NotificationModel | undefined> = this.store.statistics.error
     public readonly activityMovementsPageResetSearch: Signal<boolean> = this.store.movements.params.resetSearch
     public readonly activityMovementsPageTypeParam: Signal<string | undefined> = this.store.movements.params.type
+
+    public readonly activityMovementsPageSortParam: Signal<string | undefined> = this.store.movements.params.sort
     public readonly activityMovementsPageFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
         DateHelper.buildDate( this.store.movements.params.from() ),
     )
@@ -79,11 +83,13 @@ export class ActivityFacade extends GenericProjectElementFacade {
         at: Date | undefined,
         isAvailable: boolean | undefined,
         isVisible: boolean | undefined,
+        sort: string | undefined = undefined,
     ): void {
         const resetSearch: boolean = this.activitiesPageQueryParam() != q
                                      || this.activitiesPageAtParam()?.toISOString() != at?.toISOString()
                                      || this.activitiesPageIsAvailableParam() != isAvailable
                                      || this.activitiesPageIsVisibleParam() != isVisible
+                                     || this.activitiesPageSortParam() != sort
 
         if (resetSearch) {
             this.store.updateActivitiesPageSearchParams( {
@@ -92,6 +98,7 @@ export class ActivityFacade extends GenericProjectElementFacade {
                 q: q,
                 isAvailable: isAvailable,
                 at: at?.toISOString(),
+                sort: sort,
             } )
         }
     }
@@ -122,11 +129,13 @@ export class ActivityFacade extends GenericProjectElementFacade {
         from: Date | undefined,
         to: Date | undefined,
         isVisible: boolean | undefined,
+        sort: string | undefined = undefined,
     ): void {
         const resetSearch: boolean = this.activityMovementsPageTypeParam() != type
                                      || this.activityMovementsPageFromParam()?.toISOString() != from?.toISOString()
                                      || this.activityMovementsPageToParam()?.toISOString() != to?.toISOString()
                                      || this.activityMovementsPageIsVisibleParam() != isVisible
+                                     || this.activityMovementsPageSortParam() != sort
 
         if (resetSearch) {
             this.store.updateActivityMovementsPageSearchParams( {
@@ -137,6 +146,7 @@ export class ActivityFacade extends GenericProjectElementFacade {
                 type: type,
                 from: from?.toISOString(),
                 to: to?.toISOString(),
+                sort: sort,
             } )
         }
     }

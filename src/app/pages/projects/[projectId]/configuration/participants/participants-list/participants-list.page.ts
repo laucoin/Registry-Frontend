@@ -15,7 +15,7 @@ import '@sgdf/ui/select'
 import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import { ParticipantRoutesEnum } from '@pages/projects/[projectId]/configuration/participants/participant-routes.enum'
 import { ParticipantRowComponent } from '@pages/projects/[projectId]/configuration/participants/participant-row/participant-row.component'
-import {
+import { PARTICIPANTS_LIST_SORT_FIELDS,
     ParticipantsListSearchModel,
     toParticipantsListSearchModel,
     toParticipantsListSearchParams,
@@ -23,6 +23,8 @@ import {
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { sortQueryCodec } from '@shared/helpers/search/sort-query'
+import { SortFieldsComponent } from '@shared/ui/common/sort-fields/sort-fields.component'
 import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
 import { StringHelper } from '@shared/helpers/string.helper'
@@ -30,7 +32,7 @@ import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authori
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
 
-const PARTICIPANTS_LIST_DEFAULTS: ParticipantsListSearchModel = toParticipantsListSearchModel({ q: undefined, status: undefined, isVisible: undefined })
+const PARTICIPANTS_LIST_DEFAULTS: ParticipantsListSearchModel = toParticipantsListSearchModel({ q: undefined, status: undefined, isVisible: undefined, sort: undefined })
 const PARTICIPANTS_LIST_QUERY_SCHEMA: SearchQuerySchema<ParticipantsListSearchModel> = { q: 'text', status: 'text', isVisible: 'choice' }
 
 /**
@@ -41,6 +43,7 @@ const PARTICIPANTS_LIST_QUERY_SCHEMA: SearchQuerySchema<ParticipantsListSearchMo
 @Component({
     selector: 'app-participants-list',
     imports: [
+        SortFieldsComponent,
         IfProjectAuthorityDirective,
         ListComponent,
         ParticipantRowComponent,
@@ -75,12 +78,14 @@ export class ParticipantsListPage {
         this.facade.participantsPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
+    protected readonly sortFields: readonly string[] = PARTICIPANTS_LIST_SORT_FIELDS
     protected readonly model: WritableSignal<ParticipantsListSearchModel> = signal(PARTICIPANTS_LIST_DEFAULTS)
     protected readonly form: FieldTree<ParticipantsListSearchModel> = createSearchForm(this.model)
     private readonly searchQuery: SearchQuery = injectSearchQuery({
         schema: PARTICIPANTS_LIST_QUERY_SCHEMA,
         defaults: PARTICIPANTS_LIST_DEFAULTS,
         model: this.model,
+        extra: sortQueryCodec<ParticipantsListSearchModel>( PARTICIPANTS_LIST_SORT_FIELDS ),
         apply: (model: ParticipantsListSearchModel): void => {
             this.inputSearch(model)
             this.facade.fetchParticipantsPage(undefined, undefined)
@@ -100,7 +105,7 @@ export class ParticipantsListPage {
 
     private inputSearch(model: ParticipantsListSearchModel): void {
         const search: ReturnType<typeof toParticipantsListSearchParams> = toParticipantsListSearchParams(model)
-        this.facade.inputPageSearchParameters(search.q, search.status, search.isVisible)
+        this.facade.inputPageSearchParameters(search.q, search.status, search.isVisible, search.sort)
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {

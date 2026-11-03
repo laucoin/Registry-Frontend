@@ -15,7 +15,7 @@ import '@sgdf/ui/select'
 import { ProjectProfileFacade } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.facade'
 import { ProjectProfileRoutesEnum } from '@pages/projects/[projectId]/configuration/profiles/project-profile-routes.enum'
 import { ProjectProfileRowComponent } from '@pages/projects/[projectId]/configuration/profiles/project-profile-row/project-profile-row.component'
-import {
+import { PROJECT_PROFILES_LIST_SORT_FIELDS,
     ProjectProfilesListSearchModel,
     toProjectProfilesListSearchModel,
     toProjectProfilesListSearchParams,
@@ -24,6 +24,8 @@ import { IfProjectAuthorityDirective } from '@shared/directives/if-project-autho
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { sortQueryCodec } from '@shared/helpers/search/sort-query'
+import { SortFieldsComponent } from '@shared/ui/common/sort-fields/sort-fields.component'
 import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
 import { StringHelper } from '@shared/helpers/string.helper'
@@ -32,7 +34,7 @@ import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authori
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
 
-const PROJECT_PROFILES_LIST_DEFAULTS: ProjectProfilesListSearchModel = toProjectProfilesListSearchModel({ q: undefined, at: undefined, status: undefined, isAvailable: undefined, isVisible: undefined })
+const PROJECT_PROFILES_LIST_DEFAULTS: ProjectProfilesListSearchModel = toProjectProfilesListSearchModel({ q: undefined, at: undefined, status: undefined, isAvailable: undefined, isVisible: undefined, sort: undefined })
 const PROJECT_PROFILES_LIST_QUERY_SCHEMA: SearchQuerySchema<ProjectProfilesListSearchModel> = { q: 'text', at: 'date', status: 'text', isAvailable: 'choice', isVisible: 'choice' }
 
 /**
@@ -43,6 +45,7 @@ const PROJECT_PROFILES_LIST_QUERY_SCHEMA: SearchQuerySchema<ProjectProfilesListS
 @Component({
     selector: 'app-project-profiles-list',
     imports: [
+        SortFieldsComponent,
         ListComponent,
         IfProjectAuthorityDirective,
         ProjectProfileRowComponent,
@@ -79,12 +82,14 @@ export class ProjectProfilesListPage {
         this.facade.projectProfilesPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
+    protected readonly sortFields: readonly string[] = PROJECT_PROFILES_LIST_SORT_FIELDS
     protected readonly model: WritableSignal<ProjectProfilesListSearchModel> = signal(PROJECT_PROFILES_LIST_DEFAULTS)
     protected readonly form: FieldTree<ProjectProfilesListSearchModel> = createSearchForm(this.model)
     private readonly searchQuery: SearchQuery = injectSearchQuery({
         schema: PROJECT_PROFILES_LIST_QUERY_SCHEMA,
         defaults: PROJECT_PROFILES_LIST_DEFAULTS,
         model: this.model,
+        extra: sortQueryCodec<ProjectProfilesListSearchModel>( PROJECT_PROFILES_LIST_SORT_FIELDS ),
         apply: (model: ProjectProfilesListSearchModel): void => {
             this.inputSearch(model)
             this.facade.fetchProjectProfilesPage(undefined, undefined)
@@ -110,6 +115,7 @@ export class ProjectProfilesListPage {
             search.status as ProfileStatusEnum | undefined,
             search.isAvailable,
             search.isVisible,
+            search.sort,
         )
     }
 

@@ -5,5 +5,5 @@ export interface ProjectPageParamsModel {
     at: string | undefined
     isFavorite: boolean | undefined
     withProfile: boolean | undefined
-    sort?: string
+    sort: string | undefined
 }

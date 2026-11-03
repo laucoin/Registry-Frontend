@@ -40,6 +40,8 @@ export class AlertFacade extends GenericProjectElementFacade {
 
     public readonly alertsPageQueryParam: Signal<string | undefined> = this.store.alerts.params.q
 
+    public readonly alertsPageSortParam: Signal<string | undefined> = this.store.alerts.params.sort
+
     public readonly alertsPageStatusParam: Signal<string | undefined> = this.store.alerts.params.status
 
     public readonly alertsPageIsVisibleParam: Signal<boolean | undefined> = this.store.alerts.params.isVisible
@@ -99,12 +101,14 @@ export class AlertFacade extends GenericProjectElementFacade {
         isVisible: boolean | undefined,
         from: Date | undefined,
         to: Date | undefined,
+        sort: string | undefined = undefined,
     ): void {
         const resetSearch: boolean = this.alertsPageQueryParam() != q
                                      || this.alertsPageStatusParam() != status
                                      || this.alertsPageIsVisibleParam() != isVisible
                                      || this.alertsPageFromParam()?.toISOString() != from?.toISOString()
                                      || this.alertsPageToParam()?.toISOString() != to?.toISOString()
+                                     || this.alertsPageSortParam() != sort
 
         if (resetSearch) {
             this.store.updateAlertsPageSearchParams( {
@@ -114,7 +118,7 @@ export class AlertFacade extends GenericProjectElementFacade {
                 isVisible: isVisible,
                 from: from?.toISOString(),
                 to: to?.toISOString(),
-                sort: undefined,
+                sort: sort,
             } )
         }
     }

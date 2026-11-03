@@ -7,4 +7,5 @@ export interface ProjectProfilePageParamsModel {
     isVisible: boolean | undefined
     status: ProfileStatusEnum | undefined
     at: string | undefined
+    sort: string | undefined
 }

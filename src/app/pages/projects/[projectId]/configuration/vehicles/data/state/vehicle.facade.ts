@@ -32,6 +32,8 @@ export class VehicleFacade extends GenericProjectElementFacade {
     public readonly vehiclesPageError: Signal<NotificationModel | undefined> = this.store.vehicles.error
     public readonly vehiclesPageResetSearch: Signal<boolean> = this.store.vehicles.params.resetSearch
     public readonly vehiclesPageQueryParam: Signal<string | undefined> = this.store.vehicles.params.q
+
+    public readonly vehiclesPageSortParam: Signal<string | undefined> = this.store.vehicles.params.sort
     public readonly vehiclesPageAtParam: Signal<Date | undefined> = computed( (): Date | undefined =>
         DateHelper.buildDate( this.store.vehicles.params.at() ),
     )
@@ -47,6 +49,8 @@ export class VehicleFacade extends GenericProjectElementFacade {
     public readonly vehicleTimelineError: Signal<NotificationModel | undefined> = this.store.timeline.error
     private readonly vehicleMovementsPageResetSearch: Signal<boolean> = this.store.movements.params.resetSearch
     public readonly vehicleMovementsPageTypeParam: Signal<string | undefined> = this.store.movements.params.type
+
+    public readonly vehicleMovementsPageSortParam: Signal<string | undefined> = this.store.movements.params.sort
     public readonly vehicleMovementsPageFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
         DateHelper.buildDate( this.store.movements.params.from() ),
     )
@@ -78,11 +82,13 @@ export class VehicleFacade extends GenericProjectElementFacade {
         at: Date | undefined,
         status: string | undefined,
         isVisible: boolean | undefined,
+        sort: string | undefined = undefined,
     ): void {
         const resetSearch: boolean = this.vehiclesPageQueryParam() != q
                                      || this.vehiclesPageAtParam()?.toISOString() != at?.toISOString()
                                      || this.vehiclesPageStatusParam() != status
                                      || this.vehiclesPageIsVisibleParam() != isVisible
+                                     || this.vehiclesPageSortParam() != sort
 
         if (resetSearch) {
             this.store.updateVehiclesPageSearchParams( {
@@ -91,6 +97,7 @@ export class VehicleFacade extends GenericProjectElementFacade {
                 q: q,
                 status: status,
                 at: at?.toISOString(),
+                sort: sort,
             } )
         }
     }
@@ -121,11 +128,13 @@ export class VehicleFacade extends GenericProjectElementFacade {
         from: Date | undefined,
         to: Date | undefined,
         isVisible: boolean | undefined,
+        sort: string | undefined = undefined,
     ): void {
         const resetSearch: boolean = this.vehicleMovementsPageTypeParam() != type
                                      || this.vehicleMovementsPageFromParam()?.toISOString() != from?.toISOString()
                                      || this.vehicleMovementsPageToParam()?.toISOString() != to?.toISOString()
                                      || this.vehicleMovementsPageIsVisibleParam() != isVisible
+                                     || this.vehicleMovementsPageSortParam() != sort
 
         if (resetSearch) {
             this.store.updateVehicleMovementsPageSearchParams( {
@@ -136,6 +145,7 @@ export class VehicleFacade extends GenericProjectElementFacade {
                 type: type,
                 from: from?.toISOString(),
                 to: to?.toISOString(),
+                sort: sort,
             } )
         }
     }

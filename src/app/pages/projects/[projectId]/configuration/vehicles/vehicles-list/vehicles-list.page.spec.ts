@@ -44,7 +44,7 @@ describe('VehiclesListPage', () => {
         const page: VehiclesListApi = create()
 
         // Assert
-        expect(page.model()).toEqual({ q: '', at: null, status: '', isVisible: '' })
+        expect(page.model()).toEqual({ q: '', at: null, status: '', isVisible: '', sortBy: '', sortDirection: 'asc' })
         expect(facade['fetchVehiclesPage']).toHaveBeenCalledWith(undefined, undefined)
     })
 
@@ -54,15 +54,15 @@ describe('VehiclesListPage', () => {
         const page: VehiclesListApi = create({ q: 'ada', status: 'AVAILABLE' })
 
         // Assert
-        expect(page.model()).toEqual({ q: 'ada', at: null, status: 'AVAILABLE', isVisible: '' })
-        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith('ada', undefined, 'AVAILABLE', undefined)
+        expect(page.model()).toEqual({ q: 'ada', at: null, status: 'AVAILABLE', isVisible: '', sortBy: '', sortDirection: 'asc' })
+        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith('ada', undefined, 'AVAILABLE', undefined, undefined)
     })
 
     it('sends the typed filters to the facade, restarts from the first batch and writes the url', async () => {
         // Arrange
         const page: VehiclesListApi = create()
         const router: Router = TestBed.inject(Router)
-        page.model.set({ q: 'camp', at: null, status: '', isVisible: '' })
+        page.model.set({ q: 'camp', at: null, status: '', isVisible: '', sortBy: '', sortDirection: 'asc' })
 
         const navigated: Promise<unknown> = firstValueFrom(router.events.pipe(filter((event: unknown): boolean => event instanceof NavigationEnd)))
 
@@ -71,7 +71,7 @@ describe('VehiclesListPage', () => {
         await navigated
 
         // Assert
-        expect(facade['inputPageSearchParameters']).toHaveBeenLastCalledWith('camp', undefined, undefined, undefined)
+        expect(facade['inputPageSearchParameters']).toHaveBeenLastCalledWith('camp', undefined, undefined, undefined, undefined)
         expect(facade['fetchVehiclesPage']).toHaveBeenLastCalledWith(0, undefined)
         expect(router.url).toBe('/?q=camp')
     })
@@ -84,7 +84,7 @@ describe('VehiclesListPage', () => {
         page.resetFilters()
 
         // Assert
-        expect(page.model()).toEqual({ q: '', at: null, status: '', isVisible: '' })
+        expect(page.model()).toEqual({ q: '', at: null, status: '', isVisible: '', sortBy: '', sortDirection: 'asc' })
         expect(facade['fetchVehiclesPage']).toHaveBeenLastCalledWith(0, undefined)
     })
 })

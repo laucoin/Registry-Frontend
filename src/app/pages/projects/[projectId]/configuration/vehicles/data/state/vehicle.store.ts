@@ -47,6 +47,7 @@ const defaultVehicleStore: VehicleStoreModel = {
         q: undefined,
         status: undefined,
         at: undefined,
+        sort: undefined,
     } ),
     movements: PageStateHelper.initial<MovementPageParamsModel, MovementModel>( {
         resetSearch: false,
@@ -56,6 +57,7 @@ const defaultVehicleStore: VehicleStoreModel = {
         type: undefined,
         from: undefined,
         to: undefined,
+        sort: undefined,
     } ),
     timeline: { element: undefined, loading: false, error: undefined },
     metadata: {

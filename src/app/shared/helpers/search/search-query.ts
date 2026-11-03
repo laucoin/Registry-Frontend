@@ -60,11 +60,17 @@ function serializeField (kind: SearchQueryFieldKind, value: unknown): string {
     return String(value ?? '')
 }
 
+export interface SearchQueryExtra<T> {
+    read (query: ParamMap, parsed: T): T
+    write (model: T): Params
+}
+
 export interface SearchQueryOptions<T extends object> {
     schema: SearchQuerySchema<T>
     defaults: T
     model: WritableSignal<T>
     apply: (model: T, initial: boolean) => void
+    extra?: SearchQueryExtra<T>
 }
 
 export interface SearchQuery {
@@ -74,7 +80,7 @@ export interface SearchQuery {
 /**
  * Purpose: Garde le formulaire de recherche d'une liste et l'URL alignés, l'URL faisant foi.
  * Scope: Charge le formulaire depuis les query params à la création, le réaligne à chaque changement d'URL (retour arrière, lien modifié) et écrit le formulaire dans l'URL à la demande, sans empiler d'historique.
- * Limits: Doit être appelé dans un contexte d'injection ; `apply` porte l'application des valeurs au store et le chargement (`initial` vaut true à la création), il n'est pas rappelé quand l'URL reflète déjà le formulaire.
+ * Limits: Doit être appelé dans un contexte d'injection ; `extra` ajoute les query params qui ne correspondent pas champ à champ au formulaire (tri). `apply` porte l'application des valeurs au store et le chargement (`initial` vaut true à la création), il n'est pas rappelé quand l'URL reflète déjà le formulaire.
  */
 export function injectSearchQuery<T extends object> (options: SearchQueryOptions<T>): SearchQuery {
     const route: ActivatedRoute = inject(ActivatedRoute)
@@ -89,11 +95,16 @@ export function injectSearchQuery<T extends object> (options: SearchQueryOptions
 }
 
 function readQuery<T extends object> (options: SearchQueryOptions<T>, query: ParamMap): T {
-    return parseSearchQuery(options.schema, options.defaults, query)
+    const parsed: T = parseSearchQuery(options.schema, options.defaults, query)
+    return options.extra ? options.extra.read(query, parsed) : parsed
+}
+
+function queryParamsOf<T extends object> (options: SearchQueryOptions<T>, model: T): Params {
+    return { ...serializeSearchQuery(options.schema, options.defaults, model), ...options.extra?.write(model) }
 }
 
 function queryKey<T extends object> (options: SearchQueryOptions<T>, model: T): string {
-    return JSON.stringify(serializeSearchQuery(options.schema, options.defaults, model))
+    return JSON.stringify(queryParamsOf(options, model))
 }
 
 function realign<T extends object> (options: SearchQueryOptions<T>, fromUrl: T): void {
@@ -108,7 +119,7 @@ function realign<T extends object> (options: SearchQueryOptions<T>, fromUrl: T):
 function writeQuery<T extends object> (options: SearchQueryOptions<T>, router: Router, route: ActivatedRoute): void {
     router.navigate([], {
         relativeTo: route,
-        queryParams: serializeSearchQuery(options.schema, options.defaults, options.model()),
+        queryParams: queryParamsOf(options, options.model()),
         queryParamsHandling: 'merge',
         replaceUrl: true,
     }).then()

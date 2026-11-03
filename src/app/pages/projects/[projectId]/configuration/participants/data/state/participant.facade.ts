@@ -44,6 +44,8 @@ export class ParticipantFacade extends GenericProjectElementFacade {
 
     public readonly participantsPageQueryParam: Signal<string | undefined> = this.store.participants.params.q
 
+    public readonly participantsPageSortParam: Signal<string | undefined> = this.store.participants.params.sort
+
     public readonly participantsPageStatusParam: Signal<string | undefined> = this.store.participants.params.status
 
     public readonly participantsPageIsVisibleParam: Signal<boolean | undefined> = this.store.participants.params.isVisible
@@ -65,6 +67,8 @@ export class ParticipantFacade extends GenericProjectElementFacade {
     public readonly participantMovementsPageResetSearch: Signal<boolean> = this.store.movements.params.resetSearch
 
     public readonly participantMovementsPageTypeParam: Signal<string | undefined> = this.store.movements.params.type
+
+    public readonly participantMovementsPageSortParam: Signal<string | undefined> = this.store.movements.params.sort
 
     public readonly participantMovementsPageFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
             DateHelper.buildDate( this.store.movements.params.from() ),
@@ -101,10 +105,12 @@ export class ParticipantFacade extends GenericProjectElementFacade {
         q: string | undefined,
         status: string | undefined,
         isVisible: boolean | undefined,
+        sort: string | undefined = undefined,
     ): void {
         const resetSearch: boolean = this.participantsPageQueryParam() != q
                                      || this.participantsPageStatusParam() != status
                                      || this.participantsPageIsVisibleParam() != isVisible
+                                     || this.participantsPageSortParam() != sort
 
         if (resetSearch) {
             this.store.updateParticipantsPageSearchParams( {
@@ -112,6 +118,7 @@ export class ParticipantFacade extends GenericProjectElementFacade {
                 isVisible: isVisible,
                 status: status,
                 q: q,
+                sort: sort,
             } )
         }
     }
@@ -142,11 +149,13 @@ export class ParticipantFacade extends GenericProjectElementFacade {
         from: Date | undefined,
         to: Date | undefined,
         isVisible: boolean | undefined,
+        sort: string | undefined = undefined,
     ): void {
         const resetSearch: boolean = this.participantMovementsPageTypeParam() != type
                                      || this.participantMovementsPageFromParam()?.toISOString() != from?.toISOString()
                                      || this.participantMovementsPageToParam()?.toISOString() != to?.toISOString()
                                      || this.participantMovementsPageIsVisibleParam() != isVisible
+                                     || this.participantMovementsPageSortParam() != sort
 
         if (resetSearch) {
             this.store.updateParticipantMovementsPageSearchParams( {
@@ -157,6 +166,7 @@ export class ParticipantFacade extends GenericProjectElementFacade {
                 type: type,
                 from: from?.toISOString(),
                 to: to?.toISOString(),
+                sort: sort,
             } )
         }
     }

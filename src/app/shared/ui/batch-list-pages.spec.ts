@@ -139,6 +139,21 @@ describe( 'batch list pages', () => {
         expect( fetched( item ).mock.calls[ 0 ].slice( -2 ) ).toEqual( [ 0, undefined ] )
     } )
 
+    it.each( CASES )( 'sends the chosen sort of the $name page to the facade as the backend sort', (item: BatchListCase) => {
+        // Arrange
+        const page: BatchListApi = create( item )
+        page.model.set( { ...page.model(), sortBy: 'x', sortDirection: 'desc' } )
+
+        // Act
+        page.search()
+
+        // Assert
+        const calls: unknown[][] = [ ...mocks.values() ].flatMap( (mock: Record<string, Mock>): unknown[][] =>
+            Object.entries( mock ).filter( ([ name ]: [ string, Mock ]): boolean => /^input\w*SearchParameters$/.test( name ) ).flatMap( ([ , fn ]: [ string, Mock ]): unknown[][] => fn.mock.calls ) )
+        expect( calls.at( -1 )!.at( -1 ) ).toBe( '-x' )
+        expect( TestBed.inject( Router ).navigate ).toHaveBeenCalledWith( [], expect.objectContaining( { queryParams: expect.objectContaining( { sort: '-x' } ) } ) )
+    } )
+
     it.each( CASES )( 'clears the $name filters when they are reset, then searches again', (item: BatchListCase) => {
         // Arrange
         const page: BatchListApi = create( item )
@@ -150,7 +165,7 @@ describe( 'batch list pages', () => {
         page.resetFilters()
 
         // Assert
-        const texts: unknown[] = Object.values( page.model() ).filter( (value: unknown): boolean => typeof value === 'string' )
+        const texts: unknown[] = Object.entries( page.model() ).filter( ([ key, value ]: [ string, unknown ]): boolean => key !== 'sortDirection' && typeof value === 'string' ).map( ([ , value ]: [ string, unknown ]): unknown => value )
         expect( texts.every( (value: unknown): boolean => value === '' ) ).toBe( true )
         expect( fetched( item ) ).toHaveBeenCalledTimes( 1 )
     } )

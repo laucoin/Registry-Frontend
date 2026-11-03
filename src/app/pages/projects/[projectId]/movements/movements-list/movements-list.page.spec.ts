@@ -44,7 +44,7 @@ describe('MovementsListPage', () => {
         const page: MovementsListApi = create()
 
         // Assert
-        expect(page.model()).toEqual({ type: '', from: null, to: null, isVisible: '' })
+        expect(page.model()).toEqual({ type: '', from: null, to: null, isVisible: '', sortBy: '', sortDirection: 'asc' })
         expect(facade['fetchMovementsPage']).toHaveBeenCalledWith(undefined, undefined)
     })
 
@@ -54,15 +54,15 @@ describe('MovementsListPage', () => {
         const page: MovementsListApi = create({ type: 'IN', from: '2026-01-02T00:00:00.000Z' })
 
         // Assert
-        expect(page.model()).toEqual({ type: 'IN', from: new Date('2026-01-02T00:00:00.000Z'), to: null, isVisible: '' })
-        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith('IN', new Date('2026-01-02T00:00:00.000Z'), undefined, undefined)
+        expect(page.model()).toEqual({ type: 'IN', from: new Date('2026-01-02T00:00:00.000Z'), to: null, isVisible: '', sortBy: '', sortDirection: 'asc' })
+        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith('IN', new Date('2026-01-02T00:00:00.000Z'), undefined, undefined, undefined)
     })
 
     it('sends the typed filters to the facade, restarts from the first batch and writes the url', async () => {
         // Arrange
         const page: MovementsListApi = create()
         const router: Router = TestBed.inject(Router)
-        page.model.set({ type: 'IN', from: null, to: null, isVisible: 'true' })
+        page.model.set({ type: 'IN', from: null, to: null, isVisible: 'true', sortBy: '', sortDirection: 'asc' })
 
         const navigated: Promise<unknown> = firstValueFrom(router.events.pipe(filter((event: unknown): boolean => event instanceof NavigationEnd)))
 
@@ -71,7 +71,7 @@ describe('MovementsListPage', () => {
         await navigated
 
         // Assert
-        expect(facade['inputPageSearchParameters']).toHaveBeenLastCalledWith('IN', undefined, undefined, true)
+        expect(facade['inputPageSearchParameters']).toHaveBeenLastCalledWith('IN', undefined, undefined, true, undefined)
         expect(facade['fetchMovementsPage']).toHaveBeenLastCalledWith(0, undefined)
         expect(router.url).toBe('/?type=IN&isVisible=true')
     })
@@ -84,7 +84,7 @@ describe('MovementsListPage', () => {
         page.resetFilters()
 
         // Assert
-        expect(page.model()).toEqual({ type: '', from: null, to: null, isVisible: '' })
+        expect(page.model()).toEqual({ type: '', from: null, to: null, isVisible: '', sortBy: '', sortDirection: 'asc' })
         expect(facade['fetchMovementsPage']).toHaveBeenLastCalledWith(0, undefined)
     })
 })

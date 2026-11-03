@@ -70,6 +70,8 @@ export class ProjectFacade extends GenericFacade {
 
     public readonly projectsPageWithProfileParam: Signal<boolean | undefined> = this.store.projects.params.withProfile
 
+    public readonly projectsPageSortParam: Signal<string | undefined> = this.store.projects.params.sort
+
     public readonly withProfilesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed( (): SelectOptionModel<boolean | undefined>[] =>
             this.store.metadata.withProfiles().map( (item: SelectOptionModel<boolean | undefined>): SelectOptionModel<boolean | undefined> => ({
                 ...item,
@@ -114,12 +116,14 @@ export class ProjectFacade extends GenericFacade {
         isVisible: boolean | undefined,
         isFavorite: boolean | undefined = undefined,
         withProfile: boolean | undefined = undefined,
+        sort: string | undefined = undefined,
     ): void {
         const resetSearch: boolean = this.projectsPageQueryParam() != q
                                      || this.projectsPageAtParam()?.toISOString() != at?.toISOString()
                                      || this.projectsPageIsVisibleParam() != isVisible
                                      || this.projectsPageIsFavoriteParam() != isFavorite
                                      || this.projectsPageWithProfileParam() != withProfile
+                                     || this.projectsPageSortParam() != sort
 
         if (resetSearch) {
             this.store.updateProjectsPageSearchParams( {
@@ -129,6 +133,7 @@ export class ProjectFacade extends GenericFacade {
                 withProfile: withProfile,
                 q: q,
                 at: at?.toISOString(),
+                sort: sort,
             } )
         }
     }

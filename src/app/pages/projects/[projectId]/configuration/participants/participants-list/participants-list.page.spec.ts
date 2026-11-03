@@ -44,7 +44,7 @@ describe('ParticipantsListPage', () => {
         const page: ParticipantsListApi = create()
 
         // Assert
-        expect(page.model()).toEqual({ q: '', status: '', isVisible: '' })
+        expect(page.model()).toEqual({ q: '', status: '', isVisible: '', sortBy: '', sortDirection: 'asc' })
         expect(facade['fetchParticipantsPage']).toHaveBeenCalledWith(undefined, undefined)
     })
 
@@ -54,15 +54,15 @@ describe('ParticipantsListPage', () => {
         const page: ParticipantsListApi = create({ q: 'ada', status: 'ACTIVE', isVisible: 'false' })
 
         // Assert
-        expect(page.model()).toEqual({ q: 'ada', status: 'ACTIVE', isVisible: 'false' })
-        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith('ada', 'ACTIVE', false)
+        expect(page.model()).toEqual({ q: 'ada', status: 'ACTIVE', isVisible: 'false', sortBy: '', sortDirection: 'asc' })
+        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith('ada', 'ACTIVE', false, undefined)
     })
 
     it('sends the typed filters to the facade, restarts from the first batch and writes the url', async () => {
         // Arrange
         const page: ParticipantsListApi = create()
         const router: Router = TestBed.inject(Router)
-        page.model.set({ q: 'camp', status: '', isVisible: '' })
+        page.model.set({ q: 'camp', status: '', isVisible: '', sortBy: '', sortDirection: 'asc' })
 
         const navigated: Promise<unknown> = firstValueFrom(router.events.pipe(filter((event: unknown): boolean => event instanceof NavigationEnd)))
 
@@ -71,7 +71,7 @@ describe('ParticipantsListPage', () => {
         await navigated
 
         // Assert
-        expect(facade['inputPageSearchParameters']).toHaveBeenLastCalledWith('camp', undefined, undefined)
+        expect(facade['inputPageSearchParameters']).toHaveBeenLastCalledWith('camp', undefined, undefined, undefined)
         expect(facade['fetchParticipantsPage']).toHaveBeenLastCalledWith(0, undefined)
         expect(router.url).toBe('/?q=camp')
     })
@@ -84,7 +84,7 @@ describe('ParticipantsListPage', () => {
         page.resetFilters()
 
         // Assert
-        expect(page.model()).toEqual({ q: '', status: '', isVisible: '' })
+        expect(page.model()).toEqual({ q: '', status: '', isVisible: '', sortBy: '', sortDirection: 'asc' })
         expect(facade['fetchParticipantsPage']).toHaveBeenLastCalledWith(0, undefined)
     })
 })

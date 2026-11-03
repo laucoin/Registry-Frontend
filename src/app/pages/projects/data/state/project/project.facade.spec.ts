@@ -98,6 +98,19 @@ describe( 'ProjectFacade', () => {
         expect( findProjects ).toHaveBeenCalledWith( 3, 10, expect.anything() )
     } )
 
+    it( 'restarts from the first page and sends the sort when it changes', () => {
+        // Arrange
+        facade.inputPageSearchParameters( undefined, undefined, undefined, undefined, true )
+        facade.inputPageSearchParameters( undefined, undefined, undefined, undefined, true, '-name' )
+
+        // Act
+        facade.fetchProjectsPage( 3, 10 )
+
+        // Assert
+        expect( facade.projectsPageSortParam() ).toBe( '-name' )
+        expect( findProjects ).toHaveBeenCalledWith( 0, 10, expect.objectContaining( { sort: '-name' } ) )
+    } )
+
     it( 'adds a project to the favorites and shows it as a favorite', () => {
         // Arrange
         findProjects.mockReturnValueOnce( of( pageOf<ProjectModel>( [ { id: 'a', favorite: false } as ProjectModel ], 0 ) ) )

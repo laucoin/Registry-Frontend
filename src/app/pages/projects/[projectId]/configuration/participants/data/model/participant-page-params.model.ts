@@ -4,5 +4,5 @@ export interface ParticipantPageParamsModel {
     status: string | undefined
     q: string | undefined
     onSite?: boolean
-    sort?: string
+    sort: string | undefined
 }

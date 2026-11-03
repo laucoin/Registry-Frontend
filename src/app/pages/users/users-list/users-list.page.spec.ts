@@ -48,7 +48,7 @@ describe('UsersListPage', () => {
         const model: UsersListSearchModel = page.model()
 
         // Assert
-        expect(model).toEqual({ q: '', isVisible: '' })
+        expect(model).toEqual({ q: '', isVisible: '', sortBy: '', sortDirection: 'asc' })
     })
 
     it('starts from the filters carried by the url', () => {
@@ -57,8 +57,8 @@ describe('UsersListPage', () => {
         const page: UsersListApi = create({ q: 'ada', isVisible: 'false' })
 
         // Assert
-        expect(page.model()).toEqual({ q: 'ada', isVisible: 'false' })
-        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith('ada', false)
+        expect(page.model()).toEqual({ q: 'ada', isVisible: 'false', sortBy: '', sortDirection: 'asc' })
+        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith('ada', false, undefined)
         expect(facade['fetchUsersPage']).toHaveBeenCalledWith(undefined, undefined)
     })
 

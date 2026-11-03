@@ -1,9 +1,13 @@
+import { formatSort, parseSort, SortFields } from '@shared/helpers/search/sort-query'
+export const INVITATIONS_LIST_SORT_FIELDS: readonly string[] = [ 'startAccess', 'endAccess' ]
+
 interface InvitationsListSearch {
     q: string | undefined
     at: Date | undefined
+    sort: string | undefined
 }
 
-export interface InvitationsListSearchModel {
+export interface InvitationsListSearchModel extends SortFields {
     q: string
     at: Date | null
 }
@@ -17,6 +21,7 @@ export function toInvitationsListSearchModel (params: InvitationsListSearch): In
     return {
         q: params.q ?? '',
         at: params.at ?? null,
+        ...parseSort( params.sort, INVITATIONS_LIST_SORT_FIELDS ),
     }
 }
 
@@ -29,5 +34,6 @@ export function toInvitationsListSearchParams (model: InvitationsListSearchModel
     return {
         q: model.q === '' ? undefined : model.q,
         at: model.at ?? undefined,
+        sort: formatSort( model ),
     }
 }

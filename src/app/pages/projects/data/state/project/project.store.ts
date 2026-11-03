@@ -28,6 +28,7 @@ const defaultProjectStore: ProjectStoreModel = {
         at: undefined,
         isFavorite: undefined,
         withProfile: true,
+        sort: undefined,
     } ),
     project: defaultProject,
     createdProjectId: undefined,

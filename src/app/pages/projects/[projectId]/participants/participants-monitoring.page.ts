@@ -24,6 +24,8 @@ import { GroupStatusFacade } from '@pages/projects/[projectId]/participants/data
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { sortQueryCodec } from '@shared/helpers/search/sort-query'
+import { SortFieldsComponent } from '@shared/ui/common/sort-fields/sort-fields.component'
 import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { MonitoringRowHelper } from '@shared/helpers/monitoring-row.helper'
 import { MonitoringRowModel } from '@shared/models/model/monitoring-row.model'
@@ -39,9 +41,10 @@ import { ProjectParticipantOverviewComponent } from '@shared/ui/domain/project-p
 
 type ParticipantsTabKey = 'mine' | 'groups' | 'individual'
 
+const PARTICIPANTS_MONITORING_SORT_FIELDS: readonly string[] = [ 'lastName', 'firstName', 'status' ]
 const PAGE_SIZE: number = 20
 const TAB_PARAM: string = 'tab'
-const PARTICIPANTS_MONITORING_DEFAULTS: ParticipantsListSearchModel = toParticipantsListSearchModel( { q: undefined, status: undefined, isVisible: undefined } )
+const PARTICIPANTS_MONITORING_DEFAULTS: ParticipantsListSearchModel = toParticipantsListSearchModel( { q: undefined, status: undefined, isVisible: undefined, sort: undefined } )
 const PARTICIPANTS_MONITORING_QUERY_SCHEMA: SearchQuerySchema<ParticipantsListSearchModel> = { q: 'text', status: Object.values( PresenceStatusEnum ) }
 
 /**
@@ -54,6 +57,7 @@ const PARTICIPANTS_MONITORING_QUERY_SCHEMA: SearchQuerySchema<ParticipantsListSe
     schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
     providers: [ provideTranslocoScope( 'project-home' ) ],
     imports: [
+        SortFieldsComponent,
         TranslocoPipe,
         PluralTranslationPipe,
         FormField,
@@ -99,12 +103,14 @@ export class ParticipantsMonitoringPage implements OnInit {
         this.participants.participantsPageStatusParam() !== undefined,
     ].filter( Boolean ).length )
 
+    protected readonly sortFields: readonly string[] = PARTICIPANTS_MONITORING_SORT_FIELDS
     protected readonly model: WritableSignal<ParticipantsListSearchModel> = signal( PARTICIPANTS_MONITORING_DEFAULTS )
     protected readonly form: FieldTree<ParticipantsListSearchModel> = createSearchForm( this.model )
     private readonly searchQuery: SearchQuery = injectSearchQuery( {
         schema: PARTICIPANTS_MONITORING_QUERY_SCHEMA,
         defaults: PARTICIPANTS_MONITORING_DEFAULTS,
         model: this.model,
+        extra: sortQueryCodec<ParticipantsListSearchModel>( PARTICIPANTS_MONITORING_SORT_FIELDS ),
         apply: (model: ParticipantsListSearchModel, initial: boolean): void => {
             this.inputSearch( model )
             if (!initial) {
@@ -174,7 +180,7 @@ export class ParticipantsMonitoringPage implements OnInit {
 
     private inputSearch (model: ParticipantsListSearchModel): void {
         const search: ReturnType<typeof toParticipantsListSearchParams> = toParticipantsListSearchParams( model )
-        this.participants.inputPageSearchParameters( search.q, search.status, undefined )
+        this.participants.inputPageSearchParameters( search.q, search.status, undefined, search.sort )
     }
 
     private settled (page: unknown, loading: boolean, error: unknown): boolean {

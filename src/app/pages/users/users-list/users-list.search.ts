@@ -1,11 +1,15 @@
+import { formatSort, parseSort, SortFields } from '@shared/helpers/search/sort-query'
 import { fromBooleanChoice, toBooleanChoice, BooleanChoice } from '@shared/helpers/form/boolean-choice'
+
+export const USERS_LIST_SORT_FIELDS: readonly string[] = [ 'lastName', 'firstName', 'email', 'lastLogin' ]
 
 interface UsersListSearch {
     q: string | undefined
     isVisible: boolean | undefined
+    sort: string | undefined
 }
 
-export interface UsersListSearchModel {
+export interface UsersListSearchModel extends SortFields {
     q: string
     isVisible: BooleanChoice
 }
@@ -19,6 +23,7 @@ export function toUsersListSearchModel (params: UsersListSearch): UsersListSearc
     return {
         q: params.q ?? '',
         isVisible: toBooleanChoice( params.isVisible ),
+        ...parseSort( params.sort, USERS_LIST_SORT_FIELDS ),
     }
 }
 
@@ -31,5 +36,6 @@ export function toUsersListSearchParams (model: UsersListSearchModel): UsersList
     return {
         q: model.q === '' ? undefined : model.q,
         isVisible: fromBooleanChoice( model.isVisible ),
+        sort: formatSort( model ),
     }
 }

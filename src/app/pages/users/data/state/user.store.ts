@@ -23,6 +23,7 @@ const defaultUserStore: UserStoreModel = {
         resetSearch: false,
         q: undefined,
         isVisible: undefined,
+        sort: undefined,
     } ),
     user: defaultUser,
     metadata: {

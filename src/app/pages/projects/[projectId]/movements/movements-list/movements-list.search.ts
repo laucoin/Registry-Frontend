@@ -1,13 +1,17 @@
+import { formatSort, parseSort, SortFields } from '@shared/helpers/search/sort-query'
 import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice'
+
+export const MOVEMENTS_LIST_SORT_FIELDS: readonly string[] = [ 'dateTime', 'type', 'lastCommunicationDateTime' ]
 
 interface MovementsListSearch {
     type: string | undefined
     from: Date | undefined
     to: Date | undefined
     isVisible: boolean | undefined
+    sort: string | undefined
 }
 
-export interface MovementsListSearchModel {
+export interface MovementsListSearchModel extends SortFields {
     type: string
     from: Date | null
     to: Date | null
@@ -25,6 +29,7 @@ export function toMovementsListSearchModel (params: MovementsListSearch): Moveme
         from: params.from ?? null,
         to: params.to ?? null,
         isVisible: toBooleanChoice( params.isVisible ),
+        ...parseSort( params.sort, MOVEMENTS_LIST_SORT_FIELDS ),
     }
 }
 
@@ -39,5 +44,6 @@ export function toMovementsListSearchParams (model: MovementsListSearchModel): M
         from: model.from ?? undefined,
         to: model.to ?? undefined,
         isVisible: fromBooleanChoice( model.isVisible ),
+        sort: formatSort( model ),
     }
 }

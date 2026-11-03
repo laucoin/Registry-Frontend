@@ -2,8 +2,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { IfProjectAuthorityDirective } from '@shared/directives/if-project-authority.directive'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { sortQueryCodec } from '@shared/helpers/search/sort-query'
+import { SortFieldsComponent } from '@shared/ui/common/sort-fields/sort-fields.component'
 import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
-import { GroupMemberListSearchModel, toGroupMemberListSearchModel, toGroupMemberListSearchParams } from './group-member-list.search'
+import { GROUP_MEMBER_LIST_SORT_FIELDS, GroupMemberListSearchModel, toGroupMemberListSearchModel, toGroupMemberListSearchParams } from './group-member-list.search'
 import { NgTemplateOutlet } from '@angular/common'
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, signal, Signal, WritableSignal, model, ModelSignal, DestroyRef } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
@@ -43,7 +45,7 @@ import { FormActionsComponent } from '@shared/ui/common/form-actions/form-action
 import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import { ParticipantFormComponent } from '@pages/projects/[projectId]/configuration/participants/participant-form/participant-form.component'
 
-const GROUP_MEMBER_LIST_DEFAULTS: GroupMemberListSearchModel = toGroupMemberListSearchModel( { q: undefined, status: undefined, isVisible: undefined } )
+const GROUP_MEMBER_LIST_DEFAULTS: GroupMemberListSearchModel = toGroupMemberListSearchModel( { q: undefined, status: undefined, isVisible: undefined, sort: undefined } )
 const GROUP_MEMBER_LIST_QUERY_SCHEMA: SearchQuerySchema<GroupMemberListSearchModel> = { q: 'text', status: 'text', isVisible: 'choice' }
 
 /**
@@ -54,6 +56,7 @@ const GROUP_MEMBER_LIST_QUERY_SCHEMA: SearchQuerySchema<GroupMemberListSearchMod
 @Component( {
     selector: 'app-group-member-list',
     imports: [
+        SortFieldsComponent,
         IfProjectAuthorityDirective,
         ListComponent,
         ParticipantRowComponent,
@@ -100,12 +103,14 @@ export class GroupMemberListPage {
         this.facade.groupMembersPageIsVisibleParam() !== undefined,
     ].filter( Boolean ).length )
 
+    protected readonly sortFields: readonly string[] = GROUP_MEMBER_LIST_SORT_FIELDS
     protected readonly model: WritableSignal<GroupMemberListSearchModel> = signal( GROUP_MEMBER_LIST_DEFAULTS )
     protected readonly form: FieldTree<GroupMemberListSearchModel> = createSearchForm( this.model )
     private readonly searchQuery: SearchQuery = injectSearchQuery( {
         schema: GROUP_MEMBER_LIST_QUERY_SCHEMA,
         defaults: GROUP_MEMBER_LIST_DEFAULTS,
         model: this.model,
+        extra: sortQueryCodec<GroupMemberListSearchModel>( GROUP_MEMBER_LIST_SORT_FIELDS ),
         apply: (model: GroupMemberListSearchModel): void => {
             this.inputSearch( model )
             this.facade.fetchGroupMembersPage( this.groupId(), undefined, undefined )
@@ -167,7 +172,7 @@ export class GroupMemberListPage {
 
     private inputSearch (model: GroupMemberListSearchModel): void {
         const search: ReturnType<typeof toGroupMemberListSearchParams> = toGroupMemberListSearchParams( model )
-        this.facade.inputMembersPageSearchParameters( search.q, search.status, search.isVisible )
+        this.facade.inputMembersPageSearchParameters( search.q, search.status, search.isVisible, search.sort )
     }
 
     protected loadBatch (pageEvent: PageEventModel): void {

@@ -16,7 +16,7 @@ import '@sgdf/ui/select'
 import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/data/state/group.facade'
 import { GroupRoutesEnum } from '@pages/projects/[projectId]/configuration/groups/group-routes.enum'
 import { GroupRowComponent } from '@pages/projects/[projectId]/configuration/groups/group-row/group-row.component'
-import {
+import { GROUPS_LIST_SORT_FIELDS,
     GroupsListSearchModel,
     toGroupsListSearchModel,
     toGroupsListSearchParams,
@@ -24,6 +24,8 @@ import {
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { sortQueryCodec } from '@shared/helpers/search/sort-query'
+import { SortFieldsComponent } from '@shared/ui/common/sort-fields/sort-fields.component'
 import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
 import { StringHelper } from '@shared/helpers/string.helper'
@@ -31,7 +33,7 @@ import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authori
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
 
-const GROUPS_LIST_DEFAULTS: GroupsListSearchModel = toGroupsListSearchModel({ q: undefined, at: undefined, isPresent: undefined, isVisible: undefined })
+const GROUPS_LIST_DEFAULTS: GroupsListSearchModel = toGroupsListSearchModel({ q: undefined, at: undefined, isPresent: undefined, isVisible: undefined, sort: undefined })
 const GROUPS_LIST_QUERY_SCHEMA: SearchQuerySchema<GroupsListSearchModel> = { q: 'text', at: 'date', isPresent: 'choice', isVisible: 'choice' }
 
 /**
@@ -42,6 +44,7 @@ const GROUPS_LIST_QUERY_SCHEMA: SearchQuerySchema<GroupsListSearchModel> = { q: 
 @Component({
     selector: 'app-groups-list',
     imports: [
+        SortFieldsComponent,
         IfProjectAuthorityDirective,
         ListComponent,
         GroupRowComponent,
@@ -77,12 +80,14 @@ export class GroupsListPage {
         this.facade.groupsPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
+    protected readonly sortFields: readonly string[] = GROUPS_LIST_SORT_FIELDS
     protected readonly model: WritableSignal<GroupsListSearchModel> = signal(GROUPS_LIST_DEFAULTS)
     protected readonly form: FieldTree<GroupsListSearchModel> = createSearchForm(this.model)
     private readonly searchQuery: SearchQuery = injectSearchQuery({
         schema: GROUPS_LIST_QUERY_SCHEMA,
         defaults: GROUPS_LIST_DEFAULTS,
         model: this.model,
+        extra: sortQueryCodec<GroupsListSearchModel>( GROUPS_LIST_SORT_FIELDS ),
         apply: (model: GroupsListSearchModel): void => {
             this.inputSearch(model)
             this.facade.fetchGroupsPage(undefined, undefined)
@@ -102,7 +107,7 @@ export class GroupsListPage {
 
     private inputSearch(model: GroupsListSearchModel): void {
         const search: ReturnType<typeof toGroupsListSearchParams> = toGroupsListSearchParams(model)
-        this.facade.inputPageSearchParameters(search.q, search.at, search.isPresent, search.isVisible)
+        this.facade.inputPageSearchParameters(search.q, search.at, search.isPresent, search.isVisible, search.sort)
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {

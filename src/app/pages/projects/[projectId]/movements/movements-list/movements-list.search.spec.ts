@@ -4,18 +4,18 @@ import { toMovementsListSearchModel, toMovementsListSearchParams } from '@pages/
 describe('MovementsList search mapping', () => {
     it('turns absent parameters into empty form values', () => {
         // Arrange
-        const params: Parameters<typeof toMovementsListSearchModel>[0] = { type: undefined, from: undefined, to: undefined, isVisible: undefined }
+        const params: Parameters<typeof toMovementsListSearchModel>[0] = { type: undefined, from: undefined, to: undefined, isVisible: undefined, sort: undefined }
 
         // Act
         const model: ReturnType<typeof toMovementsListSearchModel> = toMovementsListSearchModel(params)
 
         // Assert
-        expect(model).toEqual({ type: '', from: null, to: null, isVisible: '' })
+        expect(model).toEqual({ type: '', from: null, to: null, isVisible: '', sortBy: '', sortDirection: 'asc' })
     })
 
     it('turns the filled parameters, with both dates of the range, into form values and back', () => {
         // Arrange
-        const params: Parameters<typeof toMovementsListSearchModel>[0] = { type: 'IN', from: new Date(2026, 9, 3), to: new Date(2026, 9, 5), isVisible: false }
+        const params: Parameters<typeof toMovementsListSearchModel>[0] = { type: 'IN', from: new Date(2026, 9, 3), to: new Date(2026, 9, 5), isVisible: false, sort: undefined }
 
         // Act
         const model: ReturnType<typeof toMovementsListSearchModel> = toMovementsListSearchModel(params)
@@ -27,7 +27,7 @@ describe('MovementsList search mapping', () => {
 
     it('turns empty form values into absent parameters', () => {
         // Arrange
-        const model: ReturnType<typeof toMovementsListSearchModel> = { type: '', from: null, to: null, isVisible: '' }
+        const model: ReturnType<typeof toMovementsListSearchModel> = { type: '', from: null, to: null, isVisible: '', sortBy: '', sortDirection: 'asc' }
 
         // Act
         const params: ReturnType<typeof toMovementsListSearchParams> = toMovementsListSearchParams(model)

@@ -56,8 +56,8 @@ describe( 'GroupMemberListPage', () => {
         const page: MemberListApi = create( { q: 'ada', isVisible: 'true' } )
 
         // Assert
-        expect( page.model() ).toEqual( { q: 'ada', status: '', isVisible: 'true' } )
-        expect( facade[ 'inputMembersPageSearchParameters' ] ).toHaveBeenCalledWith( 'ada', undefined, true )
+        expect( page.model() ).toEqual( { q: 'ada', status: '', isVisible: 'true', sortBy: '', sortDirection: 'asc' } )
+        expect( facade[ 'inputMembersPageSearchParameters' ] ).toHaveBeenCalledWith( 'ada', undefined, true, undefined )
         expect( facade[ 'fetchGroupMembersPage' ] ).toHaveBeenCalledWith( 'g1', undefined, undefined )
     } )
 
@@ -71,7 +71,7 @@ describe( 'GroupMemberListPage', () => {
 
         // Assert
         expect( facade[ 'fetchGroupMembersPage' ] ).toHaveBeenLastCalledWith( 'g1', 0, undefined )
-        expect( navigate ).toHaveBeenCalledWith( [], expect.objectContaining( { queryParams: { q: null, status: null, isVisible: null } } ) )
+        expect( navigate ).toHaveBeenCalledWith( [], expect.objectContaining( { queryParams: { q: null, status: null, isVisible: null, sort: null } } ) )
     } )
 
     it( 'opens the panel to add members with an empty selection', () => {

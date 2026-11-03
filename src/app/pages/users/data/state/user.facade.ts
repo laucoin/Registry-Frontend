@@ -44,6 +44,8 @@ export class UserFacade extends GenericFacade {
 
     public readonly usersPageQueryParam: Signal<string | undefined> = this.store.users.params.q
 
+    public readonly usersPageSortParam: Signal<string | undefined> = this.store.users.params.sort
+
     public readonly actualUsersPageIsVisibleParam: Signal<boolean | undefined> = this.store.users.params.isVisible
 
     public readonly user: Signal<UserModel | undefined> = this.store.user.element
@@ -72,15 +74,18 @@ export class UserFacade extends GenericFacade {
     public inputPageSearchParameters (
         q: string | undefined,
         isVisible: boolean | undefined,
+        sort: string | undefined = undefined,
     ): void {
         const resetSearch: boolean = this.usersPageQueryParam() != q
                                      || this.actualUsersPageIsVisibleParam() != isVisible
+                                     || this.usersPageSortParam() != sort
 
         if (resetSearch) {
             this.store.updateUsersPageSearchParams( {
                 resetSearch: resetSearch,
                 q: q,
                 isVisible: isVisible,
+                sort: sort,
             } )
         }
     }

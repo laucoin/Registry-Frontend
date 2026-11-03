@@ -18,7 +18,7 @@ import '@sgdf/ui/skeleton'
 import '@sgdf/ui/stat'
 import { distinctUntilChanged, map, tap } from 'rxjs'
 import { ActivityFacade } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
-import {
+import { ACTIVITY_MOVEMENTS_LIST_SORT_FIELDS,
     ActivityMovementsListSearchModel,
     toActivityMovementsListSearchModel,
     toActivityMovementsListSearchParams,
@@ -27,6 +27,8 @@ import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { sortQueryCodec } from '@shared/helpers/search/sort-query'
+import { SortFieldsComponent } from '@shared/ui/common/sort-fields/sort-fields.component'
 import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { DurationHelper } from '@shared/helpers/duration.helper'
 import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
@@ -37,7 +39,7 @@ import { ListComponent } from '@shared/ui/common/list/list.component'
 import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
 import { MovementElementComponent } from '@shared/ui/domain/movement-element/movement-element.component'
 
-const ACTIVITY_MOVEMENTS_LIST_DEFAULTS: ActivityMovementsListSearchModel = toActivityMovementsListSearchModel({ type: undefined, from: undefined, to: undefined, isVisible: undefined })
+const ACTIVITY_MOVEMENTS_LIST_DEFAULTS: ActivityMovementsListSearchModel = toActivityMovementsListSearchModel({ type: undefined, from: undefined, to: undefined, isVisible: undefined, sort: undefined })
 const ACTIVITY_MOVEMENTS_LIST_QUERY_SCHEMA: SearchQuerySchema<ActivityMovementsListSearchModel> = { type: 'text', from: 'date', to: 'date', isVisible: 'choice' }
 
 /**
@@ -48,6 +50,7 @@ const ACTIVITY_MOVEMENTS_LIST_QUERY_SCHEMA: SearchQuerySchema<ActivityMovementsL
 @Component({
     selector: 'app-activity-movements-list',
     imports: [
+        SortFieldsComponent,
         IfProjectAuthorityDirective,
         ListComponent,
         SectionErrorComponent,
@@ -96,12 +99,14 @@ export class ActivityMovementsListPage {
         this.facade.activityMovementsPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
+    protected readonly sortFields: readonly string[] = ACTIVITY_MOVEMENTS_LIST_SORT_FIELDS
     protected readonly model: WritableSignal<ActivityMovementsListSearchModel> = signal(ACTIVITY_MOVEMENTS_LIST_DEFAULTS)
     protected readonly form: FieldTree<ActivityMovementsListSearchModel> = createSearchForm(this.model)
     private readonly searchQuery: SearchQuery = injectSearchQuery({
         schema: ACTIVITY_MOVEMENTS_LIST_QUERY_SCHEMA,
         defaults: ACTIVITY_MOVEMENTS_LIST_DEFAULTS,
         model: this.model,
+        extra: sortQueryCodec<ActivityMovementsListSearchModel>( ACTIVITY_MOVEMENTS_LIST_SORT_FIELDS ),
         apply: (model: ActivityMovementsListSearchModel, initial: boolean): void => {
             this.inputSearch(model)
             if (!initial) {
@@ -150,7 +155,7 @@ export class ActivityMovementsListPage {
 
     private inputSearch(model: ActivityMovementsListSearchModel): void {
         const search: ReturnType<typeof toActivityMovementsListSearchParams> = toActivityMovementsListSearchParams(model)
-        this.facade.inputMovementsPageSearchParameters(search.type, search.from, search.to, search.isVisible)
+        this.facade.inputMovementsPageSearchParameters(search.type, search.from, search.to, search.isVisible, search.sort)
     }
 
     protected retryStatistics(): void {

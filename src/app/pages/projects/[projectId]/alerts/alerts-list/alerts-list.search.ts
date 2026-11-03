@@ -1,4 +1,7 @@
+import { formatSort, parseSort, SortFields } from '@shared/helpers/search/sort-query'
 import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice'
+
+export const ALERTS_LIST_SORT_FIELDS: readonly string[] = [ 'dateTime', 'title', 'status', 'criticality' ]
 
 interface AlertsListSearch {
     q: string | undefined
@@ -6,9 +9,10 @@ interface AlertsListSearch {
     isVisible: boolean | undefined
     from: Date | undefined
     to: Date | undefined
+    sort: string | undefined
 }
 
-export interface AlertsListSearchModel {
+export interface AlertsListSearchModel extends SortFields {
     q: string
     status: string
     isVisible: BooleanChoice
@@ -28,6 +32,7 @@ export function toAlertsListSearchModel (params: AlertsListSearch): AlertsListSe
         isVisible: toBooleanChoice( params.isVisible ),
         from: params.from ?? null,
         to: params.to ?? null,
+        ...parseSort( params.sort, ALERTS_LIST_SORT_FIELDS ),
     }
 }
 
@@ -43,5 +48,6 @@ export function toAlertsListSearchParams (model: AlertsListSearchModel): AlertsL
         isVisible: fromBooleanChoice( model.isVisible ),
         from: model.from ?? undefined,
         to: model.to ?? undefined,
+        sort: formatSort( model ),
     }
 }

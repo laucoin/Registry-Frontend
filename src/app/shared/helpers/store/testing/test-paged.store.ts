@@ -64,6 +64,7 @@ export const TestPagedStore = signalStore(
             type: undefined,
             from: undefined,
             to: undefined,
+            sort: undefined,
         } ),
         item: { element: undefined, loading: false, error: undefined },
         metadata: { labels: [] },

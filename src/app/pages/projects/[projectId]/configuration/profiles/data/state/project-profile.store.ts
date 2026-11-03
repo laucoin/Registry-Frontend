@@ -38,6 +38,7 @@ const defaultProjectProfileStore: ProjectProfileStoreModel = {
         status: undefined,
         q: undefined,
         at: undefined,
+        sort: undefined,
     } ),
     metadata: {
         roles: [],

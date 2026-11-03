@@ -17,6 +17,8 @@ import {
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { sortQueryCodec } from '@shared/helpers/search/sort-query'
+import { SortFieldsComponent } from '@shared/ui/common/sort-fields/sort-fields.component'
 import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { MonitoringRowHelper } from '@shared/helpers/monitoring-row.helper'
 import { StringHelper } from '@shared/helpers/string.helper'
@@ -27,8 +29,9 @@ import { ListComponent } from '@shared/ui/common/list/list.component'
 import { MonitoringRowComponent } from '@shared/ui/domain/monitoring-row/monitoring-row.component'
 import { ProjectVehicleOverviewComponent } from '@shared/ui/domain/project-vehicle-overview/project-vehicle-overview.component'
 
-const VEHICLES_MONITORING_DEFAULTS: VehiclesListSearchModel = toVehiclesListSearchModel( { q: undefined, at: undefined, status: undefined, isVisible: undefined } )
+const VEHICLES_MONITORING_DEFAULTS: VehiclesListSearchModel = toVehiclesListSearchModel( { q: undefined, at: undefined, status: undefined, isVisible: undefined, sort: undefined } )
 const VEHICLES_MONITORING_QUERY_SCHEMA: SearchQuerySchema<VehiclesListSearchModel> = { q: 'text', at: 'date', status: 'text' }
+const VEHICLES_MONITORING_SORT_FIELDS: readonly string[] = [ 'licensePlate', 'brand', 'model', 'status' ]
 const PAGE_SIZE: number = 20
 
 /**
@@ -41,6 +44,7 @@ const PAGE_SIZE: number = 20
     schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
     providers: [ provideTranslocoScope( 'project-home' ) ],
     imports: [
+        SortFieldsComponent,
         TranslocoPipe,
         FormField,
         RegistryTemplateDirective,
@@ -59,12 +63,14 @@ export class VehiclesMonitoringPage {
         this.facade.vehiclesPageStatusParam() !== undefined,
     ].filter( Boolean ).length )
 
+    protected readonly sortFields: readonly string[] = VEHICLES_MONITORING_SORT_FIELDS
     protected readonly model: WritableSignal<VehiclesListSearchModel> = signal( VEHICLES_MONITORING_DEFAULTS )
     protected readonly form: FieldTree<VehiclesListSearchModel> = createSearchForm( this.model )
     private readonly searchQuery: SearchQuery = injectSearchQuery( {
         schema: VEHICLES_MONITORING_QUERY_SCHEMA,
         defaults: VEHICLES_MONITORING_DEFAULTS,
         model: this.model,
+        extra: sortQueryCodec<VehiclesListSearchModel>( VEHICLES_MONITORING_SORT_FIELDS ),
         apply: (model: VehiclesListSearchModel): void => {
             this.inputSearch( model )
             this.facade.fetchVehiclesPage( undefined, PAGE_SIZE )
@@ -88,7 +94,7 @@ export class VehiclesMonitoringPage {
 
     private inputSearch (model: VehiclesListSearchModel): void {
         const search: ReturnType<typeof toVehiclesListSearchParams> = toVehiclesListSearchParams( model )
-        this.facade.inputPageSearchParameters( search.q, search.at, search.status, undefined )
+        this.facade.inputPageSearchParameters( search.q, search.at, search.status, undefined, search.sort )
     }
 
     protected loadBatch (pageEvent: PageEventModel): void {

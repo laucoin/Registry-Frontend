@@ -38,6 +38,8 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
     public readonly projectProfilesPageError: Signal<NotificationModel | undefined> = this.store.projectProfiles.error
     private readonly projectProfilesPageResetSearch: Signal<boolean> = this.store.projectProfiles.params.resetSearch
     public readonly projectProfilesPageQueryParam: Signal<string | undefined> = this.store.projectProfiles.params.q
+
+    public readonly projectProfilesPageSortParam: Signal<string | undefined> = this.store.projectProfiles.params.sort
     public readonly projectProfilesPageAtParam: Signal<Date | undefined> = computed( (): Date | undefined =>
         DateHelper.buildDate( this.store.projectProfiles.params.at() ),
     )
@@ -77,12 +79,14 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
         status: ProfileStatusEnum | undefined,
         isAvailable: boolean | undefined,
         isVisible: boolean | undefined,
+        sort: string | undefined = undefined,
     ): void {
         const resetSearch: boolean = this.projectProfilesPageQueryParam() != q
                                      || this.projectProfilesPageAtParam()?.toISOString() != at?.toISOString()
                                      || this.projectProfilesPageStatusParam() != status
                                      || this.projectProfilesPageIsAvailableParam() != isAvailable
                                      || this.projectProfilesPageIsVisibleParam() != isVisible
+                                     || this.projectProfilesPageSortParam() != sort
 
         if (resetSearch) {
             this.store.updateProjectProfilesPageSearchParams( {
@@ -92,6 +96,7 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
                 isVisible: isVisible,
                 q: q,
                 at: at?.toISOString(),
+                sort: sort,
             } )
         }
     }

@@ -24,6 +24,7 @@ const invitationParams: UserProjectProfilePageParamsModel = {
     status: ProfileStatusEnum.INVITED,
     q: undefined,
     at: undefined,
+    sort: undefined,
 }
 
 const defaultUserProfileState: UserProfileState = {

@@ -4,4 +4,5 @@ export interface GroupPageParamsModel {
     isPresent: boolean | undefined
     isVisible: boolean | undefined
     at: string | undefined
+    sort: string | undefined
 }

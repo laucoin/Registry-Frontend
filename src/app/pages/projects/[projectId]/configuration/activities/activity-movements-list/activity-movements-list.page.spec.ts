@@ -107,13 +107,13 @@ describe('ActivityMovementsListPage', () => {
 
     it('searches from the first batch with the filled filters', () => {
         // Arrange
-        page['model'].set({ type: 'IN', from: null, to: null, isVisible: '' })
+        page['model'].set({ type: 'IN', from: null, to: null, isVisible: '', sortBy: '', sortDirection: 'asc' })
 
         // Act
         page['search']()
 
         // Assert
-        expect(inputSearch).toHaveBeenLastCalledWith('IN', undefined, undefined, undefined)
+        expect(inputSearch).toHaveBeenLastCalledWith('IN', undefined, undefined, undefined, undefined)
         expect(fetchMovements).toHaveBeenLastCalledWith('activity1', 0, undefined)
     })
 
@@ -126,32 +126,32 @@ describe('ActivityMovementsListPage', () => {
         TestBed.tick()
 
         // Assert
-        expect(page['model']()).toEqual({ type: 'IN', from: null, to: null, isVisible: '' })
-        expect(inputSearch).toHaveBeenLastCalledWith('IN', undefined, undefined, undefined)
+        expect(page['model']()).toEqual({ type: 'IN', from: null, to: null, isVisible: '', sortBy: '', sortDirection: 'asc' })
+        expect(inputSearch).toHaveBeenLastCalledWith('IN', undefined, undefined, undefined, undefined)
         expect(fetchMovements).toHaveBeenCalledWith('activity1', undefined, undefined)
     })
 
     it('writes the submitted filters in the url', () => {
         // Arrange
         const navigate: Mock = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true)
-        page['model'].set({ type: 'IN', from: null, to: null, isVisible: '' })
+        page['model'].set({ type: 'IN', from: null, to: null, isVisible: '', sortBy: '', sortDirection: 'asc' })
 
         // Act
         page['search']()
 
         // Assert
-        expect(navigate).toHaveBeenCalledWith([], expect.objectContaining({ queryParams: { type: 'IN', from: null, to: null, isVisible: null } }))
+        expect(navigate).toHaveBeenCalledWith([], expect.objectContaining({ queryParams: { type: 'IN', from: null, to: null, isVisible: null, sort: null } }))
     })
 
     it('clears the filters then searches from the first batch', () => {
         // Arrange
-        page['model'].set({ type: 'IN', from: null, to: null, isVisible: 'true' })
+        page['model'].set({ type: 'IN', from: null, to: null, isVisible: 'true', sortBy: '', sortDirection: 'asc' })
 
         // Act
         page['resetFilters']()
 
         // Assert
-        expect(page['model']()).toEqual({ type: '', from: null, to: null, isVisible: '' })
+        expect(page['model']()).toEqual({ type: '', from: null, to: null, isVisible: '', sortBy: '', sortDirection: 'asc' })
         expect(fetchMovements).toHaveBeenLastCalledWith('activity1', 0, undefined)
     })
 

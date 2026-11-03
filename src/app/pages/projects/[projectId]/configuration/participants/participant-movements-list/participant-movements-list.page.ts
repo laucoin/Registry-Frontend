@@ -16,7 +16,7 @@ import '@sgdf/ui/skeleton'
 import { distinctUntilChanged, map, tap } from 'rxjs'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
-import {
+import { PARTICIPANT_MOVEMENTS_LIST_SORT_FIELDS,
     ParticipantMovementsListSearchModel,
     toParticipantMovementsListSearchModel,
     toParticipantMovementsListSearchParams,
@@ -25,6 +25,8 @@ import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { sortQueryCodec } from '@shared/helpers/search/sort-query'
+import { SortFieldsComponent } from '@shared/ui/common/sort-fields/sort-fields.component'
 import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
 import { withLoading } from '@shared/helpers/rx.helper'
@@ -34,7 +36,7 @@ import { ListComponent } from '@shared/ui/common/list/list.component'
 import { PresenceTimelineComponent } from '@shared/ui/common/presence-timeline/presence-timeline.component'
 import { MovementElementComponent } from '@shared/ui/domain/movement-element/movement-element.component'
 
-const PARTICIPANT_MOVEMENTS_LIST_DEFAULTS: ParticipantMovementsListSearchModel = toParticipantMovementsListSearchModel({ type: undefined, from: undefined, to: undefined, isVisible: undefined })
+const PARTICIPANT_MOVEMENTS_LIST_DEFAULTS: ParticipantMovementsListSearchModel = toParticipantMovementsListSearchModel({ type: undefined, from: undefined, to: undefined, isVisible: undefined, sort: undefined })
 const PARTICIPANT_MOVEMENTS_LIST_QUERY_SCHEMA: SearchQuerySchema<ParticipantMovementsListSearchModel> = { type: 'text', from: 'date', to: 'date', isVisible: 'choice' }
 
 /**
@@ -45,6 +47,7 @@ const PARTICIPANT_MOVEMENTS_LIST_QUERY_SCHEMA: SearchQuerySchema<ParticipantMove
 @Component({
     selector: 'app-participant-movements-list',
     imports: [
+        SortFieldsComponent,
         IfProjectAuthorityDirective,
         ListComponent,
         PresenceTimelineComponent,
@@ -82,12 +85,14 @@ export class ParticipantMovementsListPage {
         this.facade.participantMovementsPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
+    protected readonly sortFields: readonly string[] = PARTICIPANT_MOVEMENTS_LIST_SORT_FIELDS
     protected readonly model: WritableSignal<ParticipantMovementsListSearchModel> = signal(PARTICIPANT_MOVEMENTS_LIST_DEFAULTS)
     protected readonly form: FieldTree<ParticipantMovementsListSearchModel> = createSearchForm(this.model)
     private readonly searchQuery: SearchQuery = injectSearchQuery({
         schema: PARTICIPANT_MOVEMENTS_LIST_QUERY_SCHEMA,
         defaults: PARTICIPANT_MOVEMENTS_LIST_DEFAULTS,
         model: this.model,
+        extra: sortQueryCodec<ParticipantMovementsListSearchModel>( PARTICIPANT_MOVEMENTS_LIST_SORT_FIELDS ),
         apply: (model: ParticipantMovementsListSearchModel, initial: boolean): void => {
             this.inputSearch(model)
             if (!initial) {
@@ -136,7 +141,7 @@ export class ParticipantMovementsListPage {
 
     private inputSearch(model: ParticipantMovementsListSearchModel): void {
         const search: ReturnType<typeof toParticipantMovementsListSearchParams> = toParticipantMovementsListSearchParams(model)
-        this.facade.inputMovementsPageSearchParameters(search.type, search.from, search.to, search.isVisible)
+        this.facade.inputMovementsPageSearchParameters(search.type, search.from, search.to, search.isVisible, search.sort)
     }
 
     protected retryTimeline(): void {

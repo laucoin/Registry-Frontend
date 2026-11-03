@@ -44,7 +44,7 @@ describe('ProjectProfilesListPage', () => {
         const page: ProjectProfilesListApi = create()
 
         // Assert
-        expect(page.model()).toEqual({ q: '', at: null, status: '', isAvailable: '', isVisible: '' })
+        expect(page.model()).toEqual({ q: '', at: null, status: '', isAvailable: '', isVisible: '', sortBy: '', sortDirection: 'asc' })
         expect(facade['fetchProjectProfilesPage']).toHaveBeenCalledWith(undefined, undefined)
     })
 
@@ -54,15 +54,15 @@ describe('ProjectProfilesListPage', () => {
         const page: ProjectProfilesListApi = create({ q: 'ada', status: 'ACTIVE' })
 
         // Assert
-        expect(page.model()).toEqual({ q: 'ada', at: null, status: 'ACTIVE', isAvailable: '', isVisible: '' })
-        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith('ada', undefined, 'ACTIVE', undefined, undefined)
+        expect(page.model()).toEqual({ q: 'ada', at: null, status: 'ACTIVE', isAvailable: '', isVisible: '', sortBy: '', sortDirection: 'asc' })
+        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith('ada', undefined, 'ACTIVE', undefined, undefined, undefined)
     })
 
     it('sends the typed filters to the facade, restarts from the first batch and writes the url', async () => {
         // Arrange
         const page: ProjectProfilesListApi = create()
         const router: Router = TestBed.inject(Router)
-        page.model.set({ q: 'camp', at: null, status: '', isAvailable: '', isVisible: '' })
+        page.model.set({ q: 'camp', at: null, status: '', isAvailable: '', isVisible: '', sortBy: '', sortDirection: 'asc' })
 
         const navigated: Promise<unknown> = firstValueFrom(router.events.pipe(filter((event: unknown): boolean => event instanceof NavigationEnd)))
 
@@ -71,7 +71,7 @@ describe('ProjectProfilesListPage', () => {
         await navigated
 
         // Assert
-        expect(facade['inputPageSearchParameters']).toHaveBeenLastCalledWith('camp', undefined, undefined, undefined, undefined)
+        expect(facade['inputPageSearchParameters']).toHaveBeenLastCalledWith('camp', undefined, undefined, undefined, undefined, undefined)
         expect(facade['fetchProjectProfilesPage']).toHaveBeenLastCalledWith(0, undefined)
         expect(router.url).toBe('/?q=camp')
     })
@@ -84,7 +84,7 @@ describe('ProjectProfilesListPage', () => {
         page.resetFilters()
 
         // Assert
-        expect(page.model()).toEqual({ q: '', at: null, status: '', isAvailable: '', isVisible: '' })
+        expect(page.model()).toEqual({ q: '', at: null, status: '', isAvailable: '', isVisible: '', sortBy: '', sortDirection: 'asc' })
         expect(facade['fetchProjectProfilesPage']).toHaveBeenLastCalledWith(0, undefined)
     })
 })

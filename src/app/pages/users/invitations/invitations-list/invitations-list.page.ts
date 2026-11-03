@@ -12,16 +12,18 @@ import '@sgdf/ui/icon'
 import '@sgdf/ui/input'
 import '@sgdf/ui/page-title'
 import { ProjectProfileRowComponent } from '@pages/projects/[projectId]/configuration/profiles/project-profile-row/project-profile-row.component'
-import { InvitationsListSearchModel, toInvitationsListSearchModel, toInvitationsListSearchParams } from '@pages/users/invitations/invitations-list/invitations-list.search'
+import { INVITATIONS_LIST_SORT_FIELDS, InvitationsListSearchModel, toInvitationsListSearchModel, toInvitationsListSearchParams } from '@pages/users/invitations/invitations-list/invitations-list.search'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { sortQueryCodec } from '@shared/helpers/search/sort-query'
+import { SortFieldsComponent } from '@shared/ui/common/sort-fields/sort-fields.component'
 import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { StringHelper } from '@shared/helpers/string.helper'
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
 
-const INVITATIONS_LIST_DEFAULTS: InvitationsListSearchModel = toInvitationsListSearchModel({ q: undefined, at: undefined })
+const INVITATIONS_LIST_DEFAULTS: InvitationsListSearchModel = toInvitationsListSearchModel({ q: undefined, at: undefined, sort: undefined })
 const INVITATIONS_LIST_QUERY_SCHEMA: SearchQuerySchema<InvitationsListSearchModel> = { q: 'text', at: 'date' }
 
 /**
@@ -32,6 +34,7 @@ const INVITATIONS_LIST_QUERY_SCHEMA: SearchQuerySchema<InvitationsListSearchMode
 @Component({
     selector: 'app-invitations-list',
     imports: [
+        SortFieldsComponent,
         ListComponent,
         ProjectProfileRowComponent,
         RegistryTemplateDirective,
@@ -56,12 +59,14 @@ export class InvitationsListPage {
         this.userProfileFacade.userProjectProfileInvitationsPageAtParam() !== undefined,
     ].filter(Boolean).length)
 
+    protected readonly sortFields: readonly string[] = INVITATIONS_LIST_SORT_FIELDS
     protected readonly model: WritableSignal<InvitationsListSearchModel> = signal(INVITATIONS_LIST_DEFAULTS)
     protected readonly form: FieldTree<InvitationsListSearchModel> = createSearchForm(this.model)
     private readonly searchQuery: SearchQuery = injectSearchQuery({
         schema: INVITATIONS_LIST_QUERY_SCHEMA,
         defaults: INVITATIONS_LIST_DEFAULTS,
         model: this.model,
+        extra: sortQueryCodec<InvitationsListSearchModel>( INVITATIONS_LIST_SORT_FIELDS ),
         apply: (model: InvitationsListSearchModel): void => {
             this.inputSearch(model)
             this.userProfileFacade.fetchProjectProfileInvitationPage(undefined, undefined)
@@ -81,7 +86,7 @@ export class InvitationsListPage {
 
     private inputSearch(model: InvitationsListSearchModel): void {
         const search: ReturnType<typeof toInvitationsListSearchParams> = toInvitationsListSearchParams(model)
-        this.userProfileFacade.inputInvitationsPageSearchParameters(search.q, search.at)
+        this.userProfileFacade.inputInvitationsPageSearchParameters(search.q, search.at, search.sort)
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {

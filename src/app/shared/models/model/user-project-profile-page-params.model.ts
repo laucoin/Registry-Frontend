@@ -6,4 +6,5 @@ export interface UserProjectProfilePageParamsModel {
     isAvailable: boolean | undefined
     status: ProfileStatusEnum | undefined
     at: string | undefined
+    sort: string | undefined
 }

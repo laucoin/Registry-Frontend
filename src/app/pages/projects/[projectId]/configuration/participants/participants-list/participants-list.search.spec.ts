@@ -4,18 +4,18 @@ import { toParticipantsListSearchModel, toParticipantsListSearchParams } from '@
 describe('participants-list search mapping', () => {
     it('turns absent parameters into empty form values', () => {
         // Arrange
-        const params: Parameters<typeof toParticipantsListSearchModel>[0] = { q: undefined, status: undefined, isVisible: undefined }
+        const params: Parameters<typeof toParticipantsListSearchModel>[0] = { q: undefined, status: undefined, isVisible: undefined, sort: undefined }
 
         // Act
         const model: ReturnType<typeof toParticipantsListSearchModel> = toParticipantsListSearchModel(params)
 
         // Assert
-        expect(model).toEqual({ q: '', status: '', isVisible: '' })
+        expect(model).toEqual({ q: '', status: '', isVisible: '', sortBy: '', sortDirection: 'asc' })
     })
 
     it('turns the filled parameters into form values and back', () => {
         // Arrange
-        const params: Parameters<typeof toParticipantsListSearchModel>[0] = { q: 'camp', status: 'IN', isVisible: false }
+        const params: Parameters<typeof toParticipantsListSearchModel>[0] = { q: 'camp', status: 'IN', isVisible: false, sort: undefined }
 
         // Act
         const model: ReturnType<typeof toParticipantsListSearchModel> = toParticipantsListSearchModel(params)
@@ -27,7 +27,7 @@ describe('participants-list search mapping', () => {
 
     it('turns empty form values into absent parameters', () => {
         // Arrange
-        const model: ReturnType<typeof toParticipantsListSearchModel> = { q: '', status: '', isVisible: '' }
+        const model: ReturnType<typeof toParticipantsListSearchModel> = { q: '', status: '', isVisible: '', sortBy: '', sortDirection: 'asc' }
 
         // Act
         const params: ReturnType<typeof toParticipantsListSearchParams> = toParticipantsListSearchParams(model)

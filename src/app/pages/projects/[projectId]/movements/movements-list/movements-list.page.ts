@@ -14,7 +14,7 @@ import '@sgdf/ui/page-title'
 import '@sgdf/ui/select'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import { MovementRoutesEnum } from '@pages/projects/[projectId]/movements/movement-routes.enum'
-import {
+import { MOVEMENTS_LIST_SORT_FIELDS,
     MovementsListSearchModel,
     toMovementsListSearchModel,
     toMovementsListSearchParams,
@@ -22,6 +22,8 @@ import {
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { sortQueryCodec } from '@shared/helpers/search/sort-query'
+import { SortFieldsComponent } from '@shared/ui/common/sort-fields/sort-fields.component'
 import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
@@ -29,7 +31,7 @@ import { PageEventModel } from '@shared/models/model/page-event.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
 import { MovementElementComponent } from '@shared/ui/domain/movement-element/movement-element.component'
 
-const MOVEMENTS_LIST_DEFAULTS: MovementsListSearchModel = toMovementsListSearchModel({ type: undefined, from: undefined, to: undefined, isVisible: undefined })
+const MOVEMENTS_LIST_DEFAULTS: MovementsListSearchModel = toMovementsListSearchModel({ type: undefined, from: undefined, to: undefined, isVisible: undefined, sort: undefined })
 const MOVEMENTS_LIST_QUERY_SCHEMA: SearchQuerySchema<MovementsListSearchModel> = { type: 'text', from: 'date', to: 'date', isVisible: 'choice' }
 
 /**
@@ -40,6 +42,7 @@ const MOVEMENTS_LIST_QUERY_SCHEMA: SearchQuerySchema<MovementsListSearchModel> =
 @Component({
     selector: 'app-movements-list',
     imports: [
+        SortFieldsComponent,
         IfProjectAuthorityDirective,
         ListComponent,
         MovementElementComponent,
@@ -75,12 +78,14 @@ export class MovementsListPage {
         this.facade.movementsPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
+    protected readonly sortFields: readonly string[] = MOVEMENTS_LIST_SORT_FIELDS
     protected readonly model: WritableSignal<MovementsListSearchModel> = signal(MOVEMENTS_LIST_DEFAULTS)
     protected readonly form: FieldTree<MovementsListSearchModel> = createSearchForm(this.model)
     private readonly searchQuery: SearchQuery = injectSearchQuery({
         schema: MOVEMENTS_LIST_QUERY_SCHEMA,
         defaults: MOVEMENTS_LIST_DEFAULTS,
         model: this.model,
+        extra: sortQueryCodec<MovementsListSearchModel>( MOVEMENTS_LIST_SORT_FIELDS ),
         apply: (model: MovementsListSearchModel): void => {
             this.inputSearch(model)
             this.facade.fetchMovementsPage(undefined, undefined)
@@ -100,7 +105,7 @@ export class MovementsListPage {
 
     private inputSearch(model: MovementsListSearchModel): void {
         const search: ReturnType<typeof toMovementsListSearchParams> = toMovementsListSearchParams(model)
-        this.facade.inputPageSearchParameters(search.type, search.from, search.to, search.isVisible)
+        this.facade.inputPageSearchParameters(search.type, search.from, search.to, search.isVisible, search.sort)
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {

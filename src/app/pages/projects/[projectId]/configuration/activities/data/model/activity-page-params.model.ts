@@ -4,4 +4,5 @@ export interface ActivityPageParamsModel {
     q: string | undefined
     isAvailable: boolean | undefined
     at: string | undefined
+    sort: string | undefined
 }

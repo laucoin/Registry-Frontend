@@ -38,6 +38,7 @@ const defaultMembers: GroupStoreModel['members'] = {
         isVisible: undefined,
         status: undefined,
         q: undefined,
+        sort: undefined,
     } ),
     groupId: undefined,
 }
@@ -49,6 +50,7 @@ const defaultGroupStore: GroupStoreModel = {
         isVisible: undefined,
         isPresent: undefined,
         at: undefined,
+        sort: undefined,
     } ),
     members: defaultMembers,
     metadata: {

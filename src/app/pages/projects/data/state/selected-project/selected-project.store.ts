@@ -48,6 +48,7 @@ const currentMovementsBlock = (hasActivity: boolean): MovementsBlock =>
         type: undefined,
         from: undefined,
         to: undefined,
+        sort: undefined,
     } )
 
 function overdueBlock (): PageRequestInformationModel<ParticipantPageParamsModel, ParticipantModel> {

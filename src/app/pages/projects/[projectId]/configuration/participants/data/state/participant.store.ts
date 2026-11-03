@@ -55,6 +55,7 @@ const defaultParticipantStore: ParticipantStoreModel = {
         q: undefined,
         isVisible: undefined,
         status: undefined,
+        sort: undefined,
     } ),
     movements: PageStateHelper.initial<MovementPageParamsModel, MovementModel>( {
         resetSearch: false,
@@ -64,6 +65,7 @@ const defaultParticipantStore: ParticipantStoreModel = {
         type: undefined,
         from: undefined,
         to: undefined,
+        sort: undefined,
     } ),
     timeline: { element: undefined, loading: false, error: undefined },
     metadata: {

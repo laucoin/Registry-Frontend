@@ -6,4 +6,5 @@ export interface MovementPageParamsModel {
     type: string | undefined
     from: string | undefined
     to: string | undefined
+    sort: string | undefined
 }

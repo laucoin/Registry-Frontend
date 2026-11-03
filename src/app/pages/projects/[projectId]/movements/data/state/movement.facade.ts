@@ -49,6 +49,8 @@ export class MovementFacade extends GenericProjectElementFacade {
 
     public readonly movementsPageTypeParam: Signal<string | undefined> = this.store.movements.params.type
 
+    public readonly movementsPageSortParam: Signal<string | undefined> = this.store.movements.params.sort
+
     public readonly movementsPageFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
             DateHelper.buildDate( this.store.movements.params.from() ),
         )
@@ -95,11 +97,13 @@ export class MovementFacade extends GenericProjectElementFacade {
         from: Date | undefined,
         to: Date | undefined,
         isVisible: boolean | undefined,
+        sort: string | undefined = undefined,
     ): void {
         const resetSearch: boolean = this.movementsPageTypeParam() != type
                                      || this.movementsPageFromParam()?.toISOString() != from?.toISOString()
                                      || this.movementsPageToParam()?.toISOString() != to?.toISOString()
                                      || this.movementsPageIsVisibleParam() != isVisible
+                                     || this.movementsPageSortParam() != sort
 
         if (resetSearch) {
             this.store.updateMovementsPageSearchParams( {
@@ -110,6 +114,7 @@ export class MovementFacade extends GenericProjectElementFacade {
                 type: type,
                 from: from?.toISOString(),
                 to: to?.toISOString(),
+                sort: sort,
             } )
         }
     }

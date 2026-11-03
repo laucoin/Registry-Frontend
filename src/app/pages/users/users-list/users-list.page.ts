@@ -15,12 +15,14 @@ import '@sgdf/ui/select'
 import '@sgdf/ui/tag'
 import { UserFacade } from '@pages/users/data/state/user.facade'
 import { UserActions } from '@pages/users/users-list/user-actions.service'
-import { toUsersListSearchModel, toUsersListSearchParams, UsersListSearchModel } from '@pages/users/users-list/users-list.search'
+import { USERS_LIST_SORT_FIELDS, toUsersListSearchModel, toUsersListSearchParams, UsersListSearchModel } from '@pages/users/users-list/users-list.search'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
 import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
 import { VisibilityNamePipe } from '@shared/helpers/pipe/visibility.pipe'
+import { sortQueryCodec } from '@shared/helpers/search/sort-query'
+import { SortFieldsComponent } from '@shared/ui/common/sort-fields/sort-fields.component'
 import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { StringHelper } from '@shared/helpers/string.helper'
 import { PageEventModel } from '@shared/models/model/page-event.model'
@@ -30,7 +32,7 @@ import { ListComponent } from '@shared/ui/common/list/list.component'
 import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 
 const INITIALS_LENGTH: number = 2
-const USERS_LIST_DEFAULTS: UsersListSearchModel = toUsersListSearchModel({ q: undefined, isVisible: undefined })
+const USERS_LIST_DEFAULTS: UsersListSearchModel = toUsersListSearchModel({ q: undefined, isVisible: undefined, sort: undefined })
 const USERS_LIST_QUERY_SCHEMA: SearchQuerySchema<UsersListSearchModel> = { q: 'text', isVisible: 'choice' }
 
 /**
@@ -41,6 +43,7 @@ const USERS_LIST_QUERY_SCHEMA: SearchQuerySchema<UsersListSearchModel> = { q: 't
 @Component({
     selector: 'app-users-list',
     imports: [
+        SortFieldsComponent,
         EllipsisDirective,
         ListComponent,
         RegistryTemplateDirective,
@@ -65,12 +68,14 @@ export class UsersListPage {
         this.facade.actualUsersPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
+    protected readonly sortFields: readonly string[] = USERS_LIST_SORT_FIELDS
     protected readonly model: WritableSignal<UsersListSearchModel> = signal(USERS_LIST_DEFAULTS)
     protected readonly form: FieldTree<UsersListSearchModel> = createSearchForm(this.model)
     private readonly searchQuery: SearchQuery = injectSearchQuery({
         schema: USERS_LIST_QUERY_SCHEMA,
         defaults: USERS_LIST_DEFAULTS,
         model: this.model,
+        extra: sortQueryCodec<UsersListSearchModel>( USERS_LIST_SORT_FIELDS ),
         apply: (model: UsersListSearchModel): void => {
             this.inputSearch(model)
             this.facade.fetchUsersPage(undefined, undefined)
@@ -90,7 +95,7 @@ export class UsersListPage {
 
     private inputSearch(model: UsersListSearchModel): void {
         const search: ReturnType<typeof toUsersListSearchParams> = toUsersListSearchParams(model)
-        this.facade.inputPageSearchParameters(search.q, search.isVisible)
+        this.facade.inputPageSearchParameters(search.q, search.isVisible, search.sort)
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {

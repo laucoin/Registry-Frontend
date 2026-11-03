@@ -87,6 +87,36 @@
         "max": "Max"
       }
     },
+    "sort": {
+      "fields": {
+        "name": "Nom",
+        "begin": "Début",
+        "end": "Fin",
+        "lastName": "Nom de famille",
+        "firstName": "Prénom",
+        "email": "Email",
+        "lastLogin": "Dernière connexion",
+        "startAccess": "Début d’accès",
+        "endAccess": "Fin d’accès",
+        "status": "Statut",
+        "startAvailability": "Début de disponibilité",
+        "endAvailability": "Fin de disponibilité",
+        "membersCount": "Nombre de membres",
+        "licensePlate": "Immatriculation",
+        "brand": "Marque",
+        "model": "Modèle",
+        "dateTime": "Date et heure",
+        "type": "Type",
+        "lastCommunicationDateTime": "Dernière communication",
+        "title": "Titre",
+        "criticality": "Criticité"
+      },
+      "by": "Trier par",
+      "direction": "Ordre",
+      "default": "Par défaut",
+      "asc": "Croissant",
+      "desc": "Décroissant"
+    },
     "actions": {
       "confirm": "Confirmer",
       "create": "Créer",

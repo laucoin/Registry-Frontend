@@ -57,25 +57,25 @@ describe( 'VehiclesMonitoringPage', () => {
 
     it( 'searches the vehicles from the first batch with the filters of the form', () => {
         // Arrange
-        fixture.componentInstance[ 'model' ].set( { q: 'ford', at: null, status: 'OUT', isVisible: '' } )
+        fixture.componentInstance[ 'model' ].set( { q: 'ford', at: null, status: 'OUT', isVisible: '', sortBy: '', sortDirection: 'asc' } )
 
         // Act
         fixture.componentInstance[ 'search' ]()
 
         // Assert
-        expect( facade[ 'inputPageSearchParameters' ] ).toHaveBeenCalledWith( 'ford', undefined, 'OUT', undefined )
+        expect( facade[ 'inputPageSearchParameters' ] ).toHaveBeenCalledWith( 'ford', undefined, 'OUT', undefined , undefined)
         expect( facade[ 'fetchVehiclesPage' ] ).toHaveBeenLastCalledWith( 0, 20 )
     } )
 
     it( 'clears the filters of the form before searching again', () => {
         // Arrange
-        fixture.componentInstance[ 'model' ].set( { q: 'ford', at: null, status: 'OUT', isVisible: '' } )
+        fixture.componentInstance[ 'model' ].set( { q: 'ford', at: null, status: 'OUT', isVisible: '', sortBy: '', sortDirection: 'asc' } )
 
         // Act
         fixture.componentInstance[ 'resetFilters' ]()
 
         // Assert
-        expect( facade[ 'inputPageSearchParameters' ] ).toHaveBeenLastCalledWith( undefined, undefined, undefined, undefined )
+        expect( facade[ 'inputPageSearchParameters' ] ).toHaveBeenLastCalledWith( undefined, undefined, undefined, undefined , undefined)
     } )
 
     it( 'fetches the requested batch when the list asks for one', () => {
@@ -123,14 +123,14 @@ describe( 'VehiclesMonitoringPage', () => {
         TestBed.tick()
 
         // Assert
-        expect( fixture.componentInstance[ 'model' ]() ).toEqual( { q: 'van', at: null, status: 'OUT', isVisible: '' } )
-        expect( facade[ 'inputPageSearchParameters' ] ).toHaveBeenLastCalledWith( 'van', undefined, 'OUT', undefined )
+        expect( fixture.componentInstance[ 'model' ]() ).toEqual( { q: 'van', at: null, status: 'OUT', isVisible: '', sortBy: '', sortDirection: 'asc' } )
+        expect( facade[ 'inputPageSearchParameters' ] ).toHaveBeenLastCalledWith( 'van', undefined, 'OUT', undefined , undefined)
         expect( facade[ 'fetchVehiclesPage' ] ).toHaveBeenCalledWith( undefined, 20 )
     } )
 
     it( 'writes the submitted filters in the url', () => {
         // Arrange
-        fixture.componentInstance[ 'model' ].set( { q: 'van', at: null, status: '', isVisible: '' } )
+        fixture.componentInstance[ 'model' ].set( { q: 'van', at: null, status: '', isVisible: '', sortBy: '', sortDirection: 'asc' } )
         const navigate: ReturnType<typeof vi.fn> = TestBed.inject( Router ).navigate as ReturnType<typeof vi.fn>
 
         // Act
@@ -138,6 +138,6 @@ describe( 'VehiclesMonitoringPage', () => {
 
         // Assert
         expect( facade[ 'fetchVehiclesPage' ] ).toHaveBeenLastCalledWith( 0, 20 )
-        expect( navigate ).toHaveBeenCalledWith( [], expect.objectContaining( { queryParams: { q: 'van', at: null, status: null } } ) )
+        expect( navigate ).toHaveBeenCalledWith( [], expect.objectContaining( { queryParams: { q: 'van', at: null, status: null, sort: null } } ) )
     } )
 } )

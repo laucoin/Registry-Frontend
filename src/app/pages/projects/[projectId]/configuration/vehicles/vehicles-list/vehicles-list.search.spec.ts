@@ -4,19 +4,19 @@ import { toVehiclesListSearchModel, toVehiclesListSearchParams } from '@pages/pr
 describe('vehicles-list search mapping', () => {
     it('turns absent parameters into empty form values', () => {
         // Arrange
-        const params: Parameters<typeof toVehiclesListSearchModel>[0] = { q: undefined, at: undefined, status: undefined, isVisible: undefined }
+        const params: Parameters<typeof toVehiclesListSearchModel>[0] = { q: undefined, at: undefined, status: undefined, isVisible: undefined, sort: undefined }
 
         // Act
         const model: ReturnType<typeof toVehiclesListSearchModel> = toVehiclesListSearchModel(params)
 
         // Assert
-        expect(model).toEqual({ q: '', at: null, status: '', isVisible: '' })
+        expect(model).toEqual({ q: '', at: null, status: '', isVisible: '', sortBy: '', sortDirection: 'asc' })
     })
 
     it('turns the filled parameters into form values and back', () => {
         // Arrange
         const when: Date = new Date(2026, 9, 3)
-        const params: Parameters<typeof toVehiclesListSearchModel>[0] = { q: 'camp', at: when, status: 'IN', isVisible: false }
+        const params: Parameters<typeof toVehiclesListSearchModel>[0] = { q: 'camp', at: when, status: 'IN', isVisible: false, sort: undefined }
 
         // Act
         const model: ReturnType<typeof toVehiclesListSearchModel> = toVehiclesListSearchModel(params)
@@ -28,7 +28,7 @@ describe('vehicles-list search mapping', () => {
 
     it('turns empty form values into absent parameters', () => {
         // Arrange
-        const model: ReturnType<typeof toVehiclesListSearchModel> = { q: '', at: null, status: '', isVisible: '' }
+        const model: ReturnType<typeof toVehiclesListSearchModel> = { q: '', at: null, status: '', isVisible: '', sortBy: '', sortDirection: 'asc' }
 
         // Act
         const params: ReturnType<typeof toVehiclesListSearchParams> = toVehiclesListSearchParams(model)

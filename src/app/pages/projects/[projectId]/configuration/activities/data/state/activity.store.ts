@@ -34,6 +34,7 @@ const defaultActivityStore: ActivityStoreModel = {
         isVisible: undefined,
         isAvailable: undefined,
         at: undefined,
+        sort: undefined,
     } ),
     movements: PageStateHelper.initial<MovementPageParamsModel, MovementModel>( {
         resetSearch: false,
@@ -43,6 +44,7 @@ const defaultActivityStore: ActivityStoreModel = {
         type: undefined,
         from: undefined,
         to: undefined,
+        sort: undefined,
     } ),
     statistics: { element: undefined, loading: false, error: undefined },
     metadata: {

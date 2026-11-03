@@ -74,6 +74,7 @@ const defaultMovementStore: MovementStoreModel = {
         type: undefined,
         from: undefined,
         to: undefined,
+        sort: undefined,
     } ),
     movementCommunications: PageStateHelper.initial<CommunicationPageParamsModel, CommunicationModel>( {
         resetSearch: false,

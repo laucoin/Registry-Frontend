@@ -16,7 +16,7 @@ import '@sgdf/ui/select'
 import { ActivityFacade } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
 import { ActivityRoutesEnum } from '@pages/projects/[projectId]/configuration/activities/activity-routes.enum'
 import { ActivityRowComponent } from '@pages/projects/[projectId]/configuration/activities/activity-row/activity-row.component'
-import {
+import { ACTIVITIES_LIST_SORT_FIELDS,
     ActivitiesListSearchModel,
     toActivitiesListSearchModel,
     toActivitiesListSearchParams,
@@ -24,6 +24,8 @@ import {
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
+import { sortQueryCodec } from '@shared/helpers/search/sort-query'
+import { SortFieldsComponent } from '@shared/ui/common/sort-fields/sort-fields.component'
 import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
 import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
 import { StringHelper } from '@shared/helpers/string.helper'
@@ -31,7 +33,7 @@ import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authori
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
 
-const ACTIVITIES_LIST_DEFAULTS: ActivitiesListSearchModel = toActivitiesListSearchModel({ q: undefined, at: undefined, isAvailable: undefined, isVisible: undefined })
+const ACTIVITIES_LIST_DEFAULTS: ActivitiesListSearchModel = toActivitiesListSearchModel({ q: undefined, at: undefined, isAvailable: undefined, isVisible: undefined, sort: undefined })
 const ACTIVITIES_LIST_QUERY_SCHEMA: SearchQuerySchema<ActivitiesListSearchModel> = { q: 'text', at: 'date', isAvailable: 'choice', isVisible: 'choice' }
 
 /**
@@ -42,6 +44,7 @@ const ACTIVITIES_LIST_QUERY_SCHEMA: SearchQuerySchema<ActivitiesListSearchModel>
 @Component({
     selector: 'app-activities-list',
     imports: [
+        SortFieldsComponent,
         IfProjectAuthorityDirective,
         ListComponent,
         ActivityRowComponent,
@@ -78,12 +81,14 @@ export class ActivitiesListPage {
         this.facade.activitiesPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
+    protected readonly sortFields: readonly string[] = ACTIVITIES_LIST_SORT_FIELDS
     protected readonly model: WritableSignal<ActivitiesListSearchModel> = signal(ACTIVITIES_LIST_DEFAULTS)
     protected readonly form: FieldTree<ActivitiesListSearchModel> = createSearchForm(this.model)
     private readonly searchQuery: SearchQuery = injectSearchQuery({
         schema: ACTIVITIES_LIST_QUERY_SCHEMA,
         defaults: ACTIVITIES_LIST_DEFAULTS,
         model: this.model,
+        extra: sortQueryCodec<ActivitiesListSearchModel>( ACTIVITIES_LIST_SORT_FIELDS ),
         apply: (model: ActivitiesListSearchModel): void => {
             this.inputSearch(model)
             this.facade.fetchActivitiesPage(undefined, undefined)
@@ -103,7 +108,7 @@ export class ActivitiesListPage {
 
     private inputSearch(model: ActivitiesListSearchModel): void {
         const search: ReturnType<typeof toActivitiesListSearchParams> = toActivitiesListSearchParams(model)
-        this.facade.inputPageSearchParameters(search.q, search.at, search.isAvailable, search.isVisible)
+        this.facade.inputPageSearchParameters(search.q, search.at, search.isAvailable, search.isVisible, search.sort)
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {

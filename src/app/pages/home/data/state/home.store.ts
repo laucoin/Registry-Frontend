@@ -9,7 +9,7 @@ import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
 import { pageFetcher } from '@shared/helpers/store/paged-store.methods'
 import { ProjectModel } from '@shared/models/model/project.model'
 
-const baseParams: ProjectPageParamsModel = { resetSearch: false, q: undefined, isVisible: undefined, at: undefined, isFavorite: undefined, withProfile: undefined }
+const baseParams: ProjectPageParamsModel = { resetSearch: false, q: undefined, isVisible: undefined, at: undefined, isFavorite: undefined, withProfile: undefined, sort: undefined }
 
 const defaultHomeStore: HomeStoreModel = {
 	favorites: PageStateHelper.initial<ProjectPageParamsModel, ProjectModel>({ ...baseParams, isFavorite: true, sort: 'name' }),

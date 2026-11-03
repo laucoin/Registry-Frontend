@@ -44,7 +44,7 @@ describe('GroupsListPage', () => {
         const page: GroupsListApi = create()
 
         // Assert
-        expect(page.model()).toEqual({ q: '', at: null, isPresent: '', isVisible: '' })
+        expect(page.model()).toEqual({ q: '', at: null, isPresent: '', isVisible: '', sortBy: '', sortDirection: 'asc' })
         expect(facade['fetchGroupsPage']).toHaveBeenCalledWith(undefined, undefined)
     })
 
@@ -54,15 +54,15 @@ describe('GroupsListPage', () => {
         const page: GroupsListApi = create({ q: 'ada', isPresent: 'true' })
 
         // Assert
-        expect(page.model()).toEqual({ q: 'ada', at: null, isPresent: 'true', isVisible: '' })
-        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith('ada', undefined, true, undefined)
+        expect(page.model()).toEqual({ q: 'ada', at: null, isPresent: 'true', isVisible: '', sortBy: '', sortDirection: 'asc' })
+        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith('ada', undefined, true, undefined, undefined)
     })
 
     it('sends the typed filters to the facade, restarts from the first batch and writes the url', async () => {
         // Arrange
         const page: GroupsListApi = create()
         const router: Router = TestBed.inject(Router)
-        page.model.set({ q: 'camp', at: null, isPresent: '', isVisible: '' })
+        page.model.set({ q: 'camp', at: null, isPresent: '', isVisible: '', sortBy: '', sortDirection: 'asc' })
 
         const navigated: Promise<unknown> = firstValueFrom(router.events.pipe(filter((event: unknown): boolean => event instanceof NavigationEnd)))
 
@@ -71,7 +71,7 @@ describe('GroupsListPage', () => {
         await navigated
 
         // Assert
-        expect(facade['inputPageSearchParameters']).toHaveBeenLastCalledWith('camp', undefined, undefined, undefined)
+        expect(facade['inputPageSearchParameters']).toHaveBeenLastCalledWith('camp', undefined, undefined, undefined, undefined)
         expect(facade['fetchGroupsPage']).toHaveBeenLastCalledWith(0, undefined)
         expect(router.url).toBe('/?q=camp')
     })
@@ -84,7 +84,7 @@ describe('GroupsListPage', () => {
         page.resetFilters()
 
         // Assert
-        expect(page.model()).toEqual({ q: '', at: null, isPresent: '', isVisible: '' })
+        expect(page.model()).toEqual({ q: '', at: null, isPresent: '', isVisible: '', sortBy: '', sortDirection: 'asc' })
         expect(facade['fetchGroupsPage']).toHaveBeenLastCalledWith(0, undefined)
     })
 })

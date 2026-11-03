@@ -7,18 +7,18 @@ import {
 describe('project profiles list search mapping', () => {
     it('turns absent parameters into empty form values', () => {
         // Arrange
-        const params: Parameters<typeof toProjectProfilesListSearchModel>[0] = { q: undefined, at: undefined, status: undefined, isAvailable: undefined, isVisible: undefined }
+        const params: Parameters<typeof toProjectProfilesListSearchModel>[0] = { q: undefined, at: undefined, status: undefined, isAvailable: undefined, isVisible: undefined, sort: undefined }
 
         // Act
         const model: ReturnType<typeof toProjectProfilesListSearchModel> = toProjectProfilesListSearchModel(params)
 
         // Assert
-        expect(model).toEqual({ q: '', at: null, status: '', isAvailable: '', isVisible: '' })
+        expect(model).toEqual({ q: '', at: null, status: '', isAvailable: '', isVisible: '', sortBy: '', sortDirection: 'asc' })
     })
 
     it('turns the status and the availability into their select values and back', () => {
         // Arrange
-        const params: Parameters<typeof toProjectProfilesListSearchModel>[0] = { q: 'ada', at: undefined, status: 'ACCEPTED', isAvailable: true, isVisible: false }
+        const params: Parameters<typeof toProjectProfilesListSearchModel>[0] = { q: 'ada', at: undefined, status: 'ACCEPTED', isAvailable: true, isVisible: false, sort: undefined }
 
         // Act
         const model: ReturnType<typeof toProjectProfilesListSearchModel> = toProjectProfilesListSearchModel(params)
@@ -31,7 +31,7 @@ describe('project profiles list search mapping', () => {
 
     it('turns empty form values into absent parameters', () => {
         // Arrange
-        const model: ReturnType<typeof toProjectProfilesListSearchModel> = { q: '', at: null, status: '', isAvailable: '', isVisible: '' }
+        const model: ReturnType<typeof toProjectProfilesListSearchModel> = { q: '', at: null, status: '', isAvailable: '', isVisible: '', sortBy: '', sortDirection: 'asc' }
 
         // Act
         const params: ReturnType<typeof toProjectProfilesListSearchParams> = toProjectProfilesListSearchParams(model)

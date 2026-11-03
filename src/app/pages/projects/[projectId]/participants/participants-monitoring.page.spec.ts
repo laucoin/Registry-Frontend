@@ -168,7 +168,7 @@ describe( 'ParticipantsMonitoringPage', () => {
         create( undefined, 1, true, status )
 
         // Assert
-        expect( participants[ 'inputPageSearchParameters' ] ).toHaveBeenCalledWith( undefined, 'OUT', undefined )
+        expect( participants[ 'inputPageSearchParameters' ] ).toHaveBeenCalledWith( undefined, 'OUT', undefined , undefined)
         expect( fixture.componentInstance[ 'model' ]().status ).toBe( 'OUT' )
     } )
 
@@ -180,7 +180,7 @@ describe( 'ParticipantsMonitoringPage', () => {
         create( undefined, 1, true, status )
 
         // Assert
-        expect( participants[ 'inputPageSearchParameters' ] ).toHaveBeenCalledWith( undefined, undefined, undefined )
+        expect( participants[ 'inputPageSearchParameters' ] ).toHaveBeenCalledWith( undefined, undefined, undefined , undefined)
         expect( fixture.componentInstance[ 'model' ]().status ).toBe( '' )
     } )
 
@@ -236,26 +236,26 @@ describe( 'ParticipantsMonitoringPage', () => {
     it( 'searches the participants from the first batch with the filters of the form', () => {
         // Arrange
         create( 'individual' )
-        fixture.componentInstance[ 'model' ].set( { q: 'cam', status: 'OUT', isVisible: '' } )
+        fixture.componentInstance[ 'model' ].set( { q: 'cam', status: 'OUT', isVisible: '', sortBy: '', sortDirection: 'asc' } )
 
         // Act
         fixture.componentInstance[ 'search' ]()
 
         // Assert
-        expect( participants[ 'inputPageSearchParameters' ] ).toHaveBeenCalledWith( 'cam', 'OUT', undefined )
+        expect( participants[ 'inputPageSearchParameters' ] ).toHaveBeenCalledWith( 'cam', 'OUT', undefined , undefined)
         expect( participants[ 'fetchParticipantsPage' ] ).toHaveBeenLastCalledWith( 0, 20 )
     } )
 
     it( 'clears the filters of the form before searching again', () => {
         // Arrange
         create( 'individual' )
-        fixture.componentInstance[ 'model' ].set( { q: 'cam', status: 'OUT', isVisible: '' } )
+        fixture.componentInstance[ 'model' ].set( { q: 'cam', status: 'OUT', isVisible: '', sortBy: '', sortDirection: 'asc' } )
 
         // Act
         fixture.componentInstance[ 'resetFilters' ]()
 
         // Assert
-        expect( participants[ 'inputPageSearchParameters' ] ).toHaveBeenLastCalledWith( undefined, undefined, undefined )
+        expect( participants[ 'inputPageSearchParameters' ] ).toHaveBeenLastCalledWith( undefined, undefined, undefined , undefined)
     } )
 
     it( 'forwards the batch requests of each tab to its facade', () => {
@@ -423,7 +423,7 @@ describe( 'ParticipantsMonitoringPage', () => {
         fixture.detectChanges()
 
         // Assert
-        expect( participants[ 'inputPageSearchParameters' ] ).toHaveBeenCalledWith( undefined, 'OVERDUE', undefined )
+        expect( participants[ 'inputPageSearchParameters' ] ).toHaveBeenCalledWith( undefined, 'OVERDUE', undefined , undefined)
         expect( fixture.componentInstance[ 'model' ]().status ).toBe( 'OVERDUE' )
     } )
 
@@ -436,13 +436,13 @@ describe( 'ParticipantsMonitoringPage', () => {
 
         // Assert
         expect( (participants[ 'inputPageSearchParameters' ] as MockInstance).mock.calls.length ).toBe( expected )
-        expect( participants[ 'inputPageSearchParameters' ] ).toHaveBeenCalledWith( undefined, undefined, undefined )
+        expect( participants[ 'inputPageSearchParameters' ] ).toHaveBeenCalledWith( undefined, undefined, undefined , undefined)
     } )
 
     it( 'writes the submitted filters in the url next to the tab', () => {
         // Arrange
         create()
-        fixture.componentInstance[ 'model' ].set( { q: 'ada', status: 'OUT', isVisible: '' } )
+        fixture.componentInstance[ 'model' ].set( { q: 'ada', status: 'OUT', isVisible: '', sortBy: '', sortDirection: 'asc' } )
         const navigate: MockInstance = TestBed.inject( Router ).navigate as unknown as MockInstance
 
         // Act
@@ -450,7 +450,7 @@ describe( 'ParticipantsMonitoringPage', () => {
 
         // Assert
         expect( participants[ 'fetchParticipantsPage' ] ).toHaveBeenLastCalledWith( 0, 20 )
-        expect( navigate ).toHaveBeenCalledWith( [], expect.objectContaining( { queryParams: { q: 'ada', status: 'OUT' }, queryParamsHandling: 'merge' } ) )
+        expect( navigate ).toHaveBeenCalledWith( [], expect.objectContaining( { queryParams: { q: 'ada', status: 'OUT', sort: null }, queryParamsHandling: 'merge' } ) )
     } )
 
     it( 'reloads the participants from the first batch when the filters of the url change', () => {
@@ -464,7 +464,7 @@ describe( 'ParticipantsMonitoringPage', () => {
 
         // Assert
         expect( fixture.componentInstance[ 'model' ]().q ).toBe( 'ada' )
-        expect( participants[ 'inputPageSearchParameters' ] ).toHaveBeenLastCalledWith( 'ada', undefined, undefined )
+        expect( participants[ 'inputPageSearchParameters' ] ).toHaveBeenLastCalledWith( 'ada', undefined, undefined , undefined)
         expect( participants[ 'fetchParticipantsPage' ] ).toHaveBeenCalledWith( 0, 20 )
     } )
 } )

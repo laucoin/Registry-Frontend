@@ -1,12 +1,16 @@
+import { formatSort, parseSort, SortFields } from '@shared/helpers/search/sort-query'
 import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice'
+
+export const PARTICIPANTS_LIST_SORT_FIELDS: readonly string[] = [ 'lastName', 'firstName', 'status', 'startAvailability', 'endAvailability' ]
 
 interface ParticipantsListSearch {
     q: string | undefined
     status: string | undefined
     isVisible: boolean | undefined
+    sort: string | undefined
 }
 
-export interface ParticipantsListSearchModel {
+export interface ParticipantsListSearchModel extends SortFields {
     q: string
     status: string
     isVisible: BooleanChoice
@@ -22,6 +26,7 @@ export function toParticipantsListSearchModel (params: ParticipantsListSearch): 
         q: params.q ?? '',
         status: params.status ?? '',
         isVisible: toBooleanChoice( params.isVisible ),
+        ...parseSort( params.sort, PARTICIPANTS_LIST_SORT_FIELDS ),
     }
 }
 
@@ -35,5 +40,6 @@ export function toParticipantsListSearchParams (model: ParticipantsListSearchMod
         q: model.q === '' ? undefined : model.q,
         status: model.status === '' ? undefined : model.status,
         isVisible: fromBooleanChoice( model.isVisible ),
+        sort: formatSort( model ),
     }
 }

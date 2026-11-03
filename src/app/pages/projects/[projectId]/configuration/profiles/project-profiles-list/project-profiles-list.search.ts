@@ -1,4 +1,7 @@
+import { formatSort, parseSort, SortFields } from '@shared/helpers/search/sort-query'
 import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice'
+
+export const PROJECT_PROFILES_LIST_SORT_FIELDS: readonly string[] = [ 'startAccess', 'endAccess', 'status' ]
 
 interface ProjectProfilesListSearch {
     q: string | undefined
@@ -6,9 +9,10 @@ interface ProjectProfilesListSearch {
     status: string | undefined
     isAvailable: boolean | undefined
     isVisible: boolean | undefined
+    sort: string | undefined
 }
 
-export interface ProjectProfilesListSearchModel {
+export interface ProjectProfilesListSearchModel extends SortFields {
     q: string
     at: Date | null
     status: string
@@ -28,6 +32,7 @@ export function toProjectProfilesListSearchModel (params: ProjectProfilesListSea
         status: params.status ?? '',
         isAvailable: toBooleanChoice( params.isAvailable ),
         isVisible: toBooleanChoice( params.isVisible ),
+        ...parseSort( params.sort, PROJECT_PROFILES_LIST_SORT_FIELDS ),
     }
 }
 
@@ -43,5 +48,6 @@ export function toProjectProfilesListSearchParams (model: ProjectProfilesListSea
         status: model.status === '' ? undefined : model.status,
         isAvailable: fromBooleanChoice( model.isAvailable ),
         isVisible: fromBooleanChoice( model.isVisible ),
+        sort: formatSort( model ),
     }
 }

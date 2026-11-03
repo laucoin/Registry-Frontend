@@ -41,6 +41,8 @@ export class GroupFacade extends GenericProjectElementFacade {
 
     public readonly groupsPageQueryParam: Signal<string | undefined> = this.store.groups.params.q
 
+    public readonly groupsPageSortParam: Signal<string | undefined> = this.store.groups.params.sort
+
     public readonly groupsPageAtParam: Signal<Date | undefined> = computed( () =>
             DateHelper.buildDate( this.store.groups.params.at() ),
         )
@@ -60,6 +62,8 @@ export class GroupFacade extends GenericProjectElementFacade {
     public readonly groupMembersPageResetSearch: Signal<boolean> = this.store.members.params.resetSearch
 
     public readonly groupMembersPageQueryParam: Signal<string | undefined> = this.store.members.params.q
+
+    public readonly groupMembersPageSortParam: Signal<string | undefined> = this.store.members.params.sort
 
     public readonly groupMembersPageStatusParam: Signal<string | undefined> = this.store.members.params.status
 
@@ -94,11 +98,13 @@ export class GroupFacade extends GenericProjectElementFacade {
         at: Date | undefined,
         isPresent: boolean | undefined,
         isVisible: boolean | undefined,
+        sort: string | undefined = undefined,
     ): void {
         const resetSearch: boolean = this.groupsPageQueryParam() != q
                                      || this.groupsPageIsPresentParam() != isPresent
                                      || this.groupsPageAtParam()?.toISOString() != at?.toISOString()
                                      || this.groupsPageIsVisibleParam() != isVisible
+                                     || this.groupsPageSortParam() != sort
 
         if (resetSearch) {
             this.store.updateGroupsPageSearchParams( {
@@ -107,6 +113,7 @@ export class GroupFacade extends GenericProjectElementFacade {
                 isPresent: isPresent,
                 isVisible: isVisible,
                 at: at?.toISOString(),
+                sort: sort,
             } )
         }
     }
@@ -124,10 +131,12 @@ export class GroupFacade extends GenericProjectElementFacade {
         q: string | undefined,
         status: string | undefined,
         isVisible: boolean | undefined,
+        sort: string | undefined = undefined,
     ): void {
         const resetSearch: boolean = this.groupMembersPageQueryParam() != q
                                      || this.groupMembersPageStatusParam() != status
                                      || this.groupMembersPageIsVisibleParam() != isVisible
+                                     || this.groupMembersPageSortParam() != sort
 
         if (resetSearch) {
             this.store.updateGroupMembersPageSearchParams( {
@@ -135,6 +144,7 @@ export class GroupFacade extends GenericProjectElementFacade {
                 isVisible: isVisible,
                 status: status,
                 q: q,
+                sort: sort,
             } )
         }
     }

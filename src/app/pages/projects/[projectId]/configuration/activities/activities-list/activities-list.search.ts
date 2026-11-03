@@ -1,13 +1,17 @@
+import { formatSort, parseSort, SortFields } from '@shared/helpers/search/sort-query'
 import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice'
+
+export const ACTIVITIES_LIST_SORT_FIELDS: readonly string[] = [ 'name', 'status', 'startAvailability', 'endAvailability' ]
 
 interface ActivitiesListSearch {
     q: string | undefined
     at: Date | undefined
     isAvailable: boolean | undefined
     isVisible: boolean | undefined
+    sort: string | undefined
 }
 
-export interface ActivitiesListSearchModel {
+export interface ActivitiesListSearchModel extends SortFields {
     q: string
     at: Date | null
     isAvailable: BooleanChoice
@@ -25,6 +29,7 @@ export function toActivitiesListSearchModel (params: ActivitiesListSearch): Acti
         at: params.at ?? null,
         isAvailable: toBooleanChoice( params.isAvailable ),
         isVisible: toBooleanChoice( params.isVisible ),
+        ...parseSort( params.sort, ACTIVITIES_LIST_SORT_FIELDS ),
     }
 }
 
@@ -39,5 +44,6 @@ export function toActivitiesListSearchParams (model: ActivitiesListSearchModel):
         at: model.at ?? undefined,
         isAvailable: fromBooleanChoice( model.isAvailable ),
         isVisible: fromBooleanChoice( model.isVisible ),
+        sort: formatSort( model ),
     }
 }
