@@ -1,12 +1,15 @@
-import '@sgdf/ui/avatar'
-import '@sgdf/ui/checkbox'
-import '@sgdf/ui/icon'
-import '@sgdf/ui/list-item'
-import '@sgdf/ui/tag'
-import { Component, CUSTOM_ELEMENTS_SCHEMA, input, InputSignal, output, OutputEmitterRef } from '@angular/core'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, input, output, OutputEmitterRef } from '@angular/core';
+
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
-import { MonitoringRowModel } from '@shared/models/model/monitoring-row.model'
-import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
+
+import { EllipsisDirective } from '@shared/directives/ellipsis.directive';
+import { MonitoringRowModel } from '@shared/models/model/monitoring-row.model';
+
+import '@sgdf/ui/avatar';
+import '@sgdf/ui/checkbox';
+import '@sgdf/ui/icon';
+import '@sgdf/ui/list-item';
+import '@sgdf/ui/tag';
 
 /**
  * Purpose: Élément de liste présentant le statut de présence d'un participant ou d'un véhicule ; utilisé comme attribut de `sgdf-list-item`.
@@ -21,9 +24,9 @@ import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 	templateUrl: './monitoring-row.component.html',
 })
 export class MonitoringRowComponent {
-	public readonly row: InputSignal<MonitoringRowModel> = input.required<MonitoringRowModel>()
-	public readonly selectable: InputSignal<boolean> = input(false)
-	public readonly checked: InputSignal<boolean> = input(false)
+	public readonly row = input.required<MonitoringRowModel>();
+	public readonly selectable = input(false);
+	public readonly checked = input(false);
 
-	public readonly checkedChange: OutputEmitterRef<boolean> = output()
+	public readonly checkedChange: OutputEmitterRef<boolean> = output();
 }

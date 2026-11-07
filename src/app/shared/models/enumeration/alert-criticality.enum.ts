@@ -1,5 +1,5 @@
 export enum AlertCriticalityEnum {
-    RECENT = 'RECENT',
-    REINFORCED = 'REINFORCED',
-    HIGH = 'HIGH',
+	RECENT = 'RECENT',
+	REINFORCED = 'REINFORCED',
+	HIGH = 'HIGH',
 }

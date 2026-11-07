@@ -1,98 +1,122 @@
-import { beforeEach, describe, expect, it } from 'vitest'
-import { StateHelper } from '@shared/helpers/state/state.helper'
-import { provideTestConfig, pageOf } from '@shared/helpers/testing/test-fixtures'
-import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
-import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
-import { GenericModel } from '@shared/models/model/generic.model'
-import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
-import { RegistryConfig } from '@core/config/registry.config'
+import { beforeEach, describe, expect, it } from 'vitest';
 
-type Block = PageRequestInformationModel<object, GenericModel>
+import { RegistryConfig } from '@core/config/registry.config';
+import { StateHelper } from '@shared/helpers/state/state.helper';
+import { PageStateHelper } from '@shared/helpers/store/page-state.helper';
+import { pageOf, provideTestConfig } from '@shared/helpers/testing/test-fixtures';
+import { SeverityEnum } from '@shared/models/enumeration/severity.enum';
+import { GenericModel } from '@shared/models/model/generic.model';
+import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model';
 
-describe( 'StateHelper', () => {
-    beforeEach( () => {
-        provideTestConfig()
-    } )
+type Block = PageRequestInformationModel<object, GenericModel>;
 
-    it( 'uses the plain loader while nothing is displayed yet', () => {
-        // Arrange
-        const block: Block = PageStateHelper.initial<object, GenericModel>( {} )
+describe('StateHelper', () => {
+	beforeEach(() => {
+		provideTestConfig();
+	});
 
-        // Act
-        const loading: Block = StateHelper.updatePageLoader( block, true )
+	it('uses the plain loader while nothing is displayed yet', () => {
+		// Arrange
+		const block: Block = PageStateHelper.initial<object, GenericModel>({});
 
-        // Assert
-        expect( loading.loading ).toBe( true )
-        expect( loading.silentLoading ).toBe( false )
-    } )
+		// Act
+		const loading: Block = StateHelper.updatePageLoader(block, true);
 
-    it( 'uses the plain loader when the displayed page is empty', () => {
-        // Arrange
-        const block: Block = { ...PageStateHelper.initial<object, GenericModel>( {} ), element: pageOf<GenericModel>( [] ) }
+		// Assert
+		expect(loading.loading).toBe(true);
+		expect(loading.silentLoading).toBe(false);
+	});
 
-        // Act
-        const loading: Block = StateHelper.updatePageLoader( block, true )
+	it('uses the plain loader when the displayed page is empty', () => {
+		// Arrange
+		const block: Block = {
+			...PageStateHelper.initial<object, GenericModel>({}),
+			element: pageOf<GenericModel>([]),
+		};
 
-        // Assert
-        expect( loading.loading ).toBe( true )
-    } )
+		// Act
+		const loading: Block = StateHelper.updatePageLoader(block, true);
 
-    it( 'uses the silent loader when content is already displayed', () => {
-        // Arrange
-        const block: Block = { ...PageStateHelper.initial<object, GenericModel>( {} ), element: pageOf<GenericModel>( [ { id: '1' } as GenericModel ] ) }
+		// Assert
+		expect(loading.loading).toBe(true);
+	});
 
-        // Act
-        const loading: Block = StateHelper.updatePageLoader( block, true )
+	it('uses the silent loader when content is already displayed', () => {
+		// Arrange
+		const block: Block = {
+			...PageStateHelper.initial<object, GenericModel>({}),
+			element: pageOf<GenericModel>([{ id: '1' } as GenericModel]),
+		};
 
-        // Assert
-        expect( loading.silentLoading ).toBe( true )
-        expect( loading.loading ).toBe( false )
-    } )
+		// Act
+		const loading: Block = StateHelper.updatePageLoader(block, true);
 
-    it( 'clears both loaders when loading stops', () => {
-        // Arrange
-        const block: Block = { ...PageStateHelper.initial<object, GenericModel>( {} ), loading: true, silentLoading: true }
+		// Assert
+		expect(loading.silentLoading).toBe(true);
+		expect(loading.loading).toBe(false);
+	});
 
-        // Act
-        const stopped: Block = StateHelper.updatePageLoader( block, false )
+	it('clears both loaders when loading stops', () => {
+		// Arrange
+		const block: Block = {
+			...PageStateHelper.initial<object, GenericModel>({}),
+			loading: true,
+			silentLoading: true,
+		};
 
-        // Assert
-        expect( stopped.loading ).toBe( false )
-        expect( stopped.silentLoading ).toBe( false )
-    } )
+		// Act
+		const stopped: Block = StateHelper.updatePageLoader(block, false);
 
-    it( 'toggles the element loader without touching the element', () => {
-        // Arrange
-        const block: { element: { id: string } | undefined, loading: boolean } = { element: { id: 'a' }, loading: false }
+		// Assert
+		expect(stopped.loading).toBe(false);
+		expect(stopped.silentLoading).toBe(false);
+	});
 
-        // Act
-        const loading: typeof block = StateHelper.updateElementLoader( block as never, true ) as unknown as typeof block
+	it('toggles the element loader without touching the element', () => {
+		// Arrange
+		const block: { element: { id: string } | undefined; loading: boolean } = {
+			element: { id: 'a' },
+			loading: false,
+		};
 
-        // Assert
-        expect( loading.loading ).toBe( true )
-        expect( loading.element ).toEqual( { id: 'a' } )
-    } )
+		// Act
+		const loading: typeof block = StateHelper.updateElementLoader(block as never, true) as unknown as typeof block;
 
-    it( 'gives a notification the configured life of its severity', () => {
-        // Arrange
-        RegistryConfig.config.notification.duration.success = 3000
+		// Assert
+		expect(loading.loading).toBe(true);
+		expect(loading.element).toEqual({ id: 'a' });
+	});
 
-        // Act
-        const message: ReturnType<typeof StateHelper.buildNotificationMessage> = StateHelper.buildNotificationMessage( SeverityEnum.SUCCESS, 'title', 'detail', { a: 1 } )
+	it('gives a notification the configured life of its severity', () => {
+		// Arrange
+		RegistryConfig.config.notification.duration.success = 3000;
 
-        // Assert
-        expect( message ).toEqual( expect.objectContaining( { severity: 'success', summary: 'title', detail: 'detail', life: 3000, sticky: false, closable: true, data: { a: 1 } } ) )
-    } )
+		// Act
+		const message = StateHelper.buildNotificationMessage(SeverityEnum.SUCCESS, 'title', 'detail', { a: 1 });
 
-    it( 'makes a notification sticky when its severity has no configured life', () => {
-        // Arrange
-        const severity: SeverityEnum = SeverityEnum.DANGER
+		// Assert
+		expect(message).toEqual(
+			expect.objectContaining({
+				severity: 'success',
+				summary: 'title',
+				detail: 'detail',
+				life: 3000,
+				sticky: false,
+				closable: true,
+				data: { a: 1 },
+			}),
+		);
+	});
 
-        // Act
-        const message: ReturnType<typeof StateHelper.buildNotificationMessage> = StateHelper.buildNotificationMessage( severity, undefined, 'detail' )
+	it('makes a notification sticky when its severity has no configured life', () => {
+		// Arrange
+		const severity: SeverityEnum = SeverityEnum.DANGER;
 
-        // Assert
-        expect( message.sticky ).toBe( true )
-        expect( message.life ).toBeUndefined()
-    } )
-} )
+		// Act
+		const message = StateHelper.buildNotificationMessage(severity, undefined, 'detail');
+
+		// Assert
+		expect(message.sticky).toBe(true);
+		expect(message.life).toBeUndefined();
+	});
+});

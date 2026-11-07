@@ -1,14 +1,16 @@
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, Signal } from '@angular/core'
-import { RouterLink } from '@angular/router'
-import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper'
-import { SessionFacade } from '@core/registry/state/session.facade'
-import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
-import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco'
-import { HomeAttentionProjectsComponent } from '@pages/home/widgets/home-attention-projects/home-attention-projects.component'
-import { HomeFavoriteProjectsComponent } from '@pages/home/widgets/home-favorite-projects/home-favorite-projects.component'
-import { HomeInvitationsComponent } from '@pages/home/widgets/home-invitations/home-invitations.component'
-import { HomeQuickAccessComponent } from '@pages/home/widgets/home-quick-access/home-quick-access.component'
-import { UserAuthorityEnum } from '@shared/models/enumeration/user-authority.enum'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
+
+import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
+
+import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper';
+import { SessionFacade } from '@core/registry/state/session.facade';
+import { RegistryRouteEnum } from '@core/routing/registry-route.enum';
+import { HomeAttentionProjectsComponent } from '@pages/home/widgets/home-attention-projects/home-attention-projects.component';
+import { HomeFavoriteProjectsComponent } from '@pages/home/widgets/home-favorite-projects/home-favorite-projects.component';
+import { HomeInvitationsComponent } from '@pages/home/widgets/home-invitations/home-invitations.component';
+import { HomeQuickAccessComponent } from '@pages/home/widgets/home-quick-access/home-quick-access.component';
+import { UserAuthorityEnum } from '@shared/models/enumeration/user-authority.enum';
 
 /**
  * Purpose: Page d'accueil globale de l'utilisateur connecté.
@@ -31,11 +33,11 @@ import { UserAuthorityEnum } from '@shared/models/enumeration/user-authority.enu
 	templateUrl: './home.page.html',
 })
 export class HomePage {
-	private readonly sessionFacade: SessionFacade = inject(SessionFacade)
+	private readonly sessionFacade = inject(SessionFacade);
 
-	protected readonly createRoute: string = RegistryRouteEnum.PROJECTS_CREATION
-	protected readonly firstName: Signal<string> = computed((): string => this.sessionFacade.currentUser()?.firstName ?? '')
-	protected readonly canCreate: Signal<boolean> = computed((): boolean =>
+	protected readonly createRoute: string = RegistryRouteEnum.PROJECTS_CREATION;
+	protected readonly firstName = computed(() => this.sessionFacade.currentUser()?.firstName ?? '');
+	protected readonly canCreate = computed(() =>
 		CurrentUserHelper.hasUserAuthority(this.sessionFacade.currentUser(), UserAuthorityEnum.REGISTRY_PROJECT_C),
-	)
+	);
 }

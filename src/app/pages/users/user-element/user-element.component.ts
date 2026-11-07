@@ -1,15 +1,18 @@
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, input, InputSignal, Signal } from '@angular/core'
-import { TranslocoPipe } from '@jsverse/transloco'
-import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
-import { VisibilityNamePipe } from '@shared/helpers/pipe/visibility.pipe'
-import { UserModel } from '@shared/models/model/user.model'
-import '@sgdf/ui/avatar'
-import '@sgdf/ui/icon'
-import '@sgdf/ui/list'
-import '@sgdf/ui/list-item'
-import '@sgdf/ui/tag'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, input, InputSignal } from '@angular/core';
 
-const INITIALS_LENGTH: number = 2
+import { TranslocoPipe } from '@jsverse/transloco';
+
+import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe';
+import { VisibilityNamePipe } from '@shared/helpers/pipe/visibility.pipe';
+import { UserModel } from '@shared/models/model/user.model';
+
+import '@sgdf/ui/avatar';
+import '@sgdf/ui/icon';
+import '@sgdf/ui/list';
+import '@sgdf/ui/list-item';
+import '@sgdf/ui/tag';
+
+const INITIALS_LENGTH = 2;
 
 /**
  * Purpose: Résumé d'un utilisateur : nom, e-mail, anniversaire, rôle et visibilité.
@@ -23,16 +26,22 @@ const INITIALS_LENGTH: number = 2
 	templateUrl: './user-element.component.html',
 })
 export class UserElementComponent {
-	public readonly user: InputSignal<UserModel> = input.required()
+	public readonly user: InputSignal<UserModel> = input.required();
 
-	protected readonly fullName: Signal<string> = computed((): string => {
-		const user: UserModel = this.user()
-		return [user.firstName, user.lastName?.toUpperCase()].filter(Boolean).join(' ') || user.email
-	})
+	protected readonly fullName = computed(() => this.buildFullName());
 
-	protected readonly initials: Signal<string> = computed((): string => {
-		const user: UserModel = this.user()
-		const letters: string = [user.firstName, user.lastName].map((name: string | undefined): string => name?.charAt(0) ?? '').join('')
-		return (letters || user.email.charAt(0)).slice(0, INITIALS_LENGTH).toUpperCase()
-	})
+	protected readonly initials = computed(() => this.buildInitials());
+
+	private buildFullName(): string {
+		const user: UserModel = this.user();
+		return [user.firstName, user.lastName?.toUpperCase()].filter(Boolean).join(' ') || user.email;
+	}
+
+	private buildInitials(): string {
+		const user: UserModel = this.user();
+		const letters = [user.firstName, user.lastName]
+			.map((name: string | undefined): string => name?.charAt(0) ?? '')
+			.join('');
+		return (letters || user.email.charAt(0)).slice(0, INITIALS_LENGTH).toUpperCase();
+	}
 }

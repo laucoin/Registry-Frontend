@@ -1,66 +1,103 @@
-import { ActivityRoutesEnum } from '@pages/projects/[projectId]/configuration/activities/activity-routes.enum'
-import { ConfigurationRoutesEnum } from '@pages/projects/[projectId]/configuration/configuration-routes.enum'
-import { GroupRoutesEnum } from '@pages/projects/[projectId]/configuration/groups/group-routes.enum'
-import { ParticipantRoutesEnum } from '@pages/projects/[projectId]/configuration/participants/participant-routes.enum'
-import {
-	ProjectProfileRoutesEnum
-} from '@pages/projects/[projectId]/configuration/profiles/project-profile-routes.enum'
-import { VehicleRoutesEnum } from '@pages/projects/[projectId]/configuration/vehicles/vehicle-routes.enum'
-import { MovementRoutesEnum } from '@pages/projects/[projectId]/movements/movement-routes.enum'
-import { ProjectRoutesEnum } from '@pages/projects/project-routes.enum'
-import { UserRoutesEnum } from '@pages/users/user-routes.enum'
+import { ActivityRoutesEnum } from '@pages/projects/[projectId]/configuration/activities/activity-routes.enum';
+import { ConfigurationRoutesEnum } from '@pages/projects/[projectId]/configuration/configuration-routes.enum';
+import { GroupRoutesEnum } from '@pages/projects/[projectId]/configuration/groups/group-routes.enum';
+import { ParticipantRoutesEnum } from '@pages/projects/[projectId]/configuration/participants/participant-routes.enum';
+import { ProjectProfileRoutesEnum } from '@pages/projects/[projectId]/configuration/profiles/project-profile-routes.enum';
+import { VehicleRoutesEnum } from '@pages/projects/[projectId]/configuration/vehicles/vehicle-routes.enum';
+import { MovementRoutesEnum } from '@pages/projects/[projectId]/movements/movement-routes.enum';
+import { ProjectRoutesEnum } from '@pages/projects/project-routes.enum';
+import { UserRoutesEnum } from '@pages/users/user-routes.enum';
 
-export enum RegistryRouteEnum {
-	LOGIN = 'login',
-	AUTH_CALLBACK = 'auth/callback',
+const LOGIN = 'login';
+const AUTH_CALLBACK = 'auth/callback';
 
-	HOME = '/',
+const HOME = '/';
 
-	PRIVACY = 'privacy',
-	TERMS = 'terms',
+const PRIVACY = 'privacy';
+const TERMS = 'terms';
 
-	MY_ACCOUNT = 'my-account',
-	MY_ACCOUNT_INVITATIONS = `${MY_ACCOUNT}/invitations`,
+const MY_ACCOUNT = 'my-account';
+const MY_ACCOUNT_INVITATIONS = `${MY_ACCOUNT}/invitations`;
 
-	USERS = 'users',
-	USERS_EDITION = `${USERS}/${UserRoutesEnum.EDIT}`,
+const USERS = 'users';
+const USERS_EDITION = `${USERS}/${UserRoutesEnum.EDIT}`;
 
-	PROJECTS = 'projects',
-	PROJECTS_CREATION = `${PROJECTS}/${ProjectRoutesEnum.CREATE}`,
+const PROJECTS = 'projects';
+const PROJECTS_CREATION = `${PROJECTS}/${ProjectRoutesEnum.CREATE}`;
 
-	PROJECT = `${PROJECTS}/${ProjectRoutesEnum.PROJECT_ID}`,
-	PROJECTS_EDITION = `${PROJECT}/${ProjectRoutesEnum.EDIT}`,
+const PROJECT = `${PROJECTS}/${ProjectRoutesEnum.PROJECT_ID}`;
+const PROJECTS_EDITION = `${PROJECT}/${ProjectRoutesEnum.EDIT}`;
 
-	PROJECTS_MOVEMENTS = `${PROJECT}/${ProjectRoutesEnum.MOVEMENTS}`,
-	PROJECTS_MOVEMENTS_REGISTERED_CREATION = `${PROJECTS_MOVEMENTS}/${MovementRoutesEnum.CREATE_REGISTERED}`,
-	PROJECTS_MOVEMENTS_GUEST_CREATION = `${PROJECTS_MOVEMENTS}/${MovementRoutesEnum.CREATE_GUEST}`,
-	PROJECTS_MOVEMENTS_REGISTERED_EDITION = `${PROJECTS_MOVEMENTS}/${MovementRoutesEnum.EDIT_REGISTERED}`,
-	PROJECTS_MOVEMENTS_GUEST_EDITION = `${PROJECTS_MOVEMENTS}/${MovementRoutesEnum.EDIT_GUEST}`,
+const PROJECTS_MOVEMENTS = `${PROJECT}/${ProjectRoutesEnum.MOVEMENTS}`;
+const PROJECTS_MOVEMENTS_REGISTERED_CREATION = `${PROJECTS_MOVEMENTS}/${MovementRoutesEnum.CREATE_REGISTERED}`;
+const PROJECTS_MOVEMENTS_GUEST_CREATION = `${PROJECTS_MOVEMENTS}/${MovementRoutesEnum.CREATE_GUEST}`;
+const PROJECTS_MOVEMENTS_REGISTERED_EDITION = `${PROJECTS_MOVEMENTS}/${MovementRoutesEnum.EDIT_REGISTERED}`;
+const PROJECTS_MOVEMENTS_GUEST_EDITION = `${PROJECTS_MOVEMENTS}/${MovementRoutesEnum.EDIT_GUEST}`;
 
-	PROJECTS_ALERTS = `${PROJECT}/${ProjectRoutesEnum.ALERTS}`,
+const PROJECTS_ALERTS = `${PROJECT}/${ProjectRoutesEnum.ALERTS}`;
 
-	PROJECTS_PARTICIPANTS = `${PROJECT}/${ProjectRoutesEnum.PARTICIPANTS}`,
+const PROJECTS_PARTICIPANTS = `${PROJECT}/${ProjectRoutesEnum.PARTICIPANTS}`;
 
-	PROJECTS_VEHICLES = `${PROJECT}/${ProjectRoutesEnum.VEHICLES}`,
+const PROJECTS_VEHICLES = `${PROJECT}/${ProjectRoutesEnum.VEHICLES}`;
 
-	PROJECTS_CONFIGURATION = `${PROJECT}/${ProjectRoutesEnum.CONFIGURATION}`,
+const PROJECTS_CONFIGURATION = `${PROJECT}/${ProjectRoutesEnum.CONFIGURATION}`;
 
-	PROJECTS_CONFIGURATION_PROFILES = `${PROJECTS_CONFIGURATION}/${ConfigurationRoutesEnum.PROFILES}`,
-	PROJECTS_CONFIGURATION_PROFILES_EDITION = `${PROJECTS_CONFIGURATION_PROFILES}/${ProjectProfileRoutesEnum.EDIT}`,
+const PROJECTS_CONFIGURATION_PROFILES = `${PROJECTS_CONFIGURATION}/${ConfigurationRoutesEnum.PROFILES}`;
+const PROJECTS_CONFIGURATION_PROFILES_EDITION = `${PROJECTS_CONFIGURATION_PROFILES}/${ProjectProfileRoutesEnum.EDIT}`;
 
-	PROJECTS_CONFIGURATION_PARTICIPANTS = `${PROJECTS_CONFIGURATION}/${ConfigurationRoutesEnum.PARTICIPANTS}`,
-	PROJECTS_CONFIGURATION_PARTICIPANTS_EDITION = `${PROJECTS_CONFIGURATION_PARTICIPANTS}/${ParticipantRoutesEnum.EDIT}`,
-	PROJECTS_CONFIGURATION_PARTICIPANTS_MOVEMENTS = `${PROJECTS_CONFIGURATION_PARTICIPANTS}/${ParticipantRoutesEnum.MOVEMENTS}`,
+const PROJECTS_CONFIGURATION_PARTICIPANTS = `${PROJECTS_CONFIGURATION}/${ConfigurationRoutesEnum.PARTICIPANTS}`;
+const PROJECTS_CONFIGURATION_PARTICIPANTS_EDITION = `${PROJECTS_CONFIGURATION_PARTICIPANTS}/${ParticipantRoutesEnum.EDIT}`;
+const PROJECTS_CONFIGURATION_PARTICIPANTS_MOVEMENTS = `${PROJECTS_CONFIGURATION_PARTICIPANTS}/${ParticipantRoutesEnum.MOVEMENTS}`;
 
-	PROJECTS_CONFIGURATION_GROUPS = `${PROJECTS_CONFIGURATION}/${ConfigurationRoutesEnum.GROUPS}`,
-	PROJECTS_CONFIGURATION_GROUPS_EDITION = `${PROJECTS_CONFIGURATION_GROUPS}/${GroupRoutesEnum.EDIT}`,
-	PROJECTS_CONFIGURATION_GROUPS_MEMBERS = `${PROJECTS_CONFIGURATION_GROUPS}/${GroupRoutesEnum.MEMBERS}`,
+const PROJECTS_CONFIGURATION_GROUPS = `${PROJECTS_CONFIGURATION}/${ConfigurationRoutesEnum.GROUPS}`;
+const PROJECTS_CONFIGURATION_GROUPS_EDITION = `${PROJECTS_CONFIGURATION_GROUPS}/${GroupRoutesEnum.EDIT}`;
+const PROJECTS_CONFIGURATION_GROUPS_MEMBERS = `${PROJECTS_CONFIGURATION_GROUPS}/${GroupRoutesEnum.MEMBERS}`;
 
-	PROJECTS_CONFIGURATION_VEHICLES = `${PROJECTS_CONFIGURATION}/${ConfigurationRoutesEnum.VEHICLES}`,
-	PROJECTS_CONFIGURATION_VEHICLES_EDITION = `${PROJECTS_CONFIGURATION_VEHICLES}/${VehicleRoutesEnum.EDIT}`,
-	PROJECTS_CONFIGURATION_VEHICLES_MOVEMENTS = `${PROJECTS_CONFIGURATION_VEHICLES}/${VehicleRoutesEnum.MOVEMENTS}`,
+const PROJECTS_CONFIGURATION_VEHICLES = `${PROJECTS_CONFIGURATION}/${ConfigurationRoutesEnum.VEHICLES}`;
+const PROJECTS_CONFIGURATION_VEHICLES_EDITION = `${PROJECTS_CONFIGURATION_VEHICLES}/${VehicleRoutesEnum.EDIT}`;
+const PROJECTS_CONFIGURATION_VEHICLES_MOVEMENTS = `${PROJECTS_CONFIGURATION_VEHICLES}/${VehicleRoutesEnum.MOVEMENTS}`;
 
-	PROJECTS_CONFIGURATION_ACTIVITIES = `${PROJECTS_CONFIGURATION}/${ConfigurationRoutesEnum.ACTIVITIES}`,
-	PROJECTS_CONFIGURATION_ACTIVITIES_EDITION = `${PROJECTS_CONFIGURATION_ACTIVITIES}/${ActivityRoutesEnum.EDIT}`,
-	PROJECTS_CONFIGURATION_ACTIVITIES_MOVEMENTS = `${PROJECTS_CONFIGURATION_ACTIVITIES}/${ActivityRoutesEnum.MOVEMENTS}`,
-}
+const PROJECTS_CONFIGURATION_ACTIVITIES = `${PROJECTS_CONFIGURATION}/${ConfigurationRoutesEnum.ACTIVITIES}`;
+const PROJECTS_CONFIGURATION_ACTIVITIES_EDITION = `${PROJECTS_CONFIGURATION_ACTIVITIES}/${ActivityRoutesEnum.EDIT}`;
+const PROJECTS_CONFIGURATION_ACTIVITIES_MOVEMENTS = `${PROJECTS_CONFIGURATION_ACTIVITIES}/${ActivityRoutesEnum.MOVEMENTS}`;
+
+export const RegistryRouteEnum = {
+	LOGIN,
+	AUTH_CALLBACK,
+	HOME,
+	PRIVACY,
+	TERMS,
+	MY_ACCOUNT,
+	MY_ACCOUNT_INVITATIONS,
+	USERS,
+	USERS_EDITION,
+	PROJECTS,
+	PROJECTS_CREATION,
+	PROJECT,
+	PROJECTS_EDITION,
+	PROJECTS_MOVEMENTS,
+	PROJECTS_MOVEMENTS_REGISTERED_CREATION,
+	PROJECTS_MOVEMENTS_GUEST_CREATION,
+	PROJECTS_MOVEMENTS_REGISTERED_EDITION,
+	PROJECTS_MOVEMENTS_GUEST_EDITION,
+	PROJECTS_ALERTS,
+	PROJECTS_PARTICIPANTS,
+	PROJECTS_VEHICLES,
+	PROJECTS_CONFIGURATION,
+	PROJECTS_CONFIGURATION_PROFILES,
+	PROJECTS_CONFIGURATION_PROFILES_EDITION,
+	PROJECTS_CONFIGURATION_PARTICIPANTS,
+	PROJECTS_CONFIGURATION_PARTICIPANTS_EDITION,
+	PROJECTS_CONFIGURATION_PARTICIPANTS_MOVEMENTS,
+	PROJECTS_CONFIGURATION_GROUPS,
+	PROJECTS_CONFIGURATION_GROUPS_EDITION,
+	PROJECTS_CONFIGURATION_GROUPS_MEMBERS,
+	PROJECTS_CONFIGURATION_VEHICLES,
+	PROJECTS_CONFIGURATION_VEHICLES_EDITION,
+	PROJECTS_CONFIGURATION_VEHICLES_MOVEMENTS,
+	PROJECTS_CONFIGURATION_ACTIVITIES,
+	PROJECTS_CONFIGURATION_ACTIVITIES_EDITION,
+	PROJECTS_CONFIGURATION_ACTIVITIES_MOVEMENTS,
+} as const;
+
+export type RegistryRouteEnum = (typeof RegistryRouteEnum)[keyof typeof RegistryRouteEnum];

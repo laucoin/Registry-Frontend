@@ -1,10 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+
 import { TranslocoPipe } from '@jsverse/transloco';
 import { MockBuilder } from 'ng-mocks';
+
 import { MonitoringRowModel } from '@shared/models/model/monitoring-row.model';
+
 import { MonitoringRowComponent } from './monitoring-row.component';
 
-const row: MonitoringRowModel = { id: '1', title: 'Camille RENAUD', subtitle: 'Santé', statusLabel: 'En sortie', statusVariant: 'warning', icon: 'user' };
+const row: MonitoringRowModel = {
+	id: '1',
+	title: 'Camille RENAUD',
+	subtitle: 'Santé',
+	statusLabel: 'En sortie',
+	statusVariant: 'warning',
+	icon: 'user',
+};
 
 describe('MonitoringRowComponent', () => {
 	let fixture: ComponentFixture<MonitoringRowComponent>;
@@ -85,7 +95,7 @@ describe('MonitoringRowComponent', () => {
 		fixture.componentRef.setInput('selectable', true);
 		await render(row);
 		const changes: boolean[] = [];
-		fixture.componentInstance.checkedChange.subscribe((checked: boolean): number => changes.push(checked));
+		fixture.componentInstance.checkedChange.subscribe((checked) => changes.push(checked));
 		const checkbox: HTMLElement & { checked: boolean } = fixture.nativeElement.querySelector('sgdf-checkbox');
 
 		// Act

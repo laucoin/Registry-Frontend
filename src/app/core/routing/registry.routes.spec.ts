@@ -1,73 +1,75 @@
-import { Route } from '@angular/router'
-import { routes } from '@core/routing/registry.routes'
-import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
-import { describe, expect, it } from 'vitest'
+import { Route } from '@angular/router';
 
-describe( 'routes', () => {
-    function flatten (candidates: Route[]): Route[] {
-        return candidates.flatMap( (route: Route): Route[] => [ route, ...flatten( route.children ?? [] ) ] )
-    }
+import { describe, expect, it } from 'vitest';
 
-    function lazyRoutes (): Route[] {
-        return flatten( routes ).filter( (route: Route): boolean => !!route.loadComponent || !!route.loadChildren )
-    }
+import { routes } from '@core/routing/registry.routes';
+import { RegistryRouteEnum } from '@core/routing/registry-route.enum';
 
-    it( 'loads the login, auth callback, home, account, users, projects, privacy and terms areas lazily', () => {
-        // Arrange
-        const expected: string[] = [
-            RegistryRouteEnum.LOGIN,
-            RegistryRouteEnum.AUTH_CALLBACK,
-            '',
-            RegistryRouteEnum.MY_ACCOUNT,
-            RegistryRouteEnum.PROJECTS,
-            RegistryRouteEnum.USERS,
-            RegistryRouteEnum.PRIVACY,
-            RegistryRouteEnum.TERMS,
-        ]
+describe('routes', () => {
+	function flatten(candidates: Route[]): Route[] {
+		return candidates.flatMap((route) => [route, ...flatten(route.children ?? [])]);
+	}
 
-        // Act
-        const paths: (string | undefined)[] = lazyRoutes().map( (route: Route): string | undefined => route.path )
+	function lazyRoutes(): Route[] {
+		return flatten(routes).filter((route) => !!route.loadComponent || !!route.loadChildren);
+	}
 
-        // Assert
-        expect( paths ).toEqual( expected )
-    } )
+	it('loads the login, auth callback, home, account, users, projects, privacy and terms areas lazily', () => {
+		// Arrange
+		const expected = [
+			RegistryRouteEnum.LOGIN,
+			RegistryRouteEnum.AUTH_CALLBACK,
+			'',
+			RegistryRouteEnum.MY_ACCOUNT,
+			RegistryRouteEnum.PROJECTS,
+			RegistryRouteEnum.USERS,
+			RegistryRouteEnum.PRIVACY,
+			RegistryRouteEnum.TERMS,
+		];
 
-    it( 'resolves the lazy pages of the login, auth callback, account, privacy and terms routes', async () => {
-        // Arrange
-        const loaders: (() => Promise<unknown>)[] = lazyRoutes()
-            .filter( (route: Route): boolean => !!route.loadComponent )
-            .map( (route: Route): (() => Promise<unknown>) => route.loadComponent as () => Promise<unknown> )
+		// Act
+		const paths = lazyRoutes().map((route) => route.path);
 
-        // Act
-        const pages: unknown[] = await Promise.all( loaders.map( (load: () => Promise<unknown>): Promise<unknown> => load() ) )
+		// Assert
+		expect(paths).toEqual(expected);
+	});
 
-        // Assert
-        expect( pages.map( (page: unknown): string => typeof page ) ).toEqual( [ 'function', 'function', 'function', 'function' ] )
-    } )
+	it('resolves the lazy pages of the login, auth callback, account, privacy and terms routes', async () => {
+		// Arrange
+		const loaders = lazyRoutes()
+			.filter((route) => !!route.loadComponent)
+			.map((route) => route.loadComponent as () => Promise<unknown>);
 
-    it( 'guards the signed-in areas', () => {
-        // Arrange
-        const guarded: string[] = [ RegistryRouteEnum.MY_ACCOUNT, RegistryRouteEnum.PROJECTS, RegistryRouteEnum.USERS ]
+		// Act
+		const pages = await Promise.all(loaders.map((load) => load()));
 
-        // Act
-        const unguarded: string[] = guarded.filter(
-            (path: string): boolean => !flatten( routes ).find( (route: Route): boolean => route.path === path )?.canActivate?.length,
-        )
+		// Assert
+		expect(pages.map((page): string => typeof page)).toEqual(['function', 'function', 'function', 'function']);
+	});
 
-        // Assert
-        expect( unguarded ).toEqual( [] )
-    } )
+	it('guards the signed-in areas', () => {
+		// Arrange
+		const guarded: string[] = [RegistryRouteEnum.MY_ACCOUNT, RegistryRouteEnum.PROJECTS, RegistryRouteEnum.USERS];
 
-    it( 'guards the home page and sends unknown paths to it', () => {
-        // Arrange
-        const all: Route[] = flatten( routes )
+		// Act
+		const unguarded: string[] = guarded.filter(
+			(path: string) => !flatten(routes).find((route) => route.path === path)?.canActivate?.length,
+		);
 
-        // Act
-        const home: Route | undefined = all.find( (route: Route): boolean => route.path === '' && route.pathMatch === 'full' )
-        const fallback: Route | undefined = all.find( (route: Route): boolean => route.path === '**' )
+		// Assert
+		expect(unguarded).toEqual([]);
+	});
 
-        // Assert
-        expect( home?.canActivate?.length ).toBeGreaterThan( 0 )
-        expect( fallback?.redirectTo ).toBe( '' )
-    } )
-} )
+	it('guards the home page and sends unknown paths to it', () => {
+		// Arrange
+		const all = flatten(routes);
+
+		// Act
+		const home = all.find((route) => route.path === '' && route.pathMatch === 'full');
+		const fallback = all.find((route) => route.path === '**');
+
+		// Assert
+		expect(home?.canActivate?.length).toBeGreaterThan(0);
+		expect(fallback?.redirectTo).toBe('');
+	});
+});

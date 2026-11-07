@@ -1,79 +1,81 @@
-import { inject } from '@angular/core'
-import { signalStore, withHooks, withMethods, withState } from '@ngrx/signals'
-import { SelectOptionModel } from '@shared/models/model/select-option.model'
-import { ErrorReporter } from '@core/registry/state/error-reporter'
-import { MetadataApi } from '@core/registry/state/metadata.api'
-import { VehiclePageParamsModel } from '@pages/projects/[projectId]/configuration/vehicles/data/model/vehicle-page-params.model'
-import { VehicleStoreModel } from '@pages/projects/[projectId]/configuration/vehicles/data/model/vehicle-store.model'
-import { VehicleApi } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.api'
-import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
-import { refreshOnLanguageChange } from '@shared/helpers/store/language-refresh'
-import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
+import { inject } from '@angular/core';
+
+import { signalStore, withHooks, withMethods, withState } from '@ngrx/signals';
+
+import { ErrorReporter } from '@core/registry/state/error-reporter';
+import { MetadataApi } from '@core/registry/state/metadata.api';
+import { VehiclePageParamsModel } from '@pages/projects/[projectId]/configuration/vehicles/data/model/vehicle-page-params.model';
+import { VehicleStoreModel } from '@pages/projects/[projectId]/configuration/vehicles/data/model/vehicle-store.model';
+import { VehicleApi } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.api';
+import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api';
+import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper';
+import { refreshOnLanguageChange } from '@shared/helpers/store/language-refresh';
+import { PageStateHelper } from '@shared/helpers/store/page-state.helper';
 import {
-    contentsRequester,
-    elementFetcher,
-    metadataFetcher,
-    movementContentsFetcher,
-    pageFetcher,
-    paramsUpdater,
-    silentElementFetcher,
-    withEmptyOption,
-} from '@shared/helpers/store/paged-store.methods'
-import { withProfileScope } from '@shared/helpers/store/with-profile-scope.feature'
-import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
-import { MovementModel } from '@shared/models/model/movement.model'
-import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
-import { VehicleModel } from '@shared/models/model/vehicle.model'
-import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper'
+	contentsRequester,
+	elementFetcher,
+	metadataFetcher,
+	movementContentsFetcher,
+	pageFetcher,
+	paramsUpdater,
+	silentElementFetcher,
+	withEmptyOption,
+} from '@shared/helpers/store/paged-store.methods';
+import { withProfileScope } from '@shared/helpers/store/with-profile-scope.feature';
+import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum';
+import { MovementModel } from '@shared/models/model/movement.model';
+import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model';
+import { SelectOptionModel } from '@shared/models/model/select-option.model';
+import { VehicleModel } from '@shared/models/model/vehicle.model';
 
 interface VehiclesPageRequest extends CumulativePageRequest {
-    projectId: string | undefined
+	projectId: string | undefined;
 }
 
 interface VehicleMovementsPageRequest extends VehiclesPageRequest {
-    id: string
+	id: string;
 }
 
 interface VehicleTimelineRequest {
-    projectId: string | undefined
-    id: string
+	projectId: string | undefined;
+	id: string;
 }
 
 const defaultVehicleStore: VehicleStoreModel = {
-    sectionErrors: {},
-    vehicles: PageStateHelper.initial<VehiclePageParamsModel, VehicleModel>( {
-        resetSearch: false,
-        isVisible: undefined,
-        q: undefined,
-        status: undefined,
-        at: undefined,
-        sort: undefined,
-    } ),
-    movements: PageStateHelper.initial<MovementPageParamsModel, MovementModel>( {
-        resetSearch: false,
-        isCurrent: false,
-        isVisible: undefined,
-        hasActivity: undefined,
-        type: undefined,
-        from: undefined,
-        to: undefined,
-        sort: undefined,
-    } ),
-    timeline: { element: undefined, loading: false, error: undefined },
-    metadata: {
-        availabilities: [
-            { label: '-', value: undefined },
-            { label: 'vehicles.available.true', value: true },
-            { label: 'vehicles.available.false', value: false },
-        ],
-        visibilities: [
-            { label: '-', value: undefined },
-            { label: 'vehicles.visible.true', value: true },
-            { label: 'vehicles.visible.false', value: false },
-        ],
-        presencesStatus: [],
-    },
-}
+	sectionErrors: {},
+	vehicles: PageStateHelper.initial<VehiclePageParamsModel, VehicleModel>({
+		resetSearch: false,
+		isVisible: undefined,
+		q: undefined,
+		status: undefined,
+		at: undefined,
+		sort: undefined,
+	}),
+	movements: PageStateHelper.initial<MovementPageParamsModel, MovementModel>({
+		resetSearch: false,
+		isCurrent: false,
+		isVisible: undefined,
+		hasActivity: undefined,
+		type: undefined,
+		from: undefined,
+		to: undefined,
+		sort: undefined,
+	}),
+	timeline: { element: undefined, loading: false, error: undefined },
+	metadata: {
+		availabilities: [
+			{ label: '-', value: undefined },
+			{ label: 'vehicles.available.true', value: true },
+			{ label: 'vehicles.available.false', value: false },
+		],
+		visibilities: [
+			{ label: '-', value: undefined },
+			{ label: 'vehicles.visible.true', value: true },
+			{ label: 'vehicles.visible.false', value: false },
+		],
+		presencesStatus: [],
+	},
+};
 
 /**
  * Purpose: Détient l'état des véhicules.
@@ -81,30 +83,57 @@ const defaultVehicleStore: VehicleStoreModel = {
  * Limits: Atteint via la facade des véhicules ; ne formate pas les données et ne notifie pas l'utilisateur du résultat des commandes.
  */
 export const VehicleStore = signalStore(
-    withState<VehicleStoreModel>( defaultVehicleStore ),
-    withProfileScope<VehicleStoreModel>( defaultVehicleStore, (current: VehicleStoreModel): Partial<VehicleStoreModel> => ({
-        metadata: { ...defaultVehicleStore.metadata, presencesStatus: current.metadata.presencesStatus },
-    }) ),
-    withMethods( (store, api = inject( VehicleApi ), movementApi = inject( MovementApi ), metadataApi = inject( MetadataApi ), errors = inject( ErrorReporter )) => ({
-        fetchPresencesStatus: metadataFetcher<VehicleStoreModel, 'presencesStatus', void, SelectOptionModel<PresenceStatusEnum>[]>(
-            store, 'presencesStatus', () => metadataApi.getPresencesStatus(), withEmptyOption,
-        ),
-        fetchVehiclesPage: pageFetcher( store, 'vehicles', (request: VehiclesPageRequest, params: VehiclePageParamsModel) =>
-            api.findVehicles( request.projectId, request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
-        updateVehiclesPageSearchParams: paramsUpdater( store, 'vehicles' ),
-        updateVehicleMovementsPageSearchParams: paramsUpdater( store, 'movements' ),
-        fetchVehicleMovementsContents: movementContentsFetcher( store, movementApi ),
-    }) ),
-    withMethods( (store, api = inject( VehicleApi ), errors = inject( ErrorReporter )) => ({
-        fetchVehicleMovementsPage: pageFetcher( store, 'movements', (request: VehicleMovementsPageRequest, params: MovementPageParamsModel) =>
-            api.findVehicleMovements( request.projectId, request.id, request.page, request.size, params ), errors, {
-            merge: CumulativePageHelper.merge,
-            after: contentsRequester( store.fetchVehicleMovementsContents ),
-        } ),
-        fetchVehicleTimeline: elementFetcher( store, 'timeline', (request: VehicleTimelineRequest) => api.findVehicleTimeline( request.projectId, request.id ) ),
-        reloadVehicleTimeline: silentElementFetcher( store, 'timeline', (request: VehicleTimelineRequest) => api.findVehicleTimeline( request.projectId, request.id ) ),
-    }) ),
-    withHooks( {
-        onInit: (store): void => refreshOnLanguageChange( store.fetchPresencesStatus ),
-    } ),
-)
+	withState<VehicleStoreModel>(defaultVehicleStore),
+	withProfileScope<VehicleStoreModel>(defaultVehicleStore, (current): Partial<VehicleStoreModel> => ({
+		metadata: { ...defaultVehicleStore.metadata, presencesStatus: current.metadata.presencesStatus },
+	})),
+	withMethods(
+		(
+			store,
+			api = inject(VehicleApi),
+			movementApi = inject(MovementApi),
+			metadataApi = inject(MetadataApi),
+			errors = inject(ErrorReporter),
+		) => ({
+			fetchPresencesStatus: metadataFetcher<
+				VehicleStoreModel,
+				'presencesStatus',
+				void,
+				SelectOptionModel<PresenceStatusEnum>[]
+			>(store, 'presencesStatus', () => metadataApi.getPresencesStatus(), withEmptyOption),
+			fetchVehiclesPage: pageFetcher(
+				store,
+				'vehicles',
+				(request: VehiclesPageRequest, params) =>
+					api.findVehicles(request.projectId, request.page, request.size, params),
+				errors,
+				{ merge: CumulativePageHelper.merge },
+			),
+			updateVehiclesPageSearchParams: paramsUpdater(store, 'vehicles'),
+			updateVehicleMovementsPageSearchParams: paramsUpdater(store, 'movements'),
+			fetchVehicleMovementsContents: movementContentsFetcher(store, movementApi),
+		}),
+	),
+	withMethods((store, api = inject(VehicleApi), errors = inject(ErrorReporter)) => ({
+		fetchVehicleMovementsPage: pageFetcher(
+			store,
+			'movements',
+			(request: VehicleMovementsPageRequest, params) =>
+				api.findVehicleMovements(request.projectId, request.id, request.page, request.size, params),
+			errors,
+			{
+				merge: CumulativePageHelper.merge,
+				after: contentsRequester(store.fetchVehicleMovementsContents),
+			},
+		),
+		fetchVehicleTimeline: elementFetcher(store, 'timeline', (request: VehicleTimelineRequest) =>
+			api.findVehicleTimeline(request.projectId, request.id),
+		),
+		reloadVehicleTimeline: silentElementFetcher(store, 'timeline', (request: VehicleTimelineRequest) =>
+			api.findVehicleTimeline(request.projectId, request.id),
+		),
+	})),
+	withHooks({
+		onInit: (store) => refreshOnLanguageChange(store.fetchPresencesStatus),
+	}),
+);

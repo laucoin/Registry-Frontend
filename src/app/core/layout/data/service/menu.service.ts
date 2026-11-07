@@ -1,13 +1,18 @@
-import { computed, inject, Injectable, Signal } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
-import { NavigationEnd, Router } from '@angular/router'
-import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper'
-import { APP_LEVEL_MENUS, LOGOUT_MENU, PROJECT_LEVEL_MENUS, USER_LEVEL_MENUS } from '@core/layout/data/menu.definitions'
-import { MenuItemModel } from '@core/layout/data/model/menu-item.model'
-import { SessionFacade } from '@core/registry/state/session.facade'
-import { CurrentUserModel } from '@shared/models/model/current-user.model'
-import { ProjectModel } from '@shared/models/model/project.model'
-import { filter, map, startWith } from 'rxjs'
+import { computed, inject, Injectable, Signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router } from '@angular/router';
+
+import { filter, map, startWith } from 'rxjs';
+
+import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper';
+import {
+	APP_LEVEL_MENUS,
+	LOGOUT_MENU,
+	PROJECT_LEVEL_MENUS,
+	USER_LEVEL_MENUS,
+} from '@core/layout/data/menu.definitions';
+import { MenuItemModel } from '@core/layout/data/model/menu-item.model';
+import { SessionFacade } from '@core/registry/state/session.facade';
 
 /**
  * Purpose: Donne les menus de navigation que l'utilisateur connecté a le droit de voir.
@@ -16,71 +21,69 @@ import { filter, map, startWith } from 'rxjs'
  */
 @Injectable({ providedIn: 'root' })
 export class MenuService {
-	private readonly session: SessionFacade = inject(SessionFacade)
-	private readonly router: Router = inject(Router)
-	private readonly currentPath: Signal<string> = toSignal(
+	private readonly session = inject(SessionFacade);
+	private readonly router = inject(Router);
+	private readonly currentPath = toSignal(
 		this.router.events.pipe(
-			filter((event: unknown): boolean => event instanceof NavigationEnd),
-			map((): string => this.pathOf(this.router.url)),
+			filter((event: unknown) => event instanceof NavigationEnd),
+			map(() => this.pathOf(this.router.url)),
 			startWith(this.pathOf(this.router.url)),
 		),
 		{ requireSync: true },
-	)
+	);
 
-	public readonly appMenus: Signal<MenuItemModel[]> = computed((): MenuItemModel[] =>
-		this.filterMenus(APP_LEVEL_MENUS),
-	)
+	public readonly appMenus = computed(() => this.filterMenus(APP_LEVEL_MENUS));
 
-	public readonly projectMenus: Signal<MenuItemModel[]> = computed((): MenuItemModel[] =>
-		this.filterMenus(PROJECT_LEVEL_MENUS),
-	)
+	public readonly projectMenus = computed(() => this.filterMenus(PROJECT_LEVEL_MENUS));
 
-	public readonly userMenus: Signal<MenuItemModel[]> = computed((): MenuItemModel[] =>
-		this.filterMenus(USER_LEVEL_MENUS),
-	)
+	public readonly userMenus = computed(() => this.filterMenus(USER_LEVEL_MENUS));
 
-	public readonly logoutMenu: MenuItemModel = LOGOUT_MENU
+	public readonly logoutMenu: MenuItemModel = LOGOUT_MENU;
 
-	public readonly activeMenuUrl: Signal<string | undefined> = computed((): string | undefined =>
-		this.flatten([...this.appMenus(), ...this.projectMenus()])
-			.map((menu: MenuItemModel): string | undefined => menu.url)
-			.filter((url: string | undefined): url is string => url !== undefined && this.isPrefixOfCurrentPath(url))
-			.sort((first: string, second: string): number => second.length - first.length)[0],
-	)
+	public readonly activeMenuUrl: Signal<string | undefined> = computed(
+		(): string | undefined =>
+			this.flatten([...this.appMenus(), ...this.projectMenus()])
+				.map((menu) => menu.url)
+				.filter((url): url is string => url !== undefined && this.isPrefixOfCurrentPath(url))
+				.sort((first, second) => second.length - first.length)[0],
+	);
 
 	private filterMenus(menus: MenuItemModel[]): MenuItemModel[] {
-		const currentUser: CurrentUserModel | undefined = this.session.currentUser()
-		const project: ProjectModel | undefined = this.session.selectedProject()
+		const currentUser = this.session.currentUser();
+		const project = this.session.selectedProject();
 
 		return menus
-			.filter((menu: MenuItemModel): boolean => CurrentUserHelper.isFeasible(currentUser, project, menu))
-			.map((menu: MenuItemModel): MenuItemModel => this.resolve(menu))
-			.filter((menu: MenuItemModel): boolean => !menu.items || menu.items.length > 0)
+			.filter((menu) => CurrentUserHelper.isFeasible(currentUser, project, menu))
+			.map((menu) => this.resolve(menu))
+			.filter((menu) => !menu.items || menu.items.length > 0);
 	}
 
 	private resolve(menu: MenuItemModel): MenuItemModel {
-		const fallback: MenuItemModel['fallbackLabel'] = menu.fallbackLabel
-		const useFallback: boolean = !!fallback
-			&& !CurrentUserHelper.hasUserAuthority(this.session.currentUser(), fallback.unlessAuthority)
-
 		return {
 			...menu,
-			label: useFallback ? fallback!.label : menu.label,
+			label: this.fallbackLabelOf(menu) ?? menu.label,
 			url: menu.url?.replace(':projectId', this.session.currentProjectId() ?? ''),
 			items: menu.items && this.filterMenus(menu.items),
-		}
+		};
+	}
+
+	private fallbackLabelOf(menu: MenuItemModel): string | undefined {
+		const fallback = menu.fallbackLabel;
+		if (!fallback) return undefined;
+		const restricted = CurrentUserHelper.hasUserAuthority(this.session.currentUser(), fallback.unlessAuthority);
+		return restricted ? undefined : fallback.label;
 	}
 
 	private flatten(menus: MenuItemModel[]): MenuItemModel[] {
-		return menus.flatMap((menu: MenuItemModel): MenuItemModel[] => [menu, ...this.flatten(menu.items ?? [])])
+		return menus.flatMap((menu) => [menu, ...this.flatten(menu.items ?? [])]);
 	}
 
 	private isPrefixOfCurrentPath(url: string): boolean {
-		const path: string = url.replace(/^\//, '')
-		return this.currentPath() === path || (path !== '' && this.currentPath().startsWith(`${path}/`))
+		const path = url.replace(/^\//, '');
+		return this.currentPath() === path || (path !== '' && this.currentPath().startsWith(`${path}/`));
 	}
 
 	private pathOf(url: string): string {
-		return url.split(/[?#]/)[0]!.replace(/^\//, '')
+		return url.split(/[?#]/)[0].replace(/^\//, '');
 	}
 }

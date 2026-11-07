@@ -1,195 +1,216 @@
-import { TestBed } from '@angular/core/testing'
-import { TranslocoService } from '@jsverse/transloco'
-import { of, Subject } from 'rxjs'
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { MetadataApi } from '@core/registry/state/metadata.api'
-import { ErrorReporter } from '@core/registry/state/error-reporter'
-import { ProjectProfileApi } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.api'
-import { ProjectProfileStore } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.store'
-import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures'
-import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
-import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
-import { UserModel } from '@shared/models/model/user.model'
+import { TestBed } from '@angular/core/testing';
 
-describe( 'ProjectProfileStore', () => {
-    let store: InstanceType<typeof ProjectProfileStore>
-    let findProjectProfiles: Mock<ProjectProfileApi['findProjectProfiles']>
-    let searchUsers: Mock<ProjectProfileApi['searchUsers']>
-    let getAssignableProjectProfileRoles: Mock<ProjectProfileApi['getAssignableProjectProfileRoles']>
-    let getProfilesStatus: Mock<MetadataApi['getProfilesStatus']>
-    let getFeatures: Mock<MetadataApi['getFeatures']>
-    let notify: Mock<(message: unknown) => void>
-    let langChanges: Subject<string>
+import { TranslocoService } from '@jsverse/transloco';
+import { of, Subject } from 'rxjs';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-    beforeEach( () => {
-        findProjectProfiles = vi.fn()
-        searchUsers = vi.fn()
-        getAssignableProjectProfileRoles = vi.fn()
-        getProfilesStatus = vi.fn( () => of( [ { label: 'Invited', value: ProfileStatusEnum.INVITED } ] ) )
-        getFeatures = vi.fn()
-        notify = vi.fn()
-        langChanges = new Subject<string>()
-        TestBed.configureTestingModule( {
-            providers: [
-                ProjectProfileStore,
-                { provide: ProjectProfileApi, useValue: { findProjectProfiles, searchUsers, getAssignableProjectProfileRoles } },
-                { provide: MetadataApi, useValue: { getProfilesStatus, getFeatures } },
-                { provide: ErrorReporter, useValue: { notify } },
-                { provide: TranslocoService, useValue: { langChanges$: langChanges.asObservable() } },
-            ],
-        } )
-        store = TestBed.inject( ProjectProfileStore )
-    } )
+import { ErrorReporter } from '@core/registry/state/error-reporter';
+import { MetadataApi } from '@core/registry/state/metadata.api';
+import { ProjectProfileApi } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.api';
+import { ProjectProfileStore } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.store';
+import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures';
+import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum';
+import { ProjectProfileModel } from '@shared/models/model/project-profile.model';
+import { UserModel } from '@shared/models/model/user.model';
 
-    it( 'leaves the blocked status out of the status options', () => {
-        // Arrange
-        getProfilesStatus.mockReturnValue( of( [ { label: 'Invited', value: ProfileStatusEnum.INVITED }, { label: 'Blocked', value: ProfileStatusEnum.BLOCKED } ] ) )
+describe('ProjectProfileStore', () => {
+	let store: InstanceType<typeof ProjectProfileStore>;
+	let findProjectProfiles: Mock<ProjectProfileApi['findProjectProfiles']>;
+	let searchUsers: Mock<ProjectProfileApi['searchUsers']>;
+	let getAssignableProjectProfileRoles: Mock<ProjectProfileApi['getAssignableProjectProfileRoles']>;
+	let getProfilesStatus: Mock<MetadataApi['getProfilesStatus']>;
+	let getFeatures: Mock<MetadataApi['getFeatures']>;
+	let notify: Mock<(message: unknown) => void>;
+	let langChanges: Subject<string>;
 
-        // Act
-        langChanges.next( 'fr' )
+	beforeEach(() => {
+		findProjectProfiles = vi.fn();
+		searchUsers = vi.fn();
+		getAssignableProjectProfileRoles = vi.fn();
+		getProfilesStatus = vi.fn(() => of([{ label: 'Invited', value: ProfileStatusEnum.INVITED }]));
+		getFeatures = vi.fn();
+		notify = vi.fn();
+		langChanges = new Subject<string>();
+		TestBed.configureTestingModule({
+			providers: [
+				ProjectProfileStore,
+				{
+					provide: ProjectProfileApi,
+					useValue: { findProjectProfiles, searchUsers, getAssignableProjectProfileRoles },
+				},
+				{ provide: MetadataApi, useValue: { getProfilesStatus, getFeatures } },
+				{ provide: ErrorReporter, useValue: { notify } },
+				{ provide: TranslocoService, useValue: { langChanges$: langChanges.asObservable() } },
+			],
+		});
+		store = TestBed.inject(ProjectProfileStore);
+	});
 
-        // Assert
-        expect( store.metadata.status().map( (item: { value: unknown }): unknown => item.value ) ).toEqual( [ undefined, ProfileStatusEnum.INVITED ] )
-    } )
+	it('leaves the blocked status out of the status options', () => {
+		// Arrange
+		getProfilesStatus.mockReturnValue(
+			of([
+				{ label: 'Invited', value: ProfileStatusEnum.INVITED },
+				{ label: 'Blocked', value: ProfileStatusEnum.BLOCKED },
+			]),
+		);
 
-    it( 'loads the profile statuses on init with an empty option first', () => {
-        // Arrange
-        const expectedFirst: unknown = { label: '-', value: undefined }
+		// Act
+		langChanges.next('fr');
 
-        // Act
-        const statuses: unknown[] = store.metadata.status()
+		// Assert
+		expect(store.metadata.status().map((item: { value: unknown }): unknown => item.value)).toEqual([
+			undefined,
+			ProfileStatusEnum.INVITED,
+		]);
+	});
 
-        // Assert
-        expect( statuses[ 0 ] ).toEqual( expectedFirst )
-        expect( statuses ).toHaveLength( 2 )
-    } )
+	it('loads the profile statuses on init with an empty option first', () => {
+		// Arrange
+		const expectedFirst: unknown = { label: '-', value: undefined };
 
-    it( 'reloads the statuses when the language changes but not on the initial language', () => {
-        // Arrange
-        langChanges.next( 'fr' )
-        const callsAfterInitial: number = getProfilesStatus.mock.calls.length
+		// Act
+		const statuses: unknown[] = store.metadata.status();
 
-        // Act
-        langChanges.next( 'en' )
+		// Assert
+		expect(statuses[0]).toEqual(expectedFirst);
+		expect(statuses).toHaveLength(2);
+	});
 
-        // Assert
-        expect( callsAfterInitial ).toBe( 1 )
-        expect( getProfilesStatus ).toHaveBeenCalledTimes( 2 )
-    } )
+	it('reloads the statuses when the language changes but not on the initial language', () => {
+		// Arrange
+		langChanges.next('fr');
+		const callsAfterInitial = getProfilesStatus.mock.calls.length;
 
-    it( 'stores the fetched profiles page', () => {
-        // Arrange
-        findProjectProfiles.mockReturnValue( of( pageOf<ProjectProfileModel>( [ { id: 'pp1' } as ProjectProfileModel ] ) ) )
+		// Act
+		langChanges.next('en');
 
-        // Act
-        store.fetchProjectProfilesPage( { projectId: 'p1', page: 0, size: 10 } )
+		// Assert
+		expect(callsAfterInitial).toBe(1);
+		expect(getProfilesStatus).toHaveBeenCalledTimes(2);
+	});
 
-        // Assert
-        expect( store.projectProfiles.element()?.content ).toHaveLength( 1 )
-        expect( store.projectProfiles.loading() ).toBe( false )
-    } )
+	it('stores the fetched profiles page', () => {
+		// Arrange
+		findProjectProfiles.mockReturnValue(of(pageOf<ProjectProfileModel>([{ id: 'pp1' } as ProjectProfileModel])));
 
-    it( 'appends the next batch to the profiles already shown', () => {
-        // Arrange
-        findProjectProfiles
-            .mockReturnValueOnce( of( { ...pageOf<ProjectProfileModel>( [ { id: 'pp1' } as ProjectProfileModel ] ), size: 1, totalPages: 2 } ) )
-            .mockReturnValueOnce( of( { ...pageOf<ProjectProfileModel>( [ { id: 'pp2' } as ProjectProfileModel ], 1 ), size: 1, totalPages: 2 } ) )
-        store.fetchProjectProfilesPage( { projectId: 'p1', page: 0, size: 1 } )
+		// Act
+		store.fetchProjectProfilesPage({ projectId: 'p1', page: 0, size: 10 });
 
-        // Act
-        store.fetchProjectProfilesPage( { projectId: 'p1', page: 1, size: 1 } )
+		// Assert
+		expect(store.projectProfiles.element()?.content).toHaveLength(1);
+		expect(store.projectProfiles.loading()).toBe(false);
+	});
 
-        // Assert
-        expect( store.projectProfiles.element()?.content.map( (profile: ProjectProfileModel): string => profile.id ) ).toEqual( [ 'pp1', 'pp2' ] )
-    } )
+	it('appends the next batch to the profiles already shown', () => {
+		// Arrange
+		findProjectProfiles
+			.mockReturnValueOnce(
+				of({ ...pageOf<ProjectProfileModel>([{ id: 'pp1' } as ProjectProfileModel]), size: 1, totalPages: 2 }),
+			)
+			.mockReturnValueOnce(
+				of({
+					...pageOf<ProjectProfileModel>([{ id: 'pp2' } as ProjectProfileModel], 1),
+					size: 1,
+					totalPages: 2,
+				}),
+			);
+		store.fetchProjectProfilesPage({ projectId: 'p1', page: 0, size: 1 });
 
-    it( 'keeps a failed profiles fetch in the profiles block', () => {
-        // Arrange
-        findProjectProfiles.mockReturnValue( failing( ERROR_500 ) )
+		// Act
+		store.fetchProjectProfilesPage({ projectId: 'p1', page: 1, size: 1 });
 
-        // Act
-        store.fetchProjectProfilesPage( { projectId: 'p1', page: 0, size: 10 } )
+		// Assert
+		expect(store.projectProfiles.element()?.content.map((profile) => profile.id)).toEqual(['pp1', 'pp2']);
+	});
 
-        // Assert
-        expect( store.projectProfiles.error()?.summary ).toBe( 'Title' )
-    } )
+	it('keeps a failed profiles fetch in the profiles block', () => {
+		// Arrange
+		findProjectProfiles.mockReturnValue(failing(ERROR_500));
 
-    it( 'keeps a 503 failure in its block', () => {
-        // Arrange
-        findProjectProfiles.mockReturnValue( failing( ERROR_503 ) )
+		// Act
+		store.fetchProjectProfilesPage({ projectId: 'p1', page: 0, size: 10 });
 
-        // Act
-        store.fetchProjectProfilesPage( { projectId: 'p1', page: 0, size: 10 } )
+		// Assert
+		expect(store.projectProfiles.error()?.summary).toBe('Title');
+	});
 
-        // Assert
-        expect( store.projectProfiles.error() ).toBeDefined()
-    } )
+	it('keeps a 503 failure in its block', () => {
+		// Arrange
+		findProjectProfiles.mockReturnValue(failing(ERROR_503));
 
-    it( 'turns the searched users into select items', () => {
-        // Arrange
-        searchUsers.mockReturnValue( of( [ { id: 'u1', email: 'a@b.c', firstName: 'Ada', lastName: 'L' } as UserModel ] ) )
+		// Act
+		store.fetchProjectProfilesPage({ projectId: 'p1', page: 0, size: 10 });
 
-        // Act
-        store.searchUsers( { projectId: 'p1', q: 'ada' } )
+		// Assert
+		expect(store.projectProfiles.error()).toBeDefined();
+	});
 
-        // Assert
-        expect( store.metadata.searched()[ 0 ].label ).toBe( 'a@b.c (Ada L)' )
-    } )
+	it('turns the searched users into select items', () => {
+		// Arrange
+		searchUsers.mockReturnValue(of([{ id: 'u1', email: 'a@b.c', firstName: 'Ada', lastName: 'L' } as UserModel]));
 
-    it( 'stores the assignable roles of the project', () => {
-        // Arrange
-        getAssignableProjectProfileRoles.mockReturnValue( of( [ { label: 'Chief', value: 'CHIEF' } ] ) )
+		// Act
+		store.searchUsers({ projectId: 'p1', q: 'ada' });
 
-        // Act
-        store.fetchAssignableRoles( 'p1' )
+		// Assert
+		expect(store.metadata.searched()[0].label).toBe('a@b.c (Ada L)');
+	});
 
-        // Assert
-        expect( getAssignableProjectProfileRoles ).toHaveBeenCalledWith( 'p1' )
-        expect( store.metadata.roles() ).toEqual( [ { label: 'Chief', value: 'CHIEF' } ] )
-    } )
+	it('stores the assignable roles of the project', () => {
+		// Arrange
+		getAssignableProjectProfileRoles.mockReturnValue(of([{ label: 'Chief', value: 'CHIEF' }]));
 
-    it( 'keeps a failed role fetch in the section error and keeps the previous roles', () => {
-        // Arrange
-        getAssignableProjectProfileRoles.mockReturnValueOnce( of( [ { label: 'Chief', value: 'CHIEF' } ] ) )
-        getAssignableProjectProfileRoles.mockReturnValueOnce( failing( ERROR_500 ) )
-        store.fetchAssignableRoles( 'p1' )
+		// Act
+		store.fetchAssignableRoles('p1');
 
-        // Act
-        store.fetchAssignableRoles( 'p1' )
+		// Assert
+		expect(getAssignableProjectProfileRoles).toHaveBeenCalledWith('p1');
+		expect(store.metadata.roles()).toEqual([{ label: 'Chief', value: 'CHIEF' }]);
+	});
 
-        // Assert
-        expect( store.sectionErrors()[ 'metadata.roles' ]?.summary ).toBe( 'Title' )
-        expect( store.metadata.roles() ).toHaveLength( 1 )
-    } )
+	it('keeps a failed role fetch in the section error and keeps the previous roles', () => {
+		// Arrange
+		getAssignableProjectProfileRoles.mockReturnValueOnce(of([{ label: 'Chief', value: 'CHIEF' }]));
+		getAssignableProjectProfileRoles.mockReturnValueOnce(failing(ERROR_500));
+		store.fetchAssignableRoles('p1');
 
-    it( 'keeps the invitation by email disabled until the features are fetched', () => {
-        // Arrange & Act
-        const enabled: boolean = store.metadata.features.inviteByEmail()
+		// Act
+		store.fetchAssignableRoles('p1');
 
-        // Assert
-        expect( enabled ).toBe( false )
-    } )
+		// Assert
+		expect(store.sectionErrors()['metadata.roles']?.summary).toBe('Title');
+		expect(store.metadata.roles()).toHaveLength(1);
+	});
 
-    it( 'stores the enabled features', () => {
-        // Arrange
-        getFeatures.mockReturnValue( of( { inviteByEmail: true } ) )
+	it('keeps the invitation by email disabled until the features are fetched', () => {
+		// Arrange & Act
+		const enabled = store.metadata.features.inviteByEmail();
 
-        // Act
-        store.fetchFeatures()
+		// Assert
+		expect(enabled).toBe(false);
+	});
 
-        // Assert
-        expect( store.metadata.features() ).toEqual( { inviteByEmail: true } )
-    } )
+	it('stores the enabled features', () => {
+		// Arrange
+		getFeatures.mockReturnValue(of({ inviteByEmail: true }));
 
-    it( 'keeps a failed features fetch in the section error and keeps the invitation by email disabled', () => {
-        // Arrange
-        getFeatures.mockReturnValue( failing( ERROR_500 ) )
+		// Act
+		store.fetchFeatures();
 
-        // Act
-        store.fetchFeatures()
+		// Assert
+		expect(store.metadata.features()).toEqual({ inviteByEmail: true });
+	});
 
-        // Assert
-        expect( store.sectionErrors()[ 'metadata.features' ]?.summary ).toBe( 'Title' )
-        expect( store.metadata.features.inviteByEmail() ).toBe( false )
-    } )
-} )
+	it('keeps a failed features fetch in the section error and keeps the invitation by email disabled', () => {
+		// Arrange
+		getFeatures.mockReturnValue(failing(ERROR_500));
+
+		// Act
+		store.fetchFeatures();
+
+		// Assert
+		expect(store.sectionErrors()['metadata.features']?.summary).toBe('Title');
+		expect(store.metadata.features.inviteByEmail()).toBe(false);
+	});
+});

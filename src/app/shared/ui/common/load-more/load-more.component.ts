@@ -1,9 +1,24 @@
-import { afterNextRender, Component, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, effect, ElementRef, inject, input, InputSignal, output, OutputEmitterRef, Signal, viewChild } from '@angular/core'
-import { TranslocoPipe } from '@jsverse/transloco'
-import { BrowserService } from '@core/browser/browser.service'
-import '@sgdf/ui/button'
+import {
+	afterNextRender,
+	Component,
+	CUSTOM_ELEMENTS_SCHEMA,
+	DestroyRef,
+	effect,
+	ElementRef,
+	inject,
+	input,
+	InputSignal,
+	output,
+	viewChild,
+} from '@angular/core';
 
-const OBSERVER_MARGIN: string = '200px'
+import { TranslocoPipe } from '@jsverse/transloco';
+
+import { BrowserService } from '@core/browser/browser.service';
+
+import '@sgdf/ui/button';
+
+const OBSERVER_MARGIN = '200px';
 
 /**
  * Purpose: Déclenche le chargement du lot suivant d'une liste, automatiquement quand la fin de la liste approche et manuellement via un bouton.
@@ -17,46 +32,50 @@ const OBSERVER_MARGIN: string = '200px'
 	templateUrl: './load-more.component.html',
 })
 export class LoadMoreComponent {
-	public readonly loadedCount: InputSignal<number> = input.required()
-	public readonly total: InputSignal<number> = input.required()
-	public readonly loading: InputSignal<boolean> = input(false)
-	public readonly autoLoad: InputSignal<boolean> = input(true)
+	public readonly loadedCount: InputSignal<number> = input.required();
+	public readonly total: InputSignal<number> = input.required();
+	public readonly loading = input(false);
+	public readonly autoLoad = input(true);
 
-	public readonly loadMore: OutputEmitterRef<void> = output()
+	public readonly loadMore = output();
 
-	private readonly sentinel: Signal<ElementRef<HTMLElement> | undefined> = viewChild<ElementRef<HTMLElement>>('sentinel')
-	private readonly destroyRef: DestroyRef = inject(DestroyRef)
-	private readonly browser: BrowserService = inject(BrowserService)
-	private stopWatching: (() => void) | undefined
+	private readonly sentinel = viewChild<ElementRef<HTMLElement>>('sentinel');
+	private readonly destroyRef = inject(DestroyRef);
+	private readonly browser = inject(BrowserService);
+	private stopWatching: (() => void) | undefined;
 
-	public constructor() {
-		afterNextRender((): void => {
-			const element: HTMLElement | undefined = this.sentinel()?.nativeElement
+	constructor() {
+		afterNextRender(() => {
+			const element = this.sentinel()?.nativeElement;
 			if (!element) {
-				return
+				return;
 			}
-			this.watch(element)
-			this.destroyRef.onDestroy((): void => this.stopWatching?.())
-		})
+			this.watch(element);
+			this.destroyRef.onDestroy((): void => this.stopWatching?.());
+		});
 
 		// Un lot terminé peut laisser la sentinelle visible : l'observer à nouveau fait signaler son état de nouveau.
-		effect((): void => {
-			const element: HTMLElement | undefined = this.sentinel()?.nativeElement
+		effect(() => {
+			const element = this.sentinel()?.nativeElement;
 			if (this.loading() || !this.autoLoad() || !element || !this.stopWatching) {
-				return
+				return;
 			}
-			this.stopWatching()
-			this.watch(element)
-		})
+			this.stopWatching();
+			this.watch(element);
+		});
 	}
 
 	private watch(element: HTMLElement): void {
-		this.stopWatching = this.browser.watchIntersection(element, (intersecting: boolean): void => this.onIntersect(intersecting), OBSERVER_MARGIN)
+		this.stopWatching = this.browser.watchIntersection(
+			element,
+			(intersecting) => this.onIntersect(intersecting),
+			OBSERVER_MARGIN,
+		);
 	}
 
 	private onIntersect(intersecting: boolean): void {
 		if (this.autoLoad() && !this.loading() && intersecting) {
-			this.loadMore.emit()
+			this.loadMore.emit();
 		}
 	}
 }

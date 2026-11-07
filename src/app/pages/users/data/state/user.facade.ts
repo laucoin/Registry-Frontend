@@ -1,20 +1,23 @@
-import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
-import { computed, inject, Injectable, Signal } from '@angular/core'
-import { toObservable } from '@angular/core/rxjs-interop'
-import { finalize, Observable, tap } from 'rxjs'
-import { PageModel } from '@shared/models/model/page.model'
-import { UserModel } from '@shared/models/model/user.model'
-import { SelectOptionModel } from '@shared/models/model/select-option.model'
-import { NotificationModel } from '@shared/models/model/notification.model'
-import { GenericFacade } from '@shared/helpers/facade/generic.facade'
-import { UserApi } from '@core/registry/state/user.api'
-import { BrowserService } from '@core/browser/browser.service'
-import { UiFacade } from '@core/registry/state/ui.facade'
-import { StateHelper } from '@shared/helpers/state/state.helper'
-import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
-import { initialize, notifyOnError } from '@shared/helpers/rx.helper'
-import { UserStore } from '@pages/users/data/state/user.store'
-import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
+import { computed, inject, Injectable, Signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
+
+import { finalize, Observable, tap } from 'rxjs';
+
+import { BrowserService } from '@core/browser/browser.service';
+import { UiFacade } from '@core/registry/state/ui.facade';
+import { UserApi } from '@core/registry/state/user.api';
+import { UserStore } from '@pages/users/data/state/user.store';
+import { GenericFacade } from '@shared/helpers/facade/generic.facade';
+import { initialize, notifyOnError } from '@shared/helpers/rx.helper';
+import { SearchParamsHelper } from '@shared/helpers/search/search-params.helper';
+import { StateHelper } from '@shared/helpers/state/state.helper';
+import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper';
+import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper';
+import { SeverityEnum } from '@shared/models/enumeration/severity.enum';
+import { NotificationModel } from '@shared/models/model/notification.model';
+import { PageModel } from '@shared/models/model/page.model';
+import { SelectOptionModel } from '@shared/models/model/select-option.model';
+import { UserModel } from '@shared/models/model/user.model';
 
 /**
  * Purpose: Point d'entrée public du domaine des utilisateurs pour les pages, composants et guards.
@@ -23,137 +26,142 @@ import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.help
  */
 @Injectable()
 export class UserFacade extends GenericFacade {
-    private readonly store: InstanceType<typeof UserStore> = inject( UserStore )
-    private readonly api: UserApi = inject( UserApi )
-    private readonly uiFacade: UiFacade = inject( UiFacade )
-    private readonly browser: BrowserService = inject( BrowserService )
+	private readonly store: InstanceType<typeof UserStore> = inject(UserStore);
+	private readonly api = inject(UserApi);
+	private readonly uiFacade = inject(UiFacade);
+	private readonly browser = inject(BrowserService);
 
-    public readonly metadataErrors: Signal<Record<string, NotificationModel | undefined>> = SectionErrorsHelper.metadata( this.store.sectionErrors )
+	public readonly metadataErrors: Signal<Record<string, NotificationModel | undefined>> =
+		SectionErrorsHelper.metadata(this.store.sectionErrors);
 
-    public readonly userError: Signal<NotificationModel | undefined> = this.store.user.error
+	public readonly userError: Signal<NotificationModel | undefined> = this.store.user.error;
 
-    public readonly usersPage: Signal<PageModel<UserModel> | undefined> = this.store.users.element
+	public readonly usersPage: Signal<PageModel<UserModel> | undefined> = this.store.users.element;
 
-    public readonly usersPageLoading: Signal<boolean> = this.store.users.loading
+	public readonly usersPageLoading = this.store.users.loading;
 
-    public readonly usersPageSilentLoading: Signal<boolean> = this.store.users.silentLoading
+	public readonly usersPageSilentLoading = this.store.users.silentLoading;
 
-    public readonly usersPageError: Signal<NotificationModel | undefined> = this.store.users.error
+	public readonly usersPageError: Signal<NotificationModel | undefined> = this.store.users.error;
 
-    public readonly usersPageResetSearch: Signal<boolean> = this.store.users.params.resetSearch
+	public readonly usersPageResetSearch = this.store.users.params.resetSearch;
 
-    public readonly usersPageQueryParam: Signal<string | undefined> = this.store.users.params.q
+	public readonly usersPageQueryParam = this.store.users.params.q;
 
-    public readonly usersPageSortParam: Signal<string | undefined> = this.store.users.params.sort
+	public readonly usersPageSortParam = this.store.users.params.sort;
 
-    public readonly actualUsersPageIsVisibleParam: Signal<boolean | undefined> = this.store.users.params.isVisible
+	public readonly actualUsersPageIsVisibleParam = this.store.users.params.isVisible;
 
-    public readonly user: Signal<UserModel | undefined> = this.store.user.element
+	public readonly user: Signal<UserModel | undefined> = this.store.user.element;
 
-    public readonly user$: Observable<UserModel | undefined> = toObservable( this.user )
+	public readonly user$ = toObservable(this.user);
 
-    public readonly userLoading: Signal<boolean> = this.store.user.loading
+	public readonly userLoading = this.store.user.loading;
 
-    public readonly assignableRolesMetadata: Signal<SelectOptionModel<string>[]> = this.store.metadata.assignableRoles
+	public readonly assignableRolesMetadata = this.store.metadata.assignableRoles;
 
-    public readonly statusMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed( () =>
-            this.store.metadata.status().map( (status: SelectOptionModel<boolean | undefined>) => ({
-                ...status,
-                label: this.translateLabel( status.label! ),
-            }) ),
-        )
+	public readonly statusMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed(() =>
+		this.store.metadata.status().map((status) => ({
+			...status,
+			label: this.translateLabel(status.label),
+		})),
+	);
 
-    public fetchUsersPage (
-        page: number | undefined,
-        size: number | undefined,
-    ): void {
-        const index: number | undefined = this.usersPageResetSearch() ? 0 : page
-        this.store.fetchUsersPage( { page: index, size: size } )
-    }
+	public fetchUsersPage(page: number | undefined, size: number | undefined): void {
+		const index = this.usersPageResetSearch() ? 0 : page;
+		this.store.fetchUsersPage({ page: index, size: size });
+	}
 
-    public inputPageSearchParameters (
-        q: string | undefined,
-        isVisible: boolean | undefined,
-        sort: string | undefined = undefined,
-    ): void {
-        const resetSearch: boolean = this.usersPageQueryParam() != q
-                                     || this.actualUsersPageIsVisibleParam() != isVisible
-                                     || this.usersPageSortParam() != sort
+	public inputPageSearchParameters(
+		q: string | undefined,
+		isVisible: boolean | undefined,
+		sort: string | undefined = undefined,
+	): void {
+		const next = {
+			q,
+			isVisible,
+			sort,
+		};
+		if (!SearchParamsHelper.hasChanged(this.store.users.params(), next)) return;
+		this.store.updateUsersPageSearchParams({ ...next, resetSearch: true });
+	}
 
-        if (resetSearch) {
-            this.store.updateUsersPageSearchParams( {
-                resetSearch: resetSearch,
-                q: q,
-                isVisible: isVisible,
-                sort: sort,
-            } )
-        }
-    }
+	public fetchUser(id: string): void {
+		this.store.fetchUser(id);
+	}
 
-    public fetchUser (id: string): void {
-        this.store.fetchUser( id )
-    }
+	public resetUser(): void {
+		this.store.resetUser();
+	}
 
-    public resetUser (): void {
-        this.store.resetUser()
-    }
+	public fetchAssignableRoles(): void {
+		this.store.fetchAssignableRoles();
+	}
 
-    public fetchAssignableRoles (): void {
-        this.store.fetchAssignableRoles()
-    }
+	public updateUserRole(id: string, role: string | undefined): Observable<UserModel> {
+		return this.api.updateUserRole(id, role).pipe(
+			this.trackUserLoader,
+			notifyOnError(this.uiFacade),
+			tap((user) => this.onCommandSuccess('update-role', user)),
+		);
+	}
 
-    public updateUserRole (id: string, role: string | undefined): Observable<UserModel> {
-        return this.api.updateUserRole( id, role ).pipe(
-            this.trackUserLoader,
-            notifyOnError( this.uiFacade ),
-            tap( (user: UserModel): void => this.onCommandSuccess( 'update-role', user ) ),
-        )
-    }
+	public blockUser(id: string): void {
+		this.api
+			.blockUserById(id)
+			.pipe(
+				this.trackUserLoader,
+				notifyOnError(this.uiFacade),
+				tap((user) => this.onCommandSuccess('block', user)),
+			)
+			.subscribe();
+	}
 
-    public blockUser (id: string): void {
-        this.api.blockUserById( id ).pipe(
-            this.trackUserLoader,
-            notifyOnError( this.uiFacade ),
-            tap( (user: UserModel): void => this.onCommandSuccess( 'block', user ) ),
-        ).subscribe()
-    }
+	public unblockUser(id: string): void {
+		this.api
+			.unblockUserById(id)
+			.pipe(
+				this.trackUserLoader,
+				notifyOnError(this.uiFacade),
+				tap((user) => this.onCommandSuccess('unblock', user)),
+			)
+			.subscribe();
+	}
 
-    public unblockUser (id: string): void {
-        this.api.unblockUserById( id ).pipe(
-            this.trackUserLoader,
-            notifyOnError( this.uiFacade ),
-            tap( (user: UserModel): void => this.onCommandSuccess( 'unblock', user ) ),
-        ).subscribe()
-    }
+	public exportUser(user: UserModel): Observable<unknown> {
+		return this.api.exportUserById(user.id).pipe(
+			notifyOnError(this.uiFacade),
+			tap((data) => this.browser.downloadJson(data, `registry-user-${user.id}.json`)),
+		);
+	}
 
-    public exportUser (user: UserModel): Observable<unknown> {
-        return this.api.exportUserById( user.id ).pipe(
-            notifyOnError( this.uiFacade ),
-            tap( (data: unknown): void => this.browser.downloadJson( data, `registry-user-${ user.id }.json` ) ),
-        )
-    }
+	public deleteUser(user: UserModel): void {
+		this.api
+			.deleteUserById(user.id)
+			.pipe(
+				this.trackUserLoader,
+				notifyOnError(this.uiFacade),
+				tap(() => this.onCommandSuccess('delete', user)),
+			)
+			.subscribe();
+	}
 
-    public deleteUser (user: UserModel): void {
-        this.api.deleteUserById( user.id ).pipe(
-            this.trackUserLoader,
-            notifyOnError( this.uiFacade ),
-            tap( (): void => this.onCommandSuccess( 'delete', user ) ),
-        ).subscribe()
-    }
+	private readonly trackUserLoader = <T>(source: Observable<T>): Observable<T> =>
+		source.pipe(
+			initialize(() => this.store.startUserLoader()),
+			finalize(() => this.store.stopUserLoader()),
+		);
 
-    private readonly trackUserLoader = <T> (source: Observable<T>): Observable<T> => source.pipe(
-        initialize( (): void => this.store.startUserLoader() ),
-        finalize( (): void => this.store.stopUserLoader() ),
-    )
+	private onCommandSuccess(command: string, user: UserModel): void {
+		this.uiFacade.notify(
+			StateHelper.buildNotificationMessage(
+				SeverityEnum.SUCCESS,
+				`users.notifications.${command}.title`,
+				`users.notifications.${command}.message`,
+				{ firstName: user.firstName, lastName: user.lastName },
+			),
+		);
 
-    private onCommandSuccess (command: string, user: UserModel): void {
-        this.uiFacade.notify( StateHelper.buildNotificationMessage(
-            SeverityEnum.SUCCESS,
-            `users.notifications.${ command }.title`,
-            `users.notifications.${ command }.message`,
-            { firstName: user.firstName, lastName: user.lastName },
-        ) )
-
-        this.store.fetchUsersPage( CumulativePageHelper.reloadRequest( this.usersPage() ) )
-    }
+		this.store.fetchUsersPage(CumulativePageHelper.reloadRequest(this.usersPage()));
+	}
 }

@@ -1,4 +1,4 @@
 export interface CreatedProjectProfiles {
-    createdEmails: string[]
-    notCreatedEmails: string[]
+	createdEmails: string[];
+	notCreatedEmails: string[];
 }

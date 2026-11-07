@@ -1,20 +1,23 @@
-import { By } from '@angular/platform-browser';
-import type { Mock } from 'vitest';
 import { signal } from '@angular/core';
-import { MovementPrefillService } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-prefill.service';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+
 import { TranslocoPipe } from '@jsverse/transloco';
 import { MockBuilder, ngMocks } from 'ng-mocks';
+import type { Mock } from 'vitest';
+
+import { MovementPrefillService } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-prefill.service';
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe';
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe';
+import { PageStateHelper } from '@shared/helpers/store/page-state.helper';
 import { PARTICIPANT_DTO, PLANNED_MOVEMENT_DTO } from '@shared/helpers/testing/response-fixtures';
 import { ERROR_500 } from '@shared/helpers/testing/test-fixtures';
-import { PageStateHelper } from '@shared/helpers/store/page-state.helper';
 import { PlannedMovementMapper } from '@shared/mappers/planned-movement.mapper';
 import { NotificationModel } from '@shared/models/model/notification.model';
 import { PlannedMovementModel } from '@shared/models/model/planned-movement.model';
-import { PlannedMovementCardComponent } from './planned-movement-card.component';
 import { SkeletonListComponent } from '@shared/ui/common/skeleton-list/skeleton-list.component';
+
+import { PlannedMovementCardComponent } from './planned-movement-card.component';
 
 function movement(overrides: Partial<PlannedMovementModel> = {}): PlannedMovementModel {
 	return { ...PlannedMovementMapper.toModel(PLANNED_MOVEMENT_DTO), ...overrides };
@@ -24,7 +27,10 @@ describe('PlannedMovementCardComponent', () => {
 	const openPlanned: Mock<(value: unknown) => void> = vi.fn();
 	let fixture: ComponentFixture<PlannedMovementCardComponent>;
 
-	async function render(movements: PlannedMovementModel[] | undefined, options: { loading?: boolean, error?: NotificationModel } = {}): Promise<void> {
+	async function render(
+		movements: PlannedMovementModel[] | undefined,
+		options: { loading?: boolean; error?: NotificationModel } = {},
+	): Promise<void> {
 		fixture = TestBed.createComponent(PlannedMovementCardComponent);
 		fixture.componentRef.setInput('movements', movements);
 		fixture.componentRef.setInput('loading', options.loading ?? false);
@@ -40,20 +46,22 @@ describe('PlannedMovementCardComponent', () => {
 	beforeEach(async () => {
 		await MockBuilder(PlannedMovementCardComponent)
 			.mock(TranslocoPipe, (key: string): string => key)
-			.mock(PluralTranslationPipe, (key: string): string => key)
-			.mock(CustomDateFormatPipe, (): string => '10:32')
+			.mock(PluralTranslationPipe, (key) => key)
+			.mock(CustomDateFormatPipe, () => '10:32')
 			.mock(MovementPrefillService, { canCreate: signal(true), openPlanned });
 		openPlanned.mockClear();
 	});
 
 	it('should list the planned movements with their total and their time', async () => {
 		// Arrange
-		const movements: PlannedMovementModel[] = [movement(), movement({ poolName: 'Owls' })];
+		const movements = [movement(), movement({ poolName: 'Owls' })];
 
 		// Act
 		await render(movements);
 		const rows: number = fixture.nativeElement.querySelectorAll('sgdf-list-item').length;
-		const times: string[] = Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('strong')).map((it: HTMLElement): string => it.textContent.trim());
+		const times = Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('strong')).map((it) =>
+			it.textContent.trim(),
+		);
 
 		// Assert
 		expect(rows).toBe(2);
@@ -63,7 +71,7 @@ describe('PlannedMovementCardComponent', () => {
 
 	it('should title a pool by its name and a single participant by his name with his reason', async () => {
 		// Arrange
-		const single: PlannedMovementModel = movement({
+		const single = movement({
 			poolName: undefined,
 			reason: { label: 'Hospital return', value: 'HOSPITAL', kind: 'REASON' },
 		});
@@ -80,7 +88,7 @@ describe('PlannedMovementCardComponent', () => {
 
 	it('should leave out the time when the movement has none', async () => {
 		// Arrange
-		const movements: PlannedMovementModel[] = [movement({ plannedAt: undefined })];
+		const movements = [movement({ plannedAt: undefined })];
 
 		// Act
 		await render(movements);
@@ -91,7 +99,7 @@ describe('PlannedMovementCardComponent', () => {
 
 	it('should show only the first movements and count the others', async () => {
 		// Arrange
-		const movements: PlannedMovementModel[] = Array.from({ length: 8 }, (_: unknown, index: number): PlannedMovementModel => movement({ poolName: `Pool ${index}` }));
+		const movements = Array.from({ length: 8 }, (_, index) => movement({ poolName: `Pool ${index}` }));
 
 		// Act
 		await render(movements);
@@ -129,8 +137,8 @@ describe('PlannedMovementCardComponent', () => {
 	it('should display the failure and ask for a retry', async () => {
 		// Arrange
 		await render(undefined, { error: PageStateHelper.toNotification(ERROR_500) });
-		let retried: boolean = false;
-		fixture.componentInstance.retry.subscribe((): boolean => retried = true);
+		let retried = false;
+		fixture.componentInstance.retry.subscribe(() => (retried = true));
 
 		// Act
 		ngMocks.output('app-section-error', 'retry').emit();
@@ -142,10 +150,10 @@ describe('PlannedMovementCardComponent', () => {
 
 	it('should know the participants of a movement without a pool', () => {
 		// Arrange
-		const participant: string = PARTICIPANT_DTO.id;
+		const participant = PARTICIPANT_DTO.id;
 
 		// Act
-		const model: PlannedMovementModel = movement({ poolName: undefined });
+		const model = movement({ poolName: undefined });
 
 		// Assert
 		expect(model.participants[0]?.id).toBe(participant);
@@ -153,7 +161,7 @@ describe('PlannedMovementCardComponent', () => {
 
 	it('should open the movement form prefilled with the movement of the clicked row', async () => {
 		// Arrange
-		const movements: PlannedMovementModel[] = [movement(), movement({ poolName: 'Owls' })];
+		const movements = [movement(), movement({ poolName: 'Owls' })];
 		await render(movements);
 
 		// Act

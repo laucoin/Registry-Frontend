@@ -1,51 +1,56 @@
-import { describe, expect, it } from 'vitest'
-import { ETagHelper } from '@shared/helpers/etag.helper'
-import { GenericModel } from '@shared/models/model/generic.model'
+import { describe, expect, it } from 'vitest';
 
-describe( 'ETagHelper', () => {
-    it( 'quotes the epoch milliseconds of the last edition', () => {
-        // Arrange
-        const element: GenericModel = { lastEdition: { dateTime: new Date( '2026-10-13T10:02:11.123456Z' ), user: undefined } } as GenericModel
+import { ETagHelper } from '@shared/helpers/etag.helper';
+import { GenericModel } from '@shared/models/model/generic.model';
 
-        // Act
-        const ifMatch: string | undefined = ETagHelper.ifMatch( element )
+describe('ETagHelper', () => {
+	it('quotes the epoch milliseconds of the last edition', () => {
+		// Arrange
+		const element = {
+			lastEdition: { dateTime: new Date('2026-10-13T10:02:11.123456Z'), user: undefined },
+		} as GenericModel;
 
-        // Assert
-        expect( ifMatch ).toBe( '"1791885731123"' )
-    } )
+		// Act
+		const ifMatch = ETagHelper.ifMatch(element);
 
-    it( 'accepts the date-time as the text received from the backend', () => {
-        // Arrange
-        const element: GenericModel = { lastEdition: { dateTime: '2026-10-13T10:02:11.123456Z', user: undefined } } as unknown as GenericModel
+		// Assert
+		expect(ifMatch).toBe('"1791885731123"');
+	});
 
-        // Act
-        const ifMatch: string | undefined = ETagHelper.ifMatch( element )
+	it('accepts the date-time as the text received from the backend', () => {
+		// Arrange
+		const element = {
+			lastEdition: { dateTime: '2026-10-13T10:02:11.123456Z', user: undefined },
+		} as unknown as GenericModel;
 
-        // Assert
-        expect( ifMatch ).toBe( '"1791885731123"' )
-    } )
+		// Act
+		const ifMatch = ETagHelper.ifMatch(element);
 
-    it( 'has no precondition without last edition', () => {
-        // Arrange
-        const withoutEdition: GenericModel = {} as GenericModel
+		// Assert
+		expect(ifMatch).toBe('"1791885731123"');
+	});
 
-        // Act
-        const results: (string | undefined)[] = [ ETagHelper.ifMatch( withoutEdition ), ETagHelper.ifMatch( undefined ) ]
+	it('has no precondition without last edition', () => {
+		// Arrange
+		const withoutEdition = {} as GenericModel;
 
-        // Assert
-        expect( results ).toEqual( [ undefined, undefined ] )
-    } )
+		// Act
+		const results = [ETagHelper.ifMatch(withoutEdition), ETagHelper.ifMatch(undefined)];
 
-    it( 'turns the precondition into request headers', () => {
-        // Arrange
-        const ifMatch: string = '"1"'
+		// Assert
+		expect(results).toEqual([undefined, undefined]);
+	});
 
-        // Act
-        const withHeader: { headers?: Record<string, string> } = ETagHelper.options( ifMatch )
-        const withoutHeader: { headers?: Record<string, string> } = ETagHelper.options( undefined )
+	it('turns the precondition into request headers', () => {
+		// Arrange
+		const ifMatch = '"1"';
 
-        // Assert
-        expect( withHeader ).toEqual( { headers: { 'If-Match': '"1"' } } )
-        expect( withoutHeader ).toEqual( {} )
-    } )
-} )
+		// Act
+		const withHeader = ETagHelper.options(ifMatch);
+		const withoutHeader = ETagHelper.options(undefined);
+
+		// Assert
+		expect(withHeader).toEqual({ headers: { 'If-Match': '"1"' } });
+		expect(withoutHeader).toEqual({});
+	});
+});

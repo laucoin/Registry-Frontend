@@ -1,4 +1,4 @@
 export enum ParticipantTypeEnum {
-    REGISTERED = 'REGISTERED',
-    GUEST = 'GUEST',
+	REGISTERED = 'REGISTERED',
+	GUEST = 'GUEST',
 }

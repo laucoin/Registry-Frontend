@@ -1,23 +1,23 @@
-import { formatSort, parseSort, SortFields } from '@shared/helpers/search/sort-query'
-import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice'
+import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice';
+import { formatSort, parseSort, SortFields } from '@shared/helpers/search/sort-query';
 
-export const PROJECT_PROFILES_LIST_SORT_FIELDS: readonly string[] = [ 'startAccess', 'endAccess', 'status' ]
+export const PROJECT_PROFILES_LIST_SORT_FIELDS: readonly string[] = ['startAccess', 'endAccess', 'status'];
 
 interface ProjectProfilesListSearch {
-    q: string | undefined
-    at: Date | undefined
-    status: string | undefined
-    isAvailable: boolean | undefined
-    isVisible: boolean | undefined
-    sort: string | undefined
+	q: string | undefined;
+	at: Date | undefined;
+	status: string | undefined;
+	isAvailable: boolean | undefined;
+	isVisible: boolean | undefined;
+	sort: string | undefined;
 }
 
 export interface ProjectProfilesListSearchModel extends SortFields {
-    q: string
-    at: Date | null
-    status: string
-    isAvailable: BooleanChoice
-    isVisible: BooleanChoice
+	q: string;
+	at: Date | null;
+	status: string;
+	isAvailable: BooleanChoice;
+	isVisible: BooleanChoice;
 }
 
 /**
@@ -25,15 +25,15 @@ export interface ProjectProfilesListSearchModel extends SortFields {
  * Scope: Remplit les paramètres vides avec les valeurs par défaut du formulaire.
  * Limits: Ne valide pas les paramètres.
  */
-export function toProjectProfilesListSearchModel (params: ProjectProfilesListSearch): ProjectProfilesListSearchModel {
-    return {
-        q: params.q ?? '',
-        at: params.at ?? null,
-        status: params.status ?? '',
-        isAvailable: toBooleanChoice( params.isAvailable ),
-        isVisible: toBooleanChoice( params.isVisible ),
-        ...parseSort( params.sort, PROJECT_PROFILES_LIST_SORT_FIELDS ),
-    }
+export function toProjectProfilesListSearchModel(params: ProjectProfilesListSearch): ProjectProfilesListSearchModel {
+	return {
+		q: params.q ?? '',
+		at: params.at ?? null,
+		status: params.status ?? '',
+		isAvailable: toBooleanChoice(params.isAvailable),
+		isVisible: toBooleanChoice(params.isVisible),
+		...parseSort(params.sort, PROJECT_PROFILES_LIST_SORT_FIELDS),
+	};
 }
 
 /**
@@ -41,13 +41,13 @@ export function toProjectProfilesListSearchModel (params: ProjectProfilesListSea
  * Scope: Transforme les valeurs vides du formulaire en paramètres undefined.
  * Limits: Ne valide pas les valeurs du formulaire.
  */
-export function toProjectProfilesListSearchParams (model: ProjectProfilesListSearchModel): ProjectProfilesListSearch {
-    return {
-        q: model.q === '' ? undefined : model.q,
-        at: model.at ?? undefined,
-        status: model.status === '' ? undefined : model.status,
-        isAvailable: fromBooleanChoice( model.isAvailable ),
-        isVisible: fromBooleanChoice( model.isVisible ),
-        sort: formatSort( model ),
-    }
+export function toProjectProfilesListSearchParams(model: ProjectProfilesListSearchModel): ProjectProfilesListSearch {
+	return {
+		q: model.q === '' ? undefined : model.q,
+		at: model.at ?? undefined,
+		status: model.status === '' ? undefined : model.status,
+		isAvailable: fromBooleanChoice(model.isAvailable),
+		isVisible: fromBooleanChoice(model.isVisible),
+		sort: formatSort(model),
+	};
 }

@@ -1,93 +1,103 @@
-import { describe, expect, it } from 'vitest'
-import { CommunicationModel } from '@shared/models/model/communication.model'
-import { CommunicationHelper } from '@shared/helpers/communication.helper'
+import { describe, expect, it } from 'vitest';
 
-describe( 'CommunicationHelper', () => {
-    it( 'attributes a communication to its movement when the movement has a reason', () => {
-        // Arrange
-        const communication: CommunicationModel = { movement: { id: 'm1', reason: { label: 'Arrival' } }, lastEdition: { user: { id: 'u1', firstName: 'Ada' } } } as unknown as CommunicationModel
+import { CommunicationHelper } from '@shared/helpers/communication.helper';
+import { CommunicationModel } from '@shared/models/model/communication.model';
 
-        // Act
-        const authorId: string | undefined = CommunicationHelper.getAuthorId( communication )
+describe('CommunicationHelper', () => {
+	it('attributes a communication to its movement when the movement has a reason', () => {
+		// Arrange
+		const communication = {
+			movement: { id: 'm1', reason: { label: 'Arrival' } },
+			lastEdition: { user: { id: 'u1', firstName: 'Ada' } },
+		} as unknown as CommunicationModel;
 
-        // Assert
-        expect( authorId ).toBe( 'm1' )
-    } )
+		// Act
+		const authorId = CommunicationHelper.getAuthorId(communication);
 
-    it( 'falls back to the last editor when there is no movement reason', () => {
-        // Arrange
-        const communication: CommunicationModel = { movement: { id: 'm1', reason: { label: ' ' } }, lastEdition: { user: { id: 'u1', firstName: 'Ada' } } } as unknown as CommunicationModel
+		// Assert
+		expect(authorId).toBe('m1');
+	});
 
-        // Act
-        const authorId: string | undefined = CommunicationHelper.getAuthorId( communication )
+	it('falls back to the last editor when there is no movement reason', () => {
+		// Arrange
+		const communication = {
+			movement: { id: 'm1', reason: { label: ' ' } },
+			lastEdition: { user: { id: 'u1', firstName: 'Ada' } },
+		} as unknown as CommunicationModel;
 
-        // Assert
-        expect( authorId ).toBe( 'u1' )
-    } )
+		// Act
+		const authorId = CommunicationHelper.getAuthorId(communication);
 
-    it( 'has no author when neither can be identified', () => {
-        // Arrange
-        const communication: CommunicationModel = {} as CommunicationModel
+		// Assert
+		expect(authorId).toBe('u1');
+	});
 
-        // Act
-        const authorId: string | undefined = CommunicationHelper.getAuthorId( communication )
+	it('has no author when neither can be identified', () => {
+		// Arrange
+		const communication = {} as CommunicationModel;
 
-        // Assert
-        expect( authorId ).toBeUndefined()
-    } )
+		// Act
+		const authorId = CommunicationHelper.getAuthorId(communication);
 
-    it( 'gives the author of the neighbours of a message', () => {
-        // Arrange
-        const byUser = (id: string): CommunicationModel => ({ lastEdition: { user: { id, firstName: 'Ada' } } }) as unknown as CommunicationModel
-        const conversation: CommunicationModel[] = [ byUser( 'u1' ), byUser( 'u2' ), byUser( 'u3' ) ]
+		// Assert
+		expect(authorId).toBeUndefined();
+	});
 
-        // Act
-        const previous: string | undefined = CommunicationHelper.previousAuthorId( conversation, 1 )
-        const next: string | undefined = CommunicationHelper.nextAuthorId( conversation, 1 )
+	it('gives the author of the neighbours of a message', () => {
+		// Arrange
+		const byUser = (id: string): CommunicationModel =>
+			({ lastEdition: { user: { id, firstName: 'Ada' } } }) as unknown as CommunicationModel;
+		const conversation = [byUser('u1'), byUser('u2'), byUser('u3')];
 
-        // Assert
-        expect( previous ).toBe( 'u1' )
-        expect( next ).toBe( 'u3' )
-    } )
+		// Act
+		const previous = CommunicationHelper.previousAuthorId(conversation, 1);
+		const next = CommunicationHelper.nextAuthorId(conversation, 1);
 
-    it( 'has no neighbour author at the ends of the conversation', () => {
-        // Arrange
-        const conversation: CommunicationModel[] = [ { lastEdition: { user: { id: 'u1', firstName: 'Ada' } } } as unknown as CommunicationModel ]
+		// Assert
+		expect(previous).toBe('u1');
+		expect(next).toBe('u3');
+	});
 
-        // Act
-        const previous: string | undefined = CommunicationHelper.previousAuthorId( conversation, 0 )
-        const next: string | undefined = CommunicationHelper.nextAuthorId( conversation, 0 )
+	it('has no neighbour author at the ends of the conversation', () => {
+		// Arrange
+		const conversation = [
+			{ lastEdition: { user: { id: 'u1', firstName: 'Ada' } } } as unknown as CommunicationModel,
+		];
 
-        // Assert
-        expect( previous ).toBeUndefined()
-        expect( next ).toBeUndefined()
-    } )
+		// Act
+		const previous = CommunicationHelper.previousAuthorId(conversation, 0);
+		const next = CommunicationHelper.nextAuthorId(conversation, 0);
 
-    it( 'has no neighbour author without a conversation or beyond its bounds', () => {
-        // Arrange
-        const conversation: CommunicationModel[] = [ {} as CommunicationModel ]
+		// Assert
+		expect(previous).toBeUndefined();
+		expect(next).toBeUndefined();
+	});
 
-        // Act
-        const withoutConversation: string | undefined = CommunicationHelper.previousAuthorId( undefined, 1 )
-        const beyondBounds: string | undefined = CommunicationHelper.nextAuthorId( conversation, 5 )
-        const unidentifiedNeighbour: string | undefined = CommunicationHelper.previousAuthorId( conversation, 1 )
+	it('has no neighbour author without a conversation or beyond its bounds', () => {
+		// Arrange
+		const conversation = [{} as CommunicationModel];
 
-        // Assert
-        expect( withoutConversation ).toBeUndefined()
-        expect( beyondBounds ).toBeUndefined()
-        expect( unidentifiedNeighbour ).toBeUndefined()
-    } )
+		// Act
+		const withoutConversation = CommunicationHelper.previousAuthorId(undefined, 1);
+		const beyondBounds = CommunicationHelper.nextAuthorId(conversation, 5);
+		const unidentifiedNeighbour = CommunicationHelper.previousAuthorId(conversation, 1);
 
-    it( 'lists the communications from the oldest to the latest without altering the page', () => {
-        // Arrange
-        const page: CommunicationModel[] = [ { id: 'new' } as CommunicationModel, { id: 'old' } as CommunicationModel ]
+		// Assert
+		expect(withoutConversation).toBeUndefined();
+		expect(beyondBounds).toBeUndefined();
+		expect(unidentifiedNeighbour).toBeUndefined();
+	});
 
-        // Act
-        const ordered: CommunicationModel[] = CommunicationHelper.chronological( page )
+	it('lists the communications from the oldest to the latest without altering the page', () => {
+		// Arrange
+		const page = [{ id: 'new' } as CommunicationModel, { id: 'old' } as CommunicationModel];
 
-        // Assert
-        expect( ordered.map( (c: CommunicationModel): string => c.id ) ).toEqual( [ 'old', 'new' ] )
-        expect( page[ 0 ].id ).toBe( 'new' )
-        expect( CommunicationHelper.chronological( undefined ) ).toEqual( [] )
-    } )
-} )
+		// Act
+		const ordered = CommunicationHelper.chronological(page);
+
+		// Assert
+		expect(ordered.map((c) => c.id)).toEqual(['old', 'new']);
+		expect(page[0].id).toBe('new');
+		expect(CommunicationHelper.chronological(undefined)).toEqual([]);
+	});
+});

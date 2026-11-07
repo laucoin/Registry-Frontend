@@ -1,15 +1,17 @@
-import '@sgdf/ui/avatar'
-import '@sgdf/ui/icon'
-import '@sgdf/ui/list-item'
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal, Signal } from '@angular/core'
-import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco'
-import { MovementPrefillService } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-prefill.service'
-import { DateHelper } from '@shared/helpers/date.helper'
-import { MonitoringRowHelper } from '@shared/helpers/monitoring-row.helper'
-import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
-import { IntervalPipe } from '@shared/helpers/pipe/interval.pipe'
-import { IntervalModel } from '@shared/models/model/interval.model'
-import { ParticipantModel } from '@shared/models/model/participant.model'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, input } from '@angular/core';
+
+import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
+
+import { MovementPrefillService } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-prefill.service';
+import { DateHelper } from '@shared/helpers/date.helper';
+import { MonitoringRowHelper } from '@shared/helpers/monitoring-row.helper';
+import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe';
+import { IntervalPipe } from '@shared/helpers/pipe/interval.pipe';
+import { ParticipantModel } from '@shared/models/model/participant.model';
+
+import '@sgdf/ui/avatar';
+import '@sgdf/ui/icon';
+import '@sgdf/ui/list-item';
 
 /**
  * Purpose: Élément de liste présentant un participant dont la présence a dépassé la fin prévue ; utilisé comme attribut de `sgdf-list-item`.
@@ -28,15 +30,16 @@ import { ParticipantModel } from '@shared/models/model/participant.model'
 	templateUrl: './regularization-row.component.html',
 })
 export class RegularizationRowComponent {
-	protected readonly prefillService: MovementPrefillService = inject(MovementPrefillService)
+	protected readonly prefillService = inject(MovementPrefillService);
 
-	public readonly participant: InputSignal<ParticipantModel> = input.required<ParticipantModel>()
+	public readonly participant = input.required<ParticipantModel>();
 
-	protected readonly name: Signal<string> = computed((): string => MonitoringRowHelper.fullName(this.participant()))
-	protected readonly since: Signal<IntervalModel | undefined> = computed((): IntervalModel | undefined =>
-		DateHelper.buildDateInterval(this.participant().effectiveArrival, new Date()))
+	protected readonly name = computed(() => MonitoringRowHelper.fullName(this.participant()));
+	protected readonly since = computed(() =>
+		DateHelper.buildDateInterval(this.participant().effectiveArrival, new Date()),
+	);
 
 	protected open(): void {
-		this.prefillService.openRegularization(this.participant())
+		this.prefillService.openRegularization(this.participant());
 	}
 }

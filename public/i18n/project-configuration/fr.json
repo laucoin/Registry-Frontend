@@ -1,45 +1,45 @@
 {
-  "eyebrow": "Configuration",
-  "title": "Configuration du projet",
-  "subtitle": "Gère les participants, groupes, véhicules et options du projet.",
-  "tiles": {
-    "participants": {
-      "title": "Participants",
-      "description": "Inscrits, invités et données individuelles"
-    },
-    "groups": {
-      "title": "Groupes",
-      "description": "Unités, équipes et affectations"
-    },
-    "vehicles": {
-      "title": "Véhicules",
-      "description": "Parc, conducteurs et capacités"
-    },
-    "activities": {
-      "title": "Activités",
-      "description": "Programme du projet et cadres d'entrées/sorties"
-    },
-    "profiles": {
-      "title": "Membres",
-      "description": "Profils propres au projet : rôles et accès"
-    }
-  },
-  "dangerZone": {
-    "title": "Zone de danger",
-    "softDelete": {
-      "title": "Supprimer le projet",
-      "description": "Tant que le projet est supprimé, plus aucun profil, entrée/sortie ou participant ne peut y être créé. Tu peux le restaurer à tout moment.",
-      "action": "Supprimer le projet"
-    },
-    "restore": {
-      "title": "Restaurer le projet",
-      "description": "Le projet est actuellement supprimé. Le restaurer permet de nouveau d’y créer des profils, entrées/sorties, participants, etc.",
-      "action": "Restaurer le projet"
-    },
-    "hardDelete": {
-      "title": "Supprimer définitivement le projet",
-      "description": "Supprime définitivement le projet ainsi que tous les éléments qui lui sont liés (profils, entrées/sorties, participants, etc.). Cette action est irréversible.",
-      "action": "Supprimer définitivement le projet"
-    }
-  }
+	"eyebrow": "Configuration",
+	"title": "Configuration du projet",
+	"subtitle": "Gère les participants, groupes, véhicules et options du projet.",
+	"tiles": {
+		"participants": {
+			"title": "Participants",
+			"description": "Inscrits, invités et données individuelles"
+		},
+		"groups": {
+			"title": "Groupes",
+			"description": "Unités, équipes et affectations"
+		},
+		"vehicles": {
+			"title": "Véhicules",
+			"description": "Parc, conducteurs et capacités"
+		},
+		"activities": {
+			"title": "Activités",
+			"description": "Programme du projet et cadres d'entrées/sorties"
+		},
+		"profiles": {
+			"title": "Membres",
+			"description": "Profils propres au projet : rôles et accès"
+		}
+	},
+	"dangerZone": {
+		"title": "Zone de danger",
+		"softDelete": {
+			"title": "Supprimer le projet",
+			"description": "Tant que le projet est supprimé, plus aucun profil, entrée/sortie ou participant ne peut y être créé. Tu peux le restaurer à tout moment.",
+			"action": "Supprimer le projet"
+		},
+		"restore": {
+			"title": "Restaurer le projet",
+			"description": "Le projet est actuellement supprimé. Le restaurer permet de nouveau d’y créer des profils, entrées/sorties, participants, etc.",
+			"action": "Restaurer le projet"
+		},
+		"hardDelete": {
+			"title": "Supprimer définitivement le projet",
+			"description": "Supprime définitivement le projet ainsi que tous les éléments qui lui sont liés (profils, entrées/sorties, participants, etc.). Cette action est irréversible.",
+			"action": "Supprimer définitivement le projet"
+		}
+	}
 }

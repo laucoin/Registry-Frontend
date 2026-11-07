@@ -1,11 +1,14 @@
 import { signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+
 import { MockBuilder, ngMocks } from 'ng-mocks';
+
 import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade';
+import { REFRESH_SERVICE_STUB } from '@shared/helpers/testing/refresh-service.stub';
 import { NotificationModel } from '@shared/models/model/notification.model';
 import { PlannedMovementModel } from '@shared/models/model/planned-movement.model';
+
 import { ProjectUpcomingDepartureComponent } from './project-upcoming-departure.component';
-import { REFRESH_SERVICE_STUB } from '@shared/helpers/testing/refresh-service.stub';
 
 describe('ProjectUpcomingDepartureComponent', () => {
 	let fixture: ComponentFixture<ProjectUpcomingDepartureComponent>;
@@ -19,20 +22,27 @@ describe('ProjectUpcomingDepartureComponent', () => {
 		loading = signal(true);
 		error = signal<NotificationModel | undefined>(undefined);
 		load = vi.fn();
-		await MockBuilder(ProjectUpcomingDepartureComponent).provide(REFRESH_SERVICE_STUB).provide({
-			provide: SelectedProjectFacade,
-			useValue: { plannedDepartures: movements, plannedDeparturesLoading: loading, plannedDeparturesError: error, fetchPlannedDepartures: load },
-		});
+		await MockBuilder(ProjectUpcomingDepartureComponent)
+			.provide(REFRESH_SERVICE_STUB)
+			.provide({
+				provide: SelectedProjectFacade,
+				useValue: {
+					plannedDepartures: movements,
+					plannedDeparturesLoading: loading,
+					plannedDeparturesError: error,
+					fetchPlannedDepartures: load,
+				},
+			});
 		fixture = TestBed.createComponent(ProjectUpcomingDepartureComponent);
 		await fixture.whenStable();
 	});
 
 	it('should load the planned departures when displayed', () => {
 		// Arrange
-		const expected: number = 1;
+		const expected = 1;
 
 		// Act
-		const calls: number = load.mock.calls.length;
+		const calls = load.mock.calls.length;
 
 		// Assert
 		expect(calls).toBe(expected);
@@ -40,7 +50,7 @@ describe('ProjectUpcomingDepartureComponent', () => {
 
 	it('should give the state of the departures to the planned movement card', () => {
 		// Arrange
-		const selector: string = 'app-planned-movement-card';
+		const selector = 'app-planned-movement-card';
 
 		// Act
 		const given: PlannedMovementModel[] = ngMocks.input(selector, 'movements');
@@ -53,7 +63,7 @@ describe('ProjectUpcomingDepartureComponent', () => {
 
 	it('should name the card after the departures', () => {
 		// Arrange
-		const selector: string = 'app-planned-movement-card';
+		const selector = 'app-planned-movement-card';
 
 		// Act
 		const title: string = ngMocks.input(selector, 'titleKey');
@@ -66,7 +76,7 @@ describe('ProjectUpcomingDepartureComponent', () => {
 
 	it('should load the departures again when the card asks for a retry', () => {
 		// Arrange
-		const selector: string = 'app-planned-movement-card';
+		const selector = 'app-planned-movement-card';
 
 		// Act
 		ngMocks.output(selector, 'retry').emit();

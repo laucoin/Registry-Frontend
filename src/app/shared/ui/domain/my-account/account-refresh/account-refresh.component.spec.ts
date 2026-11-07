@@ -1,9 +1,12 @@
 import { signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SessionFacade } from '@core/registry/state/session.facade';
+
 import { TranslocoPipe } from '@jsverse/transloco';
-import { RefreshModeEnum } from '@shared/models/enumeration/refresh-mode.enum';
 import { MockBuilder } from 'ng-mocks';
+
+import { SessionFacade } from '@core/registry/state/session.facade';
+import { RefreshModeEnum } from '@shared/models/enumeration/refresh-mode.enum';
+
 import { AccountRefreshComponent } from './account-refresh.component';
 
 describe('AccountRefreshComponent', () => {
@@ -16,7 +19,10 @@ describe('AccountRefreshComponent', () => {
 		updateCurrentUserRefreshMode = vi.fn();
 		await MockBuilder(AccountRefreshComponent)
 			.mock(TranslocoPipe, (key: string): string => key)
-			.provide({ provide: SessionFacade, useValue: { currentUserRefreshMode: mode, updateCurrentUserRefreshMode } });
+			.provide({
+				provide: SessionFacade,
+				useValue: { currentUserRefreshMode: mode, updateCurrentUserRefreshMode },
+			});
 		fixture = TestBed.createComponent(AccountRefreshComponent);
 		await fixture.whenStable();
 	});

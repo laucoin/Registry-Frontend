@@ -1,76 +1,123 @@
-<sgdf-page-title [eyebrow]="'projectEyebrow.configuration' | transloco" [lede]="'movements.history-page.subtitle' | transloco">
-    @if (entity()) {
-        {{ title() }}
-    } @else {
-        <sgdf-skeleton effect="pulse" shape="rounded" class="inline-block h-8 w-48"/>
-    }
+<sgdf-page-title
+	[eyebrow]="'projectEyebrow.configuration' | transloco"
+	[lede]="'movements.history-page.subtitle' | transloco"
+>
+	@if (entity()) {
+		{{ title() }}
+	} @else {
+		<sgdf-skeleton effect="pulse" shape="rounded" class="inline-block h-8 w-48" />
+	}
 </sgdf-page-title>
 
-<app-presence-timeline data-testid="vehicle-movements-list-timeline" class="mt-(--spacing--block) block"
-                       [planned]="facade.vehicleTimeline()?.planned ?? []"
-                       [actual]="facade.vehicleTimeline()?.actual ?? []"
-                       [projectBegin]="session.selectedProject()?.begin"
-                       [projectEnd]="session.selectedProject()?.end"
-                       [loading]="facade.vehicleTimelineLoading()"
-                       [error]="facade.vehicleTimelineError()"
-                       (retry)="retryTimeline()"/>
+<app-presence-timeline
+	data-testid="vehicle-movements-list-timeline"
+	class="mt-(--spacing--block) block"
+	[planned]="facade.vehicleTimeline()?.planned ?? []"
+	[actual]="facade.vehicleTimeline()?.actual ?? []"
+	[projectBegin]="session.selectedProject()?.begin"
+	[projectEnd]="session.selectedProject()?.end"
+	[loading]="facade.vehicleTimelineLoading()"
+	[error]="facade.vehicleTimelineError()"
+	(retry)="retryTimeline()"
+/>
 
 @if (!facade.vehicleTimelineError()) {
-    <section data-testid="vehicle-movements-list-statistics-section" class="mt-(--spacing--block) grid grid-cols-1 gap-(--spacing--in-block-large) md:grid-cols-2">
-        @let timeline = facade.vehicleTimeline();
-        @let usage = timeline?.usageRate;
-        <sgdf-stat data-testid="vehicle-movements-list-out-stat" [loading]="facade.vehicleTimelineLoading()"
-                   [title]="'vehicles.statistics.out.title' | transloco"
-                   [hint]="timeline ? ('vehicles.statistics.out.hint' | transloco) : ''">
-            @if (outDuration(); as duration) {
-                <sgdf-format-duration [value]="duration"/>
-            }
-        </sgdf-stat>
-        <sgdf-stat data-testid="vehicle-movements-list-usage-stat" [loading]="facade.vehicleTimelineLoading()"
-                   [title]="'vehicles.statistics.usage.title' | transloco"
-                   [hint]="timeline ? ((usage === undefined ? 'vehicles.statistics.usage.empty' : 'vehicles.statistics.usage.hint') | transloco) : ''">
-            @if (usage !== undefined) {
-                <sgdf-format-number type="percent" [value]="usage"/>
-            }
-        </sgdf-stat>
-    </section>
+	<section
+		data-testid="vehicle-movements-list-statistics-section"
+		class="mt-(--spacing--block) grid grid-cols-1 gap-(--spacing--in-block-large) md:grid-cols-2"
+	>
+		@let timeline = facade.vehicleTimeline(); @let usage = timeline?.usageRate;
+		<sgdf-stat
+			data-testid="vehicle-movements-list-out-stat"
+			[loading]="facade.vehicleTimelineLoading()"
+			[title]="'vehicles.statistics.out.title' | transloco"
+			[hint]="timeline ? ('vehicles.statistics.out.hint' | transloco) : ''"
+		>
+			@if (outDuration(); as duration) {
+				<sgdf-format-duration [value]="duration" />
+			}
+		</sgdf-stat>
+		<sgdf-stat
+			data-testid="vehicle-movements-list-usage-stat"
+			[loading]="facade.vehicleTimelineLoading()"
+			[title]="'vehicles.statistics.usage.title' | transloco"
+			[hint]="
+				timeline
+					? ((usage === undefined ? 'vehicles.statistics.usage.empty' : 'vehicles.statistics.usage.hint') | transloco)
+					: ''
+			"
+		>
+			@if (usage !== undefined) {
+				<sgdf-format-number type="percent" [value]="usage" />
+			}
+		</sgdf-stat>
+	</section>
 }
 
-<app-list data-testid="vehicle-movements-list-list" class="mt-(--spacing--block) block"
-          emptyMessagePrefix="movements.notifications.EMPTY"
-          [elementPage]="facade.vehicleMovementsPage()"
-          [error]="facade.vehicleMovementsPageError()"
-          [loading]="facade.vehicleMovementsPageLoading()"
-          [loadingMore]="facade.vehicleMovementsPageSilentLoading()"
-          [activeFilters]="activeFilters()"
-          (updateRequired)="loadBatch($event)"
-          (filtersReset)="resetFilters()">
-    <ng-template appTemplate="search">
-        <form data-testid="vehicle-movements-list-search-form" class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
-              (submit)="$event.preventDefault()">
-            <sgdf-date-time-picker data-testid="vehicle-movements-list-from-picker" appSgdfField with-time
-                                   [label]="'movements.search-and-filter.start-datetime' | transloco"
-                                   [formField]="form.from"/>
-            <sgdf-date-time-picker data-testid="vehicle-movements-list-to-picker" appSgdfField with-time
-                                   [label]="'movements.search-and-filter.end-datetime' | transloco"
-                                   [formField]="form.to"/>
-            <sgdf-select data-testid="vehicle-movements-list-type-select" appSgdfField [label]="'movements.search-and-filter.type' | transloco"
-                         [formField]="form.type">
-                @for (item of movementFacade.movementTypesMetadata(); track item.label) {
-                    <sgdf-option [value]="item.value ?? ''">{{ item.label }}</sgdf-option>
-                }
-            </sgdf-select>
-            <sgdf-select *appIfProjectAuthority="hiddenAuthority" data-testid="vehicle-movements-list-is-visible-select" appSgdfField [label]="'movements.search-and-filter.visibility' | transloco"
-                         [formField]="form.isVisible">
-                @for (item of movementFacade.visibilitiesMetadata(); track item.label) {
-                    <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
-                }
-            </sgdf-select>
-            <app-sort-fields [sortBy]="form.sortBy" [sortDirection]="form.sortDirection" [fields]="sortFields"/>
-        </form>
-    </ng-template>
+<app-list
+	data-testid="vehicle-movements-list-list"
+	class="mt-(--spacing--block) block"
+	emptyMessagePrefix="movements.notifications.EMPTY"
+	[elementPage]="facade.vehicleMovementsPage()"
+	[error]="facade.vehicleMovementsPageError()"
+	[loading]="facade.vehicleMovementsPageLoading()"
+	[loadingMore]="facade.vehicleMovementsPageSilentLoading()"
+	[activeFilters]="activeFilters()"
+	(updateRequired)="loadBatch($event)"
+	(filtersReset)="resetFilters()"
+>
+	<ng-template appTemplate="search">
+		<form
+			data-testid="vehicle-movements-list-search-form"
+			class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
+			(submit)="$event.preventDefault()"
+		>
+			<sgdf-date-time-picker
+				data-testid="vehicle-movements-list-from-picker"
+				appSgdfField
+				with-time
+				[label]="'movements.search-and-filter.start-datetime' | transloco"
+				[formField]="form.from"
+			/>
+			<sgdf-date-time-picker
+				data-testid="vehicle-movements-list-to-picker"
+				appSgdfField
+				with-time
+				[label]="'movements.search-and-filter.end-datetime' | transloco"
+				[formField]="form.to"
+			/>
+			<sgdf-select
+				data-testid="vehicle-movements-list-type-select"
+				appSgdfField
+				[label]="'movements.search-and-filter.type' | transloco"
+				[formField]="form.type"
+			>
+				@for (item of movementFacade.movementTypesMetadata(); track item.label) {
+					<sgdf-option [value]="item.value ?? ''">{{ item.label }}</sgdf-option>
+				}
+			</sgdf-select>
+			<sgdf-select
+				*appIfProjectAuthority="hiddenAuthority"
+				data-testid="vehicle-movements-list-is-visible-select"
+				appSgdfField
+				[label]="'movements.search-and-filter.visibility' | transloco"
+				[formField]="form.isVisible"
+			>
+				@for (item of movementFacade.visibilitiesMetadata(); track item.label) {
+					<sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+				}
+			</sgdf-select>
+			<app-sort-fields [sortBy]="form.sortBy" [sortDirection]="form.sortDirection" [fields]="sortFields" />
+		</form>
+	</ng-template>
 
-    <ng-template appTemplate="element" let-movement>
-        <sgdf-list-item data-testid="movement-row" [attr.data-id]="movement.id" appMovementElement [movement]="movement" [vehicleId]="entity()?.id"/>
-    </ng-template>
+	<ng-template appTemplate="element" let-movement>
+		<sgdf-list-item
+			data-testid="movement-row"
+			[attr.data-id]="movement.id"
+			appMovementElement
+			[movement]="movement"
+			[vehicleId]="entity()?.id"
+		/>
+	</ng-template>
 </app-list>

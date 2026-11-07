@@ -1,41 +1,42 @@
-import { describe, expect, it } from 'vitest'
-import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
-import { RouteHelper } from '@shared/helpers/route.helper'
+import { describe, expect, it } from 'vitest';
 
-describe( 'RouteHelper', () => {
-    it( 'prefixes a simple route with a slash', () => {
-        // Arrange
-        const route: RegistryRouteEnum = RegistryRouteEnum.LOGIN
+import { RegistryRouteEnum } from '@core/routing/registry-route.enum';
+import { RouteHelper } from '@shared/helpers/route.helper';
 
-        // Act
-        const url: string = RouteHelper.absolute( route )
+describe('RouteHelper', () => {
+	it('prefixes a simple route with a slash', () => {
+		// Arrange
+		const route: RegistryRouteEnum = RegistryRouteEnum.LOGIN;
 
-        // Assert
-        expect( url ).toBe( '/login' )
-    } )
+		// Act
+		const url = RouteHelper.absolute(route);
 
-    it( 'keeps the nested segments of a composed route', () => {
-        // Arrange
-        const route: RegistryRouteEnum = RegistryRouteEnum.MY_ACCOUNT_INVITATIONS
+		// Assert
+		expect(url).toBe('/login');
+	});
 
-        // Act
-        const url: string = RouteHelper.absolute( route )
+	it('keeps the nested segments of a composed route', () => {
+		// Arrange
+		const route: RegistryRouteEnum = RegistryRouteEnum.MY_ACCOUNT_INVITATIONS;
 
-        // Assert
-        expect( url ).toBe( `/${RegistryRouteEnum.MY_ACCOUNT_INVITATIONS}` )
-    } )
+		// Act
+		const url = RouteHelper.absolute(route);
 
-    it.each( [
-        [ '/users/u1/edit', '/users?q=ada&isVisible=false', '/users/u1/edit?q=ada&isVisible=false' ],
-        [ '/users/u1/edit', '/users?q=ada#top', '/users/u1/edit?q=ada' ],
-        [ '/users/u1/edit', '/users', '/users/u1/edit' ],
-        [ '/users/u1/edit', undefined, '/users/u1/edit' ],
-    ] )( 'carries the query string of the current url over to %s from %s', (url: string, currentUrl: string | undefined, expected: string) => {
-        // Arrange
-        // Act
-        const target: string = RouteHelper.preservingQuery( url, currentUrl )
+		// Assert
+		expect(url).toBe(`/${RegistryRouteEnum.MY_ACCOUNT_INVITATIONS}`);
+	});
 
-        // Assert
-        expect( target ).toBe( expected )
-    } )
-} )
+	it.each([
+		['/users/u1/edit', '/users?q=ada&isVisible=false', '/users/u1/edit?q=ada&isVisible=false'],
+		['/users/u1/edit', '/users?q=ada#top', '/users/u1/edit?q=ada'],
+		['/users/u1/edit', '/users', '/users/u1/edit'],
+		['/users/u1/edit', undefined, '/users/u1/edit'],
+	])('carries the query string of the current url over to %s from %s', (url, currentUrl, expected) => {
+		// Arrange
+		// Act
+		const target = RouteHelper.preservingQuery(url, currentUrl);
+
+		// Assert
+		expect(target).toBe(expected);
+	});
+});

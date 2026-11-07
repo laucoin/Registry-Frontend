@@ -1,7 +1,10 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, input, InputSignal } from '@angular/core'
-import '@sgdf/ui/callout'
-import {TranslocoPipe} from '@jsverse/transloco'
-import { ErrorModel } from '@shared/models/model/error.model'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, input } from '@angular/core';
+
+import { TranslocoPipe } from '@jsverse/transloco';
+
+import { ErrorModel } from '@shared/models/model/error.model';
+
+import '@sgdf/ui/callout';
 
 /**
  * Purpose: Affiche l'erreur d'un formulaire entier.
@@ -10,12 +13,10 @@ import { ErrorModel } from '@shared/models/model/error.model'
  */
 @Component({
 	selector: 'app-form-error',
-	imports: [
-		TranslocoPipe,
-	],
+	imports: [TranslocoPipe],
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	templateUrl: './form-error.component.html',
 })
 export class FormErrorComponent {
-	public readonly error: InputSignal<ErrorModel | undefined> = input<ErrorModel | undefined>()
+	public readonly error = input<ErrorModel | undefined>();
 }

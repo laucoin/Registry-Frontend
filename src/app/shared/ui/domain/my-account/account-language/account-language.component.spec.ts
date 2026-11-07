@@ -1,8 +1,11 @@
 import { signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SessionFacade } from '@core/registry/state/session.facade';
+
 import { TranslocoPipe } from '@jsverse/transloco';
 import { MockBuilder } from 'ng-mocks';
+
+import { SessionFacade } from '@core/registry/state/session.facade';
+
 import { AccountLanguageComponent } from './account-language.component';
 
 describe('AccountLanguageComponent', () => {
@@ -27,7 +30,11 @@ describe('AccountLanguageComponent', () => {
 			.mock(TranslocoPipe, (key: string): string => key)
 			.provide({
 				provide: SessionFacade,
-				useValue: Object.assign(facade, { currentUserLanguage: language, pendingLanguage: pending, updateCurrentUserLanguage }),
+				useValue: Object.assign(facade, {
+					currentUserLanguage: language,
+					pendingLanguage: pending,
+					updateCurrentUserLanguage,
+				}),
 			});
 		await createComponent(['fr', 'en']);
 	});

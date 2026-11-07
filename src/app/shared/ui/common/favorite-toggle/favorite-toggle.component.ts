@@ -1,6 +1,8 @@
-import '@sgdf/ui/icon-button'
-import { Component, CUSTOM_ELEMENTS_SCHEMA, input, InputSignal, output, OutputEmitterRef } from '@angular/core'
-import { TranslocoPipe } from '@jsverse/transloco'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, input, output } from '@angular/core';
+
+import { TranslocoPipe } from '@jsverse/transloco';
+
+import '@sgdf/ui/icon-button';
 
 /**
  * Purpose: Bouton étoile qui indique si un projet est favori et bascule ce statut.
@@ -14,7 +16,7 @@ import { TranslocoPipe } from '@jsverse/transloco'
 	templateUrl: './favorite-toggle.component.html',
 })
 export class FavoriteToggleComponent {
-	public readonly favorite: InputSignal<boolean> = input.required<boolean>()
-	public readonly name: InputSignal<string> = input.required<string>()
-	public readonly toggled: OutputEmitterRef<void> = output<void>()
+	public readonly favorite = input.required<boolean>();
+	public readonly name = input.required<string>();
+	public readonly toggled = output();
 }

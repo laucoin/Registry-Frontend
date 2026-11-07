@@ -1,15 +1,22 @@
 import { signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+
 import { TranslocoPipe } from '@jsverse/transloco';
 import { MockBuilder, ngMocks } from 'ng-mocks';
+
 import { SessionFacade } from '@core/registry/state/session.facade';
 import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade';
-import { ProjectStatusModel } from '@shared/models/model/project-status.model';
-import { ProjectParticipantOverviewComponent } from './project-participant-overview.component';
 import { REFRESH_SERVICE_STUB } from '@shared/helpers/testing/refresh-service.stub';
+import { ProjectStatusModel } from '@shared/models/model/project-status.model';
 
-const status: ProjectStatusModel = { registered: { presentMinors: 50, presentMajors: 74, absentMinors: 1, absentMajors: 1 }, guests: 2, lastRefresh: new Date() };
+import { ProjectParticipantOverviewComponent } from './project-participant-overview.component';
+
+const status: ProjectStatusModel = {
+	registered: { presentMinors: 50, presentMajors: 74, absentMinors: 1, absentMajors: 1 },
+	guests: 2,
+	lastRefresh: new Date(),
+};
 
 describe('ProjectParticipantOverviewComponent', () => {
 	let fixture: ComponentFixture<ProjectParticipantOverviewComponent>;
@@ -19,7 +26,8 @@ describe('ProjectParticipantOverviewComponent', () => {
 	beforeEach(async () => {
 		participantsStatus = signal<ProjectStatusModel | undefined>(status);
 		fetchParticipantsStatus = vi.fn();
-		await MockBuilder(ProjectParticipantOverviewComponent).provide(REFRESH_SERVICE_STUB)
+		await MockBuilder(ProjectParticipantOverviewComponent)
+			.provide(REFRESH_SERVICE_STUB)
 			.mock(TranslocoPipe, (key: string): string => key)
 			.provide({ provide: SelectedProjectFacade, useValue: { participantsStatus, fetchParticipantsStatus } })
 			.provide({ provide: SessionFacade, useValue: { currentProjectId: signal('p1') } })
@@ -30,10 +38,10 @@ describe('ProjectParticipantOverviewComponent', () => {
 
 	it('should load the participants status when displayed', () => {
 		// Arrange
-		const expected: number = 1;
+		const expected = 1;
 
 		// Act
-		const calls: number = fetchParticipantsStatus.mock.calls.length;
+		const calls = fetchParticipantsStatus.mock.calls.length;
 
 		// Assert
 		expect(calls).toBe(expected);
@@ -41,7 +49,9 @@ describe('ProjectParticipantOverviewComponent', () => {
 
 	it('should display the three participant counters', () => {
 		// Arrange
-		const elements: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('sgdf-table-row:nth-child(2) strong'));
+		const elements: HTMLElement[] = Array.from(
+			fixture.nativeElement.querySelectorAll('sgdf-table-row:nth-child(2) strong'),
+		);
 
 		// Act
 		const values: string[] = elements.map((element: HTMLElement): string => element.textContent.trim());
@@ -56,7 +66,9 @@ describe('ProjectParticipantOverviewComponent', () => {
 
 		// Act
 		await fixture.whenStable();
-		const values: string[] = Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('sgdf-table-row:nth-child(2) strong')).map((element: HTMLElement): string => element.textContent.trim());
+		const values = Array.from<HTMLElement>(
+			fixture.nativeElement.querySelectorAll('sgdf-table-row:nth-child(2) strong'),
+		).map((element) => element.textContent.trim());
 
 		// Assert
 		expect(values).toEqual(['–', '–', '–']);
@@ -76,7 +88,7 @@ describe('ProjectParticipantOverviewComponent', () => {
 
 	it('should link to the participants page of the selected project', () => {
 		// Arrange
-		const selector: string = 'sgdf-button';
+		const selector = 'sgdf-button';
 
 		// Act
 		const target: string = ngMocks.input(selector, 'routerLink');

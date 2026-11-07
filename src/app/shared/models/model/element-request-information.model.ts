@@ -1,7 +1,7 @@
-import { NotificationModel } from '@shared/models/model/notification.model'
+import { NotificationModel } from '@shared/models/model/notification.model';
 
 export interface ElementRequestInformationModel<M> {
-    element: M | undefined
-    loading: boolean
-    error: NotificationModel | undefined
+	element: M | undefined;
+	loading: boolean;
+	error: NotificationModel | undefined;
 }

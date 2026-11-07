@@ -1,23 +1,34 @@
-import { NgTemplateOutlet } from "@angular/common";
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, Signal } from '@angular/core'
-import { RouterLink } from '@angular/router'
-import { ConfigModel } from "@core/config/model/config.model";
-import { RegistryConfig } from "@core/config/registry.config";
-import { MenuItemModel } from '@core/layout/data/model/menu-item.model'
-import { MenuService } from '@core/layout/data/service/menu.service'
-import { SessionFacade } from '@core/registry/state/session.facade'
-import { UiFacade } from '@core/registry/state/ui.facade'
-import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
-import { TranslocoPipe } from '@jsverse/transloco'
-import { CurrentUserModel } from '@shared/models/model/current-user.model'
-import { ProjectModel } from '@shared/models/model/project.model'
-import '@sgdf/ui/avatar'
-import '@sgdf/ui/divider'
-import '@sgdf/ui/icon'
-import '@sgdf/ui/menu'
-import '@sgdf/ui/menu-item'
-import '@sgdf/ui/nav-item'
-import '@sgdf/ui/navbar'
+import { NgTemplateOutlet } from '@angular/common';
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, Signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+
+import { TranslocoPipe } from '@jsverse/transloco';
+
+import { RegistryConfig } from '@core/config/registry.config';
+import { MenuItemModel } from '@core/layout/data/model/menu-item.model';
+import { MenuService } from '@core/layout/data/service/menu.service';
+import { SessionFacade } from '@core/registry/state/session.facade';
+import { UiFacade } from '@core/registry/state/ui.facade';
+import { RegistryRouteEnum } from '@core/routing/registry-route.enum';
+import { CurrentUserModel } from '@shared/models/model/current-user.model';
+
+import '@sgdf/ui/avatar';
+import '@sgdf/ui/divider';
+import '@sgdf/ui/icon';
+import '@sgdf/ui/menu';
+import '@sgdf/ui/menu-item';
+import '@sgdf/ui/nav-item';
+import '@sgdf/ui/navbar';
+
+function initialOf(name: string | undefined): string {
+	return name?.charAt(0) ?? '';
+}
+
+function initialsOf(user: CurrentUserModel | undefined): string {
+	if (!user) return '';
+	const initials = [user.firstName, user.lastName].map(initialOf).join('');
+	return (initials || initialOf(user.email)).toUpperCase();
+}
 
 /**
  * Purpose: Barre de navigation supérieure de l'application.
@@ -32,35 +43,33 @@ import '@sgdf/ui/navbar'
 	imports: [RouterLink, TranslocoPipe, NgTemplateOutlet],
 })
 export class NavbarComponent {
-	private readonly menuService: MenuService = inject(MenuService)
-	private readonly sessionFacade: SessionFacade = inject(SessionFacade)
-	protected readonly uiFacade: UiFacade = inject(UiFacade)
+	private readonly menuService = inject(MenuService);
+	private readonly sessionFacade = inject(SessionFacade);
+	protected readonly uiFacade = inject(UiFacade);
 
-	protected readonly RegistryRouteEnum: typeof RegistryRouteEnum = RegistryRouteEnum
-	protected readonly application: ConfigModel['application'] = RegistryConfig.config.application;
+	protected readonly RegistryRouteEnum = RegistryRouteEnum;
+	protected readonly application = RegistryConfig.config.application;
 
-	protected readonly activeMenuUrl: Signal<string | undefined> = this.menuService.activeMenuUrl
-	protected readonly appMenus: Signal<MenuItemModel[]> = this.menuService.appMenus
-	protected readonly userMenus: Signal<MenuItemModel[]> = this.menuService.userMenus
-	protected readonly logoutMenu: MenuItemModel = this.menuService.logoutMenu
-	protected readonly projectMenus: Signal<MenuItemModel[]> = computed((): MenuItemModel[] =>
-		this.menuService.projectMenus().flatMap((menu: MenuItemModel): MenuItemModel[] => menu.items ?? [menu]),
-	)
+	protected readonly activeMenuUrl: Signal<string | undefined> = this.menuService.activeMenuUrl;
+	protected readonly appMenus = this.menuService.appMenus;
+	protected readonly userMenus = this.menuService.userMenus;
+	protected readonly logoutMenu: MenuItemModel = this.menuService.logoutMenu;
+	protected readonly projectMenus = computed(() =>
+		this.menuService.projectMenus().flatMap((menu) => menu.items ?? [menu]),
+	);
 
-	protected readonly selectedProject: Signal<ProjectModel | undefined> = this.sessionFacade.selectedProject
-	protected readonly projectHomeUrl: Signal<string> = computed((): string =>
+	protected readonly selectedProject = this.sessionFacade.selectedProject;
+	protected readonly projectHomeUrl = computed(() =>
 		RegistryRouteEnum.PROJECT.replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
-	)
-	protected readonly currentUser: Signal<CurrentUserModel | undefined> = this.sessionFacade.currentUser
-	protected readonly userFullName: Signal<string> = computed((): string => {
-		const user: CurrentUserModel | undefined = this.currentUser()
-		return [user?.firstName, user?.lastName].filter(Boolean).join(' ') || (user?.email ?? '')
-	})
-	protected readonly userInitials: Signal<string> = computed((): string => {
-		const user: CurrentUserModel | undefined = this.currentUser()
-		const initials: string = [user?.firstName, user?.lastName].map((name: string | undefined): string => name?.charAt(0) ?? '').join('')
-		return (initials || user?.email?.charAt(0) || '').toUpperCase()
-	})
+	);
+	protected readonly currentUser: Signal<CurrentUserModel | undefined> = this.sessionFacade.currentUser;
+	protected readonly userFullName = computed(() => this.buildUserFullName());
+	protected readonly userInitials = computed(() => initialsOf(this.currentUser()));
 
-	protected readonly logout: () => void = (): void => this.sessionFacade.logout()
+	protected readonly logout: () => void = () => this.sessionFacade.logout();
+
+	private buildUserFullName(): string {
+		const user = this.currentUser();
+		return [user?.firstName, user?.lastName].filter(Boolean).join(' ') || (user?.email ?? '');
+	}
 }

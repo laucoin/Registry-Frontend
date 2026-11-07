@@ -1,24 +1,28 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { TranslocoPipe } from '@jsverse/transloco';
+import { MockBuilder } from 'ng-mocks';
+
 import { RegistryConfig } from '@core/config/registry.config';
 import { SessionFacade } from '@core/registry/state/session.facade';
-import { TranslocoPipe } from '@jsverse/transloco';
 import { CurrentUserModel } from '@shared/models/model/current-user.model';
-import { MockBuilder } from 'ng-mocks';
+
 import { AccountInfoComponent } from './account-info.component';
 
 describe('AccountInfoComponent', () => {
 	let user: WritableSignal<CurrentUserModel | undefined>;
 	let fixture: ComponentFixture<AccountInfoComponent>;
 
-	const buildUser = (firstName: string | undefined, lastName: string | undefined): CurrentUserModel => ({
-		firstName,
-		lastName,
-		email: 'grace@example.test',
-		role: { label: 'Admin', value: 'ADMIN' },
-		lastLogin: new Date(),
-	} as CurrentUserModel);
+	const buildUser = (firstName: string | undefined, lastName: string | undefined): CurrentUserModel =>
+		({
+			firstName,
+			lastName,
+			email: 'grace@example.test',
+			role: { label: 'Admin', value: 'ADMIN' },
+			lastLogin: new Date(),
+		}) as CurrentUserModel;
 
 	beforeEach(async () => {
 		RegistryConfig.config = { application: { organization: 'SGDF' } } as typeof RegistryConfig.config;
@@ -33,7 +37,7 @@ describe('AccountInfoComponent', () => {
 
 	it('should show skeletons while the user is loading', () => {
 		// Arrange
-		const expected: number = 4;
+		const expected = 4;
 
 		// Act
 		const skeletons: number = fixture.nativeElement.querySelectorAll('sgdf-skeleton').length;
@@ -70,7 +74,11 @@ describe('AccountInfoComponent', () => {
 
 	it('should show a placeholder instead of a skeleton for a value the user does not have', async () => {
 		// Arrange
-		user.set({ ...buildUser('Grace', 'Hopper'), role: undefined, lastLogin: undefined } as unknown as CurrentUserModel);
+		user.set({
+			...buildUser('Grace', 'Hopper'),
+			role: undefined,
+			lastLogin: undefined,
+		} as unknown as CurrentUserModel);
 
 		// Act
 		await fixture.whenStable();
@@ -82,7 +90,9 @@ describe('AccountInfoComponent', () => {
 
 	it('should flag the table as busy only while the user is loading', async () => {
 		// Arrange
-		const busyWhileLoading: string | null = fixture.nativeElement.querySelector('sgdf-table').getAttribute('aria-busy');
+		const busyWhileLoading: string | null = fixture.nativeElement
+			.querySelector('sgdf-table')
+			.getAttribute('aria-busy');
 
 		// Act
 		user.set(buildUser('Grace', 'Hopper'));

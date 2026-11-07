@@ -1,55 +1,56 @@
-import { describe, expect, it } from 'vitest'
-import { GroupHelper } from '@shared/helpers/group.helper'
-import { ParticipantHelper } from '@shared/helpers/participant.helper'
-import { UserHelper } from '@shared/helpers/user.helper'
-import { VehicleHelper } from '@shared/helpers/vehicle.helper'
-import { GroupModel } from '@shared/models/model/group.model'
-import { ParticipantModel } from '@shared/models/model/participant.model'
-import { UserModel } from '@shared/models/model/user.model'
-import { VehicleModel } from '@shared/models/model/vehicle.model'
+import { describe, expect, it } from 'vitest';
 
-describe( 'select item helpers', () => {
-    it( 'labels a group with its name', () => {
-        // Arrange
-        const group: GroupModel = { name: 'Wolves' } as GroupModel
+import { GroupHelper } from '@shared/helpers/group.helper';
+import { ParticipantHelper } from '@shared/helpers/participant.helper';
+import { UserHelper } from '@shared/helpers/user.helper';
+import { VehicleHelper } from '@shared/helpers/vehicle.helper';
+import { GroupModel } from '@shared/models/model/group.model';
+import { ParticipantModel } from '@shared/models/model/participant.model';
+import { UserModel } from '@shared/models/model/user.model';
+import { VehicleModel } from '@shared/models/model/vehicle.model';
 
-        // Act
-        const item: { label?: string } = GroupHelper.toSelectItem( group )
+describe('select item helpers', () => {
+	it('labels a group with its name', () => {
+		// Arrange
+		const group = { name: 'Wolves' } as GroupModel;
 
-        // Assert
-        expect( item.label ).toBe( 'Wolves' )
-    } )
+		// Act
+		const item: { label?: string } = GroupHelper.toSelectItem(group);
 
-    it( 'labels a participant with the first and last name', () => {
-        // Arrange
-        const participant: ParticipantModel = { firstName: 'Ada', lastName: 'Lovelace' } as ParticipantModel
+		// Assert
+		expect(item.label).toBe('Wolves');
+	});
 
-        // Act
-        const item: { label?: string } = ParticipantHelper.toSelectItem( participant )
+	it('labels a participant with the first and last name', () => {
+		// Arrange
+		const participant = { firstName: 'Ada', lastName: 'Lovelace' } as ParticipantModel;
 
-        // Assert
-        expect( item.label ).toBe( 'Ada Lovelace' )
-    } )
+		// Act
+		const item: { label?: string } = ParticipantHelper.toSelectItem(participant);
 
-    it( 'labels a user with the email and the name', () => {
-        // Arrange
-        const user: UserModel = { email: 'a@b.c', firstName: 'Ada', lastName: 'Lovelace' } as UserModel
+		// Assert
+		expect(item.label).toBe('Ada Lovelace');
+	});
 
-        // Act
-        const item: { label?: string } = UserHelper.toSelectItem( user )
+	it('labels a user with the email and the name', () => {
+		// Arrange
+		const user = { email: 'a@b.c', firstName: 'Ada', lastName: 'Lovelace' } as UserModel;
 
-        // Assert
-        expect( item.label ).toBe( 'a@b.c (Ada Lovelace)' )
-    } )
+		// Act
+		const item: { label?: string } = UserHelper.toSelectItem(user);
 
-    it( 'labels a vehicle with its brand, model and plate', () => {
-        // Arrange
-        const vehicle: VehicleModel = { brand: 'Ford', model: 'Transit', licensePlate: 'AB-123-CD' } as VehicleModel
+		// Assert
+		expect(item.label).toBe('a@b.c (Ada Lovelace)');
+	});
 
-        // Act
-        const item: { label?: string } = VehicleHelper.toSelectItem( vehicle )
+	it('labels a vehicle with its brand, model and plate', () => {
+		// Arrange
+		const vehicle = { brand: 'Ford', model: 'Transit', licensePlate: 'AB-123-CD' } as VehicleModel;
 
-        // Assert
-        expect( item.label ).toBe( 'Ford Transit (AB-123-CD)' )
-    } )
-} )
+		// Act
+		const item: { label?: string } = VehicleHelper.toSelectItem(vehicle);
+
+		// Assert
+		expect(item.label).toBe('Ford Transit (AB-123-CD)');
+	});
+});

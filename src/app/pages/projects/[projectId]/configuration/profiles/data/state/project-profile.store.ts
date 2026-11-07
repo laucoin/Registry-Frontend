@@ -1,62 +1,71 @@
-import { inject } from '@angular/core'
-import { signalStore, withHooks, withMethods, withState } from '@ngrx/signals'
-import { SelectOptionModel } from '@shared/models/model/select-option.model'
-import { ErrorReporter } from '@core/registry/state/error-reporter'
-import { MetadataApi } from '@core/registry/state/metadata.api'
-import { ProjectProfilePageParamsModel } from '@shared/models/model/project-profile-page-params.model'
-import { ProjectProfileStoreModel } from '@pages/projects/[projectId]/configuration/profiles/data/model/project-profile-store.model'
-import { ProjectProfileApi } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.api'
-import { refreshOnLanguageChange } from '@shared/helpers/store/language-refresh'
-import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
-import { metadataFetcher, pageFetcher, paramsUpdater, withEmptyOption } from '@shared/helpers/store/paged-store.methods'
-import { UserHelper } from '@shared/helpers/user.helper'
-import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
-import { FeaturesModel } from '@shared/models/model/features.model'
-import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
-import { UserModel } from '@shared/models/model/user.model'
-import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper'
+import { inject } from '@angular/core';
+
+import { signalStore, withHooks, withMethods, withState } from '@ngrx/signals';
+
+import { ErrorReporter } from '@core/registry/state/error-reporter';
+import { MetadataApi } from '@core/registry/state/metadata.api';
+import { ProjectProfileStoreModel } from '@pages/projects/[projectId]/configuration/profiles/data/model/project-profile-store.model';
+import { ProjectProfileApi } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.api';
+import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper';
+import { refreshOnLanguageChange } from '@shared/helpers/store/language-refresh';
+import { PageStateHelper } from '@shared/helpers/store/page-state.helper';
+import {
+	metadataFetcher,
+	pageFetcher,
+	paramsUpdater,
+	withEmptyOption,
+} from '@shared/helpers/store/paged-store.methods';
+import { UserHelper } from '@shared/helpers/user.helper';
+import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum';
+import { FeaturesModel } from '@shared/models/model/features.model';
+import { ProjectProfileModel } from '@shared/models/model/project-profile.model';
+import { ProjectProfilePageParamsModel } from '@shared/models/model/project-profile-page-params.model';
+import { SelectOptionModel } from '@shared/models/model/select-option.model';
+import { UserModel } from '@shared/models/model/user.model';
 
 interface ProjectProfilesPageRequest extends CumulativePageRequest {
-    projectId: string | undefined
+	projectId: string | undefined;
 }
 
 interface SearchUsersRequest {
-    projectId: string | undefined
-    q: string | undefined
+	projectId: string | undefined;
+	q: string | undefined;
 }
 
-function withoutBlockedOption (items: SelectOptionModel<ProfileStatusEnum>[]): SelectOptionModel<ProfileStatusEnum | undefined>[] {
-    return withEmptyOption( items.filter( (item: SelectOptionModel<ProfileStatusEnum>): boolean => item.value !== ProfileStatusEnum.BLOCKED ) )
+function withoutBlockedOption(
+	items: SelectOptionModel<ProfileStatusEnum>[],
+): SelectOptionModel<ProfileStatusEnum | undefined>[] {
+	return withEmptyOption(items.filter((item) => item.value !== ProfileStatusEnum.BLOCKED));
 }
 
 const defaultProjectProfileStore: ProjectProfileStoreModel = {
-    sectionErrors: {},
-    projectProfiles: PageStateHelper.initial<ProjectProfilePageParamsModel, ProjectProfileModel>( {
-        resetSearch: false,
-        isAvailable: undefined,
-        isVisible: undefined,
-        status: undefined,
-        q: undefined,
-        at: undefined,
-        sort: undefined,
-    } ),
-    metadata: {
-        roles: [],
-        status: [],
-        searched: [],
-        availabilities: [
-            { label: '-', value: undefined },
-            { label: 'project-profiles.available.true', value: true },
-            { label: 'project-profiles.available.false', value: false },
-        ],
-        visibilities: [
-            { label: '-', value: undefined },
-            { label: 'project-profiles.visible.true', value: true },
-            { label: 'project-profiles.visible.false', value: false },
-        ],
-        features: { inviteByEmail: false },
-    },
-}
+	sectionErrors: {},
+	projectProfiles: PageStateHelper.initial<ProjectProfilePageParamsModel, ProjectProfileModel>({
+		resetSearch: false,
+		isAvailable: undefined,
+		isVisible: undefined,
+		status: undefined,
+		q: undefined,
+		at: undefined,
+		sort: undefined,
+	}),
+	metadata: {
+		roles: [],
+		status: [],
+		searched: [],
+		availabilities: [
+			{ label: '-', value: undefined },
+			{ label: 'project-profiles.available.true', value: true },
+			{ label: 'project-profiles.available.false', value: false },
+		],
+		visibilities: [
+			{ label: '-', value: undefined },
+			{ label: 'project-profiles.visible.true', value: true },
+			{ label: 'project-profiles.visible.false', value: false },
+		],
+		features: { inviteByEmail: false },
+	},
+};
 
 /**
  * Purpose: Détient l'état des profils de projet.
@@ -64,26 +73,51 @@ const defaultProjectProfileStore: ProjectProfileStoreModel = {
  * Limits: Atteint via la facade des profils de projet ; ne formate pas les données et ne notifie pas l'utilisateur du résultat des commandes.
  */
 export const ProjectProfileStore = signalStore(
-    withState<ProjectProfileStoreModel>( defaultProjectProfileStore ),
-    withMethods( (store, api = inject( ProjectProfileApi ), metadataApi = inject( MetadataApi ), errors = inject( ErrorReporter )) => ({
-        fetchProfileStatus: metadataFetcher<ProjectProfileStoreModel, 'status', void, SelectOptionModel<ProfileStatusEnum>[]>(
-            store, 'status', () => metadataApi.getProfilesStatus(), withoutBlockedOption,
-        ),
-        fetchProjectProfilesPage: pageFetcher( store, 'projectProfiles', (request: ProjectProfilesPageRequest, params: ProjectProfilePageParamsModel) =>
-            api.findProjectProfiles( request.projectId, request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
-        updateProjectProfilesPageSearchParams: paramsUpdater( store, 'projectProfiles' ),
-        searchUsers: metadataFetcher<ProjectProfileStoreModel, 'searched', SearchUsersRequest, UserModel[]>(
-            store, 'searched', (request: SearchUsersRequest) => api.searchUsers( request.projectId, request.q ),
-            (users: UserModel[]): SelectOptionModel<UserModel>[] => users.map( UserHelper.toSelectItem ),
-        ),
-        fetchAssignableRoles: metadataFetcher<ProjectProfileStoreModel, 'roles', string | undefined, SelectOptionModel<string>[]>(
-            store, 'roles', (projectId: string | undefined) => api.getAssignableProjectProfileRoles( projectId ),
-        ),
-        fetchFeatures: metadataFetcher<ProjectProfileStoreModel, 'features', void, FeaturesModel>(
-            store, 'features', () => metadataApi.getFeatures(),
-        ),
-    }) ),
-    withHooks( {
-        onInit: (store): void => refreshOnLanguageChange( store.fetchProfileStatus ),
-    } ),
-)
+	withState<ProjectProfileStoreModel>(defaultProjectProfileStore),
+	withMethods(
+		(
+			store,
+			api = inject(ProjectProfileApi),
+			metadataApi = inject(MetadataApi),
+			errors = inject(ErrorReporter),
+		) => ({
+			fetchProfileStatus: metadataFetcher<
+				ProjectProfileStoreModel,
+				'status',
+				void,
+				SelectOptionModel<ProfileStatusEnum>[]
+			>(store, 'status', () => metadataApi.getProfilesStatus(), withoutBlockedOption),
+			fetchProjectProfilesPage: pageFetcher(
+				store,
+				'projectProfiles',
+				(request: ProjectProfilesPageRequest, params) =>
+					api.findProjectProfiles(request.projectId, request.page, request.size, params),
+				errors,
+				{ merge: CumulativePageHelper.merge },
+			),
+			updateProjectProfilesPageSearchParams: paramsUpdater(store, 'projectProfiles'),
+		}),
+	),
+	withMethods((store, api = inject(ProjectProfileApi), metadataApi = inject(MetadataApi)) => ({
+		searchUsers: metadataFetcher<ProjectProfileStoreModel, 'searched', SearchUsersRequest, UserModel[]>(
+			store,
+			'searched',
+			(request) => api.searchUsers(request.projectId, request.q),
+			(users) => users.map(UserHelper.toSelectItem),
+		),
+		fetchAssignableRoles: metadataFetcher<
+			ProjectProfileStoreModel,
+			'roles',
+			string | undefined,
+			SelectOptionModel<string>[]
+		>(store, 'roles', (projectId) => api.getAssignableProjectProfileRoles(projectId)),
+		fetchFeatures: metadataFetcher<ProjectProfileStoreModel, 'features', void, FeaturesModel>(
+			store,
+			'features',
+			() => metadataApi.getFeatures(),
+		),
+	})),
+	withHooks({
+		onInit: (store) => refreshOnLanguageChange(store.fetchProfileStatus),
+	}),
+);

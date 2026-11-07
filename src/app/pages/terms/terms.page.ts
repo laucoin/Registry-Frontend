@@ -1,9 +1,10 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
-import { ConfigModel } from '@core/config/model/config.model'
-import { EnvironmentModel } from '@core/config/model/environment.model'
-import { RegistryConfig } from '@core/config/registry.config'
-import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco'
-import { BackNavigationDirective } from '@shared/directives/back-navigation.directive'
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+
+import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
+
+import { ConfigModel } from '@core/config/model/config.model';
+import { RegistryConfig } from '@core/config/registry.config';
+import { BackNavigationDirective } from '@shared/directives/back-navigation.directive';
 
 /**
  * Purpose: Page statique des conditions d'utilisation, personnalisée avec les informations de l'organisation, du créateur et de l'hébergement.
@@ -19,23 +20,19 @@ import { BackNavigationDirective } from '@shared/directives/back-navigation.dire
 	styleUrl: '../../shared/ui/common/legal-document/legal-document.css',
 })
 export class TermsPage {
-	protected readonly updatedAt: string = new Date("2024-10-09").toLocaleDateString()
-	protected readonly hosting: EnvironmentModel['hosting'] = RegistryConfig.environment.hosting
-	protected readonly orgParams: {
-		organizationName: string,
-		creatorName: string,
-		creatorEmail: string
-	} = this.buildOrgParams(RegistryConfig.config.application)
+	protected readonly updatedAt = new Date('2024-10-09').toLocaleDateString();
+	protected readonly hosting = RegistryConfig.environment.hosting;
+	protected readonly orgParams = this.buildOrgParams(RegistryConfig.config.application);
 
 	private buildOrgParams(application: ConfigModel['application']): {
-		organizationName: string,
-		creatorName: string,
-		creatorEmail: string
+		organizationName: string;
+		creatorName: string;
+		creatorEmail: string;
 	} {
 		return {
 			organizationName: application.organization,
 			creatorName: application.creator.name,
 			creatorEmail: application.creator.email,
-		}
+		};
 	}
 }

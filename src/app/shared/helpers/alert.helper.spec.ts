@@ -1,35 +1,36 @@
-import { describe, expect, it } from 'vitest'
-import { AlertHelper } from '@shared/helpers/alert.helper'
-import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
-import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
-import { AlertModel } from '@shared/models/model/alert.model'
+import { describe, expect, it } from 'vitest';
 
-describe( 'AlertHelper', () => {
-    it( 'labels a select item with the title and the formatted date', () => {
-        // Arrange
-        const alert: AlertModel = { id: 'al1', title: 'Fire', dateTime: new Date() } as AlertModel
-        const datePipe: DateFormatPipe = { transform: (): string => '01/01 10:00' } as unknown as DateFormatPipe
+import { AlertHelper } from '@shared/helpers/alert.helper';
+import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe';
+import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum';
+import { AlertModel } from '@shared/models/model/alert.model';
 
-        // Act
-        const item: { label?: string } = AlertHelper.toSelectItem( alert, datePipe )
+describe('AlertHelper', () => {
+	it('labels a select item with the title and the formatted date', () => {
+		// Arrange
+		const alert = { id: 'al1', title: 'Fire', dateTime: new Date() } as AlertModel;
+		const datePipe = { transform: (): string => '01/01 10:00' } as unknown as DateFormatPipe;
 
-        // Assert
-        expect( item.label ).toBe( 'Fire (01/01 10:00)' )
-    } )
+		// Act
+		const item: { label?: string } = AlertHelper.toSelectItem(alert, datePipe);
 
-    it.each( [
-        [ AlertStatusEnum.IN_PROGRESS, 'warning' ],
-        [ AlertStatusEnum.CANCELED, 'neutral' ],
-        [ AlertStatusEnum.RESOLVED, 'success' ],
-        [ undefined, 'success' ],
-    ] )( 'maps the status %s to the %s tag variant', (status: AlertStatusEnum | undefined, variant: string) => {
-        // Arrange
-        const current: AlertStatusEnum | undefined = status
+		// Assert
+		expect(item.label).toBe('Fire (01/01 10:00)');
+	});
 
-        // Act
-        const shown: string = AlertHelper.getTagVariant( current )
+	it.each([
+		[AlertStatusEnum.IN_PROGRESS, 'warning'],
+		[AlertStatusEnum.CANCELED, 'neutral'],
+		[AlertStatusEnum.RESOLVED, 'success'],
+		[undefined, 'success'],
+	])('maps the status %s to the %s tag variant', (status, variant) => {
+		// Arrange
+		const current = status;
 
-        // Assert
-        expect( shown ).toBe( variant )
-    } )
-} )
+		// Act
+		const shown: string = AlertHelper.getTagVariant(current);
+
+		// Assert
+		expect(shown).toBe(variant);
+	});
+});

@@ -1,0 +1,14 @@
+<sgdf-input appSgdfField [formField]="tree.text"></sgdf-input>
+<sgdf-switch appSgdfField [formField]="tree.on"></sgdf-switch>
+<sgdf-date-time-picker appSgdfField with-time [formField]="tree.when"></sgdf-date-time-picker>
+<sgdf-date-time-picker
+	id="custom"
+	appSgdfField
+	with-time
+	value-format="separate"
+	[formField]="tree.custom"
+></sgdf-date-time-picker>
+<sgdf-select appSgdfField [formField]="tree.choice">
+	<sgdf-option value="a">A</sgdf-option>
+	<sgdf-option value="b">B</sgdf-option>
+</sgdf-select>

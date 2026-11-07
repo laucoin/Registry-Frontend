@@ -1,28 +1,26 @@
-import { computed, inject, Injectable, Signal } from '@angular/core'
-import { Observable, tap } from 'rxjs'
-import { PageModel } from '@shared/models/model/page.model'
-import { SelectOptionModel, SelectOptionGroupModel } from '@shared/models/model/select-option.model'
-import { NotificationModel } from '@shared/models/model/notification.model'
-import { GroupModel } from '@shared/models/model/group.model'
-import { MovementStore } from '@pages/projects/[projectId]/movements/data/state/movement.store'
-import { GuestMovementDto } from '@pages/projects/[projectId]/movements/data/dto/guest-movement.dto'
-import { MovementDto } from '@pages/projects/[projectId]/movements/data/dto/movement.dto'
-import { MovementModel } from '@shared/models/model/movement.model'
-import { ParticipantModel } from '@shared/models/model/participant.model'
-import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
-import { VehicleModel } from '@shared/models/model/vehicle.model'
-import { DateHelper } from '@shared/helpers/date.helper'
-import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
-import { notifyOnError } from '@shared/helpers/rx.helper'
-import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
-import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
-import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
-import { CommandEvent } from '@shared/helpers/facade/command-event.service'
-import { MovementReasonModel } from '@shared/models/model/movement-reason.model'
-import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
-import { MovementTypeEnum } from '@shared/models/enumeration/movement-type.enum'
-import { CommunicationModel } from '@shared/models/model/communication.model'
-import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
+import { computed, inject, Injectable, Signal } from '@angular/core';
+
+import { Observable, tap } from 'rxjs';
+
+import { GuestMovementDto } from '@pages/projects/[projectId]/movements/data/dto/guest-movement.dto';
+import { MovementDto } from '@pages/projects/[projectId]/movements/data/dto/movement.dto';
+import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api';
+import { MovementStore } from '@pages/projects/[projectId]/movements/data/state/movement.store';
+import { DateHelper } from '@shared/helpers/date.helper';
+import { CommandEvent } from '@shared/helpers/facade/command-event.service';
+import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade';
+import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe';
+import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe';
+import { notifyOnError } from '@shared/helpers/rx.helper';
+import { SearchParamsHelper } from '@shared/helpers/search/search-params.helper';
+import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper';
+import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum';
+import { SeverityEnum } from '@shared/models/enumeration/severity.enum';
+import { CommunicationModel } from '@shared/models/model/communication.model';
+import { MovementModel } from '@shared/models/model/movement.model';
+import { NotificationModel } from '@shared/models/model/notification.model';
+import { PageModel } from '@shared/models/model/page.model';
+import { SelectOptionModel } from '@shared/models/model/select-option.model';
 
 /**
  * Purpose: Point d'entrée public du domaine des mouvements pour les pages, composants et guards.
@@ -31,230 +29,231 @@ import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.help
  */
 @Injectable()
 export class MovementFacade extends GenericProjectElementFacade {
-    private readonly store: InstanceType<typeof MovementStore> = inject( MovementStore )
+	private readonly store: InstanceType<typeof MovementStore> = inject(MovementStore);
 
-    private readonly api: MovementApi = inject( MovementApi )
-    private readonly pluralTranslationPipe: PluralTranslationPipe = inject( PluralTranslationPipe )
-    private readonly datePipe: DateFormatPipe = inject( DateFormatPipe )
+	private readonly api = inject(MovementApi);
+	private readonly pluralTranslationPipe = inject(PluralTranslationPipe);
+	private readonly datePipe = inject(DateFormatPipe);
 
-    public readonly movementsPage: Signal<PageModel<MovementModel> | undefined> = this.store.movements.element
+	public readonly movementsPage: Signal<PageModel<MovementModel> | undefined> = this.store.movements.element;
 
-    public readonly movementsPageLoading: Signal<boolean> = this.store.movements.loading
+	public readonly movementsPageLoading = this.store.movements.loading;
 
-    public readonly movementsPageSilentLoading: Signal<boolean> = this.store.movements.silentLoading
+	public readonly movementsPageSilentLoading = this.store.movements.silentLoading;
 
-    public readonly movementsPageError: Signal<NotificationModel | undefined> = this.store.movements.error
+	public readonly movementsPageError: Signal<NotificationModel | undefined> = this.store.movements.error;
 
-    private readonly movementsPageResetSearch: Signal<boolean> = this.store.movements.params.resetSearch
+	private readonly movementsPageResetSearch = this.store.movements.params.resetSearch;
 
-    public readonly movementsPageTypeParam: Signal<string | undefined> = this.store.movements.params.type
+	public readonly movementsPageTypeParam = this.store.movements.params.type;
 
-    public readonly movementsPageSortParam: Signal<string | undefined> = this.store.movements.params.sort
+	public readonly movementsPageSortParam = this.store.movements.params.sort;
 
-    public readonly movementsPageFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.movements.params.from() ),
-        )
+	public readonly movementsPageFromParam = computed(() => DateHelper.buildDate(this.store.movements.params.from()));
 
-    public readonly movementsPageToParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.movements.params.to() ),
-        )
+	public readonly movementsPageToParam = computed(() => DateHelper.buildDate(this.store.movements.params.to()));
 
-    public readonly movementsPageIsVisibleParam: Signal<boolean | undefined> = this.store.movements.params.isVisible
+	public readonly movementsPageIsVisibleParam = this.store.movements.params.isVisible;
 
-    public readonly movementCommunicationsPage: Signal<PageModel<CommunicationModel> | undefined> = this.store.movementCommunications.element
+	public readonly movementCommunicationsPage: Signal<PageModel<CommunicationModel> | undefined> =
+		this.store.movementCommunications.element;
 
-    public readonly movementCommunicationsPageLoading: Signal<boolean> = this.store.movementCommunications.loading
+	public readonly movementCommunicationsPageLoading = this.store.movementCommunications.loading;
 
-    public readonly movementCommunicationsPageSilentLoading: Signal<boolean> = this.store.movementCommunications.silentLoading
+	public readonly movementCommunicationsPageSilentLoading = this.store.movementCommunications.silentLoading;
 
-    private readonly movementCommunicationsPageResetSearch: Signal<boolean> = this.store.movementCommunications.params.resetSearch
+	private readonly movementCommunicationsPageResetSearch = this.store.movementCommunications.params.resetSearch;
 
-    public readonly searchedReasonAndActivityMetadata: Signal<MovementReasonModel[]> = this.store.metadata.searchedReasonsAndActivities
+	public readonly searchedReasonAndActivityMetadata = this.store.metadata.searchedReasonsAndActivities;
 
-    public readonly searchedParticipantAndGroupMetadata: Signal<SelectOptionGroupModel<ParticipantModel | GroupModel>[]> = this.store.metadata.searchedParticipantsAndGroups
+	public readonly searchedParticipantAndGroupMetadata = this.store.metadata.searchedParticipantsAndGroups;
 
-    public readonly searchedVehicleMetadata: Signal<SelectOptionModel<VehicleModel>[]> = this.store.metadata.searchedVehicles
+	public readonly searchedVehicleMetadata = this.store.metadata.searchedVehicles;
 
-    public readonly movementTypesMetadata: Signal<SelectOptionModel<MovementTypeEnum | undefined>[]> = this.store.metadata.types
+	public readonly movementTypesMetadata = this.store.metadata.types;
 
-    public readonly visibilitiesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed( () =>
-            this.store.metadata.visibilities().map( (status: SelectOptionModel<boolean | undefined>) => ({
-                ...status,
-                label: this.translateLabel( status.label! ),
-            }) ),
-        )
+	public readonly visibilitiesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed(() =>
+		this.store.metadata.visibilities().map((status) => ({
+			...status,
+			label: this.translateLabel(status.label),
+		})),
+	);
 
-    public fetchMovementsPage (
-        page: number | undefined,
-        size: number | undefined,
-    ): void {
-        const index: number | undefined = this.movementsPageResetSearch() ? 0 : page
-        this.store.fetchMovementsPage( { projectId: this.selectedProjectId(), page: index, size: size } )
-    }
+	public fetchMovementsPage(page: number | undefined, size: number | undefined): void {
+		const index = this.movementsPageResetSearch() ? 0 : page;
+		this.store.fetchMovementsPage({ projectId: this.selectedProjectId(), page: index, size: size });
+	}
 
-    public inputPageSearchParameters (
-        type: string | undefined,
-        from: Date | undefined,
-        to: Date | undefined,
-        isVisible: boolean | undefined,
-        sort: string | undefined = undefined,
-    ): void {
-        const resetSearch: boolean = this.movementsPageTypeParam() != type
-                                     || this.movementsPageFromParam()?.toISOString() != from?.toISOString()
-                                     || this.movementsPageToParam()?.toISOString() != to?.toISOString()
-                                     || this.movementsPageIsVisibleParam() != isVisible
-                                     || this.movementsPageSortParam() != sort
+	public inputPageSearchParameters(
+		type: string | undefined,
+		from: Date | undefined,
+		to: Date | undefined,
+		isVisible: boolean | undefined,
+		sort: string | undefined = undefined,
+	): void {
+		const next = {
+			isVisible,
+			type,
+			from: DateHelper.toIsoInstant(from),
+			to: DateHelper.toIsoInstant(to),
+			sort,
+		};
+		if (!SearchParamsHelper.hasChanged(this.store.movements.params(), next)) return;
+		this.store.updateMovementsPageSearchParams({
+			...next,
+			resetSearch: true,
+			isCurrent: false,
+			hasActivity: undefined,
+		});
+	}
 
-        if (resetSearch) {
-            this.store.updateMovementsPageSearchParams( {
-                resetSearch: resetSearch,
-                isVisible: isVisible,
-                isCurrent: false,
-                hasActivity: undefined,
-                type: type,
-                from: from?.toISOString(),
-                to: to?.toISOString(),
-                sort: sort,
-            } )
-        }
-    }
+	public fetchMovementCommunicationsPage(id: string, page: number | undefined, size: number | undefined): void {
+		const index = this.movementCommunicationsPageResetSearch() ? 0 : page;
+		this.store.fetchMovementCommunicationsPage({
+			projectId: this.selectedProjectId(),
+			id: id,
+			page: index,
+			size: size,
+		});
+	}
 
-    public fetchMovementCommunicationsPage (
-        id: string,
-        page: number | undefined,
-        size: number | undefined,
-    ): void {
-        const index: number | undefined = this.movementCommunicationsPageResetSearch() ? 0 : page
-        this.store.fetchMovementCommunicationsPage( { projectId: this.selectedProjectId(), id: id, page: index, size: size } )
-    }
+	public loadOlderMovementCommunications(id: string): void {
+		const shown = this.movementCommunicationsPage();
+		if (shown?.hasNext) {
+			this.store.fetchMovementCommunicationsPage({
+				projectId: this.selectedProjectId(),
+				id: id,
+				page: shown.page + 1,
+				size: shown.size,
+			});
+		}
+	}
 
-    public loadOlderMovementCommunications (id: string): void {
-        const shown: PageModel<CommunicationModel> | undefined = this.movementCommunicationsPage()
-        if (shown?.hasNext) {
-            this.store.fetchMovementCommunicationsPage( { projectId: this.selectedProjectId(), id: id, page: shown.page + 1, size: shown.size } )
-        }
-    }
+	public reloadMovementCommunications(id: string): void {
+		this.store.fetchMovementCommunicationsPage({
+			projectId: this.selectedProjectId(),
+			id: id,
+			...CumulativePageHelper.reloadRequest(this.movementCommunicationsPage()),
+		});
+	}
 
-    public reloadMovementCommunications (id: string): void {
-        this.store.fetchMovementCommunicationsPage( { projectId: this.selectedProjectId(), id: id, ...CumulativePageHelper.reloadRequest( this.movementCommunicationsPage() ) } )
-    }
+	public searchReasonsAndActivities(
+		q: string | undefined = undefined,
+		type: string,
+		contentType: ParticipantTypeEnum,
+	): void {
+		this.store.searchReasonsAndActivities({
+			projectId: this.selectedProjectId(),
+			q: q,
+			type: type,
+			contentType: contentType,
+		});
+	}
 
-    public searchReasonsAndActivities (
-        q: string | undefined = undefined,
-        type: string,
-        contentType: ParticipantTypeEnum,
-    ): void {
-        this.store.searchReasonsAndActivities( {
-            projectId: this.selectedProjectId(),
-            q: q,
-            type: type,
-            contentType: contentType,
-        } )
-    }
+	public searchParticipantsAndGroups(
+		contentType: ParticipantTypeEnum,
+		q: string | undefined,
+		at: Date,
+		all = false,
+	): void {
+		this.store.searchParticipantsAndGroups({
+			projectId: this.selectedProjectId(),
+			contentType: contentType,
+			q: q,
+			at: at,
+			all: all,
+		});
+	}
 
-    public searchParticipantsAndGroups (
-        contentType: ParticipantTypeEnum,
-        q: string | undefined,
-        at: Date,
-        all: boolean = false,
-    ): void {
-        this.store.searchParticipantsAndGroups( {
-            projectId: this.selectedProjectId(),
-            contentType: contentType,
-            q: q,
-            at: at,
-            all: all,
-        } )
-    }
+	public searchVehicles(q: string | undefined = undefined): void {
+		this.store.searchVehicles({ projectId: this.selectedProjectId(), q: q });
+	}
 
-    public searchVehicles (q: string | undefined = undefined): void {
-        this.store.searchVehicles( { projectId: this.selectedProjectId(), q: q } )
-    }
+	public fetchMovementTypes(): void {
+		if (this.movementTypesMetadata().length === 0) {
+			this.store.fetchMovementTypes();
+		}
+	}
 
-    public fetchMovementTypes (): void {
-        if (this.movementTypesMetadata().length === 0) {
-            this.store.fetchMovementTypes()
-        }
-    }
+	public handleMovementFirstPageReload(): Observable<unknown> {
+		return this.commandEvents.on('movement', 'create', 'hardDelete');
+	}
 
-    public handleMovementFirstPageReload (): Observable<unknown> {
-        return this.commandEvents.on( 'movement', 'create', 'hardDelete' )
-    }
+	public handleMovementCurrentPageReload(): Observable<unknown> {
+		return this.commandEvents.on('movement', 'update', 'softDelete', 'restore');
+	}
 
-    public handleMovementCurrentPageReload (): Observable<unknown> {
-        return this.commandEvents.on( 'movement', 'update', 'softDelete', 'restore' )
-    }
+	public fetchMovement(id: string): Observable<MovementModel> {
+		return this.api.findMovementById(this.selectedProjectId(), id).pipe(notifyOnError(this.uiFacade));
+	}
 
-    public fetchMovement (id: string): Observable<MovementModel> {
-        return this.api.findMovementById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.uiFacade ),
-        )
-    }
+	public createRegisteredMovement(movement: MovementDto): Observable<MovementModel> {
+		return this.api
+			.createMovement(this.selectedProjectId(), movement)
+			.pipe(tap((created) => this.onCommandSuccess('create', created)));
+	}
 
-    public createRegisteredMovement (movement: MovementDto): Observable<MovementModel> {
-        return this.api.createMovement( this.selectedProjectId(), movement ).pipe(
-            tap( (created: MovementModel): void => this.onCommandSuccess( 'create', created ) ),
-        )
-    }
+	public updateRegisteredMovement(id: string, movement: MovementDto, ifMatch?: string): Observable<MovementModel> {
+		return this.api
+			.updateMovementById(this.selectedProjectId(), id, movement, ifMatch)
+			.pipe(tap((updated) => this.onCommandSuccess('update', updated)));
+	}
 
-    public updateRegisteredMovement (id: string, movement: MovementDto, ifMatch?: string): Observable<MovementModel> {
-        return this.api.updateMovementById( this.selectedProjectId(), id, movement, ifMatch ).pipe(
-            tap( (updated: MovementModel): void => this.onCommandSuccess( 'update', updated ) ),
-        )
-    }
+	public createGuestMovement(movement: GuestMovementDto): Observable<MovementModel> {
+		return this.api
+			.createGuestsMovement(this.selectedProjectId(), movement)
+			.pipe(tap((created) => this.onCommandSuccess('create', created)));
+	}
 
-    public createGuestMovement (movement: GuestMovementDto): Observable<MovementModel> {
-        return this.api.createGuestsMovement( this.selectedProjectId(), movement ).pipe(
-            tap( (created: MovementModel): void => this.onCommandSuccess( 'create', created ) ),
-        )
-    }
+	public updateGuestMovement(id: string, movement: GuestMovementDto, ifMatch?: string): Observable<MovementModel> {
+		return this.api
+			.updateGuestsMovementById(this.selectedProjectId(), id, movement, ifMatch)
+			.pipe(tap((updated) => this.onCommandSuccess('update', updated)));
+	}
 
-    public updateGuestMovement (id: string, movement: GuestMovementDto, ifMatch?: string): Observable<MovementModel> {
-        return this.api.updateGuestsMovementById( this.selectedProjectId(), id, movement, ifMatch ).pipe(
-            tap( (updated: MovementModel): void => this.onCommandSuccess( 'update', updated ) ),
-        )
-    }
+	public softDeleteMovement(id: string): Observable<MovementModel> {
+		return this.api.softDeleteMovementById(this.selectedProjectId(), id).pipe(
+			notifyOnError(this.uiFacade),
+			tap((disabled) => this.onCommandSuccess('softDelete', disabled)),
+		);
+	}
 
-    public softDeleteMovement (id: string): Observable<MovementModel> {
-        return this.api.softDeleteMovementById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.uiFacade ),
-            tap( (disabled: MovementModel): void => this.onCommandSuccess( 'softDelete', disabled ) ),
-        )
-    }
+	public restoreMovement(id: string): Observable<MovementModel> {
+		return this.api.restoreMovementById(this.selectedProjectId(), id).pipe(
+			notifyOnError(this.uiFacade),
+			tap((enabled) => this.onCommandSuccess('restore', enabled)),
+		);
+	}
 
-    public restoreMovement (id: string): Observable<MovementModel> {
-        return this.api.restoreMovementById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.uiFacade ),
-            tap( (enabled: MovementModel): void => this.onCommandSuccess( 'restore', enabled ) ),
-        )
-    }
+	public hardDeleteMovement(movement: MovementModel): Observable<void> {
+		return this.api.hardDeleteMovementById(undefined, movement.id).pipe(
+			notifyOnError(this.uiFacade),
+			tap(() => this.onCommandSuccess('hardDelete', movement)),
+		);
+	}
 
-    public hardDeleteMovement (movement: MovementModel): Observable<void> {
-        return this.api.hardDeleteMovementById( undefined, movement.id ).pipe(
-            notifyOnError( this.uiFacade ),
-            tap( (): void => this.onCommandSuccess( 'hardDelete', movement ) ),
-        )
-    }
+	private onCommandSuccess(command: CommandEvent, movement: MovementModel): void {
+		const prefix = `movements.notifications.${command === 'update' ? 'edit' : command}.${movement.type.value}`;
+		this.notifyMessage(
+			SeverityEnum.SUCCESS,
+			`${prefix}.title`,
+			command === 'create'
+				? this.pluralTranslationPipe.transform(`${prefix}.message`, movement.content)
+				: `${prefix}.message`,
+			{
+				datetime: this.datePipe.transform(movement?.dateTime, 'datetime'),
+				participants: movement.content?.length ?? 0,
+			},
+		);
+		this.commandEvents.emit('movement', command);
 
-    private onCommandSuccess (command: CommandEvent, movement: MovementModel): void {
-        const prefix: string = `movements.notifications.${ command === 'update' ? 'edit' : command }.${ movement.type.value }`
-        this.notifyMessage(
-            SeverityEnum.SUCCESS,
-            `${ prefix }.title`,
-            command === 'create'
-            ? this.pluralTranslationPipe.transform( `${ prefix }.message`, movement.content )
-            : `${ prefix }.message`,
-            {
-                datetime: this.datePipe.transform( movement?.dateTime, 'datetime' ),
-                participants: movement.content?.length ?? 0,
-            },
-        )
-        this.commandEvents.emit( 'movement', command )
+		this.reloadMovementsPage();
+	}
 
-        this.reloadMovementsPage()
-    }
-
-    public reloadMovementsPage (): void {
-        this.store.fetchMovementsPage( { projectId: this.selectedProjectId(), ...CumulativePageHelper.reloadRequest( this.movementsPage() ) } )
-    }
+	public reloadMovementsPage(): void {
+		this.store.fetchMovementsPage({
+			projectId: this.selectedProjectId(),
+			...CumulativePageHelper.reloadRequest(this.movementsPage()),
+		});
+	}
 }

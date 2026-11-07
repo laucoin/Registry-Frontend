@@ -1,26 +1,36 @@
-import { By } from '@angular/platform-browser';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+
 import { TranslocoPipe } from '@jsverse/transloco';
 import { MockBuilder, ngMocks } from 'ng-mocks';
+
 import { GroupMembersBlock } from '@pages/projects/[projectId]/participants/data/model/group-status-store.model';
+import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe';
+import { PageStateHelper } from '@shared/helpers/store/page-state.helper';
 import { GROUP_DTO, PARTICIPANT_DTO } from '@shared/helpers/testing/response-fixtures';
 import { ERROR_500, pageOf } from '@shared/helpers/testing/test-fixtures';
-import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe';
 import { GroupMapper } from '@shared/mappers/group.mapper';
 import { ParticipantMapper } from '@shared/mappers/participant.mapper';
 import { GroupModel } from '@shared/models/model/group.model';
 import { NotificationModel } from '@shared/models/model/notification.model';
-import { PageEventModel } from '@shared/models/model/page-event.model';
 import { PageModel } from '@shared/models/model/page.model';
+import { PageEventModel } from '@shared/models/model/page-event.model';
 import { ParticipantModel } from '@shared/models/model/participant.model';
-import { PageStateHelper } from '@shared/helpers/store/page-state.helper';
 import { LoadMoreComponent } from '@shared/ui/common/load-more/load-more.component';
-import { CheckedChangeModel, GroupMembersRequestModel, GroupStatusListComponent } from './group-status-list.component';
 import { SkeletonListComponent } from '@shared/ui/common/skeleton-list/skeleton-list.component';
 
-const group: GroupModel = GroupMapper.toModel({ ...GROUP_DTO, membersCount: 4, onSiteMembersCount: 3, inMembersCount: 1, outMembersCount: 1, overdueMembersCount: 1 });
+import { CheckedChangeModel, GroupMembersRequestModel, GroupStatusListComponent } from './group-status-list.component';
+
+const group = GroupMapper.toModel({
+	...GROUP_DTO,
+	membersCount: 4,
+	onSiteMembersCount: 3,
+	inMembersCount: 1,
+	outMembersCount: 1,
+	overdueMembersCount: 1,
+});
 const quiet: GroupModel = { ...group, id: 'g2', outMembersCount: 0, overdueMembersCount: 0 };
-const member: ParticipantModel = ParticipantMapper.toModel(PARTICIPANT_DTO);
+const member = ParticipantMapper.toModel(PARTICIPANT_DTO);
 
 function block(overrides: Partial<GroupMembersBlock> = {}): GroupMembersBlock {
 	return { ...PageStateHelper.initial({ resetSearch: false }), ...overrides };
@@ -31,7 +41,10 @@ describe('GroupStatusListComponent', () => {
 	let requests: GroupMembersRequestModel[];
 	let changes: CheckedChangeModel[];
 
-	async function render(page: PageModel<GroupModel> | undefined, options: { loading?: boolean, error?: NotificationModel, members?: Record<string, GroupMembersBlock> } = {}): Promise<void> {
+	async function render(
+		page: PageModel<GroupModel> | undefined,
+		options: { loading?: boolean; error?: NotificationModel; members?: Record<string, GroupMembersBlock> } = {},
+	): Promise<void> {
 		fixture.componentRef.setInput('groupPage', page);
 		fixture.componentRef.setInput('loading', options.loading ?? false);
 		fixture.componentRef.setInput('error', options.error);
@@ -47,12 +60,12 @@ describe('GroupStatusListComponent', () => {
 		await MockBuilder(GroupStatusListComponent)
 			.keep(LoadMoreComponent)
 			.mock(TranslocoPipe, (key: string): string => key)
-			.mock(PluralTranslationPipe, (key: string): string => key);
+			.mock(PluralTranslationPipe, (key) => key);
 		fixture = TestBed.createComponent(GroupStatusListComponent);
 		requests = [];
 		changes = [];
-		fixture.componentInstance.checkedChange.subscribe((change: CheckedChangeModel): number => changes.push(change));
-		fixture.componentInstance.membersRequired.subscribe((request: GroupMembersRequestModel): number => requests.push(request));
+		fixture.componentInstance.checkedChange.subscribe((change) => changes.push(change));
+		fixture.componentInstance.membersRequired.subscribe((request) => requests.push(request));
 	});
 
 	it('should display one closed section per group without loading any member', async () => {
@@ -60,7 +73,9 @@ describe('GroupStatusListComponent', () => {
 		await render({ ...pageOf([group, quiet]), totalElements: 2 });
 
 		// Act
-		const items: { expanded: boolean }[] = Array.from(fixture.nativeElement.querySelectorAll('sgdf-accordion-item'));
+		const items: { expanded: boolean }[] = Array.from(
+			fixture.nativeElement.querySelectorAll('sgdf-accordion-item'),
+		);
 
 		// Assert
 		expect(items).toHaveLength(2);
@@ -81,7 +96,7 @@ describe('GroupStatusListComponent', () => {
 
 	it('should ask for the members of the only group without waiting for its section to announce it', async () => {
 		// Arrange
-		const page: PageModel<GroupModel> = pageOf([group]);
+		const page = pageOf([group]);
 
 		// Act
 		await render(page);
@@ -106,12 +121,14 @@ describe('GroupStatusListComponent', () => {
 		await render({ ...pageOf([group, quiet]), totalElements: 2 });
 
 		// Act
-		const tags: string[] = Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('sgdf-tag')).map((tag: HTMLElement): string => tag.textContent.trim());
+		const tags = Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('sgdf-tag')).map((tag) =>
+			tag.textContent.trim(),
+		);
 
 		// Assert
-		expect(tags.filter((tag: string): boolean => tag.includes('projectHome.groupStatus.onSite'))).toHaveLength(2);
-		expect(tags.filter((tag: string): boolean => tag.includes('projectHome.groupStatus.outside'))).toHaveLength(1);
-		expect(tags.filter((tag: string): boolean => tag.includes('projectHome.groupStatus.overdue'))).toHaveLength(1);
+		expect(tags.filter((tag) => tag.includes('projectHome.groupStatus.onSite'))).toHaveLength(2);
+		expect(tags.filter((tag) => tag.includes('projectHome.groupStatus.outside'))).toHaveLength(1);
+		expect(tags.filter((tag) => tag.includes('projectHome.groupStatus.overdue'))).toHaveLength(1);
 	});
 
 	it('should ask for the first members of a group when its section opens', async () => {
@@ -127,7 +144,10 @@ describe('GroupStatusListComponent', () => {
 
 	it('should not ask again for the members of a group that already has some', async () => {
 		// Arrange
-		await render({ ...pageOf([group, quiet]), totalElements: 2 }, { members: { g1: block({ element: pageOf([member]) }) } });
+		await render(
+			{ ...pageOf([group, quiet]), totalElements: 2 },
+			{ members: { g1: block({ element: pageOf([member]) }) } },
+		);
 
 		// Act
 		openFirstGroup();
@@ -149,7 +169,10 @@ describe('GroupStatusListComponent', () => {
 
 	it('should display a row per loaded member', async () => {
 		// Arrange
-		await render({ ...pageOf([group, quiet]), totalElements: 2 }, { members: { g1: block({ element: pageOf([member, { ...member, id: 'pa2' }]) }) } });
+		await render(
+			{ ...pageOf([group, quiet]), totalElements: 2 },
+			{ members: { g1: block({ element: pageOf([member, { ...member, id: 'pa2' }]) }) } },
+		);
 
 		// Act
 		const rows: number = fixture.nativeElement.querySelectorAll('sgdf-list-item').length;
@@ -163,7 +186,10 @@ describe('GroupStatusListComponent', () => {
 		await render({ ...pageOf([group, quiet]), totalElements: 2 }, { members: { g1: block({ loading: true }) } });
 
 		// Act
-		const skeletons: number = ngMocks.input(fixture.debugElement.query(By.directive(SkeletonListComponent)), 'rows');
+		const skeletons: number = ngMocks.input(
+			fixture.debugElement.query(By.directive(SkeletonListComponent)),
+			'rows',
+		);
 
 		// Assert
 		expect(skeletons).toBeGreaterThan(0);
@@ -171,7 +197,10 @@ describe('GroupStatusListComponent', () => {
 
 	it('should tell that a group has no member on site', async () => {
 		// Arrange
-		await render({ ...pageOf([group, quiet]), totalElements: 2 }, { members: { g1: block({ element: pageOf<ParticipantModel>([]) }) } });
+		await render(
+			{ ...pageOf([group, quiet]), totalElements: 2 },
+			{ members: { g1: block({ element: pageOf<ParticipantModel>([]) }) } },
+		);
 
 		// Act
 		const text: string = fixture.nativeElement.textContent;
@@ -182,7 +211,13 @@ describe('GroupStatusListComponent', () => {
 
 	it('should ask for the next members of a group when asked to load more', async () => {
 		// Arrange
-		const members: PageModel<ParticipantModel> = { ...pageOf([member]), page: 0, size: 10, totalElements: 30, hasNext: true };
+		const members: PageModel<ParticipantModel> = {
+			...pageOf([member]),
+			page: 0,
+			size: 10,
+			totalElements: 30,
+			hasNext: true,
+		};
 		await render({ ...pageOf([group, quiet]), totalElements: 2 }, { members: { g1: block({ element: members }) } });
 
 		// Act
@@ -194,7 +229,10 @@ describe('GroupStatusListComponent', () => {
 
 	it('should ask for the failed members again when asked to retry', async () => {
 		// Arrange
-		await render({ ...pageOf([group, quiet]), totalElements: 2 }, { members: { g1: block({ error: PageStateHelper.toNotification(ERROR_500) }) } });
+		await render(
+			{ ...pageOf([group, quiet]), totalElements: 2 },
+			{ members: { g1: block({ error: PageStateHelper.toNotification(ERROR_500) }) } },
+		);
 
 		// Act
 		ngMocks.output('sgdf-accordion-item app-section-error', 'retry').emit();
@@ -242,7 +280,7 @@ describe('GroupStatusListComponent', () => {
 		// Arrange
 		await render({ ...pageOf([group, quiet]), page: 1, size: 20, totalElements: 50, hasNext: true });
 		const events: PageEventModel[] = [];
-		fixture.componentInstance.updateRequired.subscribe((event: PageEventModel): number => events.push(event));
+		fixture.componentInstance.updateRequired.subscribe((event) => events.push(event));
 
 		// Act
 		fixture.nativeElement.querySelector('sgdf-accordion + app-load-more sgdf-button').click();
@@ -255,7 +293,7 @@ describe('GroupStatusListComponent', () => {
 		// Arrange
 		await render(pageOf([group]), { error: PageStateHelper.toNotification(ERROR_500) });
 		const events: PageEventModel[] = [];
-		fixture.componentInstance.updateRequired.subscribe((event: PageEventModel): number => events.push(event));
+		fixture.componentInstance.updateRequired.subscribe((event) => events.push(event));
 
 		// Act
 		ngMocks.output('app-section-error', 'retry').emit();
@@ -268,7 +306,7 @@ describe('GroupStatusListComponent', () => {
 		// Arrange
 		await render(undefined, { error: PageStateHelper.toNotification(ERROR_500) });
 		const events: PageEventModel[] = [];
-		fixture.componentInstance.updateRequired.subscribe((event: PageEventModel): number => events.push(event));
+		fixture.componentInstance.updateRequired.subscribe((event) => events.push(event));
 
 		// Act
 		ngMocks.output('app-section-error', 'retry').emit();
@@ -294,7 +332,9 @@ describe('GroupStatusListComponent', () => {
 		await render({ ...pageOf([group]), hasNext: true });
 
 		// Act
-		const button: { loading: boolean } = fixture.nativeElement.querySelector('sgdf-accordion + app-load-more sgdf-button');
+		const button: { loading: boolean } = fixture.nativeElement.querySelector(
+			'sgdf-accordion + app-load-more sgdf-button',
+		);
 
 		// Assert
 		expect(button.loading).toBe(true);
@@ -302,17 +342,22 @@ describe('GroupStatusListComponent', () => {
 
 	it('should hold the next groups back while members are loading', async () => {
 		// Arrange
-		await render({ ...pageOf([group, quiet]), hasNext: true, totalElements: 50 }, { members: { g1: block({ loading: true }) } });
+		await render(
+			{ ...pageOf([group, quiet]), hasNext: true, totalElements: 50 },
+			{ members: { g1: block({ loading: true }) } },
+		);
 
 		// Act
-		const button: { loading: boolean } = fixture.nativeElement.querySelector('sgdf-accordion + app-load-more sgdf-button');
+		const button: { loading: boolean } = fixture.nativeElement.querySelector(
+			'sgdf-accordion + app-load-more sgdf-button',
+		);
 
 		// Assert
 		expect(button.loading).toBe(true);
 	});
 
 	describe('roll call', () => {
-		const loaded: GroupMembersBlock = block({ element: pageOf([member, { ...member, id: 'pa2' }]) });
+		const loaded = block({ element: pageOf([member, { ...member, id: 'pa2' }]) });
 		const twoGroups: PageModel<GroupModel> = { ...pageOf([group, quiet]), totalElements: 2 };
 
 		it('should not offer a checkbox in front of the groups', async () => {

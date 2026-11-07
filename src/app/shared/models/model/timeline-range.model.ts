@@ -1,6 +1,6 @@
-import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
+import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model';
 
 export interface TimelineRangeModel {
-    start: CustomDatetimeModel | undefined
-    end: CustomDatetimeModel | undefined
+	start: CustomDatetimeModel | undefined;
+	end: CustomDatetimeModel | undefined;
 }

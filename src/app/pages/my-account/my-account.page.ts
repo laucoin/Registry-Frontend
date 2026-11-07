@@ -1,13 +1,14 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
-import { AccountInfoComponent } from "@shared/ui/domain/my-account/account-info/account-info.component";
-import { AccountLanguageComponent } from "@shared/ui/domain/my-account/account-language/account-language.component";
-import {
-	AccountPersonalDataComponent
-} from "@shared/ui/domain/my-account/account-personal-data/account-personal-data.component";
-import { AccountThemeComponent } from "@shared/ui/domain/my-account/account-theme/account-theme.component";
-import { AccountRefreshComponent } from "@shared/ui/domain/my-account/account-refresh/account-refresh.component";
-import '@sgdf/ui/page-title'
+
+import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
+
+import { AccountInfoComponent } from '@shared/ui/domain/my-account/account-info/account-info.component';
+import { AccountLanguageComponent } from '@shared/ui/domain/my-account/account-language/account-language.component';
+import { AccountPersonalDataComponent } from '@shared/ui/domain/my-account/account-personal-data/account-personal-data.component';
+import { AccountRefreshComponent } from '@shared/ui/domain/my-account/account-refresh/account-refresh.component';
+import { AccountThemeComponent } from '@shared/ui/domain/my-account/account-theme/account-theme.component';
+
+import '@sgdf/ui/page-title';
 
 /**
  * Purpose: Page de compte de l'utilisateur connecté.
@@ -21,12 +22,11 @@ import '@sgdf/ui/page-title'
 		AccountLanguageComponent,
 		AccountThemeComponent,
 		AccountRefreshComponent,
-		AccountPersonalDataComponent
+		AccountPersonalDataComponent,
 	],
 	providers: [provideTranslocoScope('my-account')],
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	styleUrl: './my-account.page.css',
 	templateUrl: './my-account.page.html',
 })
-export class MyAccountPage {
-}
+export class MyAccountPage {}

@@ -1,15 +1,15 @@
-import { formatSort, parseSort, SortFields } from '@shared/helpers/search/sort-query'
-export const INVITATIONS_LIST_SORT_FIELDS: readonly string[] = [ 'startAccess', 'endAccess' ]
+import { formatSort, parseSort, SortFields } from '@shared/helpers/search/sort-query';
+export const INVITATIONS_LIST_SORT_FIELDS: readonly string[] = ['startAccess', 'endAccess'];
 
 interface InvitationsListSearch {
-    q: string | undefined
-    at: Date | undefined
-    sort: string | undefined
+	q: string | undefined;
+	at: Date | undefined;
+	sort: string | undefined;
 }
 
 export interface InvitationsListSearchModel extends SortFields {
-    q: string
-    at: Date | null
+	q: string;
+	at: Date | null;
 }
 
 /**
@@ -17,12 +17,12 @@ export interface InvitationsListSearchModel extends SortFields {
  * Scope: Remplit les paramètres vides avec les valeurs par défaut du formulaire.
  * Limits: Ne valide pas les paramètres.
  */
-export function toInvitationsListSearchModel (params: InvitationsListSearch): InvitationsListSearchModel {
-    return {
-        q: params.q ?? '',
-        at: params.at ?? null,
-        ...parseSort( params.sort, INVITATIONS_LIST_SORT_FIELDS ),
-    }
+export function toInvitationsListSearchModel(params: InvitationsListSearch): InvitationsListSearchModel {
+	return {
+		q: params.q ?? '',
+		at: params.at ?? null,
+		...parseSort(params.sort, INVITATIONS_LIST_SORT_FIELDS),
+	};
 }
 
 /**
@@ -30,10 +30,10 @@ export function toInvitationsListSearchModel (params: InvitationsListSearch): In
  * Scope: Transforme les valeurs vides du formulaire en paramètres undefined.
  * Limits: Ne valide pas les valeurs du formulaire.
  */
-export function toInvitationsListSearchParams (model: InvitationsListSearchModel): InvitationsListSearch {
-    return {
-        q: model.q === '' ? undefined : model.q,
-        at: model.at ?? undefined,
-        sort: formatSort( model ),
-    }
+export function toInvitationsListSearchParams(model: InvitationsListSearchModel): InvitationsListSearch {
+	return {
+		q: model.q === '' ? undefined : model.q,
+		at: model.at ?? undefined,
+		sort: formatSort(model),
+	};
 }

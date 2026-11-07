@@ -1,25 +1,27 @@
-import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
-import { computed, inject, Injectable, Signal } from '@angular/core'
-import { Router } from '@angular/router'
-import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
-import { toObservable } from '@angular/core/rxjs-interop'
-import { finalize, Observable, switchMap, tap } from 'rxjs'
-import { PageModel } from '@shared/models/model/page.model'
-import { SelectOptionModel } from '@shared/models/model/select-option.model'
-import { NotificationModel } from '@shared/models/model/notification.model'
-import { GenericFacade } from '@shared/helpers/facade/generic.facade'
-import { ProjectStore } from '@pages/projects/data/state/project/project.store'
-import { ProjectDto } from '@shared/models/dto/project.dto'
-import { ProjectApi } from '@core/registry/state/project.api'
-import { SessionFacade } from '@core/registry/state/session.facade'
-import { UiFacade } from '@core/registry/state/ui.facade'
-import { StateHelper } from '@shared/helpers/state/state.helper'
-import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
-import { initialize, notifyOnError } from '@shared/helpers/rx.helper'
-import { ProjectModel } from '@shared/models/model/project.model'
-import { ProjectOptionModel } from '@shared/models/model/project-option.model'
-import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
-import { DateHelper } from '@shared/helpers/date.helper'
+import { computed, inject, Injectable, Signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
+
+import { finalize, Observable, switchMap, tap } from 'rxjs';
+
+import { ProjectApi } from '@core/registry/state/project.api';
+import { SessionFacade } from '@core/registry/state/session.facade';
+import { UiFacade } from '@core/registry/state/ui.facade';
+import { RegistryRouteEnum } from '@core/routing/registry-route.enum';
+import { ProjectStore } from '@pages/projects/data/state/project/project.store';
+import { DateHelper } from '@shared/helpers/date.helper';
+import { GenericFacade } from '@shared/helpers/facade/generic.facade';
+import { initialize, notifyOnError } from '@shared/helpers/rx.helper';
+import { SearchParamsHelper } from '@shared/helpers/search/search-params.helper';
+import { StateHelper } from '@shared/helpers/state/state.helper';
+import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper';
+import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper';
+import { ProjectDto } from '@shared/models/dto/project.dto';
+import { SeverityEnum } from '@shared/models/enumeration/severity.enum';
+import { NotificationModel } from '@shared/models/model/notification.model';
+import { PageModel } from '@shared/models/model/page.model';
+import { ProjectModel } from '@shared/models/model/project.model';
+import { SelectOptionModel } from '@shared/models/model/select-option.model';
 
 /**
  * Purpose: Point d'entrée public du domaine des projets pour les pages, composants et guards.
@@ -28,203 +30,217 @@ import { DateHelper } from '@shared/helpers/date.helper'
  */
 @Injectable()
 export class ProjectFacade extends GenericFacade {
-    private readonly store: InstanceType<typeof ProjectStore> = inject( ProjectStore )
-    private readonly api: ProjectApi = inject( ProjectApi )
-    private readonly uiFacade: UiFacade = inject( UiFacade )
-    private readonly sessionFacade: SessionFacade = inject( SessionFacade )
-    private readonly router: Router = inject( Router )
+	private readonly store: InstanceType<typeof ProjectStore> = inject(ProjectStore);
+	private readonly api = inject(ProjectApi);
+	private readonly uiFacade = inject(UiFacade);
+	private readonly sessionFacade = inject(SessionFacade);
+	private readonly router = inject(Router);
 
-    public readonly metadataErrors: Signal<Record<string, NotificationModel | undefined>> = SectionErrorsHelper.metadata( this.store.sectionErrors )
+	public readonly metadataErrors: Signal<Record<string, NotificationModel | undefined>> =
+		SectionErrorsHelper.metadata(this.store.sectionErrors);
 
-    public readonly projectError: Signal<NotificationModel | undefined> = this.store.project.error
+	public readonly projectError: Signal<NotificationModel | undefined> = this.store.project.error;
 
-    public readonly projectsPage: Signal<PageModel<ProjectModel> | undefined> = this.store.projects.element
+	public readonly projectsPage: Signal<PageModel<ProjectModel> | undefined> = this.store.projects.element;
 
-    public readonly projectsPageLoading: Signal<boolean> = this.store.projects.loading
+	public readonly projectsPageLoading = this.store.projects.loading;
 
-    public readonly projectsPageSilentLoading: Signal<boolean> = this.store.projects.silentLoading
+	public readonly projectsPageSilentLoading = this.store.projects.silentLoading;
 
-    public readonly projectsPageError: Signal<NotificationModel | undefined> = this.store.projects.error
+	public readonly projectsPageError: Signal<NotificationModel | undefined> = this.store.projects.error;
 
-    private readonly projectsPageResetSearch: Signal<boolean> = this.store.projects.params.resetSearch
+	private readonly projectsPageResetSearch = this.store.projects.params.resetSearch;
 
-    public readonly projectsPageQueryParam: Signal<string | undefined> = this.store.projects.params.q
+	public readonly projectsPageQueryParam = this.store.projects.params.q;
 
-    public readonly projectsPageAtParam: Signal<Date | undefined> = computed( (): Date | undefined => DateHelper.buildDate( this.store.projects.params.at() ) )
+	public readonly projectsPageAtParam = computed(() => DateHelper.buildDate(this.store.projects.params.at()));
 
+	public readonly projectsPageIsVisibleParam = this.store.projects.params.isVisible;
 
-    public readonly projectsPageIsVisibleParam: Signal<boolean | undefined> = this.store.projects.params.isVisible
+	public readonly projectOptionsMetadata = this.store.metadata.options;
 
-    public readonly projectOptionsMetadata: Signal<ProjectOptionModel[]> = this.store.metadata.options
+	public readonly projectOptionsMetadata$ = toObservable(this.projectOptionsMetadata);
 
-    public readonly projectOptionsMetadata$: Observable<ProjectOptionModel[]> = toObservable( this.projectOptionsMetadata )
+	public readonly visibilitiesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed(
+		(): SelectOptionModel<boolean | undefined>[] =>
+			this.store.metadata.visibilities().map((item): SelectOptionModel<boolean | undefined> => ({
+				...item,
+				label: this.translateLabel(item.label),
+			})),
+	);
 
-    public readonly visibilitiesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed( (): SelectOptionModel<boolean | undefined>[] =>
-            this.store.metadata.visibilities().map( (item: SelectOptionModel<boolean | undefined>): SelectOptionModel<boolean | undefined> => ({
-                ...item,
-                label: this.translateLabel( item.label! ),
-            }) ),
-        )
+	public readonly projectsPageIsFavoriteParam = this.store.projects.params.isFavorite;
 
-    public readonly projectsPageIsFavoriteParam: Signal<boolean | undefined> = this.store.projects.params.isFavorite
+	public readonly projectsPageWithProfileParam = this.store.projects.params.withProfile;
 
-    public readonly projectsPageWithProfileParam: Signal<boolean | undefined> = this.store.projects.params.withProfile
+	public readonly projectsPageSortParam = this.store.projects.params.sort;
 
-    public readonly projectsPageSortParam: Signal<string | undefined> = this.store.projects.params.sort
+	public readonly withProfilesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed(
+		(): SelectOptionModel<boolean | undefined>[] =>
+			this.store.metadata.withProfiles().map((item): SelectOptionModel<boolean | undefined> => ({
+				...item,
+				label: this.translateLabel(item.label),
+			})),
+	);
 
-    public readonly withProfilesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed( (): SelectOptionModel<boolean | undefined>[] =>
-            this.store.metadata.withProfiles().map( (item: SelectOptionModel<boolean | undefined>): SelectOptionModel<boolean | undefined> => ({
-                ...item,
-                label: this.translateLabel( item.label! ),
-            }) ),
-        )
+	public readonly favoritesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed(
+		(): SelectOptionModel<boolean | undefined>[] =>
+			this.store.metadata.favorites().map((item): SelectOptionModel<boolean | undefined> => ({
+				...item,
+				label: this.translateLabel(item.label),
+			})),
+	);
 
-    public readonly favoritesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed( (): SelectOptionModel<boolean | undefined>[] =>
-            this.store.metadata.favorites().map( (item: SelectOptionModel<boolean | undefined>): SelectOptionModel<boolean | undefined> => ({
-                ...item,
-                label: this.translateLabel( item.label! ),
-            }) ),
-        )
+	public readonly project: Signal<ProjectModel | undefined> = this.store.project.element;
 
-    public readonly project: Signal<ProjectModel | undefined> = this.store.project.element
+	public readonly createdProjectId = this.store.createdProjectId;
 
-    public readonly createdProjectId: Signal<string | undefined> = this.store.createdProjectId
+	public readonly project$ = toObservable(this.project);
 
-    public readonly project$: Observable<ProjectModel | undefined> = toObservable( this.project )
+	public readonly projectLoading = this.store.project.loading;
 
-    public readonly projectLoading: Signal<boolean> = this.store.project.loading
+	public fetchProjectOptions(): void {
+		this.store.fetchProjectOptions();
+	}
 
-    public fetchProjectOptions (): void {
-        this.store.fetchProjectOptions()
-    }
+	public refreshProjectsPage(): void {
+		this.store.refreshProjectsPage(CumulativePageHelper.reloadRequest(this.projectsPage()));
+	}
 
-    public refreshProjectsPage (): void {
-        this.store.refreshProjectsPage( CumulativePageHelper.reloadRequest( this.projectsPage() ) )
-    }
+	public fetchProjectsPage(page: number | undefined, size: number | undefined): void {
+		const index = this.projectsPageResetSearch() ? 0 : page;
+		this.store.fetchProjectsPage({ page: index, size: size });
+	}
 
-    public fetchProjectsPage (
-        page: number | undefined,
-        size: number | undefined,
-    ): void {
-        const index: number | undefined = this.projectsPageResetSearch() ? 0 : page
-        this.store.fetchProjectsPage( { page: index, size: size } )
-    }
+	public inputPageSearchParameters(
+		q: string | undefined,
+		at: Date | undefined,
+		isVisible: boolean | undefined,
+		isFavorite: boolean | undefined = undefined,
+		withProfile: boolean | undefined = undefined,
+		sort: string | undefined = undefined,
+	): void {
+		const next = {
+			isVisible,
+			isFavorite,
+			withProfile,
+			q,
+			at: DateHelper.toIsoInstant(at),
+			sort,
+		};
+		if (!SearchParamsHelper.hasChanged(this.store.projects.params(), next)) return;
+		this.store.updateProjectsPageSearchParams({ ...next, resetSearch: true });
+	}
 
-    public inputPageSearchParameters (
-        q: string | undefined,
-        at: Date | undefined,
-        isVisible: boolean | undefined,
-        isFavorite: boolean | undefined = undefined,
-        withProfile: boolean | undefined = undefined,
-        sort: string | undefined = undefined,
-    ): void {
-        const resetSearch: boolean = this.projectsPageQueryParam() != q
-                                     || this.projectsPageAtParam()?.toISOString() != at?.toISOString()
-                                     || this.projectsPageIsVisibleParam() != isVisible
-                                     || this.projectsPageIsFavoriteParam() != isFavorite
-                                     || this.projectsPageWithProfileParam() != withProfile
-                                     || this.projectsPageSortParam() != sort
+	public toggleFavorite(project: ProjectModel): void {
+		const favorite = !project.favorite;
+		this.api
+			.setFavoriteById(project.id, favorite)
+			.pipe(
+				notifyOnError(this.uiFacade),
+				tap(() => this.store.setProjectFavorite(project.id, favorite)),
+			)
+			.subscribe();
+	}
 
-        if (resetSearch) {
-            this.store.updateProjectsPageSearchParams( {
-                resetSearch: resetSearch,
-                isVisible: isVisible,
-                isFavorite: isFavorite,
-                withProfile: withProfile,
-                q: q,
-                at: at?.toISOString(),
-                sort: sort,
-            } )
-        }
-    }
+	public fetchProject(id: string): void {
+		this.store.fetchProject(id);
+	}
 
-    public toggleFavorite (project: ProjectModel): void {
-        const favorite: boolean = !project.favorite
-        this.api.setFavoriteById( project.id, favorite ).pipe(
-            notifyOnError( this.uiFacade ),
-            tap( (): void => this.store.setProjectFavorite( project.id, favorite ) ),
-        ).subscribe()
-    }
+	public resetProject(): void {
+		this.store.resetProject();
+	}
 
-    public fetchProject (id: string): void {
-        this.store.fetchProject( id )
-    }
+	public createProject(project: ProjectDto): Observable<unknown> {
+		return this.api.createProject(project).pipe(
+			this.trackProjectLoader,
+			notifyOnError(this.uiFacade),
+			tap((created) => this.onProjectCreated(created)),
+			switchMap((): Observable<unknown> => this.sessionFacade.fetchCurrentUser()),
+		);
+	}
 
-    public resetProject (): void {
-        this.store.resetProject()
-    }
+	public updateProject(id: string, project: ProjectDto, ifMatch?: string): Observable<ProjectModel> {
+		return this.api.updateProjectById(id, project, ifMatch).pipe(
+			this.trackProjectLoader,
+			notifyOnError(this.uiFacade),
+			tap((updated) => this.onProjectUpdated(updated)),
+		);
+	}
 
-    public createProject (project: ProjectDto): Observable<unknown> {
-        return this.api.createProject( project ).pipe(
-            this.trackProjectLoader,
-            notifyOnError( this.uiFacade ),
-            tap( (created: ProjectModel): void => {
-                this.store.setCreatedProjectId( created.id )
-                this.onCommandSuccess( 'create', created )
-            } ),
-            switchMap( (): Observable<unknown> => this.sessionFacade.fetchCurrentUser() ),
-        )
-    }
+	public softDeleteProject(id: string): void {
+		this.api
+			.softDeleteProjectById(id)
+			.pipe(
+				this.trackProjectLoader,
+				notifyOnError(this.uiFacade),
+				tap((project) => this.onCommandSuccess('softDelete', project, true)),
+			)
+			.subscribe();
+	}
 
-    public updateProject (id: string, project: ProjectDto, ifMatch?: string): Observable<ProjectModel> {
-        return this.api.updateProjectById( id, project, ifMatch ).pipe(
-            this.trackProjectLoader,
-            notifyOnError( this.uiFacade ),
-            tap( (updated: ProjectModel): void => {
-                this.onCommandSuccess( 'edit', updated )
-                if (this.sessionFacade.currentProjectId() == updated.id) {
-                    this.sessionFacade.fetchCurrentUser()
-                }
-            } ),
-        )
-    }
+	public restoreProject(id: string): void {
+		this.api
+			.restoreProjectById(id)
+			.pipe(
+				this.trackProjectLoader,
+				notifyOnError(this.uiFacade),
+				tap((project) => this.onCommandSuccess('restore', project, true)),
+			)
+			.subscribe();
+	}
 
-    public softDeleteProject (id: string): void {
-        this.api.softDeleteProjectById( id ).pipe(
-            this.trackProjectLoader,
-            notifyOnError( this.uiFacade ),
-            tap( (project: ProjectModel): void => this.onCommandSuccess( 'softDelete', project, true ) ),
-        ).subscribe()
-    }
+	public hardDeleteProject(element: ProjectModel): void {
+		this.api
+			.hardDeleteProjectById(element.id)
+			.pipe(
+				this.trackProjectLoader,
+				notifyOnError(this.uiFacade),
+				tap(() => this.onCommandSuccess('hardDelete', element, true)),
+			)
+			.subscribe();
+	}
 
-    public restoreProject (id: string): void {
-        this.api.restoreProjectById( id ).pipe(
-            this.trackProjectLoader,
-            notifyOnError( this.uiFacade ),
-            tap( (project: ProjectModel): void => this.onCommandSuccess( 'restore', project, true ) ),
-        ).subscribe()
-    }
+	private readonly trackProjectLoader = <T>(source: Observable<T>): Observable<T> =>
+		source.pipe(
+			initialize(() => this.store.startProjectLoader()),
+			finalize(() => this.store.stopProjectLoader()),
+		);
 
-    public hardDeleteProject (element: ProjectModel): void {
-        this.api.hardDeleteProjectById( element.id ).pipe(
-            this.trackProjectLoader,
-            notifyOnError( this.uiFacade ),
-            tap( (): void => this.onCommandSuccess( 'hardDelete', element, true ) ),
-        ).subscribe()
-    }
+	private onProjectCreated(created: ProjectModel): void {
+		this.store.setCreatedProjectId(created.id);
+		this.onCommandSuccess('create', created);
+	}
 
-    private readonly trackProjectLoader = <T> (source: Observable<T>): Observable<T> => source.pipe(
-        initialize( (): void => this.store.startProjectLoader() ),
-        finalize( (): void => this.store.stopProjectLoader() ),
-    )
+	private onProjectUpdated(updated: ProjectModel): void {
+		this.onCommandSuccess('edit', updated);
+		if (this.sessionFacade.currentProjectId() == updated.id) {
+			this.sessionFacade.fetchCurrentUser();
+		}
+	}
 
-    private onCommandSuccess (command: string, project: ProjectModel, refreshUser: boolean = false): void {
-        this.uiFacade.notify( StateHelper.buildNotificationMessage(
-            SeverityEnum.SUCCESS,
-            `projects.notifications.${ command }.title`,
-            `projects.notifications.${ command }.message`,
-            { name: project.name },
-        ) )
+	private onCommandSuccess(command: string, project: ProjectModel, refreshUser = false): void {
+		this.uiFacade.notify(
+			StateHelper.buildNotificationMessage(
+				SeverityEnum.SUCCESS,
+				`projects.notifications.${command}.title`,
+				`projects.notifications.${command}.message`,
+				{ name: project.name },
+			),
+		);
 
-        if (refreshUser) {
-            this.sessionFacade.fetchCurrentUser()
-        }
+		if (refreshUser) {
+			this.sessionFacade.fetchCurrentUser();
+		}
 
-        if (this.sessionFacade.currentProjectId() === project.id) {
-            if (command === 'hardDelete' || command === 'softDelete') this.router.navigateByUrl( RegistryRouteEnum.PROJECTS ).catch( (): void => undefined )
-            else if (command === 'restore') this.sessionFacade.refreshCurrentProject()
-        }
+		if (this.sessionFacade.currentProjectId() === project.id) this.followUpCurrentProject(command);
 
-        this.store.fetchProjectsPage( CumulativePageHelper.reloadRequest( this.projectsPage() ) )
-    }
+		this.store.fetchProjectsPage(CumulativePageHelper.reloadRequest(this.projectsPage()));
+	}
+
+	private followUpCurrentProject(command: string): void {
+		if (command === 'hardDelete' || command === 'softDelete')
+			this.router.navigateByUrl(RegistryRouteEnum.PROJECTS).catch((): void => undefined);
+		else if (command === 'restore') this.sessionFacade.refreshCurrentProject();
+	}
 }

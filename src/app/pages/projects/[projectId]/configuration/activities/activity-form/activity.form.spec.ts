@@ -1,129 +1,150 @@
-import { signal, WritableSignal } from '@angular/core'
-import { TestBed } from '@angular/core/testing'
-import { FieldTree } from '@angular/forms/signals'
-import { describe, expect, it } from 'vitest'
+import { signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { FieldTree } from '@angular/forms/signals';
+
+import { describe, expect, it } from 'vitest';
+
 import {
-    ActivityFormModel,
-    createActivityForm,
-    toActivityDto,
-    toActivityFormModel,
-} from '@pages/projects/[projectId]/configuration/activities/activity-form/activity.form'
-import { ProjectDateContext } from '@shared/helpers/form/registry.schemas'
-import { ActivityModel } from '@shared/models/model/activity.model'
-import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
+	ActivityFormModel,
+	createActivityForm,
+	toActivityDto,
+	toActivityFormModel,
+} from '@pages/projects/[projectId]/configuration/activities/activity-form/activity.form';
+import { ProjectDateContext } from '@shared/helpers/form/registry.schemas';
+import { defined } from '@shared/helpers/testing/defined';
+import { ActivityModel } from '@shared/models/model/activity.model';
+import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model';
 
-const JUNE: CustomDatetimeModel = { date: '2026-06-01', time: '10:00:00' }
-const AUGUST: CustomDatetimeModel = { date: '2026-08-01', time: '10:00:00' }
-const VALID: ActivityFormModel = { name: 'Hike', description: '', duration: '', allowedParticipants: null, beginDateTime: null, endDateTime: null }
+const JUNE: CustomDatetimeModel = { date: '2026-06-01', time: '10:00:00' };
+const AUGUST: CustomDatetimeModel = { date: '2026-08-01', time: '10:00:00' };
+const VALID: ActivityFormModel = {
+	name: 'Hike',
+	description: '',
+	duration: '',
+	allowedParticipants: null,
+	beginDateTime: null,
+	endDateTime: null,
+};
 
-function kindsOf (field: { errors: () => readonly { kind: string }[] }): string[] {
-    return field.errors().map( (error: { kind: string }): string => error.kind )
+function kindsOf(field: { errors: () => readonly { kind: string }[] }): string[] {
+	return field.errors().map((error) => error.kind);
 }
 
-describe( 'activity form', () => {
-    function build (initial: ActivityFormModel): FieldTree<ActivityFormModel> {
-        const model: WritableSignal<ActivityFormModel> = signal( initial )
-        const context: ProjectDateContext = { project: (): undefined => undefined, formatDate: (date: CustomDatetimeModel): string => date.date! }
-        return TestBed.runInInjectionContext( () => createActivityForm( model, context ) )
-    }
+describe('activity form', () => {
+	function build(initial: ActivityFormModel): FieldTree<ActivityFormModel> {
+		const model = signal(initial);
+		const context: ProjectDateContext = {
+			project: () => undefined,
+			formatDate: (date: CustomDatetimeModel): string => defined(date.date),
+		};
+		return TestBed.runInInjectionContext(() => createActivityForm(model, context));
+	}
 
-    it( 'maps an empty activity to a blank form', () => {
-        // Arrange
-        const activity: ActivityModel | undefined = undefined
+	it('maps an empty activity to a blank form', () => {
+		// Arrange
+		const activity: ActivityModel | undefined = undefined;
 
-        // Act
-        const model: ActivityFormModel = toActivityFormModel( activity )
+		// Act
+		const model = toActivityFormModel(activity);
 
-        // Assert
-        expect( model ).toEqual( { ...VALID, name: '' } )
-    } )
+		// Assert
+		expect(model).toEqual({ ...VALID, name: '' });
+	});
 
-    it( 'maps an activity to the model and the model back to a dto with an iso duration', () => {
-        // Arrange
-        const activity: ActivityModel = {
-            name: 'Hike', description: 'd', duration: { label: '1h30', value: 'PT1H30M' },
-            allowedParticipants: { lower: 1, upper: 5 }, startAvailability: JUNE, endAvailability: undefined,
-        } as ActivityModel
+	it('maps an activity to the model and the model back to a dto with an iso duration', () => {
+		// Arrange
+		const activity = {
+			name: 'Hike',
+			description: 'd',
+			duration: { label: '1h30', value: 'PT1H30M' },
+			allowedParticipants: { lower: 1, upper: 5 },
+			startAvailability: JUNE,
+			endAvailability: undefined,
+		} as ActivityModel;
 
-        // Act
-        const dto: object = toActivityDto( toActivityFormModel( activity ) )
+		// Act
+		const dto: object = toActivityDto(toActivityFormModel(activity));
 
-        // Assert
-        expect( dto ).toEqual( {
-            name: 'Hike', description: 'd', duration: 'PT1H30M', allowedParticipants: { lower: 1, upper: 5 },
-            startAvailability: JUNE, endAvailability: undefined,
-        } )
-    } )
+		// Assert
+		expect(dto).toEqual({
+			name: 'Hike',
+			description: 'd',
+			duration: 'PT1H30M',
+			allowedParticipants: { lower: 1, upper: 5 },
+			startAvailability: JUNE,
+			endAvailability: undefined,
+		});
+	});
 
-    it( 'sends no duration when none is chosen', () => {
-        // Arrange
-        const model: ActivityFormModel = { ...VALID, duration: '' }
+	it('sends no duration when none is chosen', () => {
+		// Arrange
+		const model: ActivityFormModel = { ...VALID, duration: '' };
 
-        // Act
-        const dto: { duration: string | undefined } = toActivityDto( model )
+		// Act
+		const dto: { duration: string | undefined } = toActivityDto(model);
 
-        // Assert
-        expect( dto.duration ).toBeUndefined()
-    } )
+		// Assert
+		expect(dto.duration).toBeUndefined();
+	});
 
-    it( 'sends no description when it is empty', () => {
-        // Arrange
-        const model: ActivityFormModel = { ...VALID, description: '' }
+	it('sends no description when it is empty', () => {
+		// Arrange
+		const model: ActivityFormModel = { ...VALID, description: '' };
 
-        // Act
-        const dto: { description: string | undefined } = toActivityDto( model )
+		// Act
+		const dto: { description: string | undefined } = toActivityDto(model);
 
-        // Assert
-        expect( dto.description ).toBeUndefined()
-    } )
+		// Assert
+		expect(dto.description).toBeUndefined();
+	});
 
-    it( 'refuses a description made only of spaces', () => {
-        // Arrange
-        const form: FieldTree<ActivityFormModel> = build( { ...VALID, description: '   ' } )
+	it('refuses a description made only of spaces', () => {
+		// Arrange
+		const form = build({ ...VALID, description: '   ' });
 
-        // Act
-        const kinds: string[] = kindsOf( form.description() )
+		// Act
+		const kinds = kindsOf(form.description());
 
-        // Assert
-        expect( kinds ).toEqual( [ 'blank' ] )
-    } )
+		// Assert
+		expect(kinds).toEqual(['blank']);
+	});
 
-    it( 'requires a name and limits the description', () => {
-        // Arrange
-        const tree: FieldTree<ActivityFormModel> = build( { ...VALID, name: '', description: 'a'.repeat( 2001 ) } )
+	it('requires a name and limits the description', () => {
+		// Arrange
+		const tree = build({ ...VALID, name: '', description: 'a'.repeat(2001) });
 
-        // Act
-        const kinds: string[][] = [ kindsOf( tree.name() ), kindsOf( tree.description() ) ]
+		// Act
+		const kinds = [kindsOf(tree.name()), kindsOf(tree.description())];
 
-        // Assert
-        expect( kinds ).toEqual( [ [ 'required', 'blank' ], [ 'maxLength' ] ] )
-    } )
+		// Assert
+		expect(kinds).toEqual([['required', 'blank'], ['maxLength']]);
+	});
 
-    it.each( [
-        [ { lower: 5, upper: 2 }, [ 'rangeMin' ] ],
-        [ { lower: 0, upper: 2 }, [ 'min' ] ],
-        [ { lower: 1, upper: 2147483648 }, [ 'max' ] ],
-        [ { lower: 1, upper: undefined }, [ 'rangeBothDefined' ] ],
-        [ { lower: 1, upper: 5 }, [] ],
-    ] )( 'judges the allowed participants %j as %j', (range: { lower: number, upper: number | undefined }, expected: string[]) => {
-        // Arrange
-        const tree: FieldTree<ActivityFormModel> = build( { ...VALID, allowedParticipants: range } )
+	it.each([
+		[{ lower: 5, upper: 2 }, ['rangeMin']],
+		[{ lower: 0, upper: 2 }, ['min']],
+		[{ lower: 1, upper: 2147483648 }, ['max']],
+		[{ lower: 1, upper: undefined }, ['rangeBothDefined']],
+		[{ lower: 1, upper: 5 }, []],
+	])('judges the allowed participants %j as %j', (range: { lower: number; upper: number | undefined }, expected) => {
+		// Arrange
+		const tree = build({ ...VALID, allowedParticipants: range });
 
-        // Act
-        const kinds: string[] = kindsOf( tree.allowedParticipants() )
+		// Act
+		const kinds = kindsOf(tree.allowedParticipants());
 
-        // Assert
-        expect( kinds ).toEqual( expected )
-    } )
+		// Assert
+		expect(kinds).toEqual(expected);
+	});
 
-    it( 'rejects an end before the beginning on the form itself', () => {
-        // Arrange
-        const tree: FieldTree<ActivityFormModel> = build( { ...VALID, beginDateTime: AUGUST, endDateTime: JUNE } )
+	it('rejects an end before the beginning on the form itself', () => {
+		// Arrange
+		const tree = build({ ...VALID, beginDateTime: AUGUST, endDateTime: JUNE });
 
-        // Act
-        const kinds: string[] = kindsOf( tree.endDateTime() )
+		// Act
+		const kinds = kindsOf(tree.endDateTime());
 
-        // Assert
-        expect( kinds ).toEqual( [ 'beginDateBeforeEndDate' ] )
-    } )
-} )
+		// Assert
+		expect(kinds).toEqual(['beginDateBeforeEndDate']);
+	});
+});

@@ -1,10 +1,12 @@
-import {UiFacade} from '@core/registry/state/ui.facade'
-import {SessionFacade} from '@core/registry/state/session.facade'
-import {inject} from '@angular/core'
-import {TranslocoService} from '@jsverse/transloco'
-import {ActivatedRoute, Router} from '@angular/router'
-import {GenericHelper} from '@shared/helpers/generic.helper'
-import {RegistryRouteEnum} from '@core/routing/registry-route.enum'
+import { inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+
+import { TranslocoService } from '@jsverse/transloco';
+
+import { SessionFacade } from '@core/registry/state/session.facade';
+import { UiFacade } from '@core/registry/state/ui.facade';
+import { RegistryRouteEnum } from '@core/routing/registry-route.enum';
+import { GenericHelper } from '@shared/helpers/generic.helper';
 
 /**
  * Purpose: Classe de base des composants qui ont besoin des facades et helpers partagés.
@@ -12,13 +14,13 @@ import {RegistryRouteEnum} from '@core/routing/registry-route.enum'
  * Limits: Abstrait ; ne contient aucune logique de vue.
  */
 export abstract class GenericComponent {
-    protected readonly RegistryRouteEnum: typeof RegistryRouteEnum = RegistryRouteEnum
+	protected readonly RegistryRouteEnum = RegistryRouteEnum;
 
-    protected readonly GenericHelper: typeof GenericHelper = GenericHelper
+	protected readonly GenericHelper = GenericHelper;
 
-    protected readonly uiFacade: UiFacade = inject(UiFacade)
-    protected readonly sessionFacade: SessionFacade = inject(SessionFacade)
-    protected readonly route: ActivatedRoute = inject(ActivatedRoute)
-    protected readonly router: Router = inject(Router)
-    protected readonly translateService: TranslocoService = inject(TranslocoService)
+	protected readonly uiFacade = inject(UiFacade);
+	protected readonly sessionFacade = inject(SessionFacade);
+	protected readonly route = inject(ActivatedRoute);
+	protected readonly router = inject(Router);
+	protected readonly translateService = inject(TranslocoService);
 }

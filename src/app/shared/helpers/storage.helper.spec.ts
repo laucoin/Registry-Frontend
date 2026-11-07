@@ -1,108 +1,113 @@
-import { beforeEach, describe, expect, it } from 'vitest'
-import { SessionStorageUtils } from '@shared/helpers/session-storage.helper'
-import { StorageUtils } from '@shared/helpers/storage.helper'
+import { beforeEach, describe, expect, it } from 'vitest';
 
-describe( 'StorageUtils', () => {
-    beforeEach( () => {
-        localStorage.clear()
-        sessionStorage.clear()
-    } )
+import { SessionStorageUtils } from '@shared/helpers/session-storage.helper';
+import { StorageUtils } from '@shared/helpers/storage.helper';
 
-    it( 'stores strings as they are and objects as JSON', () => {
-        // Arrange
-        StorageUtils.set( localStorage, 'text', 'hello' )
-        StorageUtils.set( localStorage, 'object', { a: 1 } )
+describe('StorageUtils', () => {
+	beforeEach(() => {
+		localStorage.clear();
+		sessionStorage.clear();
+	});
 
-        // Act
-        const text: unknown = StorageUtils.get( localStorage, 'text' )
-        const object: unknown = StorageUtils.get( localStorage, 'object' )
+	it('stores strings as they are and objects as JSON', () => {
+		// Arrange
+		StorageUtils.set(localStorage, 'text', 'hello');
+		StorageUtils.set(localStorage, 'object', { a: 1 });
 
-        // Assert
-        expect( text ).toBe( 'hello' )
-        expect( object ).toEqual( { a: 1 } )
-    } )
+		// Act
+		const text = StorageUtils.get(localStorage, 'text');
+		const object = StorageUtils.get(localStorage, 'object');
 
-    it( 'stores nothing meaningful for a value that is neither text nor object', () => {
-        // Arrange
-        StorageUtils.set( localStorage, 'number', 42 )
+		// Assert
+		expect(text).toBe('hello');
+		expect(object).toEqual({ a: 1 });
+	});
 
-        // Act
-        const stored: unknown = StorageUtils.get( localStorage, 'number' )
+	it('stores nothing meaningful for a value that is neither text nor object', () => {
+		// Arrange
+		StorageUtils.set(localStorage, 'number', 42);
 
-        // Assert
-        expect( stored ).toBe( '' )
-    } )
+		// Act
+		const stored = StorageUtils.get(localStorage, 'number');
 
-    it( 'reports whether a key holds a value', () => {
-        // Arrange
-        StorageUtils.set( localStorage, 'present', 'x' )
+		// Assert
+		expect(stored).toBe('');
+	});
 
-        // Act
-        const results: boolean[] = [ StorageUtils.check( localStorage, 'present' ), StorageUtils.check( localStorage, 'absent' ) ]
+	it('reports whether a key holds a value', () => {
+		// Arrange
+		StorageUtils.set(localStorage, 'present', 'x');
 
-        // Assert
-        expect( results ).toEqual( [ true, false ] )
-    } )
+		// Act
+		const results = [StorageUtils.check(localStorage, 'present'), StorageUtils.check(localStorage, 'absent')];
 
-    it( 'deletes a key', () => {
-        // Arrange
-        StorageUtils.set( localStorage, 'gone', 'x' )
+		// Assert
+		expect(results).toEqual([true, false]);
+	});
 
-        // Act
-        StorageUtils.delete( localStorage, 'gone' )
+	it('deletes a key', () => {
+		// Arrange
+		StorageUtils.set(localStorage, 'gone', 'x');
 
-        // Assert
-        expect( StorageUtils.check( localStorage, 'gone' ) ).toBe( false )
-    } )
+		// Act
+		StorageUtils.delete(localStorage, 'gone');
 
-    it( 'clears everything except the kept keys, restoring them', () => {
-        // Arrange
-        StorageUtils.set( localStorage, 'keep', 'k' )
-        StorageUtils.set( localStorage, 'keepObject', { a: 1 } )
-        StorageUtils.set( localStorage, 'drop', 'd' )
+		// Assert
+		expect(StorageUtils.check(localStorage, 'gone')).toBe(false);
+	});
 
-        // Act
-        StorageUtils.clear( localStorage, [ 'keep', 'keepObject' ] )
+	it('clears everything except the kept keys, restoring them', () => {
+		// Arrange
+		StorageUtils.set(localStorage, 'keep', 'k');
+		StorageUtils.set(localStorage, 'keepObject', { a: 1 });
+		StorageUtils.set(localStorage, 'drop', 'd');
 
-        // Assert
-        expect( StorageUtils.get( localStorage, 'keep' ) ).toBe( 'k' )
-        expect( StorageUtils.get( localStorage, 'keepObject' ) ).toEqual( { a: 1 } )
-        expect( StorageUtils.check( localStorage, 'drop' ) ).toBe( false )
-    } )
+		// Act
+		StorageUtils.clear(localStorage, ['keep', 'keepObject']);
 
-    it( 'does not restore a kept key that held no value', () => {
-        // Arrange
-        StorageUtils.set( localStorage, 'drop', 'd' )
+		// Assert
+		expect(StorageUtils.get(localStorage, 'keep')).toBe('k');
+		expect(StorageUtils.get(localStorage, 'keepObject')).toEqual({ a: 1 });
+		expect(StorageUtils.check(localStorage, 'drop')).toBe(false);
+	});
 
-        // Act
-        StorageUtils.clear( localStorage, [ 'missing' ] )
+	it('does not restore a kept key that held no value', () => {
+		// Arrange
+		StorageUtils.set(localStorage, 'drop', 'd');
 
-        // Assert
-        expect( StorageUtils.check( localStorage, 'missing' ) ).toBe( false )
-        expect( StorageUtils.check( localStorage, 'drop' ) ).toBe( false )
-    } )
+		// Act
+		StorageUtils.clear(localStorage, ['missing']);
 
-    it( 'clears everything when nothing is kept', () => {
-        // Arrange
-        StorageUtils.set( localStorage, 'a', '1' )
+		// Assert
+		expect(StorageUtils.check(localStorage, 'missing')).toBe(false);
+		expect(StorageUtils.check(localStorage, 'drop')).toBe(false);
+	});
 
-        // Act
-        StorageUtils.clear( localStorage )
+	it('clears everything when nothing is kept', () => {
+		// Arrange
+		StorageUtils.set(localStorage, 'a', '1');
 
-        // Assert
-        expect( localStorage.length ).toBe( 0 )
-    } )
+		// Act
+		StorageUtils.clear(localStorage);
 
-    it( 'keeps the session storage apart from the local storage', () => {
-        // Arrange
-        SessionStorageUtils.set( 'redirect', '/projects' )
+		// Assert
+		expect(localStorage.length).toBe(0);
+	});
 
-        // Act
-        const results: unknown[] = [ SessionStorageUtils.get( 'redirect' ), SessionStorageUtils.check( 'redirect' ), localStorage.getItem( 'redirect' ) ]
-        SessionStorageUtils.clear( [] )
+	it('keeps the session storage apart from the local storage', () => {
+		// Arrange
+		SessionStorageUtils.set('redirect', '/projects');
 
-        // Assert
-        expect( results ).toEqual( [ '/projects', true, null ] )
-        expect( sessionStorage.length ).toBe( 0 )
-    } )
-} )
+		// Act
+		const results = [
+			SessionStorageUtils.get('redirect'),
+			SessionStorageUtils.check('redirect'),
+			localStorage.getItem('redirect'),
+		];
+		SessionStorageUtils.clear([]);
+
+		// Assert
+		expect(results).toEqual(['/projects', true, null]);
+		expect(sessionStorage.length).toBe(0);
+	});
+});

@@ -1,4 +1,4 @@
 export interface NumericRangeModel {
-    lower: number | undefined
-    upper: number | undefined
+	lower: number | undefined;
+	upper: number | undefined;
 }

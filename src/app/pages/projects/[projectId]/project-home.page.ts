@@ -1,42 +1,32 @@
-import '@sgdf/ui/button'
-import '@sgdf/ui/drawer'
-import '@sgdf/ui/icon'
-import '@sgdf/ui/page-title'
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, signal, Signal, WritableSignal } from '@angular/core'
-import { RouterLink } from '@angular/router'
-import { UiFacade } from '@core/registry/state/ui.facade'
-import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
-import { EventHelper } from '@shared/helpers/event.helper'
-import { RouteHelper } from '@shared/helpers/route.helper'
-import { FavoriteToggleComponent } from '@shared/ui/common/favorite-toggle/favorite-toggle.component'
-import { ProjectRoleEnum } from '@shared/models/enumeration/project-role.enum'
-import { CommunicationFormComponent } from '@shared/ui/domain/communication-form/communication-form.component'
-import { CurrentUserHelper } from "@core/authentication/tool/current-user.helper";
-import { ProjectAuthorityEnum } from "@shared/models/enumeration/project-authority.enum";
-import { SessionFacade } from "@core/registry/state/session.facade";
-import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
-import { ProjectOptionEnum } from "@shared/models/enumeration/project-option.enum";
-import { ProjectModel } from "@shared/models/model/project.model";
-import { ProjectActiveAlertComponent } from "@shared/ui/domain/project-active-alert/project-active-alert.component";
-import { ProjectBirthdayComponent } from "@shared/ui/domain/project-birthday/project-birthday.component";
-import {
-	ProjectOperationalMonitoringComponent
-} from "@shared/ui/domain/project-operational-monitoring/project-operational-monitoring.component";
-import {
-	ProjectParticipantOverviewComponent
-} from "@shared/ui/domain/project-participant-overview/project-participant-overview.component";
-import {
-	ProjectParticipantRegularizationComponent
-} from "@shared/ui/domain/project-participant-regularization/project-participant-regularization.component";
-import {
-	ProjectUpcomingArrivalComponent
-} from "@shared/ui/domain/project-upcoming-arrival/project-upcoming-arrival.component";
-import {
-	ProjectUpcomingDepartureComponent
-} from "@shared/ui/domain/project-upcoming-departure/project-upcoming-departure.component";
-import {
-	ProjectVehicleOverviewComponent
-} from "@shared/ui/domain/project-vehicle-overview/project-vehicle-overview.component";
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+
+import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
+
+import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper';
+import { SessionFacade } from '@core/registry/state/session.facade';
+import { UiFacade } from '@core/registry/state/ui.facade';
+import { RegistryRouteEnum } from '@core/routing/registry-route.enum';
+import { EventHelper } from '@shared/helpers/event.helper';
+import { RouteHelper } from '@shared/helpers/route.helper';
+import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum';
+import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum';
+import { ProjectRoleEnum } from '@shared/models/enumeration/project-role.enum';
+import { FavoriteToggleComponent } from '@shared/ui/common/favorite-toggle/favorite-toggle.component';
+import { CommunicationFormComponent } from '@shared/ui/domain/communication-form/communication-form.component';
+import { ProjectActiveAlertComponent } from '@shared/ui/domain/project-active-alert/project-active-alert.component';
+import { ProjectBirthdayComponent } from '@shared/ui/domain/project-birthday/project-birthday.component';
+import { ProjectOperationalMonitoringComponent } from '@shared/ui/domain/project-operational-monitoring/project-operational-monitoring.component';
+import { ProjectParticipantOverviewComponent } from '@shared/ui/domain/project-participant-overview/project-participant-overview.component';
+import { ProjectParticipantRegularizationComponent } from '@shared/ui/domain/project-participant-regularization/project-participant-regularization.component';
+import { ProjectUpcomingArrivalComponent } from '@shared/ui/domain/project-upcoming-arrival/project-upcoming-arrival.component';
+import { ProjectUpcomingDepartureComponent } from '@shared/ui/domain/project-upcoming-departure/project-upcoming-departure.component';
+import { ProjectVehicleOverviewComponent } from '@shared/ui/domain/project-vehicle-overview/project-vehicle-overview.component';
+
+import '@sgdf/ui/button';
+import '@sgdf/ui/drawer';
+import '@sgdf/ui/icon';
+import '@sgdf/ui/page-title';
 
 /**
  * Purpose: Page d'accueil du projet sélectionné.
@@ -59,49 +49,61 @@ import {
 		ProjectUpcomingDepartureComponent,
 		ProjectBirthdayComponent,
 		ProjectOperationalMonitoringComponent,
-		ProjectVehicleOverviewComponent
+		ProjectVehicleOverviewComponent,
 	],
 	templateUrl: './project-home.page.html',
 })
 export class ProjectHomePage {
-	private readonly sessionFacade: SessionFacade = inject(SessionFacade)
+	private readonly sessionFacade = inject(SessionFacade);
 
-	protected readonly uiFacade: UiFacade = inject(UiFacade)
+	protected readonly uiFacade = inject(UiFacade);
 
-	protected readonly project: Signal<ProjectModel | undefined> = this.sessionFacade.selectedProject
-	protected readonly hasVehicleOption: Signal<boolean> = this.sessionFacade.selectedProjectHasOption(ProjectOptionEnum.VEHICLE)
-	protected readonly canSeePlannedMovements: Signal<boolean> = computed((): boolean => CurrentUserHelper.hasProjectAuthority(
-		this.sessionFacade.currentUser(),
-		this.sessionFacade.currentProjectId(),
-		ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_C,
-	))
-	protected readonly hasAlertOption: Signal<boolean> = this.sessionFacade.selectedProjectHasOption(ProjectOptionEnum.ALERT)
-	protected readonly canCreateMovement: Signal<boolean> = this.canSeePlannedMovements
-	protected readonly canCreateAlert: Signal<boolean> = computed((): boolean => this.hasAlertOption() && CurrentUserHelper.hasProjectAuthority(
-		this.sessionFacade.currentUser(),
-		this.sessionFacade.currentProjectId(),
-		ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_C,
-	))
-	protected readonly canSeeProfileWidgets: Signal<boolean> = computed((): boolean => {
-		const role: string | undefined = this.project()?.profile?.role.value
-		return role === ProjectRoleEnum.PROJECT_ADMINISTRATOR || role === ProjectRoleEnum.PROJECT_COORDINATOR
-	})
-	protected readonly creatingAlert: WritableSignal<boolean> = signal(false)
+	protected readonly project = this.sessionFacade.selectedProject;
+	protected readonly hasVehicleOption = this.sessionFacade.selectedProjectHasOption(ProjectOptionEnum.VEHICLE);
+	protected readonly canSeePlannedMovements = computed(() =>
+		CurrentUserHelper.hasProjectAuthority(
+			this.sessionFacade.currentUser(),
+			this.sessionFacade.currentProjectId(),
+			ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_C,
+		),
+	);
+	protected readonly hasAlertOption = this.sessionFacade.selectedProjectHasOption(ProjectOptionEnum.ALERT);
+	protected readonly canCreateMovement = this.canSeePlannedMovements;
+	protected readonly canCreateAlert = computed(
+		() =>
+			this.hasAlertOption() &&
+			CurrentUserHelper.hasProjectAuthority(
+				this.sessionFacade.currentUser(),
+				this.sessionFacade.currentProjectId(),
+				ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_C,
+			),
+	);
+	protected readonly canSeeProfileWidgets = computed(() => this.buildCanSeeProfileWidgets());
+	protected readonly creatingAlert = signal(false);
 
-	protected readonly registeredMovementRoute: Signal<string> = computed((): string => this.projectRoute(RegistryRouteEnum.PROJECTS_MOVEMENTS_REGISTERED_CREATION))
-	protected readonly guestMovementRoute: Signal<string> = computed((): string => this.projectRoute(RegistryRouteEnum.PROJECTS_MOVEMENTS_GUEST_CREATION))
+	protected readonly registeredMovementRoute = computed(() =>
+		this.projectRoute(RegistryRouteEnum.PROJECTS_MOVEMENTS_REGISTERED_CREATION),
+	);
+	protected readonly guestMovementRoute = computed(() =>
+		this.projectRoute(RegistryRouteEnum.PROJECTS_MOVEMENTS_GUEST_CREATION),
+	);
 
 	protected toggleFavorite(): void {
-		this.sessionFacade.toggleSelectedProjectFavorite()
+		this.sessionFacade.toggleSelectedProjectFavorite();
 	}
 
 	protected closeAlertDrawer(event: Event): void {
 		if (EventHelper.isFromHost(event)) {
-			this.creatingAlert.set(false)
+			this.creatingAlert.set(false);
 		}
 	}
 
 	private projectRoute(route: RegistryRouteEnum): string {
-		return RouteHelper.absolute(route).replace(':projectId', this.sessionFacade.currentProjectId() ?? '')
+		return RouteHelper.absolute(route).replace(':projectId', this.sessionFacade.currentProjectId() ?? '');
+	}
+
+	private buildCanSeeProfileWidgets(): boolean {
+		const role = this.project()?.profile?.role.value;
+		return role === ProjectRoleEnum.PROJECT_ADMINISTRATOR || role === ProjectRoleEnum.PROJECT_COORDINATOR;
 	}
 }

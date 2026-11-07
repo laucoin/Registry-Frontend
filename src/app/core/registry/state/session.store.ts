@@ -1,18 +1,33 @@
-import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
-import { CurrentUserModel } from '@shared/models/model/current-user.model'
-import { ProjectModel } from '@shared/models/model/project.model'
+import { patchState, signalStore, withMethods, withState, WritableStateSource } from '@ngrx/signals';
+
+import { CurrentUserModel } from '@shared/models/model/current-user.model';
+import { ProjectModel } from '@shared/models/model/project.model';
 
 interface SessionStoreModel {
-    currentUser: CurrentUserModel | undefined
-    currentProject: {
-        id: string | undefined
-        project: ProjectModel | undefined
-    }
+	currentUser: CurrentUserModel | undefined;
+	currentProject: {
+		id: string | undefined;
+		project: ProjectModel | undefined;
+	};
 }
 
 const defaultSessionStore: SessionStoreModel = {
-    currentUser: undefined,
-    currentProject: { id: undefined, project: undefined },
+	currentUser: undefined,
+	currentProject: { id: undefined, project: undefined },
+};
+
+function preferenceSetter(store: WritableStateSource<SessionStoreModel>, key: 'theme' | 'refreshMode') {
+	return (value: string): void =>
+		patchState(store, (state: SessionStoreModel) =>
+			state.currentUser
+				? {
+						currentUser: {
+							...state.currentUser,
+							preferences: { ...state.currentUser.preferences, [key]: value },
+						},
+					}
+				: state,
+		);
 }
 
 /**
@@ -21,23 +36,14 @@ const defaultSessionStore: SessionStoreModel = {
  * Limits: Le backend orchestre l'échange OIDC, ce store ne conserve donc que l'utilisateur obtenu ; il n'authentifie pas et ne détient pas les profils de l'utilisateur.
  */
 export const SessionStore = signalStore(
-    { providedIn: 'root' },
-    withState<SessionStoreModel>( defaultSessionStore ),
-    withMethods( (store) => ({
-        setCurrentUser: (currentUser: CurrentUserModel): void => patchState( store, { currentUser: currentUser } ),
-        setCurrentUserTheme: (theme: string): void => patchState( store, (state: SessionStoreModel) => (
-            state.currentUser
-            ? { currentUser: { ...state.currentUser, preferences: { ...state.currentUser.preferences, theme: theme } } }
-            : state
-        ) ),
-        setCurrentUserRefreshMode: (refreshMode: string): void => patchState( store, (state: SessionStoreModel) => (
-            state.currentUser
-            ? { currentUser: { ...state.currentUser, preferences: { ...state.currentUser.preferences, refreshMode: refreshMode } } }
-            : state
-        ) ),
-        setCurrentProject: (id: string | undefined, project: ProjectModel | undefined): void => {
-            patchState( store, { currentProject: { id: id, project: project } } )
-        },
-        reset: (): void => patchState( store, defaultSessionStore ),
-    }) ),
-)
+	{ providedIn: 'root' },
+	withState<SessionStoreModel>(defaultSessionStore),
+	withMethods((store) => ({
+		setCurrentUser: (currentUser: CurrentUserModel) => patchState(store, { currentUser: currentUser }),
+		setCurrentUserTheme: preferenceSetter(store, 'theme'),
+		setCurrentUserRefreshMode: preferenceSetter(store, 'refreshMode'),
+		setCurrentProject: (id: string | undefined, project: ProjectModel | undefined) =>
+			patchState(store, { currentProject: { id: id, project: project } }),
+		reset: () => patchState(store, defaultSessionStore),
+	})),
+);

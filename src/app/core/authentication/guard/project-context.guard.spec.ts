@@ -1,140 +1,154 @@
-import { signal, WritableSignal } from '@angular/core'
-import { TestBed } from '@angular/core/testing'
-import { ActivatedRouteSnapshot, convertToParamMap, Router, RouterStateSnapshot, UrlTree } from '@angular/router'
-import { firstValueFrom, Observable, of, Subject } from 'rxjs'
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { projectContextDeactivateGuard, projectContextGuard } from '@core/authentication/guard/project-context.guard'
-import { RegistryConfig } from '@core/config/registry.config'
-import { SessionFacade } from '@core/registry/state/session.facade'
-import { UiFacade } from '@core/registry/state/ui.facade'
-import { provideTestConfig } from '@shared/helpers/testing/test-fixtures'
-import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
-import { CurrentUserModel } from '@shared/models/model/current-user.model'
-import { ProjectModel } from '@shared/models/model/project.model'
+import { signal, WritableSignal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { ActivatedRouteSnapshot, convertToParamMap, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 
-const PROJECTS_TREE: UrlTree = { toString: (): string => '/projects' } as unknown as UrlTree
+import { firstValueFrom, Observable, of, Subject } from 'rxjs';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-describe( 'projectContextGuard', () => {
-    let selectedProject: WritableSignal<ProjectModel | undefined>
-    let currentUser$: Subject<CurrentUserModel>
-    let setCurrentProject: Mock<SessionFacade['setCurrentProject']>
-    let notify: Mock<(message: unknown) => void>
-    let globalError: Mock<() => unknown>
-    let parseUrl: Mock<(url: string) => UrlTree>
+import { projectContextDeactivateGuard, projectContextGuard } from '@core/authentication/guard/project-context.guard';
+import { RegistryConfig } from '@core/config/registry.config';
+import { SessionFacade } from '@core/registry/state/session.facade';
+import { UiFacade } from '@core/registry/state/ui.facade';
+import { provideTestConfig } from '@shared/helpers/testing/test-fixtures';
+import { SeverityEnum } from '@shared/models/enumeration/severity.enum';
+import { CurrentUserModel } from '@shared/models/model/current-user.model';
+import { ProjectModel } from '@shared/models/model/project.model';
 
-    function route (projectId: string | undefined): ActivatedRouteSnapshot {
-        return { paramMap: convertToParamMap( projectId ? { projectId } : {} ) } as ActivatedRouteSnapshot
-    }
+const PROJECTS_TREE = { toString: (): string => '/projects' } as unknown as UrlTree;
 
-    function run (projectId: string | undefined): Observable<boolean | UrlTree> {
-        return TestBed.runInInjectionContext( () => projectContextGuard( route( projectId ), {} as RouterStateSnapshot ) ) as Observable<boolean | UrlTree>
-    }
+describe('projectContextGuard', () => {
+	let selectedProject: WritableSignal<ProjectModel | undefined>;
+	let currentUser$: Subject<CurrentUserModel>;
+	let setCurrentProject: Mock<SessionFacade['setCurrentProject']>;
+	let notify: Mock<(message: unknown) => void>;
+	let globalError: Mock<() => unknown>;
+	let parseUrl: Mock<(url: string) => UrlTree>;
 
-    beforeEach( () => {
-        provideTestConfig()
-        RegistryConfig.config.notification.duration.error = 15000
-        selectedProject = signal<ProjectModel | undefined>( undefined )
-        currentUser$ = new Subject<CurrentUserModel>()
-        setCurrentProject = vi.fn( () => {
-            selectedProject.set( { id: 'p1' } as ProjectModel )
-            return of( undefined )
-        } )
-        notify = vi.fn()
-        globalError = vi.fn( (): unknown => undefined )
-        parseUrl = vi.fn( () => PROJECTS_TREE )
-        TestBed.configureTestingModule( {
-            providers: [
-                { provide: SessionFacade, useValue: { currentUser$, selectedProject, setCurrentProject } },
-                { provide: UiFacade, useValue: { notify, globalError } },
-                { provide: Router, useValue: { parseUrl } },
-            ],
-        } )
-    } )
+	function route(projectId: string | undefined): ActivatedRouteSnapshot {
+		return { paramMap: convertToParamMap(projectId ? { projectId } : {}) } as ActivatedRouteSnapshot;
+	}
 
-    it( 'selects the project and lets the route through when the user has a profile on it', async () => {
-        // Arrange
-        const result: Promise<boolean | UrlTree> = firstValueFrom( run( 'p1' ) )
+	function run(projectId: string | undefined): Observable<boolean | UrlTree> {
+		return TestBed.runInInjectionContext(() =>
+			projectContextGuard(route(projectId), {} as RouterStateSnapshot),
+		) as Observable<boolean | UrlTree>;
+	}
 
-        // Act
-        currentUser$.next( { authorities: [ 'p1_ADMIN' ] } as CurrentUserModel )
+	beforeEach(() => {
+		provideTestConfig();
+		RegistryConfig.config.notification.duration.error = 15000;
+		selectedProject = signal<ProjectModel | undefined>(undefined);
+		currentUser$ = new Subject<CurrentUserModel>();
+		setCurrentProject = vi.fn(() => {
+			selectedProject.set({ id: 'p1' } as ProjectModel);
+			return of(undefined);
+		});
+		notify = vi.fn();
+		globalError = vi.fn((): unknown => undefined);
+		parseUrl = vi.fn(() => PROJECTS_TREE);
+		TestBed.configureTestingModule({
+			providers: [
+				{ provide: SessionFacade, useValue: { currentUser$, selectedProject, setCurrentProject } },
+				{ provide: UiFacade, useValue: { notify, globalError } },
+				{ provide: Router, useValue: { parseUrl } },
+			],
+		});
+	});
 
-        // Assert
-        expect( await result ).toBe( true )
-        expect( setCurrentProject ).toHaveBeenCalledWith( 'p1' )
-    } )
+	it('selects the project and lets the route through when the user has a profile on it', async () => {
+		// Arrange
+		const result = firstValueFrom(run('p1'));
 
-    it( 'redirects to the projects list with a project-not-found error when the user has no authority on the project', async () => {
-        // Arrange
-        const result: Promise<boolean | UrlTree> = firstValueFrom( run( 'p1' ) )
+		// Act
+		currentUser$.next({ authorities: ['p1_ADMIN'] } as CurrentUserModel);
 
-        // Act
-        currentUser$.next( { authorities: [ 'p2_ADMIN' ] } as CurrentUserModel )
+		// Assert
+		expect(await result).toBe(true);
+		expect(setCurrentProject).toHaveBeenCalledWith('p1');
+	});
 
-        // Assert
-        expect( await result ).toBe( PROJECTS_TREE )
-        expect( setCurrentProject ).not.toHaveBeenCalled()
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { severity: SeverityEnum.ERROR, summary: 'projects.notifications.NOT_FOUND.title', life: 15000 } ) )
-    } )
+	it('redirects to the projects list with a project-not-found error when the user has no authority on the project', async () => {
+		// Arrange
+		const result = firstValueFrom(run('p1'));
 
-    it( 'does not confuse a project id that is a prefix of another one', async () => {
-        // Arrange
-        const result: Promise<boolean | UrlTree> = firstValueFrom( run( 'p1' ) )
+		// Act
+		currentUser$.next({ authorities: ['p2_ADMIN'] } as CurrentUserModel);
 
-        // Act
-        currentUser$.next( { authorities: [ 'p10_ADMIN' ] } as CurrentUserModel )
+		// Assert
+		expect(await result).toBe(PROJECTS_TREE);
+		expect(setCurrentProject).not.toHaveBeenCalled();
+		expect(notify).toHaveBeenCalledWith(
+			expect.objectContaining({
+				severity: SeverityEnum.ERROR,
+				summary: 'projects.notifications.NOT_FOUND.title',
+				life: 15000,
+			}),
+		);
+	});
 
-        // Assert
-        expect( await result ).toBe( PROJECTS_TREE )
-    } )
+	it('does not confuse a project id that is a prefix of another one', async () => {
+		// Arrange
+		const result = firstValueFrom(run('p1'));
 
-    it( 'redirects when the route has no project id', async () => {
-        // Arrange
-        const result: Promise<boolean | UrlTree> = firstValueFrom( run( undefined ) )
+		// Act
+		currentUser$.next({ authorities: ['p10_ADMIN'] } as CurrentUserModel);
 
-        // Act
-        currentUser$.next( { authorities: [ 'p1_ADMIN' ] } as CurrentUserModel )
+		// Assert
+		expect(await result).toBe(PROJECTS_TREE);
+	});
 
-        // Assert
-        expect( await result ).toBe( PROJECTS_TREE )
-        expect( notify ).toHaveBeenCalledTimes( 1 )
-    } )
+	it('redirects when the route has no project id', async () => {
+		// Arrange
+		const result = firstValueFrom(run(undefined));
 
-    it( 'answers project not found when the project could not be loaded', async () => {
-        // Arrange
-        setCurrentProject.mockReturnValue( of( undefined ) )
-        const result: Promise<boolean | UrlTree> = firstValueFrom( run( 'p1' ) )
+		// Act
+		currentUser$.next({ authorities: ['p1_ADMIN'] } as CurrentUserModel);
 
-        // Act
-        currentUser$.next( { authorities: [ 'p1_ADMIN' ] } as CurrentUserModel )
+		// Assert
+		expect(await result).toBe(PROJECTS_TREE);
+		expect(notify).toHaveBeenCalledTimes(1);
+	});
 
-        // Assert
-        expect( await result ).toBe( PROJECTS_TREE )
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'projects.notifications.NOT_FOUND.title' } ) )
-    } )
+	it('answers project not found when the project could not be loaded', async () => {
+		// Arrange
+		setCurrentProject.mockReturnValue(of(undefined));
+		const result = firstValueFrom(run('p1'));
 
-    it( 'does not answer project not found when a global error is already shown', async () => {
-        // Arrange
-        globalError.mockReturnValue( { summary: 'boom' } )
-        setCurrentProject.mockReturnValue( of( undefined ) )
-        const result: Promise<boolean | UrlTree> = firstValueFrom( run( 'p1' ) )
+		// Act
+		currentUser$.next({ authorities: ['p1_ADMIN'] } as CurrentUserModel);
 
-        // Act
-        currentUser$.next( { authorities: [ 'p1_ADMIN' ] } as CurrentUserModel )
+		// Assert
+		expect(await result).toBe(PROJECTS_TREE);
+		expect(notify).toHaveBeenCalledWith(
+			expect.objectContaining({ summary: 'projects.notifications.NOT_FOUND.title' }),
+		);
+	});
 
-        // Assert
-        expect( await result ).toBe( PROJECTS_TREE )
-        expect( notify ).not.toHaveBeenCalled()
-    } )
+	it('does not answer project not found when a global error is already shown', async () => {
+		// Arrange
+		globalError.mockReturnValue({ summary: 'boom' });
+		setCurrentProject.mockReturnValue(of(undefined));
+		const result = firstValueFrom(run('p1'));
 
-    it( 'clears the selected project when leaving the project routes', () => {
-        // Arrange
-        const expected: boolean = true
+		// Act
+		currentUser$.next({ authorities: ['p1_ADMIN'] } as CurrentUserModel);
 
-        // Act
-        const result: unknown = TestBed.runInInjectionContext( () => projectContextDeactivateGuard( {} as never, {} as never, {} as never, {} as never ) )
+		// Assert
+		expect(await result).toBe(PROJECTS_TREE);
+		expect(notify).not.toHaveBeenCalled();
+	});
 
-        // Assert
-        expect( result ).toBe( expected )
-        expect( setCurrentProject ).toHaveBeenCalledWith( undefined )
-    } )
-} )
+	it('clears the selected project when leaving the project routes', () => {
+		// Arrange
+		const expected = true;
+
+		// Act
+		const result: unknown = TestBed.runInInjectionContext(() =>
+			projectContextDeactivateGuard({} as never, {} as never, {} as never, {} as never),
+		);
+
+		// Assert
+		expect(result).toBe(expected);
+		expect(setCurrentProject).toHaveBeenCalledWith(undefined);
+	});
+});

@@ -1,15 +1,14 @@
-import { Component } from '@angular/core'
-import { RouterOutlet } from '@angular/router'
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
 /**
  * Purpose: Coque de routage de la section des activités.
  * Scope: Fournit les facades et stores de la section à ses routes enfants.
  * Limits: Ne détient aucune donnée propre.
  */
-@Component( {
-    selector: 'app-activity',
-    imports: [ RouterOutlet ],
-    template: '<router-outlet/>',
-} )
-export class ActivityPage {
-}
+@Component({
+	selector: 'app-activity',
+	imports: [RouterOutlet],
+	template: '<router-outlet/>',
+})
+export class ActivityPage {}

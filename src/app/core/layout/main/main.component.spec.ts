@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+
 import { MockBuilder } from 'ng-mocks';
+
 import { MainComponent } from './main.component';
 
 describe('MainComponent', () => {

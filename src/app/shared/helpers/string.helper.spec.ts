@@ -1,94 +1,103 @@
-import { describe, expect, it } from 'vitest'
-import { StringHelper } from '@shared/helpers/string.helper'
+import { describe, expect, it } from 'vitest';
 
-describe( 'StringHelper', () => {
-    it( 'appends a cache-busting parameter with the right separator', () => {
-        // Arrange
-        const plain: string = 'settings/config.json'
-        const withQuery: string = 'settings/config.json?lang=fr'
+import { StringHelper } from '@shared/helpers/string.helper';
 
-        // Act
-        const first: string = StringHelper.addCacheBustingToUrl( plain )
-        const second: string = StringHelper.addCacheBustingToUrl( withQuery )
+describe('StringHelper', () => {
+	it('appends a cache-busting parameter with the right separator', () => {
+		// Arrange
+		const plain = 'settings/config.json';
+		const withQuery = 'settings/config.json?lang=fr';
 
-        // Assert
-        expect( first ).toMatch( /^settings\/config\.json\?cache-bust=/ )
-        expect( second ).toMatch( /^settings\/config\.json\?lang=fr&cache-bust=/ )
-    } )
+		// Act
+		const first = StringHelper.addCacheBustingToUrl(plain);
+		const second = StringHelper.addCacheBustingToUrl(withQuery);
 
-    it.each( [
-        [ undefined, 5, '', '' ],
-        [ 'short', 10, '', 'short' ],
-        [ 'a long sentence', 6, '', 'a long' ],
-        [ 'a long sentence', 6, '…', 'a long…' ],
-    ] )( 'truncates %s to %i characters', (text: string | undefined, max: number, tail: string, expected: string) => {
-        // Arrange
-        const input: string | undefined = text
+		// Assert
+		expect(first).toMatch(/^settings\/config\.json\?cache-bust=/);
+		expect(second).toMatch(/^settings\/config\.json\?lang=fr&cache-bust=/);
+	});
 
-        // Act
-        const result: string = StringHelper.truncate( input, max, tail )
+	it.each([
+		[undefined, 5, '', ''],
+		['short', 10, '', 'short'],
+		['a long sentence', 6, '', 'a long'],
+		['a long sentence', 6, '…', 'a long…'],
+	])('truncates %s to %i characters', (text, max, tail, expected) => {
+		// Arrange
+		const input = text;
 
-        // Assert
-        expect( result ).toBe( expected )
-    } )
+		// Act
+		const result = StringHelper.truncate(input, max, tail);
 
-    it( 'tells blank from missing text', () => {
-        // Arrange
-        const samples: (string | undefined)[] = [ undefined, '', '   ', 'x' ]
+		// Assert
+		expect(result).toBe(expected);
+	});
 
-        // Act
-        const blank: boolean[] = samples.map( (text: string | undefined): boolean => StringHelper.isBlank( text ) )
-        const nullOrBlank: boolean[] = samples.map( (text: string | undefined): boolean => StringHelper.isNullOrBlank( text ) )
-        const notNullNorBlank: boolean[] = samples.map( (text: string | undefined): boolean => StringHelper.isNotNullNorBlank( text ) )
+	it('tells blank from missing text', () => {
+		// Arrange
+		const samples = [undefined, '', '   ', 'x'];
 
-        // Assert
-        expect( blank ).toEqual( [ false, true, true, false ] )
-        expect( nullOrBlank ).toEqual( [ true, true, true, false ] )
-        expect( notNullNorBlank ).toEqual( [ false, false, false, true ] )
-    } )
+		// Act
+		const blank = samples.map((text) => StringHelper.isBlank(text));
+		const nullOrBlank = samples.map((text) => StringHelper.isNullOrBlank(text));
+		const notNullNorBlank = samples.map((text) => StringHelper.isNotNullNorBlank(text));
 
-    it( 'recognizes an email address and rejects what is not one', () => {
-        // Arrange
-        const samples: (string | undefined)[] = [ 'ada@x.test', 'a.b+c@sub.x.test', undefined, '', 'ada', 'ada@x', 'ada @x.test', `${'a'.repeat( 320 )}@x.test` ]
+		// Assert
+		expect(blank).toEqual([false, true, true, false]);
+		expect(nullOrBlank).toEqual([true, true, true, false]);
+		expect(notNullNorBlank).toEqual([false, false, false, true]);
+	});
 
-        // Act
-        const result: boolean[] = samples.map( (text: string | undefined): boolean => StringHelper.isEmail( text ) )
+	it('recognizes an email address and rejects what is not one', () => {
+		// Arrange
+		const samples = [
+			'ada@x.test',
+			'a.b+c@sub.x.test',
+			undefined,
+			'',
+			'ada',
+			'ada@x',
+			'ada @x.test',
+			`${'a'.repeat(320)}@x.test`,
+		];
 
-        // Assert
-        expect( result ).toEqual( [ true, true, false, false, false, false, false, false ] )
-    } )
+		// Act
+		const result = samples.map((text) => StringHelper.isEmail(text));
 
-    it( 'converts numbers and numeric strings but leaves missing values undefined', () => {
-        // Arrange
-        const samples: (number | string | null | undefined)[] = [ 12, '34', null, undefined ]
+		// Assert
+		expect(result).toEqual([true, true, false, false, false, false, false, false]);
+	});
 
-        // Act
-        const results: (number | undefined)[] = samples.map( (value: number | string | null | undefined): number | undefined => StringHelper.toNumber( value ) )
+	it('converts numbers and numeric strings but leaves missing values undefined', () => {
+		// Arrange
+		const samples = [12, '34', null, undefined];
 
-        // Assert
-        expect( results ).toEqual( [ 12, 34, undefined, undefined ] )
-    } )
+		// Act
+		const results = samples.map((value) => StringHelper.toNumber(value));
 
-    it( 'keeps decimals and drops non numeric strings', () => {
-        // Arrange
-        const samples: string[] = [ '1.5', 'abc' ]
+		// Assert
+		expect(results).toEqual([12, 34, undefined, undefined]);
+	});
 
-        // Act
-        const results: (number | undefined)[] = samples.map( (value: string): number | undefined => StringHelper.toNumber( value ) )
+	it('keeps decimals and drops non numeric strings', () => {
+		// Arrange
+		const samples = ['1.5', 'abc'];
 
-        // Assert
-        expect( results ).toEqual( [ 1.5, undefined ] )
-    } )
+		// Act
+		const results = samples.map((value) => StringHelper.toNumber(value));
 
-    it( 'pads digits to the requested width', () => {
-        // Arrange
-        const value: number = 7
+		// Assert
+		expect(results).toEqual([1.5, undefined]);
+	});
 
-        // Act
-        const padded: string = StringHelper.formatDigits( value, 3 )
+	it('pads digits to the requested width', () => {
+		// Arrange
+		const value = 7;
 
-        // Assert
-        expect( padded ).toBe( '007' )
-    } )
+		// Act
+		const padded = StringHelper.formatDigits(value, 3);
 
-} )
+		// Assert
+		expect(padded).toBe('007');
+	});
+});

@@ -1,41 +1,57 @@
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, signal, Signal, WritableSignal } from '@angular/core'
-import { IfProjectAuthorityDirective } from '@shared/directives/if-project-authority.directive'
-import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
-import { FieldTree, FormField } from '@angular/forms/signals'
-import { TranslocoPipe } from '@jsverse/transloco'
-import '@sgdf/ui/button'
-import '@sgdf/ui/date-time-picker'
-import '@sgdf/ui/format-duration'
-import '@sgdf/ui/format-number'
-import '@sgdf/ui/icon'
-import '@sgdf/ui/input'
-import '@sgdf/ui/list-item'
-import '@sgdf/ui/option'
-import '@sgdf/ui/page-title'
-import '@sgdf/ui/select'
-import '@sgdf/ui/stat'
-import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
-import { ALERTS_LIST_SORT_FIELDS,
-    AlertsListSearchModel,
-    toAlertsListSearchModel,
-    toAlertsListSearchParams,
-} from '@pages/projects/[projectId]/alerts/alerts-list/alerts-list.search'
-import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
-import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
-import { createSearchForm } from '@shared/helpers/form/search.form'
-import { sortQueryCodec } from '@shared/helpers/search/sort-query'
-import { SortFieldsComponent } from '@shared/ui/common/sort-fields/sort-fields.component'
-import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
-import { DurationHelper } from '@shared/helpers/duration.helper'
-import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
-import { AlertStatisticsModel } from '@shared/models/model/alert-statistics.model'
-import { PageEventModel } from '@shared/models/model/page-event.model'
-import { ListComponent } from '@shared/ui/common/list/list.component'
-import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
-import { AlertElementComponent } from '@shared/ui/domain/alert-element/alert-element.component'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, signal } from '@angular/core';
+import { FormField } from '@angular/forms/signals';
 
-const ALERTS_LIST_DEFAULTS: AlertsListSearchModel = toAlertsListSearchModel({ q: undefined, status: undefined, isVisible: undefined, from: undefined, to: undefined, sort: undefined })
-const ALERTS_LIST_QUERY_SCHEMA: SearchQuerySchema<AlertsListSearchModel> = { q: 'text', status: 'text', isVisible: 'choice', from: 'date', to: 'date' }
+import { TranslocoPipe } from '@jsverse/transloco';
+
+import {
+	ALERTS_LIST_SORT_FIELDS,
+	AlertsListSearchModel,
+	toAlertsListSearchModel,
+	toAlertsListSearchParams,
+} from '@pages/projects/[projectId]/alerts/alerts-list/alerts-list.search';
+import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade';
+import { IfProjectAuthorityDirective } from '@shared/directives/if-project-authority.directive';
+import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive';
+import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive';
+import { DurationHelper } from '@shared/helpers/duration.helper';
+import { createSearchForm } from '@shared/helpers/form/search.form';
+import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe';
+import { injectSearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query';
+import { sortQueryCodec } from '@shared/helpers/search/sort-query';
+import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum';
+import { PageEventModel } from '@shared/models/model/page-event.model';
+import { ListComponent } from '@shared/ui/common/list/list.component';
+import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component';
+import { SortFieldsComponent } from '@shared/ui/common/sort-fields/sort-fields.component';
+import { AlertElementComponent } from '@shared/ui/domain/alert-element/alert-element.component';
+
+import '@sgdf/ui/button';
+import '@sgdf/ui/date-time-picker';
+import '@sgdf/ui/format-duration';
+import '@sgdf/ui/format-number';
+import '@sgdf/ui/icon';
+import '@sgdf/ui/input';
+import '@sgdf/ui/list-item';
+import '@sgdf/ui/option';
+import '@sgdf/ui/page-title';
+import '@sgdf/ui/select';
+import '@sgdf/ui/stat';
+
+const ALERTS_LIST_DEFAULTS = toAlertsListSearchModel({
+	q: undefined,
+	status: undefined,
+	isVisible: undefined,
+	from: undefined,
+	to: undefined,
+	sort: undefined,
+});
+const ALERTS_LIST_QUERY_SCHEMA: SearchQuerySchema<AlertsListSearchModel> = {
+	q: 'text',
+	status: 'text',
+	isVisible: 'choice',
+	from: 'date',
+	to: 'date',
+};
 
 /**
  * Purpose: Page listant les alertes du projet sélectionné avec recherche et déclencheur « charger plus ».
@@ -43,90 +59,97 @@ const ALERTS_LIST_QUERY_SCHEMA: SearchQuerySchema<AlertsListSearchModel> = { q: 
  * Limits: Ne détient aucun état de domaine et n'appelle jamais le backend.
  */
 @Component({
-    selector: 'app-alerts-list',
-    imports: [
-        SortFieldsComponent,
-        IfProjectAuthorityDirective,
-        ListComponent,
-        SectionErrorComponent,
-        AlertElementComponent,
-        RegistryTemplateDirective,
-        SgdfFieldDirective,
-        BooleanChoicePipe,
-        TranslocoPipe,
-        FormField,
-    ],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    templateUrl: './alerts-list.page.html',
+	selector: 'app-alerts-list',
+	imports: [
+		SortFieldsComponent,
+		IfProjectAuthorityDirective,
+		ListComponent,
+		SectionErrorComponent,
+		AlertElementComponent,
+		RegistryTemplateDirective,
+		SgdfFieldDirective,
+		BooleanChoicePipe,
+		TranslocoPipe,
+		FormField,
+	],
+	schemas: [CUSTOM_ELEMENTS_SCHEMA],
+	templateUrl: './alerts-list.page.html',
 })
 export class AlertsListPage {
-    protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_RESTORE
+	protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_RESTORE;
 
-    protected readonly facade: AlertFacade = inject(AlertFacade)
+	protected readonly facade = inject(AlertFacade);
 
-    protected readonly activeFilters: Signal<number> = computed((): number => [
-        this.facade.alertsPageQueryParam() !== undefined,
-        this.facade.alertsPageStatusParam() !== undefined,
-        this.facade.alertsPageIsVisibleParam() !== undefined,
-        this.facade.alertsPageFromParam() !== undefined,
-        this.facade.alertsPageToParam() !== undefined,
-    ].filter(Boolean).length)
+	protected readonly activeFilters = computed(
+		() =>
+			[
+				this.facade.alertsPageQueryParam() !== undefined,
+				this.facade.alertsPageStatusParam() !== undefined,
+				this.facade.alertsPageIsVisibleParam() !== undefined,
+				this.facade.alertsPageFromParam() !== undefined,
+				this.facade.alertsPageToParam() !== undefined,
+			].filter(Boolean).length,
+	);
 
-    protected readonly resolutionDuration: Signal<string | undefined> = computed((): string | undefined => {
-        const seconds: number | undefined = this.facade.alertStatistics()?.averageResolutionSeconds
+	protected readonly resolutionDuration = computed(() => this.buildResolutionDuration());
 
-        return seconds === undefined ? undefined : DurationHelper.toIsoDuration(seconds)
-    })
+	protected readonly closedAlertsCount = computed(() => this.buildClosedAlertsCount());
 
-    protected readonly closedAlertsCount: Signal<number> = computed((): number => {
-        const statistics: AlertStatisticsModel | undefined = this.facade.alertStatistics()
+	protected readonly sortFields: readonly string[] = ALERTS_LIST_SORT_FIELDS;
+	protected readonly model = signal(ALERTS_LIST_DEFAULTS);
+	protected readonly form = createSearchForm(this.model);
+	protected readonly searchQuery = injectSearchQuery({
+		schema: ALERTS_LIST_QUERY_SCHEMA,
+		defaults: ALERTS_LIST_DEFAULTS,
+		model: this.model,
+		extra: sortQueryCodec<AlertsListSearchModel>(ALERTS_LIST_SORT_FIELDS),
+		search: (model) => this.search(model),
+		apply: (model) => {
+			this.inputSearch(model);
+			this.facade.fetchAlertsPage(undefined, undefined);
+		},
+	});
 
-        return (statistics?.resolvedCount ?? 0) + (statistics?.canceledCount ?? 0)
-    })
+	constructor() {
+		this.facade.fetchAlertStatistics();
+	}
 
-    protected readonly sortFields: readonly string[] = ALERTS_LIST_SORT_FIELDS
-    protected readonly model: WritableSignal<AlertsListSearchModel> = signal(ALERTS_LIST_DEFAULTS)
-    protected readonly form: FieldTree<AlertsListSearchModel> = createSearchForm(this.model)
-    protected readonly searchQuery: SearchQuery<AlertsListSearchModel> = injectSearchQuery({
-        schema: ALERTS_LIST_QUERY_SCHEMA,
-        defaults: ALERTS_LIST_DEFAULTS,
-        model: this.model,
-        extra: sortQueryCodec<AlertsListSearchModel>( ALERTS_LIST_SORT_FIELDS ),
-        search: (model: AlertsListSearchModel): void => this.search(model),
-        apply: (model: AlertsListSearchModel): void => {
-            this.inputSearch(model)
-            this.facade.fetchAlertsPage(undefined, undefined)
-        },
-    })
+	protected search(model: AlertsListSearchModel = this.model()): void {
+		this.inputSearch(model);
+		this.facade.fetchAlertsPage(0, undefined);
+		this.searchQuery.write(model);
+	}
 
-    public constructor() {
-        this.facade.fetchAlertStatistics()
-    }
+	protected resetFilters(): void {
+		this.model.set(ALERTS_LIST_DEFAULTS);
+		this.search();
+	}
 
-    protected search(model: AlertsListSearchModel = this.model()): void {
-        this.inputSearch(model)
-        this.facade.fetchAlertsPage(0, undefined)
-        this.searchQuery.write(model)
-    }
+	private inputSearch(model: AlertsListSearchModel): void {
+		const search = toAlertsListSearchParams(model);
+		this.facade.inputPageSearchParameters(
+			search.q,
+			search.status,
+			search.isVisible,
+			search.from,
+			search.to,
+			search.sort,
+		);
+	}
 
-    protected resetFilters(): void {
-        this.model.set(ALERTS_LIST_DEFAULTS)
-        this.search()
-    }
+	protected loadBatch(pageEvent: PageEventModel): void {
+		this.facade.fetchAlertsPage(pageEvent.page, pageEvent.size);
+	}
 
-    private inputSearch(model: AlertsListSearchModel): void {
-        const search: ReturnType<typeof toAlertsListSearchParams> = toAlertsListSearchParams(model)
-        this.facade.inputPageSearchParameters(
-            search.q,
-            search.status,
-            search.isVisible,
-            search.from,
-            search.to,
-            search.sort,
-        )
-    }
+	private buildResolutionDuration(): string | undefined {
+		const seconds = this.facade.alertStatistics()?.averageResolutionSeconds;
 
-    protected loadBatch(pageEvent: PageEventModel): void {
-        this.facade.fetchAlertsPage(pageEvent.page, pageEvent.size)
-    }
+		return seconds === undefined ? undefined : DurationHelper.toIsoDuration(seconds);
+	}
+
+	private buildClosedAlertsCount(): number {
+		const statistics = this.facade.alertStatistics();
+
+		return (statistics?.resolvedCount ?? 0) + (statistics?.canceledCount ?? 0);
+	}
 }

@@ -1,13 +1,16 @@
 import { signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+
 import { TranslocoPipe } from '@jsverse/transloco';
 import { MockBuilder, ngMocks } from 'ng-mocks';
+
 import { SessionFacade } from '@core/registry/state/session.facade';
 import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade';
-import { VehicleStatusModel } from '@shared/models/model/vehicle-status.model';
-import { ProjectVehicleOverviewComponent } from './project-vehicle-overview.component';
 import { REFRESH_SERVICE_STUB } from '@shared/helpers/testing/refresh-service.stub';
+import { VehicleStatusModel } from '@shared/models/model/vehicle-status.model';
+
+import { ProjectVehicleOverviewComponent } from './project-vehicle-overview.component';
 
 const status: VehicleStatusModel = { present: 3, absent: 2, lastRefresh: new Date() };
 
@@ -19,7 +22,8 @@ describe('ProjectVehicleOverviewComponent', () => {
 	beforeEach(async () => {
 		vehiclesStatus = signal<VehicleStatusModel | undefined>(status);
 		fetchVehiclesStatus = vi.fn();
-		await MockBuilder(ProjectVehicleOverviewComponent).provide(REFRESH_SERVICE_STUB)
+		await MockBuilder(ProjectVehicleOverviewComponent)
+			.provide(REFRESH_SERVICE_STUB)
 			.mock(TranslocoPipe, (key: string): string => key)
 			.provide({ provide: SelectedProjectFacade, useValue: { vehiclesStatus, fetchVehiclesStatus } })
 			.provide({ provide: SessionFacade, useValue: { currentProjectId: signal('p1') } })
@@ -30,10 +34,10 @@ describe('ProjectVehicleOverviewComponent', () => {
 
 	it('should load the vehicles status when displayed', () => {
 		// Arrange
-		const expected: number = 1;
+		const expected = 1;
 
 		// Act
-		const calls: number = fetchVehiclesStatus.mock.calls.length;
+		const calls = fetchVehiclesStatus.mock.calls.length;
 
 		// Assert
 		expect(calls).toBe(expected);
@@ -41,7 +45,9 @@ describe('ProjectVehicleOverviewComponent', () => {
 
 	it('should display the two vehicle counters', () => {
 		// Arrange
-		const elements: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('sgdf-table-row:nth-child(2) strong'));
+		const elements: HTMLElement[] = Array.from(
+			fixture.nativeElement.querySelectorAll('sgdf-table-row:nth-child(2) strong'),
+		);
 
 		// Act
 		const values: string[] = elements.map((element: HTMLElement): string => element.textContent.trim());
@@ -56,7 +62,9 @@ describe('ProjectVehicleOverviewComponent', () => {
 
 		// Act
 		await fixture.whenStable();
-		const values: string[] = Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('sgdf-table-row:nth-child(2) strong')).map((element: HTMLElement): string => element.textContent.trim());
+		const values = Array.from<HTMLElement>(
+			fixture.nativeElement.querySelectorAll('sgdf-table-row:nth-child(2) strong'),
+		).map((element) => element.textContent.trim());
 
 		// Assert
 		expect(values).toEqual(['–', '–']);
@@ -88,7 +96,7 @@ describe('ProjectVehicleOverviewComponent', () => {
 
 	it('should link to the vehicles page of the selected project', () => {
 		// Arrange
-		const selector: string = 'sgdf-button';
+		const selector = 'sgdf-button';
 
 		// Act
 		const target: string = ngMocks.input(selector, 'routerLink');

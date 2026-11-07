@@ -1,5 +1,5 @@
-import { NotificationModel } from '@shared/models/model/notification.model'
+import { NotificationModel } from '@shared/models/model/notification.model';
 
 export interface SectionErrorsState {
-    sectionErrors: Record<string, NotificationModel | undefined>
+	sectionErrors: Record<string, NotificationModel | undefined>;
 }

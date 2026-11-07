@@ -1,77 +1,80 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing'
-import { GlobalErrorComponent } from '@core/layout/global-error/global-error.component'
-import { UiFacade } from '@core/registry/state/ui.facade'
-import { TranslocoTestingModule } from '@jsverse/transloco'
-import { NotificationModel } from '@shared/models/model/notification.model'
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { TranslocoTestingModule } from '@jsverse/transloco';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+
+import { GlobalErrorComponent } from '@core/layout/global-error/global-error.component';
+import { UiFacade } from '@core/registry/state/ui.facade';
+import { defined } from '@shared/helpers/testing/defined';
+import { NotificationModel } from '@shared/models/model/notification.model';
 
 describe('GlobalErrorComponent', () => {
-	let reloadApplication: Mock<() => void>
-	let fixture: ComponentFixture<GlobalErrorComponent>
+	let reloadApplication: Mock<() => void>;
+	let fixture: ComponentFixture<GlobalErrorComponent>;
 
 	function create(error: NotificationModel): HTMLElement {
-		fixture = TestBed.createComponent(GlobalErrorComponent)
-		fixture.componentRef.setInput('error', error)
-		fixture.detectChanges()
-		return fixture.nativeElement
+		fixture = TestBed.createComponent(GlobalErrorComponent);
+		fixture.componentRef.setInput('error', error);
+		fixture.detectChanges();
+		return fixture.nativeElement;
 	}
 
 	function calloutTitle(): string | undefined {
-		return (fixture.nativeElement.querySelector('sgdf-callout') as HTMLElement & { title?: string }).title
+		return (fixture.nativeElement.querySelector('sgdf-callout') as HTMLElement & { title?: string }).title;
 	}
 
 	beforeEach(() => {
-		TestBed.resetTestingModule()
-		reloadApplication = vi.fn()
+		TestBed.resetTestingModule();
+		reloadApplication = vi.fn();
 		TestBed.configureTestingModule({
 			imports: [TranslocoTestingModule.forRoot({ langs: { fr: {} }, translocoConfig: { defaultLang: 'fr' } })],
 			providers: [{ provide: UiFacade, useValue: { reloadApplication } }],
-		})
-	})
+		});
+	});
 
 	it('should show the title and the detail of the error in a danger callout', () => {
 		// Arrange
-		const error: NotificationModel = { summary: 'Service Unavailable', detail: 'The API cannot be reached' }
+		const error: NotificationModel = { summary: 'Service Unavailable', detail: 'The API cannot be reached' };
 
 		// Act
-		const text: string = create(error).querySelector('sgdf-callout')!.textContent ?? ''
+		const text = defined(create(error).querySelector('sgdf-callout')).textContent ?? '';
 
 		// Assert
-		expect(text).toContain('The API cannot be reached')
-		expect(calloutTitle()).toBe('Service Unavailable')
-		expect(fixture.nativeElement.querySelector('sgdf-callout').getAttribute('variant')).toBe('danger')
-	})
+		expect(text).toContain('The API cannot be reached');
+		expect(calloutTitle()).toBe('Service Unavailable');
+		expect(fixture.nativeElement.querySelector('sgdf-callout').getAttribute('variant')).toBe('danger');
+	});
 
 	it('should fall back to the unknown error message when the error has no detail', () => {
 		// Arrange
-		const error: NotificationModel = { summary: 'Down' }
+		const error: NotificationModel = { summary: 'Down' };
 
 		// Act
-		const text: string = create(error).querySelector('sgdf-callout')!.textContent ?? ''
+		const text = defined(create(error).querySelector('sgdf-callout')).textContent ?? '';
 
 		// Assert
-		expect(text).toContain('global.notifications.UNKNOWN_ERROR.message')
-	})
+		expect(text).toContain('global.notifications.UNKNOWN_ERROR.message');
+	});
 
 	it('should fall back to the unknown error title when the error has no title', () => {
 		// Arrange
-		const error: NotificationModel = { detail: 'Boom' }
+		const error: NotificationModel = { detail: 'Boom' };
 
 		// Act
-		create(error)
+		create(error);
 
 		// Assert
-		expect(calloutTitle()).toContain('global.notifications.UNKNOWN_ERROR.title')
-	})
+		expect(calloutTitle()).toContain('global.notifications.UNKNOWN_ERROR.title');
+	});
 
 	it('should reload the application when the retry button is clicked', () => {
 		// Arrange
-		const retry: HTMLElement = create({ summary: 'Down' }).querySelector('sgdf-button')!
+		const retry: HTMLElement = defined(create({ summary: 'Down' }).querySelector('sgdf-button'));
 
 		// Act
-		retry.dispatchEvent(new MouseEvent('click'))
+		retry.dispatchEvent(new MouseEvent('click'));
 
 		// Assert
-		expect(reloadApplication).toHaveBeenCalledTimes(1)
-	})
-})
+		expect(reloadApplication).toHaveBeenCalledTimes(1);
+	});
+});

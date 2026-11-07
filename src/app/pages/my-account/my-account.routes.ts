@@ -1,8 +1,9 @@
-import { Routes } from '@angular/router'
-import { MyAccountPage } from '@pages/my-account/my-account.page'
-import { InvitationsListPage } from '@pages/users/invitations/invitations-list/invitations-list.page'
-import { ProjectProfileFacade } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.facade'
-import { ProjectProfileStore } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.store'
+import { Routes } from '@angular/router';
+
+import { MyAccountPage } from '@pages/my-account/my-account.page';
+import { ProjectProfileFacade } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.facade';
+import { ProjectProfileStore } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.store';
+import { InvitationsListPage } from '@pages/users/invitations/invitations-list/invitations-list.page';
 
 /**
  * Purpose: Déclare les routes de l'espace mon compte.
@@ -10,11 +11,11 @@ import { ProjectProfileStore } from '@pages/projects/[projectId]/configuration/p
  * Limits: Ne détient aucune logique de navigation ; les guards et les pages la possèdent.
  */
 export const myAccountRoutes: Routes = [
-    { path: '', title: 'seo.myAccount', component: MyAccountPage },
-    {
-        path: 'invitations',
-        title: 'seo.invitations',
-        component: InvitationsListPage,
-        providers: [ ProjectProfileFacade, ProjectProfileStore ],
-    },
-]
+	{ path: '', title: 'seo.myAccount', component: MyAccountPage },
+	{
+		path: 'invitations',
+		title: 'seo.invitations',
+		component: InvitationsListPage,
+		providers: [ProjectProfileFacade, ProjectProfileStore],
+	},
+];

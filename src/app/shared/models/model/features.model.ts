@@ -1,3 +1,3 @@
 export interface FeaturesModel {
-    inviteByEmail: boolean
+	inviteByEmail: boolean;
 }

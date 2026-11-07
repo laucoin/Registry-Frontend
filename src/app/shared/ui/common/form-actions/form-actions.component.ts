@@ -1,7 +1,9 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, input, InputSignal, output, OutputEmitterRef } from '@angular/core'
-import { TranslocoPipe } from '@jsverse/transloco'
-import '@sgdf/ui/button'
-import '@sgdf/ui/icon'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, input, InputSignal, output } from '@angular/core';
+
+import { TranslocoPipe } from '@jsverse/transloco';
+
+import '@sgdf/ui/button';
+import '@sgdf/ui/icon';
 
 /**
  * Purpose: Boutons d'annulation et de soumission en bas d'une page de formulaire.
@@ -15,9 +17,9 @@ import '@sgdf/ui/icon'
 	templateUrl: './form-actions.component.html',
 })
 export class FormActionsComponent {
-	public readonly submitLabel: InputSignal<string> = input.required()
-	public readonly submitIcon: InputSignal<string> = input<string>('pen-to-square')
-	public readonly saving: InputSignal<boolean> = input<boolean>(false)
+	public readonly submitLabel: InputSignal<string> = input.required();
+	public readonly submitIcon = input<string>('pen-to-square');
+	public readonly saving = input<boolean>(false);
 
-	public readonly cancelled: OutputEmitterRef<void> = output<void>()
+	public readonly cancelled = output();
 }

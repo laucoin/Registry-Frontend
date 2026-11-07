@@ -1,9 +1,12 @@
-import '@sgdf/ui/button'
-import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
-import { RouterOutlet } from "@angular/router";
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+
 import { TranslocoPipe } from '@jsverse/transloco';
-import { FooterComponent } from "@core/layout/footer/footer.component";
-import { NavbarComponent } from "@core/layout/navbar/navbar.component";
+
+import { FooterComponent } from '@core/layout/footer/footer.component';
+import { NavbarComponent } from '@core/layout/navbar/navbar.component';
+
+import '@sgdf/ui/button';
 
 /**
  * Purpose: Coque des pages authentifiées.
@@ -15,16 +18,11 @@ import { NavbarComponent } from "@core/layout/navbar/navbar.component";
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	templateUrl: './main.component.html',
 	styleUrl: './main.component.css',
-	imports: [
-		RouterOutlet,
-		NavbarComponent,
-		FooterComponent,
-		TranslocoPipe,
-	]
+	imports: [RouterOutlet, NavbarComponent, FooterComponent, TranslocoPipe],
 })
 export class MainComponent {
 	protected focusContent(event: Event, content: HTMLElement): void {
-		event.preventDefault()
-		content.focus()
+		event.preventDefault();
+		content.focus();
 	}
 }

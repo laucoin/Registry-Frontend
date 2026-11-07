@@ -1,153 +1,162 @@
-import { TestBed } from '@angular/core/testing'
-import { of } from 'rxjs'
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { ErrorReporter } from '@core/registry/state/error-reporter'
-import { ProjectOptionModel } from '@shared/models/model/project-option.model'
-import { ProjectApi } from '@core/registry/state/project.api'
-import { ProjectStore } from '@pages/projects/data/state/project/project.store'
-import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures'
-import { ProjectModel } from '@shared/models/model/project.model'
+import { TestBed } from '@angular/core/testing';
 
-describe( 'ProjectStore', () => {
-    let store: InstanceType<typeof ProjectStore>
-    let findProjects: Mock<ProjectApi['findProjects']>
-    let findProjectById: Mock<ProjectApi['findProjectById']>
-    let getAvailableProjectOptions: Mock<ProjectApi['getAvailableProjectOptions']>
-    let notify: Mock<(message: unknown) => void>
+import { of } from 'rxjs';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-    beforeEach( () => {
-        findProjects = vi.fn()
-        findProjectById = vi.fn()
-        getAvailableProjectOptions = vi.fn()
-        notify = vi.fn()
-        TestBed.configureTestingModule( {
-            providers: [
-                ProjectStore,
-                { provide: ProjectApi, useValue: { findProjects, findProjectById, getAvailableProjectOptions } },
-                { provide: ErrorReporter, useValue: { notify } },
-            ],
-        } )
-        store = TestBed.inject( ProjectStore )
-    } )
+import { ErrorReporter } from '@core/registry/state/error-reporter';
+import { ProjectApi } from '@core/registry/state/project.api';
+import { ProjectStore } from '@pages/projects/data/state/project/project.store';
+import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures';
+import { ProjectModel } from '@shared/models/model/project.model';
+import { ProjectOptionModel } from '@shared/models/model/project-option.model';
 
-    it( 'stores the fetched projects page', () => {
-        // Arrange
-        findProjects.mockReturnValue( of( pageOf<ProjectModel>( [ { id: 'p1' } as ProjectModel ] ) ) )
+describe('ProjectStore', () => {
+	let store: InstanceType<typeof ProjectStore>;
+	let findProjects: Mock<ProjectApi['findProjects']>;
+	let findProjectById: Mock<ProjectApi['findProjectById']>;
+	let getAvailableProjectOptions: Mock<ProjectApi['getAvailableProjectOptions']>;
+	let notify: Mock<(message: unknown) => void>;
 
-        // Act
-        store.fetchProjectsPage( { page: 0, size: 10 } )
+	beforeEach(() => {
+		findProjects = vi.fn();
+		findProjectById = vi.fn();
+		getAvailableProjectOptions = vi.fn();
+		notify = vi.fn();
+		TestBed.configureTestingModule({
+			providers: [
+				ProjectStore,
+				{ provide: ProjectApi, useValue: { findProjects, findProjectById, getAvailableProjectOptions } },
+				{ provide: ErrorReporter, useValue: { notify } },
+			],
+		});
+		store = TestBed.inject(ProjectStore);
+	});
 
-        // Assert
-        expect( store.projects.element()?.content ).toHaveLength( 1 )
-        expect( store.projects.loading() ).toBe( false )
-    } )
+	it('stores the fetched projects page', () => {
+		// Arrange
+		findProjects.mockReturnValue(of(pageOf<ProjectModel>([{ id: 'p1' } as ProjectModel])));
 
-    it( 'updates the favorite of one shown project without refetching', () => {
-        // Arrange
-        findProjects.mockReturnValue( of( pageOf<ProjectModel>( [ { id: 'p1', favorite: false } as ProjectModel, { id: 'p2', favorite: false } as ProjectModel ] ) ) )
-        store.fetchProjectsPage( { page: 0, size: 10 } )
-        findProjects.mockClear()
+		// Act
+		store.fetchProjectsPage({ page: 0, size: 10 });
 
-        // Act
-        store.setProjectFavorite( 'p2', true )
+		// Assert
+		expect(store.projects.element()?.content).toHaveLength(1);
+		expect(store.projects.loading()).toBe(false);
+	});
 
-        // Assert
-        expect( store.projects.element()?.content.map( (project: ProjectModel): boolean | undefined => project.favorite ) ).toEqual( [ false, true ] )
-        expect( findProjects ).not.toHaveBeenCalled()
-    } )
+	it('updates the favorite of one shown project without refetching', () => {
+		// Arrange
+		findProjects.mockReturnValue(
+			of(
+				pageOf<ProjectModel>([
+					{ id: 'p1', favorite: false } as ProjectModel,
+					{ id: 'p2', favorite: false } as ProjectModel,
+				]),
+			),
+		);
+		store.fetchProjectsPage({ page: 0, size: 10 });
+		findProjects.mockClear();
 
-    it( 'ignores a favorite change when no page is shown', () => {
-        // Arrange
-        const projectId: string = 'p1'
+		// Act
+		store.setProjectFavorite('p2', true);
 
-        // Act
-        store.setProjectFavorite( projectId, true )
+		// Assert
+		expect(store.projects.element()?.content.map((project) => project.favorite)).toEqual([false, true]);
+		expect(findProjects).not.toHaveBeenCalled();
+	});
 
-        // Assert
-        expect( store.projects.element() ).toBeUndefined()
-    } )
+	it('ignores a favorite change when no page is shown', () => {
+		// Arrange
+		const projectId = 'p1';
 
-    it( 'keeps a failed projects fetch in the projects block', () => {
-        // Arrange
-        findProjects.mockReturnValue( failing( ERROR_500 ) )
+		// Act
+		store.setProjectFavorite(projectId, true);
 
-        // Act
-        store.fetchProjectsPage( { page: 0, size: 10 } )
+		// Assert
+		expect(store.projects.element()).toBeUndefined();
+	});
 
-        // Assert
-        expect( store.projects.error()?.summary ).toBe( 'Title' )
-    } )
+	it('keeps a failed projects fetch in the projects block', () => {
+		// Arrange
+		findProjects.mockReturnValue(failing(ERROR_500));
 
-    it( 'keeps a 503 failure in its block', () => {
-        // Arrange
-        findProjects.mockReturnValue( failing( ERROR_503 ) )
+		// Act
+		store.fetchProjectsPage({ page: 0, size: 10 });
 
-        // Act
-        store.fetchProjectsPage( { page: 0, size: 10 } )
+		// Assert
+		expect(store.projects.error()?.summary).toBe('Title');
+	});
 
-        // Assert
-        expect( store.projects.error() ).toBeDefined()
-    } )
+	it('keeps a 503 failure in its block', () => {
+		// Arrange
+		findProjects.mockReturnValue(failing(ERROR_503));
 
-    it( 'stores the available project options', () => {
-        // Arrange
-        const options: ProjectOptionModel[] = [ { label: 'Vehicles', value: 'VEHICLE' } as unknown as ProjectOptionModel ]
-        getAvailableProjectOptions.mockReturnValue( of( options ) )
+		// Act
+		store.fetchProjectsPage({ page: 0, size: 10 });
 
-        // Act
-        store.fetchProjectOptions()
+		// Assert
+		expect(store.projects.error()).toBeDefined();
+	});
 
-        // Assert
-        expect( store.metadata.options() ).toEqual( options )
-    } )
+	it('stores the available project options', () => {
+		// Arrange
+		const options = [{ label: 'Vehicles', value: 'VEHICLE' } as unknown as ProjectOptionModel];
+		getAvailableProjectOptions.mockReturnValue(of(options));
 
-    it( 'keeps the failure of the project options in the section error', () => {
-        // Arrange
-        getAvailableProjectOptions.mockReturnValue( failing( ERROR_500 ) )
+		// Act
+		store.fetchProjectOptions();
 
-        // Act
-        store.fetchProjectOptions()
+		// Assert
+		expect(store.metadata.options()).toEqual(options);
+	});
 
-        // Assert
-        expect( store.sectionErrors()[ 'metadata.options' ]?.summary ).toBe( 'Title' )
-        expect( store.metadata.options() ).toEqual( [] )
-    } )
+	it('keeps the failure of the project options in the section error', () => {
+		// Arrange
+		getAvailableProjectOptions.mockReturnValue(failing(ERROR_500));
 
-    it( 'loads a single project then forgets it on reset', () => {
-        // Arrange
-        findProjectById.mockReturnValue( of( { id: 'p1', name: 'Camp' } as ProjectModel ) )
-        store.fetchProject( 'p1' )
-        const loaded: string | undefined = store.project.element()?.name
+		// Act
+		store.fetchProjectOptions();
 
-        // Act
-        store.resetProject()
+		// Assert
+		expect(store.sectionErrors()['metadata.options']?.summary).toBe('Title');
+		expect(store.metadata.options()).toEqual([]);
+	});
 
-        // Assert
-        expect( loaded ).toBe( 'Camp' )
-        expect( store.project.element() ).toBeUndefined()
-    } )
+	it('loads a single project then forgets it on reset', () => {
+		// Arrange
+		findProjectById.mockReturnValue(of({ id: 'p1', name: 'Camp' } as ProjectModel));
+		store.fetchProject('p1');
+		const loaded = store.project.element()?.name;
 
-    it( 'remembers the id of the created project', () => {
-        // Arrange
-        const id: string = 'p9'
+		// Act
+		store.resetProject();
 
-        // Act
-        store.setCreatedProjectId( id )
+		// Assert
+		expect(loaded).toBe('Camp');
+		expect(store.project.element()).toBeUndefined();
+	});
 
-        // Assert
-        expect( store.createdProjectId() ).toBe( 'p9' )
-    } )
+	it('remembers the id of the created project', () => {
+		// Arrange
+		const id = 'p9';
 
-    it( 'toggles the project loader', () => {
-        // Arrange
-        store.startProjectLoader()
-        const running: boolean = store.project.loading()
+		// Act
+		store.setCreatedProjectId(id);
 
-        // Act
-        store.stopProjectLoader()
+		// Assert
+		expect(store.createdProjectId()).toBe('p9');
+	});
 
-        // Assert
-        expect( running ).toBe( true )
-        expect( store.project.loading() ).toBe( false )
-    } )
-} )
+	it('toggles the project loader', () => {
+		// Arrange
+		store.startProjectLoader();
+		const running = store.project.loading();
+
+		// Act
+		store.stopProjectLoader();
+
+		// Assert
+		expect(running).toBe(true);
+		expect(store.project.loading()).toBe(false);
+	});
+});

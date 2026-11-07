@@ -1,201 +1,221 @@
-import { TestBed } from '@angular/core/testing'
-import { TranslocoService } from '@jsverse/transloco'
-import { of, Subject } from 'rxjs'
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { MetadataApi } from '@core/registry/state/metadata.api'
-import { ErrorReporter } from '@core/registry/state/error-reporter'
-import { ParticipantTimelineModel } from '@shared/models/model/participant-timeline.model'
-import { ParticipantApi } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.api'
-import { ParticipantStore } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.store'
-import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
-import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures'
-import { GroupModel } from '@shared/models/model/group.model'
-import { MovementModel } from '@shared/models/model/movement.model'
-import { ParticipantModel } from '@shared/models/model/participant.model'
-import { UserModel } from '@shared/models/model/user.model'
+import { TestBed } from '@angular/core/testing';
 
-describe( 'ParticipantStore', () => {
-    let store: InstanceType<typeof ParticipantStore>
-    let findParticipants: Mock<ParticipantApi['findParticipants']>
-    let findParticipantMovements: Mock<ParticipantApi['findParticipantMovements']>
-    let findParticipantTimeline: Mock<ParticipantApi['findParticipantTimeline']>
-    let searchUsers: Mock<ParticipantApi['searchUsers']>
-    let searchGroups: Mock<ParticipantApi['searchGroups']>
-    let findMovementsContents: Mock<MovementApi['findMovementsContents']>
-    let notify: Mock<(message: unknown) => void>
+import { TranslocoService } from '@jsverse/transloco';
+import { of, Subject } from 'rxjs';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-    beforeEach( () => {
-        findParticipants = vi.fn()
-        findParticipantMovements = vi.fn()
-        findParticipantTimeline = vi.fn()
-        searchUsers = vi.fn()
-        searchGroups = vi.fn()
-        findMovementsContents = vi.fn( () => of( [] ) )
-        notify = vi.fn()
-        TestBed.configureTestingModule( {
-            providers: [
-                ParticipantStore,
-                { provide: ParticipantApi, useValue: { findParticipants, findParticipantMovements, findParticipantTimeline, searchUsers, searchGroups } },
-                { provide: MovementApi, useValue: { findMovementsContents } },
-                { provide: MetadataApi, useValue: { getPresencesStatus: vi.fn( () => of( [] ) ) } },
-                { provide: ErrorReporter, useValue: { notify } },
-                { provide: TranslocoService, useValue: { langChanges$: new Subject<string>().asObservable() } },
-            ],
-        } )
-        store = TestBed.inject( ParticipantStore )
-    } )
+import { ErrorReporter } from '@core/registry/state/error-reporter';
+import { MetadataApi } from '@core/registry/state/metadata.api';
+import { ParticipantApi } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.api';
+import { ParticipantStore } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.store';
+import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api';
+import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures';
+import { GroupModel } from '@shared/models/model/group.model';
+import { MovementModel } from '@shared/models/model/movement.model';
+import { ParticipantModel } from '@shared/models/model/participant.model';
+import { ParticipantTimelineModel } from '@shared/models/model/participant-timeline.model';
+import { UserModel } from '@shared/models/model/user.model';
 
-    it( 'appends the next batch to the participants already shown', () => {
-        // Arrange
-        findParticipants
-            .mockReturnValueOnce( of( { ...pageOf<ParticipantModel>( [ { id: 'a1' } as ParticipantModel ] ), size: 1, totalPages: 2 } ) )
-            .mockReturnValueOnce( of( { ...pageOf<ParticipantModel>( [ { id: 'a2' } as ParticipantModel ], 1 ), size: 1, totalPages: 2 } ) )
-        store.fetchParticipantsPage( { projectId: 'p1', page: 0, size: 1 } )
+describe('ParticipantStore', () => {
+	let store: InstanceType<typeof ParticipantStore>;
+	let findParticipants: Mock<ParticipantApi['findParticipants']>;
+	let findParticipantMovements: Mock<ParticipantApi['findParticipantMovements']>;
+	let findParticipantTimeline: Mock<ParticipantApi['findParticipantTimeline']>;
+	let searchUsers: Mock<ParticipantApi['searchUsers']>;
+	let searchGroups: Mock<ParticipantApi['searchGroups']>;
+	let findMovementsContents: Mock<MovementApi['findMovementsContents']>;
+	let notify: Mock<(message: unknown) => void>;
 
-        // Act
-        store.fetchParticipantsPage( { projectId: 'p1', page: 1, size: 1 } )
+	beforeEach(() => {
+		findParticipants = vi.fn();
+		findParticipantMovements = vi.fn();
+		findParticipantTimeline = vi.fn();
+		searchUsers = vi.fn();
+		searchGroups = vi.fn();
+		findMovementsContents = vi.fn(() => of([]));
+		notify = vi.fn();
+		TestBed.configureTestingModule({
+			providers: [
+				ParticipantStore,
+				{
+					provide: ParticipantApi,
+					useValue: {
+						findParticipants,
+						findParticipantMovements,
+						findParticipantTimeline,
+						searchUsers,
+						searchGroups,
+					},
+				},
+				{ provide: MovementApi, useValue: { findMovementsContents } },
+				{ provide: MetadataApi, useValue: { getPresencesStatus: vi.fn(() => of([])) } },
+				{ provide: ErrorReporter, useValue: { notify } },
+				{ provide: TranslocoService, useValue: { langChanges$: new Subject<string>().asObservable() } },
+			],
+		});
+		store = TestBed.inject(ParticipantStore);
+	});
 
-        // Assert
-        expect( store.participants.element()?.content.map( (element: ParticipantModel): string => element.id ) ).toEqual( [ 'a1', 'a2' ] )
-    } )
+	it('appends the next batch to the participants already shown', () => {
+		// Arrange
+		findParticipants
+			.mockReturnValueOnce(
+				of({ ...pageOf<ParticipantModel>([{ id: 'a1' } as ParticipantModel]), size: 1, totalPages: 2 }),
+			)
+			.mockReturnValueOnce(
+				of({ ...pageOf<ParticipantModel>([{ id: 'a2' } as ParticipantModel], 1), size: 1, totalPages: 2 }),
+			);
+		store.fetchParticipantsPage({ projectId: 'p1', page: 0, size: 1 });
 
-    it( 'stores the fetched participants page', () => {
-        // Arrange
-        findParticipants.mockReturnValue( of( pageOf<ParticipantModel>( [ { id: 'pa1' } as ParticipantModel ] ) ) )
+		// Act
+		store.fetchParticipantsPage({ projectId: 'p1', page: 1, size: 1 });
 
-        // Act
-        store.fetchParticipantsPage( { projectId: 'p1', page: 0, size: 10 } )
+		// Assert
+		expect(store.participants.element()?.content.map((element) => element.id)).toEqual(['a1', 'a2']);
+	});
 
-        // Assert
-        expect( store.participants.element()?.content ).toHaveLength( 1 )
-        expect( store.participants.loading() ).toBe( false )
-    } )
+	it('stores the fetched participants page', () => {
+		// Arrange
+		findParticipants.mockReturnValue(of(pageOf<ParticipantModel>([{ id: 'pa1' } as ParticipantModel])));
 
-    it( 'keeps a failed participants fetch in the participants block', () => {
-        // Arrange
-        findParticipants.mockReturnValue( failing( ERROR_500 ) )
+		// Act
+		store.fetchParticipantsPage({ projectId: 'p1', page: 0, size: 10 });
 
-        // Act
-        store.fetchParticipantsPage( { projectId: 'p1', page: 0, size: 10 } )
+		// Assert
+		expect(store.participants.element()?.content).toHaveLength(1);
+		expect(store.participants.loading()).toBe(false);
+	});
 
-        // Assert
-        expect( store.participants.error()?.summary ).toBe( 'Title' )
-    } )
+	it('keeps a failed participants fetch in the participants block', () => {
+		// Arrange
+		findParticipants.mockReturnValue(failing(ERROR_500));
 
-    it( 'keeps a 503 failure in its block', () => {
-        // Arrange
-        findParticipants.mockReturnValue( failing( ERROR_503 ) )
+		// Act
+		store.fetchParticipantsPage({ projectId: 'p1', page: 0, size: 10 });
 
-        // Act
-        store.fetchParticipantsPage( { projectId: 'p1', page: 0, size: 10 } )
+		// Assert
+		expect(store.participants.error()?.summary).toBe('Title');
+	});
 
-        // Assert
-        expect( store.participants.error() ).toBeDefined()
-    } )
+	it('keeps a 503 failure in its block', () => {
+		// Arrange
+		findParticipants.mockReturnValue(failing(ERROR_503));
 
-    it( 'turns the searched users into select items', () => {
-        // Arrange
-        searchUsers.mockReturnValue( of( [ { id: 'u1', email: 'a@b.c', firstName: 'Ada', lastName: 'L' } as UserModel ] ) )
+		// Act
+		store.fetchParticipantsPage({ projectId: 'p1', page: 0, size: 10 });
 
-        // Act
-        store.searchUsers( { projectId: 'p1', q: 'ada' } )
+		// Assert
+		expect(store.participants.error()).toBeDefined();
+	});
 
-        // Assert
-        expect( store.metadata.searchedUsers() ).toEqual( [ { label: 'a@b.c (Ada L)', value: expect.objectContaining( { id: 'u1' } ) } ] )
-    } )
+	it('turns the searched users into select items', () => {
+		// Arrange
+		searchUsers.mockReturnValue(of([{ id: 'u1', email: 'a@b.c', firstName: 'Ada', lastName: 'L' } as UserModel]));
 
-    it( 'turns the searched groups into select items', () => {
-        // Arrange
-        searchGroups.mockReturnValue( of( [ { id: 'g1', name: 'Wolves' } as GroupModel ] ) )
+		// Act
+		store.searchUsers({ projectId: 'p1', q: 'ada' });
 
-        // Act
-        store.searchGroups( { projectId: 'p1', q: 'wo' } )
+		// Assert
+		expect(store.metadata.searchedUsers()).toEqual([
+			{ label: 'a@b.c (Ada L)', value: expect.objectContaining({ id: 'u1' }) },
+		]);
+	});
 
-        // Assert
-        expect( store.metadata.searchedGroups()[ 0 ].label ).toBe( 'Wolves' )
-    } )
+	it('turns the searched groups into select items', () => {
+		// Arrange
+		searchGroups.mockReturnValue(of([{ id: 'g1', name: 'Wolves' } as GroupModel]));
 
-    it( 'keeps a failed user search in the section error and keeps the previous results', () => {
-        // Arrange
-        searchUsers.mockReturnValueOnce( of( [ { id: 'u1', email: 'a@b.c', firstName: 'A', lastName: 'B' } as UserModel ] ) )
-        searchUsers.mockReturnValueOnce( failing( ERROR_500 ) )
-        store.searchUsers( { projectId: 'p1', q: 'a' } )
+		// Act
+		store.searchGroups({ projectId: 'p1', q: 'wo' });
 
-        // Act
-        store.searchUsers( { projectId: 'p1', q: 'ab' } )
+		// Assert
+		expect(store.metadata.searchedGroups()[0].label).toBe('Wolves');
+	});
 
-        // Assert
-        expect( store.sectionErrors()[ 'metadata.searchedUsers' ]?.summary ).toBe( 'Title' )
-        expect( store.metadata.searchedUsers() ).toHaveLength( 1 )
-    } )
+	it('keeps a failed user search in the section error and keeps the previous results', () => {
+		// Arrange
+		searchUsers.mockReturnValueOnce(of([{ id: 'u1', email: 'a@b.c', firstName: 'A', lastName: 'B' } as UserModel]));
+		searchUsers.mockReturnValueOnce(failing(ERROR_500));
+		store.searchUsers({ projectId: 'p1', q: 'a' });
 
-    it( 'loads the movements of a participant and fetches their contents', () => {
-        // Arrange
-        findParticipantMovements.mockReturnValue( of( pageOf<MovementModel>( [ { id: 'm1' } as MovementModel ] ) ) )
+		// Act
+		store.searchUsers({ projectId: 'p1', q: 'ab' });
 
-        // Act
-        store.fetchParticipantMovementsPage( { projectId: 'p1', id: 'pa1', page: 0, size: 10 } )
+		// Assert
+		expect(store.sectionErrors()['metadata.searchedUsers']?.summary).toBe('Title');
+		expect(store.metadata.searchedUsers()).toHaveLength(1);
+	});
 
-        // Assert
-        expect( findMovementsContents ).toHaveBeenCalledWith( 'p1', [ 'm1' ], false )
-        expect( store.movements.element()?.content[ 0 ].content ).toEqual( [] )
-    } )
+	it('loads the movements of a participant and fetches their contents', () => {
+		// Arrange
+		findParticipantMovements.mockReturnValue(of(pageOf<MovementModel>([{ id: 'm1' } as MovementModel])));
 
-    it( 'keeps a failed movements fetch in the movements block only', () => {
-        // Arrange
-        findParticipantMovements.mockReturnValue( failing( ERROR_500 ) )
+		// Act
+		store.fetchParticipantMovementsPage({ projectId: 'p1', id: 'pa1', page: 0, size: 10 });
 
-        // Act
-        store.fetchParticipantMovementsPage( { projectId: 'p1', id: 'pa1', page: 0, size: 10 } )
+		// Assert
+		expect(findMovementsContents).toHaveBeenCalledWith('p1', ['m1'], false);
+		expect(store.movements.element()?.content[0].content).toEqual([]);
+	});
 
-        // Assert
-        expect( store.movements.error()?.summary ).toBe( 'Title' )
-        expect( store.participants.error() ).toBeUndefined()
-    } )
+	it('keeps a failed movements fetch in the movements block only', () => {
+		// Arrange
+		findParticipantMovements.mockReturnValue(failing(ERROR_500));
 
-    it( 'stores the timeline of a participant and ends its loading state', () => {
-        // Arrange
-        const timeline: ParticipantTimelineModel = { planned: [], actual: [ { start: new Date( 0 ), end: new Date( 1 ), ongoing: false } ] }
-        findParticipantTimeline.mockReturnValue( of( timeline ) )
+		// Act
+		store.fetchParticipantMovementsPage({ projectId: 'p1', id: 'pa1', page: 0, size: 10 });
 
-        // Act
-        store.fetchParticipantTimeline( { projectId: 'p1', id: 'pa1' } )
+		// Assert
+		expect(store.movements.error()?.summary).toBe('Title');
+		expect(store.participants.error()).toBeUndefined();
+	});
 
-        // Assert
-        expect( findParticipantTimeline ).toHaveBeenCalledWith( 'p1', 'pa1' )
-        expect( store.timeline.element() ).toEqual( timeline )
-        expect( store.timeline.loading() ).toBe( false )
-    } )
+	it('stores the timeline of a participant and ends its loading state', () => {
+		// Arrange
+		const timeline: ParticipantTimelineModel = {
+			planned: [],
+			actual: [{ start: new Date(0), end: new Date(1), ongoing: false }],
+		};
+		findParticipantTimeline.mockReturnValue(of(timeline));
 
-    it( 'keeps a failed timeline fetch in the timeline block only and still works afterwards', () => {
-        // Arrange
-        findParticipantTimeline.mockReturnValueOnce( failing( ERROR_500 ) )
-        store.fetchParticipantTimeline( { projectId: 'p1', id: 'pa1' } )
-        const failure: string | undefined = store.timeline.error()?.summary
-        findParticipantTimeline.mockReturnValue( of( { planned: [], actual: [] } ) )
+		// Act
+		store.fetchParticipantTimeline({ projectId: 'p1', id: 'pa1' });
 
-        // Act
-        store.fetchParticipantTimeline( { projectId: 'p1', id: 'pa1' } )
+		// Assert
+		expect(findParticipantTimeline).toHaveBeenCalledWith('p1', 'pa1');
+		expect(store.timeline.element()).toEqual(timeline);
+		expect(store.timeline.loading()).toBe(false);
+	});
 
-        // Assert
-        expect( failure ).toBe( 'Title' )
-        expect( store.movements.error() ).toBeUndefined()
-        expect( store.timeline.error() ).toBeUndefined()
-        expect( store.timeline.element() ).toEqual( { planned: [], actual: [] } )
-    } )
+	it('keeps a failed timeline fetch in the timeline block only and still works afterwards', () => {
+		// Arrange
+		findParticipantTimeline.mockReturnValueOnce(failing(ERROR_500));
+		store.fetchParticipantTimeline({ projectId: 'p1', id: 'pa1' });
+		const failure = store.timeline.error()?.summary;
+		findParticipantTimeline.mockReturnValue(of({ planned: [], actual: [] }));
 
-    it( 'reloads the timeline silently and keeps the previous one when it fails', () => {
-        // Arrange
-        findParticipantTimeline.mockReturnValueOnce( of( { planned: [], actual: [] } ) )
-        store.fetchParticipantTimeline( { projectId: 'p1', id: 'pa1' } )
-        findParticipantTimeline.mockReturnValueOnce( failing( ERROR_500 ) )
+		// Act
+		store.fetchParticipantTimeline({ projectId: 'p1', id: 'pa1' });
 
-        // Act
-        store.reloadParticipantTimeline( { projectId: 'p1', id: 'pa1' } )
+		// Assert
+		expect(failure).toBe('Title');
+		expect(store.movements.error()).toBeUndefined();
+		expect(store.timeline.error()).toBeUndefined();
+		expect(store.timeline.element()).toEqual({ planned: [], actual: [] });
+	});
 
-        // Assert
-        expect( store.timeline.element() ).toEqual( { planned: [], actual: [] } )
-        expect( store.timeline.loading() ).toBe( false )
-        expect( store.timeline.error() ).toBeUndefined()
-    } )
-} )
+	it('reloads the timeline silently and keeps the previous one when it fails', () => {
+		// Arrange
+		findParticipantTimeline.mockReturnValueOnce(of({ planned: [], actual: [] }));
+		store.fetchParticipantTimeline({ projectId: 'p1', id: 'pa1' });
+		findParticipantTimeline.mockReturnValueOnce(failing(ERROR_500));
+
+		// Act
+		store.reloadParticipantTimeline({ projectId: 'p1', id: 'pa1' });
+
+		// Assert
+		expect(store.timeline.element()).toEqual({ planned: [], actual: [] });
+		expect(store.timeline.loading()).toBe(false);
+		expect(store.timeline.error()).toBeUndefined();
+	});
+});

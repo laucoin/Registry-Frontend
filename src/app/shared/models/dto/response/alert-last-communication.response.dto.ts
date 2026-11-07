@@ -1,4 +1,4 @@
 export interface AlertLastCommunicationResponseDto {
-    dateTime: Date
-    message: string | undefined
+	dateTime: Date;
+	message: string | undefined;
 }

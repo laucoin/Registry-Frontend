@@ -1,21 +1,21 @@
-import { formatSort, parseSort, SortFields } from '@shared/helpers/search/sort-query'
-import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice'
+import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice';
+import { formatSort, parseSort, SortFields } from '@shared/helpers/search/sort-query';
 
-export const MOVEMENTS_LIST_SORT_FIELDS: readonly string[] = [ 'dateTime', 'type', 'lastCommunicationDateTime' ]
+export const MOVEMENTS_LIST_SORT_FIELDS: readonly string[] = ['dateTime', 'type', 'lastCommunicationDateTime'];
 
 interface MovementsListSearch {
-    type: string | undefined
-    from: Date | undefined
-    to: Date | undefined
-    isVisible: boolean | undefined
-    sort: string | undefined
+	type: string | undefined;
+	from: Date | undefined;
+	to: Date | undefined;
+	isVisible: boolean | undefined;
+	sort: string | undefined;
 }
 
 export interface MovementsListSearchModel extends SortFields {
-    type: string
-    from: Date | null
-    to: Date | null
-    isVisible: BooleanChoice
+	type: string;
+	from: Date | null;
+	to: Date | null;
+	isVisible: BooleanChoice;
 }
 
 /**
@@ -23,14 +23,14 @@ export interface MovementsListSearchModel extends SortFields {
  * Scope: Remplit les paramètres vides avec les valeurs par défaut du formulaire.
  * Limits: Ne valide pas les paramètres.
  */
-export function toMovementsListSearchModel (params: MovementsListSearch): MovementsListSearchModel {
-    return {
-        type: params.type ?? '',
-        from: params.from ?? null,
-        to: params.to ?? null,
-        isVisible: toBooleanChoice( params.isVisible ),
-        ...parseSort( params.sort, MOVEMENTS_LIST_SORT_FIELDS ),
-    }
+export function toMovementsListSearchModel(params: MovementsListSearch): MovementsListSearchModel {
+	return {
+		type: params.type ?? '',
+		from: params.from ?? null,
+		to: params.to ?? null,
+		isVisible: toBooleanChoice(params.isVisible),
+		...parseSort(params.sort, MOVEMENTS_LIST_SORT_FIELDS),
+	};
 }
 
 /**
@@ -38,12 +38,12 @@ export function toMovementsListSearchModel (params: MovementsListSearch): Moveme
  * Scope: Transforme les valeurs vides du formulaire en paramètres undefined.
  * Limits: Ne valide pas les valeurs du formulaire.
  */
-export function toMovementsListSearchParams (model: MovementsListSearchModel): MovementsListSearch {
-    return {
-        type: model.type === '' ? undefined : model.type,
-        from: model.from ?? undefined,
-        to: model.to ?? undefined,
-        isVisible: fromBooleanChoice( model.isVisible ),
-        sort: formatSort( model ),
-    }
+export function toMovementsListSearchParams(model: MovementsListSearchModel): MovementsListSearch {
+	return {
+		type: model.type === '' ? undefined : model.type,
+		from: model.from ?? undefined,
+		to: model.to ?? undefined,
+		isVisible: fromBooleanChoice(model.isVisible),
+		sort: formatSort(model),
+	};
 }

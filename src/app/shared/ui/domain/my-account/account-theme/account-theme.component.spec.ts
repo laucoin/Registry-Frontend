@@ -1,10 +1,13 @@
 import { signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SessionFacade } from '@core/registry/state/session.facade';
+
 import { TranslocoPipe } from '@jsverse/transloco';
+import { MockBuilder } from 'ng-mocks';
+
+import { SessionFacade } from '@core/registry/state/session.facade';
 import { THEME_CHOICES } from '@shared/helpers/theme-choices.const';
 import { ThemeEnum } from '@shared/models/enumeration/theme.enum';
-import { MockBuilder } from 'ng-mocks';
+
 import { AccountThemeComponent } from './account-theme.component';
 
 describe('AccountThemeComponent', () => {
@@ -17,7 +20,10 @@ describe('AccountThemeComponent', () => {
 		updateCurrentUserTheme = vi.fn();
 		await MockBuilder(AccountThemeComponent)
 			.mock(TranslocoPipe, (key: string): string => key)
-			.provide({ provide: SessionFacade, useValue: { currentUserTheme: theme, themeChoices: THEME_CHOICES, updateCurrentUserTheme } });
+			.provide({
+				provide: SessionFacade,
+				useValue: { currentUserTheme: theme, themeChoices: THEME_CHOICES, updateCurrentUserTheme },
+			});
 		fixture = TestBed.createComponent(AccountThemeComponent);
 		await fixture.whenStable();
 	});

@@ -1,270 +1,309 @@
-import { signal } from '@angular/core'
-import { TestBed } from '@angular/core/testing'
-import { TranslocoService } from '@jsverse/transloco'
-import { Observable, of, Subject } from 'rxjs'
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { MetadataApi } from '@core/registry/state/metadata.api'
-import { SessionFacade } from '@core/registry/state/session.facade'
-import { UiFacade } from '@core/registry/state/ui.facade'
-import { VehicleApi } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.api'
-import { VehicleFacade } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.facade'
-import { VehicleStore } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.store'
-import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
-import { ERROR_500, ERROR_503, failing, pageOf, provideTestConfig } from '@shared/helpers/testing/test-fixtures'
-import { ErrorModel } from '@shared/models/model/error.model'
-import { VehicleModel } from '@shared/models/model/vehicle.model'
+import { signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 
-describe( 'VehicleFacade', () => {
-    let facade: VehicleFacade
-    let findVehicles: Mock<VehicleApi['findVehicles']>
-    let createVehicle: Mock<VehicleApi['createVehicle']>
-    let restoreVehicleById: Mock<VehicleApi['restoreVehicleById']>
-    let api: Record<string, Mock>
-    let notify: Mock<(message: unknown) => void>
+import { TranslocoService } from '@jsverse/transloco';
+import { Observable, of, Subject } from 'rxjs';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-    beforeEach( () => {
-        provideTestConfig()
-        findVehicles = vi.fn( () => of( pageOf<VehicleModel>( [], 2 ) ) )
-        createVehicle = vi.fn()
-        restoreVehicleById = vi.fn()
-        api = { findVehicleTimeline: vi.fn( () => of( { planned: [], actual: [], outSeconds: 0, usageRate: undefined } ) ), findVehicleById: vi.fn(), updateVehicleById: vi.fn(), softDeleteVehicleById: vi.fn(), hardDeleteVehicleById: vi.fn() }
-        notify = vi.fn()
-        TestBed.configureTestingModule( {
-            providers: [
-                VehicleFacade,
-                VehicleStore,
-                { provide: VehicleApi, useValue: { findVehicles, createVehicle, restoreVehicleById, ...api } },
-                { provide: MovementApi, useValue: { findMovementsContents: vi.fn( () => of( [] ) ) } },
-                { provide: MetadataApi, useValue: { getPresencesStatus: vi.fn( () => of( [] ) ) } },
-                { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ) } },
-                { provide: UiFacade, useValue: { notify } },
-                { provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}`, langChanges$: new Subject<string>().asObservable() } },
-            ],
-        } )
-        facade = TestBed.inject( VehicleFacade )
-        facade.fetchVehiclesPage( 2, 10 )
-        findVehicles.mockClear()
-    } )
+import { MetadataApi } from '@core/registry/state/metadata.api';
+import { SessionFacade } from '@core/registry/state/session.facade';
+import { UiFacade } from '@core/registry/state/ui.facade';
+import { VehicleApi } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.api';
+import { VehicleFacade } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.facade';
+import { VehicleStore } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.store';
+import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api';
+import { ERROR_500, ERROR_503, failing, pageOf, provideTestConfig } from '@shared/helpers/testing/test-fixtures';
+import { ErrorModel } from '@shared/models/model/error.model';
+import { VehicleModel } from '@shared/models/model/vehicle.model';
 
-    it( 'fetches the requested page for the selected project', () => {
-        // Arrange
-        const page: number = 3
+describe('VehicleFacade', () => {
+	let facade: VehicleFacade;
+	let findVehicles: Mock<VehicleApi['findVehicles']>;
+	let createVehicle: Mock<VehicleApi['createVehicle']>;
+	let restoreVehicleById: Mock<VehicleApi['restoreVehicleById']>;
+	let api: Record<string, Mock>;
+	let notify: Mock<(message: unknown) => void>;
 
-        // Act
-        facade.fetchVehiclesPage( page, 10 )
+	beforeEach(() => {
+		provideTestConfig();
+		findVehicles = vi.fn(() => of(pageOf<VehicleModel>([], 2)));
+		createVehicle = vi.fn();
+		restoreVehicleById = vi.fn();
+		api = {
+			findVehicleTimeline: vi.fn(() => of({ planned: [], actual: [], outSeconds: 0, usageRate: undefined })),
+			findVehicleById: vi.fn(),
+			updateVehicleById: vi.fn(),
+			softDeleteVehicleById: vi.fn(),
+			hardDeleteVehicleById: vi.fn(),
+		};
+		notify = vi.fn();
+		TestBed.configureTestingModule({
+			providers: [
+				VehicleFacade,
+				VehicleStore,
+				{ provide: VehicleApi, useValue: { findVehicles, createVehicle, restoreVehicleById, ...api } },
+				{ provide: MovementApi, useValue: { findMovementsContents: vi.fn(() => of([])) } },
+				{ provide: MetadataApi, useValue: { getPresencesStatus: vi.fn(() => of([])) } },
+				{ provide: SessionFacade, useValue: { currentProjectId: signal('p1') } },
+				{ provide: UiFacade, useValue: { notify } },
+				{
+					provide: TranslocoService,
+					useValue: {
+						translate: (key: string): string => `t:${key}`,
+						langChanges$: new Subject<string>().asObservable(),
+					},
+				},
+			],
+		});
+		facade = TestBed.inject(VehicleFacade);
+		facade.fetchVehiclesPage(2, 10);
+		findVehicles.mockClear();
+	});
 
-        // Assert
-        expect( findVehicles ).toHaveBeenCalledWith( 'p1', 3, 10, expect.anything() )
-    } )
+	it('fetches the requested page for the selected project', () => {
+		// Arrange
+		const page = 3;
 
-    it( 'restarts from the first page when the search changed', () => {
-        // Arrange
-        facade.inputPageSearchParameters( 'van', undefined, undefined, undefined )
+		// Act
+		facade.fetchVehiclesPage(page, 10);
 
-        // Act
-        facade.fetchVehiclesPage( 4, 10 )
+		// Assert
+		expect(findVehicles).toHaveBeenCalledWith('p1', 3, 10, expect.anything());
+	});
 
-        // Assert
-        expect( findVehicles ).toHaveBeenCalledWith( 'p1', 0, 10, expect.anything() )
-    } )
+	it('restarts from the first page when the search changed', () => {
+		// Arrange
+		facade.inputPageSearchParameters('van', undefined, undefined, undefined);
 
-    it( 'translates the visibility labels except the empty option', () => {
-        // Arrange
-        const expected: (string | undefined)[] = [ '-', 't:vehicles.visible.true', 't:vehicles.visible.false' ]
+		// Act
+		facade.fetchVehiclesPage(4, 10);
 
-        // Act
-        const labels: (string | undefined)[] = facade.visibilitiesMetadata().map( (item: { label?: string }): string | undefined => item.label )
+		// Assert
+		expect(findVehicles).toHaveBeenCalledWith('p1', 0, 10, expect.anything());
+	});
 
-        // Assert
-        expect( labels ).toEqual( expected )
-    } )
+	it('translates the visibility labels except the empty option', () => {
+		// Arrange
+		const expected: (string | undefined)[] = ['-', 't:vehicles.visible.true', 't:vehicles.visible.false'];
 
-    it( 'notifies with the vehicle identity and refreshes the page after a creation', () => {
-        // Arrange
-        createVehicle.mockReturnValue( of( { id: 'v1', licensePlate: 'AB-123' } as VehicleModel ) )
+		// Act
+		const labels = facade.visibilitiesMetadata().map((item: { label?: string }) => item.label);
 
-        // Act
-        facade.createVehicle( {} as never ).subscribe()
+		// Assert
+		expect(labels).toEqual(expected);
+	});
 
-        // Assert
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'vehicles.notifications.create.title', data: expect.objectContaining( { registration: 'AB-123' } ) } ) )
-        expect( findVehicles ).toHaveBeenCalledWith( 'p1', 0, 30, expect.anything() )
-    } )
+	it('notifies with the vehicle identity and refreshes the page after a creation', () => {
+		// Arrange
+		createVehicle.mockReturnValue(of({ id: 'v1', licensePlate: 'AB-123' } as VehicleModel));
 
-    it( 'lets the form handle a creation error other than 503', () => {
-        // Arrange
-        createVehicle.mockReturnValue( failing( ERROR_500 ) )
-        let received: ErrorModel | undefined
+		// Act
+		facade.createVehicle({} as never).subscribe();
 
-        // Act
-        facade.createVehicle( {} as never ).subscribe( { error: (error: ErrorModel): void => { received = error } } )
+		// Assert
+		expect(notify).toHaveBeenCalledWith(
+			expect.objectContaining({
+				summary: 'vehicles.notifications.create.title',
+				data: expect.objectContaining({ registration: 'AB-123' }),
+			}),
+		);
+		expect(findVehicles).toHaveBeenCalledWith('p1', 0, 30, expect.anything());
+	});
 
-        // Assert
-        expect( received ).toBe( ERROR_500 )
-        expect( notify ).not.toHaveBeenCalled()
-    } )
+	it('lets the form handle a creation error other than 503', () => {
+		// Arrange
+		createVehicle.mockReturnValue(failing(ERROR_500));
+		let received: ErrorModel | undefined;
 
-    it( 'rethrows a 503 on creation for the form to display', () => {
-        // Arrange
-        createVehicle.mockReturnValue( failing( ERROR_503 ) )
-        let received: unknown
+		// Act
+		facade.createVehicle({} as never).subscribe({
+			error: (error: ErrorModel) => {
+				received = error;
+			},
+		});
 
-        // Act
-        facade.createVehicle( {} as never ).subscribe( { error: (error: unknown): void => { received = error } } )
+		// Assert
+		expect(received).toBe(ERROR_500);
+		expect(notify).not.toHaveBeenCalled();
+	});
 
-        // Assert
-        expect( received ).toBe( ERROR_503 )
-    } )
+	it('rethrows a 503 on creation for the form to display', () => {
+		// Arrange
+		createVehicle.mockReturnValue(failing(ERROR_503));
+		let received: unknown;
 
-    it( 'notifies a failed enable instead of rethrowing it', () => {
-        // Arrange
-        restoreVehicleById.mockReturnValue( failing( ERROR_500 ) )
-        let completed: boolean = false
+		// Act
+		facade.createVehicle({} as never).subscribe({
+			error: (error: unknown) => {
+				received = error;
+			},
+		});
 
-        // Act
-        facade.restoreVehicle( 'v1' ).subscribe( { complete: (): void => { completed = true } } )
+		// Assert
+		expect(received).toBe(ERROR_503);
+	});
 
-        // Assert
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
-        expect( completed ).toBe( true )
-    } )
+	it('notifies a failed enable instead of rethrowing it', () => {
+		// Arrange
+		restoreVehicleById.mockReturnValue(failing(ERROR_500));
+		let completed = false;
 
-    it( 'reloads every shown batch of the movements of a vehicle in one request', () => {
-        // Arrange
-        const finder: Mock = vi.fn( () => of( pageOf<never>( [], 1 ) ) )
-        ;(TestBed.inject( VehicleApi ) as unknown as Record<string, Mock>)[ 'findVehicleMovements' ] = finder
-        facade.fetchVehicleMovementsPage( 'e1', 1, 10 )
-        finder.mockClear()
+		// Act
+		facade.restoreVehicle('v1').subscribe({
+			complete: () => {
+				completed = true;
+			},
+		});
 
-        // Act
-        facade.reloadVehicleMovementsPage( 'e1' )
+		// Assert
+		expect(notify).toHaveBeenCalledWith(expect.objectContaining({ summary: 'Title' }));
+		expect(completed).toBe(true);
+	});
 
-        // Assert
-        expect( finder ).toHaveBeenCalledWith( 'p1', 'e1', 0, expect.any( Number ), expect.anything() )
-    } )
+	it('reloads every shown batch of the movements of a vehicle in one request', () => {
+		// Arrange
+		const finder: Mock = vi.fn(() => of(pageOf<never>([], 1)));
+		(TestBed.inject(VehicleApi) as unknown as Record<string, Mock>)['findVehicleMovements'] = finder;
+		facade.fetchVehicleMovementsPage('e1', 1, 10);
+		finder.mockClear();
 
-    it( 'fetches a vehicle of the selected project', () => {
-        // Arrange
-        api[ 'findVehicleById' ].mockReturnValue( of( { id: 'v1' } as VehicleModel ) )
-        let received: VehicleModel | undefined
+		// Act
+		facade.reloadVehicleMovementsPage('e1');
 
-        // Act
-        facade.fetchVehicle( 'v1' ).subscribe( (it: VehicleModel): void => { received = it } )
+		// Assert
+		expect(finder).toHaveBeenCalledWith('p1', 'e1', 0, expect.any(Number), expect.anything());
+	});
 
-        // Assert
-        expect( api[ 'findVehicleById' ] ).toHaveBeenCalledWith( 'p1', 'v1' )
-        expect( received?.id ).toBe( 'v1' )
-    } )
+	it('fetches a vehicle of the selected project', () => {
+		// Arrange
+		api['findVehicleById'].mockReturnValue(of({ id: 'v1' } as VehicleModel));
+		let received: VehicleModel | undefined;
 
-    it( 'notifies a failed vehicle fetch', () => {
-        // Arrange
-        api[ 'findVehicleById' ].mockReturnValue( failing( ERROR_500 ) )
+		// Act
+		facade.fetchVehicle('v1').subscribe((it) => {
+			received = it;
+		});
 
-        // Act
-        facade.fetchVehicle( 'v1' ).subscribe( { error: (): void => undefined } )
+		// Assert
+		expect(api['findVehicleById']).toHaveBeenCalledWith('p1', 'v1');
+		expect(received?.id).toBe('v1');
+	});
 
-        // Assert
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
-    } )
+	it('notifies a failed vehicle fetch', () => {
+		// Arrange
+		api['findVehicleById'].mockReturnValue(failing(ERROR_500));
 
-    it( 'sends the version of the vehicle on update and announces the edition', () => {
-        // Arrange
-        api[ 'updateVehicleById' ].mockReturnValue( of( { id: 'v1', licensePlate: 'AB-123' } as VehicleModel ) )
+		// Act
+		facade.fetchVehicle('v1').subscribe({ error: (): void => undefined });
 
-        // Act
-        facade.updateVehicle( 'v1', {} as never, 'etag-1' ).subscribe()
+		// Assert
+		expect(notify).toHaveBeenCalledWith(expect.objectContaining({ summary: 'Title' }));
+	});
 
-        // Assert
-        expect( api[ 'updateVehicleById' ] ).toHaveBeenCalledWith( 'p1', 'v1', {}, 'etag-1' )
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'vehicles.notifications.edit.title' } ) )
-        expect( findVehicles ).toHaveBeenCalledTimes( 1 )
-    } )
+	it('sends the version of the vehicle on update and announces the edition', () => {
+		// Arrange
+		api['updateVehicleById'].mockReturnValue(of({ id: 'v1', licensePlate: 'AB-123' } as VehicleModel));
 
-    it.each( [ 'softDelete', 'hardDelete' ] as const )( 'notifies and refreshes the page after the vehicle is %sd', (command: 'softDelete' | 'hardDelete') => {
-        // Arrange
-        const vehicle: VehicleModel = { id: 'v1', licensePlate: 'AB-123' } as VehicleModel
-        api[ 'softDeleteVehicleById' ].mockReturnValue( of( vehicle ) )
-        api[ 'hardDeleteVehicleById' ].mockReturnValue( of( undefined ) )
+		// Act
+		facade.updateVehicle('v1', {} as never, 'etag-1').subscribe();
 
-        // Act
-        const run$: Observable<unknown> = command === 'softDelete' ? facade.softDeleteVehicle( 'v1' ) : facade.hardDeleteVehicle( vehicle )
-        run$.subscribe()
+		// Assert
+		expect(api['updateVehicleById']).toHaveBeenCalledWith('p1', 'v1', {}, 'etag-1');
+		expect(notify).toHaveBeenCalledWith(expect.objectContaining({ summary: 'vehicles.notifications.edit.title' }));
+		expect(findVehicles).toHaveBeenCalledTimes(1);
+	});
 
-        // Assert
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: `vehicles.notifications.${ command }.title` } ) )
-        expect( findVehicles ).toHaveBeenCalledTimes( 1 )
-    } )
+	it.each(['softDelete', 'hardDelete'] as const)(
+		'notifies and refreshes the page after the vehicle is %sd',
+		(command) => {
+			// Arrange
+			const vehicle = { id: 'v1', licensePlate: 'AB-123' } as VehicleModel;
+			api['softDeleteVehicleById'].mockReturnValue(of(vehicle));
+			api['hardDeleteVehicleById'].mockReturnValue(of(undefined));
 
-    it( 'does not refresh the page when a deletion fails', () => {
-        // Arrange
-        api[ 'hardDeleteVehicleById' ].mockReturnValue( failing( ERROR_500 ) )
+			// Act
+			const run$: Observable<unknown> =
+				command === 'softDelete' ? facade.softDeleteVehicle('v1') : facade.hardDeleteVehicle(vehicle);
+			run$.subscribe();
 
-        // Act
-        facade.hardDeleteVehicle( { id: 'v1' } as VehicleModel ).subscribe( { error: (): void => undefined } )
+			// Assert
+			expect(notify).toHaveBeenCalledWith(
+				expect.objectContaining({ summary: `vehicles.notifications.${command}.title` }),
+			);
+			expect(findVehicles).toHaveBeenCalledTimes(1);
+		},
+	);
 
-        // Assert
-        expect( findVehicles ).not.toHaveBeenCalled()
-    } )
+	it('does not refresh the page when a deletion fails', () => {
+		// Arrange
+		api['hardDeleteVehicleById'].mockReturnValue(failing(ERROR_500));
 
-    it( 'restarts the movements from the first page when their search changed', () => {
-        // Arrange
-        const finder: Mock = vi.fn( () => of( pageOf<never>( [], 1 ) ) )
-        ;(TestBed.inject( VehicleApi ) as unknown as Record<string, Mock>)[ 'findVehicleMovements' ] = finder
-        facade.inputMovementsPageSearchParameters( 'IN', new Date( '2026-01-01T00:00:00.000Z' ), undefined, true )
+		// Act
+		facade.hardDeleteVehicle({ id: 'v1' } as VehicleModel).subscribe({ error: (): void => undefined });
 
-        // Act
-        facade.fetchVehicleMovementsPage( 'v1', 4, 10 )
+		// Assert
+		expect(findVehicles).not.toHaveBeenCalled();
+	});
 
-        // Assert
-        expect( finder ).toHaveBeenCalledWith( 'p1', 'v1', 0, 10, expect.anything() )
-        expect( facade.vehicleMovementsPageTypeParam() ).toBe( 'IN' )
-        expect( facade.vehicleMovementsPageFromParam()?.toISOString() ).toBe( '2026-01-01T00:00:00.000Z' )
-    } )
+	it('restarts the movements from the first page when their search changed', () => {
+		// Arrange
+		const finder: Mock = vi.fn(() => of(pageOf<never>([], 1)));
+		(TestBed.inject(VehicleApi) as unknown as Record<string, Mock>)['findVehicleMovements'] = finder;
+		facade.inputMovementsPageSearchParameters('IN', new Date('2026-01-01T00:00:00.000Z'), undefined, true);
 
-    it( 'keeps the movements search when the same values are input again', () => {
-        // Arrange
-        facade.inputMovementsPageSearchParameters( 'IN', undefined, undefined, undefined )
+		// Act
+		facade.fetchVehicleMovementsPage('v1', 4, 10);
 
-        // Act
-        facade.inputMovementsPageSearchParameters( 'IN', undefined, undefined, undefined )
+		// Assert
+		expect(finder).toHaveBeenCalledWith('p1', 'v1', 0, 10, expect.anything());
+		expect(facade.vehicleMovementsPageTypeParam()).toBe('IN');
+		expect(facade.vehicleMovementsPageFromParam()?.toISOString()).toBe('2026-01-01T00:00:00.000Z');
+	});
 
-        // Assert
-        expect( facade.vehicleMovementsPageTypeParam() ).toBe( 'IN' )
-    } )
+	it('keeps the movements search when the same values are input again', () => {
+		// Arrange
+		facade.inputMovementsPageSearchParameters('IN', undefined, undefined, undefined);
 
-    it( 'loads the timeline of a vehicle for the selected project and exposes it as signals', () => {
-        // Arrange
+		// Act
+		facade.inputMovementsPageSearchParameters('IN', undefined, undefined, undefined);
 
-        // Act
-        facade.fetchVehicleTimeline( 'v1' )
+		// Assert
+		expect(facade.vehicleMovementsPageTypeParam()).toBe('IN');
+	});
 
-        // Assert
-        expect( api[ 'findVehicleTimeline' ] ).toHaveBeenCalledWith( 'p1', 'v1' )
-        expect( facade.vehicleTimeline()?.outSeconds ).toBe( 0 )
-        expect( facade.vehicleTimelineLoading() ).toBe( false )
-        expect( facade.vehicleTimelineError() ).toBeUndefined()
-    } )
+	it('loads the timeline of a vehicle for the selected project and exposes it as signals', () => {
+		// Arrange
 
-    it( 'reloads the timeline of a vehicle', () => {
-        // Arrange
-        facade.fetchVehicleTimeline( 'v1' )
+		// Act
+		facade.fetchVehicleTimeline('v1');
 
-        // Act
-        facade.reloadVehicleTimeline( 'v1' )
+		// Assert
+		expect(api['findVehicleTimeline']).toHaveBeenCalledWith('p1', 'v1');
+		expect(facade.vehicleTimeline()?.outSeconds).toBe(0);
+		expect(facade.vehicleTimelineLoading()).toBe(false);
+		expect(facade.vehicleTimelineError()).toBeUndefined();
+	});
 
-        // Assert
-        expect( api[ 'findVehicleTimeline' ] ).toHaveBeenCalledTimes( 2 )
-    } )
+	it('reloads the timeline of a vehicle', () => {
+		// Arrange
+		facade.fetchVehicleTimeline('v1');
 
-    it( 'exposes the failure of the timeline without touching the movements', () => {
-        // Arrange
-        api[ 'findVehicleTimeline' ].mockReturnValue( failing( ERROR_503 ) )
+		// Act
+		facade.reloadVehicleTimeline('v1');
 
-        // Act
-        facade.fetchVehicleTimeline( 'v1' )
+		// Assert
+		expect(api['findVehicleTimeline']).toHaveBeenCalledTimes(2);
+	});
 
-        // Assert
-        expect( facade.vehicleTimelineError()?.summary ).toBe( 'Down' )
-        expect( facade.vehicleMovementsPageError() ).toBeUndefined()
-    } )
-} )
+	it('exposes the failure of the timeline without touching the movements', () => {
+		// Arrange
+		api['findVehicleTimeline'].mockReturnValue(failing(ERROR_503));
+
+		// Act
+		facade.fetchVehicleTimeline('v1');
+
+		// Assert
+		expect(facade.vehicleTimelineError()?.summary).toBe('Down');
+		expect(facade.vehicleMovementsPageError()).toBeUndefined();
+	});
+});

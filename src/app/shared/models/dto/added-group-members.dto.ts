@@ -1,4 +1,4 @@
 export interface AddedGroupMembersDto {
-    members: string[]
-    notAddedMemberIds: string[]
+	members: string[];
+	notAddedMemberIds: string[];
 }

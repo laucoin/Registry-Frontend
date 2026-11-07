@@ -1,11 +1,12 @@
-import { signalStore, withState } from '@ngrx/signals'
-import { SelectOptionModel } from '@shared/models/model/select-option.model'
-import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
-import { RegistryConfig } from '@core/config/registry.config'
+import { signalStore, withState } from '@ngrx/signals';
+
+import { RegistryConfig } from '@core/config/registry.config';
+import { ThemeEnum } from '@shared/models/enumeration/theme.enum';
+import { SelectOptionModel } from '@shared/models/model/select-option.model';
 
 interface MetadataStoreModel {
-    themes: SelectOptionModel<ThemeEnum>[]
-    languages: SelectOptionModel<string>[]
+	themes: SelectOptionModel<ThemeEnum>[];
+	languages: SelectOptionModel<string>[];
 }
 
 /**
@@ -14,16 +15,16 @@ interface MetadataStoreModel {
  * Limits: Does not translate labels; the UI facade does.
  */
 export const MetadataStore = signalStore(
-    { providedIn: 'root' },
-    withState<MetadataStoreModel>( () => ({
-        themes: [
-            { icon: 'pi pi-desktop', value: ThemeEnum.SYSTEM },
-            { icon: 'pi pi-sun', value: ThemeEnum.LIGHT },
-            { icon: 'pi pi-moon', value: ThemeEnum.DARK },
-        ],
-        languages: RegistryConfig.config.languages.map( (lang: string): SelectOptionModel<string> => ({
-            label: 'global.language.' + lang,
-            value: lang,
-        }) ),
-    }) ),
-)
+	{ providedIn: 'root' },
+	withState<MetadataStoreModel>(() => ({
+		themes: [
+			{ icon: 'pi pi-desktop', value: ThemeEnum.SYSTEM },
+			{ icon: 'pi pi-sun', value: ThemeEnum.LIGHT },
+			{ icon: 'pi pi-moon', value: ThemeEnum.DARK },
+		],
+		languages: RegistryConfig.config.languages.map((lang: string): SelectOptionModel<string> => ({
+			label: 'global.language.' + lang,
+			value: lang,
+		})),
+	})),
+);

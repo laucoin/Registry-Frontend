@@ -1,4 +1,4 @@
-import { SelectOptionModel } from '@shared/models/model/select-option.model'
+import { SelectOptionModel } from '@shared/models/model/select-option.model';
 
 /**
  * Purpose: Construit les valeurs dont est fait le modèle d'un signal form.
@@ -6,19 +6,27 @@ import { SelectOptionModel } from '@shared/models/model/select-option.model'
  * Limits: Ne gère que des données simples ; les valeurs contenant des fonctions ne peuvent pas être copiées.
  */
 export interface SelectableItem<T> extends SelectOptionModel<T> {
-    self: SelectOptionModel<T>
+	self: SelectOptionModel<T>;
 }
 
-export class FormModelHelper {
-    public static selectable<T> (items: readonly SelectOptionModel<T>[]): SelectableItem<T>[] {
-        return items.map( (item: SelectOptionModel<T>): SelectableItem<T> => ({ ...item, self: item }) )
-    }
+export const FormModelHelper = {
+	selectable<T>(items: readonly SelectOptionModel<T>[]): SelectableItem<T>[] {
+		return items.map((item): SelectableItem<T> => ({ ...item, self: item }));
+	},
 
-    public static copy<T> (value: T): T {
-        return structuredClone( value )
-    }
+	copy<T>(value: T): T {
+		return structuredClone(value);
+	},
 
-    public static copyItems<T extends object> (items: readonly T[] | undefined): T[] {
-        return (items ?? []).map( (item: T): T => FormModelHelper.copy( item ) )
-    }
-}
+	orEmpty(value: string | null | undefined): string {
+		return value ?? '';
+	},
+
+	orNull<T>(value: T | null | undefined): T | null {
+		return value ?? null;
+	},
+
+	copyItems<T extends object>(items: readonly T[] | undefined): T[] {
+		return (items ?? []).map((item) => FormModelHelper.copy(item));
+	},
+} as const;

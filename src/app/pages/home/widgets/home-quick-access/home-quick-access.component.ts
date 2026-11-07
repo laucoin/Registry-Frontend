@@ -1,30 +1,38 @@
-import '@sgdf/ui/table'
-import '@sgdf/ui/table-row'
-import '@sgdf/ui/table-cell'
-import '@sgdf/ui/icon'
-import '@sgdf/ui/button'
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, Signal } from '@angular/core'
-import { RouterLink } from '@angular/router'
-import { RegistryConfig } from '@core/config/registry.config'
-import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper'
-import { SessionFacade } from '@core/registry/state/session.facade'
-import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
-import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco'
-import { UserAuthorityEnum } from '@shared/models/enumeration/user-authority.enum'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
+
+import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
+
+import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper';
+import { RegistryConfig } from '@core/config/registry.config';
+import { SessionFacade } from '@core/registry/state/session.facade';
+import { RegistryRouteEnum } from '@core/routing/registry-route.enum';
+import { UserAuthorityEnum } from '@shared/models/enumeration/user-authority.enum';
+
+import '@sgdf/ui/table';
+import '@sgdf/ui/table-row';
+import '@sgdf/ui/table-cell';
+import '@sgdf/ui/icon';
+import '@sgdf/ui/button';
 
 interface QuickAccess {
-	label: string
-	icon: string
-	url: string
-	external?: boolean
-	authority?: UserAuthorityEnum
+	label: string;
+	icon: string;
+	url: string;
+	external?: boolean;
+	authority?: UserAuthorityEnum;
 }
 
 const SHORTCUTS: readonly QuickAccess[] = [
-	{ label: 'home.quickAccess.users', icon: 'user-group', url: RegistryRouteEnum.USERS, authority: UserAuthorityEnum.REGISTRY_USER_R },
+	{
+		label: 'home.quickAccess.users',
+		icon: 'user-group',
+		url: RegistryRouteEnum.USERS,
+		authority: UserAuthorityEnum.REGISTRY_USER_R,
+	},
 	{ label: 'home.quickAccess.account', icon: 'gear', url: RegistryRouteEnum.MY_ACCOUNT },
 	{ label: 'home.quickAccess.projects', icon: 'folder-open', url: RegistryRouteEnum.PROJECTS },
-]
+];
 
 /**
  * Purpose: Propose sur la page d'accueil des raccourcis vers les principaux espaces de l'application.
@@ -39,25 +47,33 @@ const SHORTCUTS: readonly QuickAccess[] = [
 	templateUrl: './home-quick-access.component.html',
 })
 export class HomeQuickAccessComponent {
-	private readonly sessionFacade: SessionFacade = inject(SessionFacade)
+	private readonly sessionFacade = inject(SessionFacade);
 
-	private readonly documentationUrl: string | undefined = RegistryConfig.config.application.support.documentationUrl
+	private readonly documentationUrl = RegistryConfig.config.application.support.documentationUrl;
 
-	private readonly issuesUrl: string | undefined = RegistryConfig.config.application.support.issuesUrl
+	private readonly issuesUrl = RegistryConfig.config.application.support.issuesUrl;
 
-	protected readonly shortcuts: Signal<QuickAccess[]> = computed((): QuickAccess[] =>
-		this.withExternalLinks().filter((shortcut: QuickAccess): boolean =>
-			shortcut.authority === undefined || CurrentUserHelper.hasUserAuthority(this.sessionFacade.currentUser(), shortcut.authority)),
-	)
+	protected readonly shortcuts = computed(() =>
+		this.withExternalLinks().filter(
+			(shortcut) =>
+				shortcut.authority === undefined ||
+				CurrentUserHelper.hasUserAuthority(this.sessionFacade.currentUser(), shortcut.authority),
+		),
+	);
 
 	private withExternalLinks(): readonly QuickAccess[] {
-		const links: QuickAccess[] = []
+		const links: QuickAccess[] = [];
 		if (this.documentationUrl) {
-			links.push({ label: 'home.quickAccess.help', icon: 'circle-question', url: this.documentationUrl, external: true })
+			links.push({
+				label: 'home.quickAccess.help',
+				icon: 'circle-question',
+				url: this.documentationUrl,
+				external: true,
+			});
 		}
 		if (this.issuesUrl) {
-			links.push({ label: 'home.quickAccess.support', icon: 'life-ring', url: this.issuesUrl, external: true })
+			links.push({ label: 'home.quickAccess.support', icon: 'life-ring', url: this.issuesUrl, external: true });
 		}
-		return [...SHORTCUTS, ...links]
+		return [...SHORTCUTS, ...links];
 	}
 }

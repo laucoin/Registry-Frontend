@@ -1,11 +1,14 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal } from '@angular/core'
-import { UiFacade } from '@core/registry/state/ui.facade'
-import { TranslocoPipe } from '@jsverse/transloco'
-import { NotificationModel } from '@shared/models/model/notification.model'
-import '@sgdf/ui/button'
-import '@sgdf/ui/callout'
-import '@sgdf/ui/icon'
-import '@sgdf/ui/page-title'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, input } from '@angular/core';
+
+import { TranslocoPipe } from '@jsverse/transloco';
+
+import { UiFacade } from '@core/registry/state/ui.facade';
+import { NotificationModel } from '@shared/models/model/notification.model';
+
+import '@sgdf/ui/button';
+import '@sgdf/ui/callout';
+import '@sgdf/ui/icon';
+import '@sgdf/ui/page-title';
 
 /**
  * Purpose: Erreur pleine page affichée quand toute l'application est bloquée.
@@ -19,11 +22,11 @@ import '@sgdf/ui/page-title'
 	imports: [TranslocoPipe],
 })
 export class GlobalErrorComponent {
-	private readonly uiFacade: UiFacade = inject(UiFacade)
+	private readonly uiFacade = inject(UiFacade);
 
-	public readonly error: InputSignal<NotificationModel> = input.required<NotificationModel>()
+	public readonly error = input.required<NotificationModel>();
 
 	protected retry(): void {
-		this.uiFacade.reloadApplication()
+		this.uiFacade.reloadApplication();
 	}
 }

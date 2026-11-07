@@ -1,79 +1,84 @@
-import { TestBed } from '@angular/core/testing'
-import { TranslocoService } from '@jsverse/transloco'
-import { beforeEach, describe, expect, it } from 'vitest'
-import { PluralTranslationPipe } from './plural-translation.pipe'
+import { TestBed } from '@angular/core/testing';
 
-describe( 'PluralTranslationPipe', () => {
-    let pipe: PluralTranslationPipe
+import { TranslocoService } from '@jsverse/transloco';
+import { beforeEach, describe, expect, it } from 'vitest';
 
-    beforeEach( () => {
-        const translations: Record<string, string> = { 'zero.zero': 'none', 'zero.two': 'pair' }
-        TestBed.configureTestingModule( {
-            providers: [
-                PluralTranslationPipe,
-                { provide: TranslocoService, useValue: { getActiveLang: (): string => 'fr', getTranslation: (): object => translations } },
-            ],
-        } )
-        pipe = TestBed.inject( PluralTranslationPipe )
-    } )
+import { PluralTranslationPipe } from './plural-translation.pipe';
 
-    it( 'uses the zero key when it exists', () => {
-        // Arrange
-        const key: string = 'zero'
+describe('PluralTranslationPipe', () => {
+	let pipe: PluralTranslationPipe;
 
-        // Act
-        const result: string = pipe.transform( key, 0 )
+	beforeEach(() => {
+		const translations: Record<string, string> = { 'zero.zero': 'none', 'zero.two': 'pair' };
+		TestBed.configureTestingModule({
+			providers: [
+				PluralTranslationPipe,
+				{
+					provide: TranslocoService,
+					useValue: { getActiveLang: (): string => 'fr', getTranslation: (): object => translations },
+				},
+			],
+		});
+		pipe = TestBed.inject(PluralTranslationPipe);
+	});
 
-        // Assert
-        expect( result ).toBe( 'zero.zero' )
-    } )
+	it('uses the zero key when it exists', () => {
+		// Arrange
+		const key = 'zero';
 
-    it( 'falls back to the one key for zero when no zero key exists', () => {
-        // Arrange
-        const key: string = 'plain'
+		// Act
+		const result = pipe.transform(key, 0);
 
-        // Act
-        const result: string = pipe.transform( key, [] )
+		// Assert
+		expect(result).toBe('zero.zero');
+	});
 
-        // Assert
-        expect( result ).toBe( 'plain.one' )
-    } )
+	it('falls back to the one key for zero when no zero key exists', () => {
+		// Arrange
+		const key = 'plain';
 
-    it( 'uses the one key for a single element', () => {
-        // Arrange
-        const key: string = 'plain'
+		// Act
+		const result = pipe.transform(key, []);
 
-        // Act
-        const result: string = pipe.transform( key, [ 'a' ] )
+		// Assert
+		expect(result).toBe('plain.one');
+	});
 
-        // Assert
-        expect( result ).toBe( 'plain.one' )
-    } )
+	it('uses the one key for a single element', () => {
+		// Arrange
+		const key = 'plain';
 
-    it( 'uses the two key when it exists and falls back to few otherwise', () => {
-        // Arrange
-        const withTwo: string = 'zero'
-        const withoutTwo: string = 'plain'
+		// Act
+		const result = pipe.transform(key, ['a']);
 
-        // Act
-        const existing: string = pipe.transform( withTwo, 2 )
-        const missing: string = pipe.transform( withoutTwo, 2 )
+		// Assert
+		expect(result).toBe('plain.one');
+	});
 
-        // Assert
-        expect( existing ).toBe( 'zero.two' )
-        expect( missing ).toBe( 'plain.few' )
-    } )
+	it('uses the two key when it exists and falls back to few otherwise', () => {
+		// Arrange
+		const withTwo = 'zero';
+		const withoutTwo = 'plain';
 
-    it( 'uses the few key for larger or unknown sizes', () => {
-        // Arrange
-        const key: string = 'plain'
+		// Act
+		const existing = pipe.transform(withTwo, 2);
+		const missing = pipe.transform(withoutTwo, 2);
 
-        // Act
-        const large: string = pipe.transform( key, 5 )
-        const unknown: string = pipe.transform( key, undefined )
+		// Assert
+		expect(existing).toBe('zero.two');
+		expect(missing).toBe('plain.few');
+	});
 
-        // Assert
-        expect( large ).toBe( 'plain.few' )
-        expect( unknown ).toBe( 'plain.few' )
-    } )
-} )
+	it('uses the few key for larger or unknown sizes', () => {
+		// Arrange
+		const key = 'plain';
+
+		// Act
+		const large = pipe.transform(key, 5);
+		const unknown = pipe.transform(key, undefined);
+
+		// Assert
+		expect(large).toBe('plain.few');
+		expect(unknown).toBe('plain.few');
+	});
+});

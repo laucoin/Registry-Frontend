@@ -1,95 +1,105 @@
-import { TestBed } from '@angular/core/testing'
-import { TranslocoService } from '@jsverse/transloco'
-import { ConfirmationModel } from '@shared/models/model/confirmation.model'
-import { NotificationModel } from '@shared/models/model/notification.model'
-import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
-import { beforeEach, describe, expect, it } from 'vitest'
-import { NotificationStore } from '@core/registry/state/notification.store'
+import { TestBed } from '@angular/core/testing';
 
-describe( 'NotificationStore', () => {
-    beforeEach( () => {
-        TestBed.configureTestingModule( { providers: [ { provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}` } } ] } )
-    } )
+import { TranslocoService } from '@jsverse/transloco';
+import { beforeEach, describe, expect, it } from 'vitest';
 
-    it( 'delivers every notification to a listener, even several in a row', () => {
-        // Arrange
-        const store: InstanceType<typeof NotificationStore> = TestBed.inject( NotificationStore )
-        const received: string[] = []
-        store.messages$().subscribe( (message: NotificationModel): number => received.push( message.summary! ) )
+import { NotificationStore } from '@core/registry/state/notification.store';
+import { defined } from '@shared/helpers/testing/defined';
+import { SeverityEnum } from '@shared/models/enumeration/severity.enum';
+import { ConfirmationModel } from '@shared/models/model/confirmation.model';
+import { NotificationModel } from '@shared/models/model/notification.model';
 
-        // Act
-        store.notify( { summary: 'first' } )
-        store.notify( { summary: 'second' } )
+describe('NotificationStore', () => {
+	beforeEach(() => {
+		TestBed.configureTestingModule({
+			providers: [{ provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}` } }],
+		});
+	});
 
-        // Assert
-        expect( received ).toEqual( [ 'first', 'second' ] )
-    } )
+	it('delivers every notification to a listener, even several in a row', () => {
+		// Arrange
+		const store = TestBed.inject(NotificationStore);
+		const received: string[] = [];
+		store.messages$().subscribe((message) => received.push(defined(message.summary)));
 
-    it( 'does not replay past notifications to a late listener', () => {
-        // Arrange
-        const store: InstanceType<typeof NotificationStore> = TestBed.inject( NotificationStore )
-        store.notify( { summary: 'missed' } )
-        const received: string[] = []
+		// Act
+		store.notify({ summary: 'first' });
+		store.notify({ summary: 'second' });
 
-        // Act
-        store.messages$().subscribe( (message: NotificationModel): number => received.push( message.summary! ) )
+		// Assert
+		expect(received).toEqual(['first', 'second']);
+	});
 
-        // Assert
-        expect( received ).toEqual( [] )
-    } )
+	it('does not replay past notifications to a late listener', () => {
+		// Arrange
+		const store = TestBed.inject(NotificationStore);
+		store.notify({ summary: 'missed' });
+		const received: string[] = [];
 
-    it( 'drops the notifications of an unauthorized call', () => {
-        // Arrange
-        const store: InstanceType<typeof NotificationStore> = TestBed.inject( NotificationStore )
-        const received: NotificationModel[] = []
-        store.messages$().subscribe( (message: NotificationModel): number => received.push( message ) )
+		// Act
+		store.messages$().subscribe((message) => received.push(defined(message.summary)));
 
-        // Act
-        store.notify( { summary: 'error 401', detail: 'x' } )
+		// Assert
+		expect(received).toEqual([]);
+	});
 
-        // Assert
-        expect( received ).toEqual( [] )
-    } )
+	it('drops the notifications of an unauthorized call', () => {
+		// Arrange
+		const store = TestBed.inject(NotificationStore);
+		const received: NotificationModel[] = [];
+		store.messages$().subscribe((message) => received.push(message));
 
-    it( 'fills a notification that has neither summary nor detail with the unknown error title and detail', () => {
-        // Arrange
-        const store: InstanceType<typeof NotificationStore> = TestBed.inject( NotificationStore )
-        const received: NotificationModel[] = []
-        store.messages$().subscribe( (message: NotificationModel): number => received.push( message ) )
+		// Act
+		store.notify({ summary: 'error 401', detail: 'x' });
 
-        // Act
-        store.notify( { severity: 'error', summary: ' ', detail: '' } )
+		// Assert
+		expect(received).toEqual([]);
+	});
 
-        // Assert
-        expect(received[0].summary).toBe('t:global.notifications.UNKNOWN_ERROR.title')
-        expect(received[0].detail).toBe('t:global.notifications.UNKNOWN_ERROR.message')
-    } )
+	it('fills a notification that has neither summary nor detail with the unknown error title and detail', () => {
+		// Arrange
+		const store = TestBed.inject(NotificationStore);
+		const received: NotificationModel[] = [];
+		store.messages$().subscribe((message) => received.push(message));
 
-    it( 'forwards a normal notification untouched', () => {
-        // Arrange
-        const store: InstanceType<typeof NotificationStore> = TestBed.inject( NotificationStore )
-        const received: NotificationModel[] = []
-        store.messages$().subscribe( (message: NotificationModel): number => received.push( message ) )
-        const message: NotificationModel = { severity: 'success', summary: 'Done', detail: 'ok' }
+		// Act
+		store.notify({ severity: 'error', summary: ' ', detail: '' });
 
-        // Act
-        store.notify( message )
+		// Assert
+		expect(received[0].summary).toBe('t:global.notifications.UNKNOWN_ERROR.title');
+		expect(received[0].detail).toBe('t:global.notifications.UNKNOWN_ERROR.message');
+	});
 
-        // Assert
-        expect( received ).toEqual( [ message ] )
-    } )
+	it('forwards a normal notification untouched', () => {
+		// Arrange
+		const store = TestBed.inject(NotificationStore);
+		const received: NotificationModel[] = [];
+		store.messages$().subscribe((message) => received.push(message));
+		const message: NotificationModel = { severity: 'success', summary: 'Done', detail: 'ok' };
 
-    it( 'delivers every confirmation request to its listener', () => {
-        // Arrange
-        const store: InstanceType<typeof NotificationStore> = TestBed.inject( NotificationStore )
-        const received: ConfirmationModel[] = []
-        const confirmation: ConfirmationModel = { header: 'h', message: 'm', acceptSeverity: SeverityEnum.DANGER, accept: (): void => undefined }
-        store.confirmations$().subscribe( (it: ConfirmationModel): number => received.push( it ) )
+		// Act
+		store.notify(message);
 
-        // Act
-        store.confirm( confirmation )
+		// Assert
+		expect(received).toEqual([message]);
+	});
 
-        // Assert
-        expect( received ).toEqual( [ confirmation ] )
-    } )
-} )
+	it('delivers every confirmation request to its listener', () => {
+		// Arrange
+		const store = TestBed.inject(NotificationStore);
+		const received: ConfirmationModel[] = [];
+		const confirmation: ConfirmationModel = {
+			header: 'h',
+			message: 'm',
+			acceptSeverity: SeverityEnum.DANGER,
+			accept: (): void => undefined,
+		};
+		store.confirmations$().subscribe((it) => received.push(it));
+
+		// Act
+		store.confirm(confirmation);
+
+		// Assert
+		expect(received).toEqual([confirmation]);
+	});
+});

@@ -1,35 +1,37 @@
-import { Signal, signal, WritableSignal } from '@angular/core'
-import { describe, expect, it } from 'vitest'
-import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
-import { NotificationModel } from '@shared/models/model/notification.model'
+import { Signal, signal, WritableSignal } from '@angular/core';
 
-describe( 'SectionErrorsHelper', () => {
-    const failure: NotificationModel = { summary: 'Title', detail: 'Message' }
+import { describe, expect, it } from 'vitest';
 
-    it( 'reads the error of one section and follows its changes', () => {
-        // Arrange
-        const errors: WritableSignal<Record<string, NotificationModel | undefined>> = signal( {} )
-        const error: Signal<NotificationModel | undefined> = SectionErrorsHelper.of( errors, 'contents' )
+import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper';
+import { NotificationModel } from '@shared/models/model/notification.model';
 
-        // Act
-        errors.set( { contents: failure } )
+describe('SectionErrorsHelper', () => {
+	const failure: NotificationModel = { summary: 'Title', detail: 'Message' };
 
-        // Assert
-        expect( error() ).toBe( failure )
-    } )
+	it('reads the error of one section and follows its changes', () => {
+		// Arrange
+		const errors: WritableSignal<Record<string, NotificationModel | undefined>> = signal({});
+		const error = SectionErrorsHelper.of(errors, 'contents');
 
-    it( 'keys the metadata errors by field and leaves out the other sections and the cleared ones', () => {
-        // Arrange
-        const errors: WritableSignal<Record<string, NotificationModel | undefined>> = signal( {
-            'metadata.status': failure,
-            'metadata.roles': undefined,
-            contents: failure,
-        } )
+		// Act
+		errors.set({ contents: failure });
 
-        // Act
-        const metadata: Signal<Record<string, NotificationModel | undefined>> = SectionErrorsHelper.metadata( errors )
+		// Assert
+		expect(error()).toBe(failure);
+	});
 
-        // Assert
-        expect( metadata() ).toEqual( { status: failure } )
-    } )
-} )
+	it('keys the metadata errors by field and leaves out the other sections and the cleared ones', () => {
+		// Arrange
+		const errors: WritableSignal<Record<string, NotificationModel | undefined>> = signal({
+			'metadata.status': failure,
+			'metadata.roles': undefined,
+			contents: failure,
+		});
+
+		// Act
+		const metadata: Signal<Record<string, NotificationModel | undefined>> = SectionErrorsHelper.metadata(errors);
+
+		// Assert
+		expect(metadata()).toEqual({ status: failure });
+	});
+});

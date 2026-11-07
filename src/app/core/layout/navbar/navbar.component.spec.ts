@@ -1,21 +1,33 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterLink } from '@angular/router';
+
+import { TranslocoPipe } from '@jsverse/transloco';
+import { MockBuilder, ngMocks } from 'ng-mocks';
+
 import { RegistryConfig } from '@core/config/registry.config';
 import { MenuItemModel } from '@core/layout/data/model/menu-item.model';
 import { MenuService } from '@core/layout/data/service/menu.service';
 import { SessionFacade } from '@core/registry/state/session.facade';
 import { UiFacade } from '@core/registry/state/ui.facade';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { defined } from '@shared/helpers/testing/defined';
 import { CurrentUserModel } from '@shared/models/model/current-user.model';
 import { ProjectModel } from '@shared/models/model/project.model';
-import { RouterLink } from '@angular/router';
-import { MockBuilder, ngMocks } from 'ng-mocks';
+
 import { NavbarComponent } from './navbar.component';
 
 describe('NavbarComponent', () => {
-	const LOGOUT_MENU: MenuItemModel = { label: 'menu.logout', url: '/logout', icon: { library: 'solid', name: 'power-off' } };
-	const PROJECT_MENU: MenuItemModel = { label: 'menu.project', url: '/projects/1', icon: { library: 'solid', name: 'folder' } };
+	const LOGOUT_MENU: MenuItemModel = {
+		label: 'menu.logout',
+		url: '/logout',
+		icon: { library: 'solid', name: 'power-off' },
+	};
+	const PROJECT_MENU: MenuItemModel = {
+		label: 'menu.project',
+		url: '/projects/1',
+		icon: { library: 'solid', name: 'folder' },
+	};
 	let currentUser: WritableSignal<CurrentUserModel | undefined>;
 	let projectMenus: WritableSignal<MenuItemModel[]>;
 	let selectedProject: WritableSignal<ProjectModel | undefined>;
@@ -34,7 +46,9 @@ describe('NavbarComponent', () => {
 	}
 
 	beforeEach(async () => {
-		RegistryConfig.config = { application: { name: 'Registry', organization: 'Org' } } as typeof RegistryConfig.config;
+		RegistryConfig.config = {
+			application: { name: 'Registry', organization: 'Org' },
+		} as typeof RegistryConfig.config;
 		currentUser = signal<CurrentUserModel | undefined>(undefined);
 		projectMenus = signal<MenuItemModel[]>([]);
 		selectedProject = signal<ProjectModel | undefined>(undefined);
@@ -54,13 +68,16 @@ describe('NavbarComponent', () => {
 				},
 			})
 			.provide({ provide: UiFacade, useValue: { tinyScreen } })
-			.provide({ provide: SessionFacade, useValue: { currentUser, selectedProject, currentProjectId: signal<string | undefined>('42'), logout } });
+			.provide({
+				provide: SessionFacade,
+				useValue: { currentUser, selectedProject, currentProjectId: signal<string | undefined>('42'), logout },
+			});
 	});
 
 	it.each([
 		['wide', false, true],
 		['tiny', true, false],
-	])('should draw the torn edge only on a %s screen', async (_label: string, tiny: boolean, torn: boolean) => {
+	])('should draw the torn edge only on a %s screen', async (_label, tiny, torn) => {
 		// Arrange
 		tinyScreen.set(tiny);
 		await render(undefined);
@@ -110,10 +127,13 @@ describe('NavbarComponent', () => {
 
 	it('should show the role of the user when there is one', async () => {
 		// Arrange
-		await render({ firstName: 'Ada', role: { value: 'ADMIN', label: 'Administrator' } } as Partial<CurrentUserModel>);
+		await render({
+			firstName: 'Ada',
+			role: { value: 'ADMIN', label: 'Administrator' },
+		} as Partial<CurrentUserModel>);
 
 		// Act
-		const role: string | undefined = userButton().querySelector('small')?.textContent ?? undefined;
+		const role = userButton().querySelector('small')?.textContent ?? undefined;
 
 		// Assert
 		expect(role).toBe('Administrator');
@@ -132,12 +152,16 @@ describe('NavbarComponent', () => {
 
 	it('should flatten the project menus that group sub items', async () => {
 		// Arrange
-		projectMenus.set([{ label: 'group', items: [PROJECT_MENU] }, { ...PROJECT_MENU, label: 'menu.other' }]);
+		projectMenus.set([
+			{ label: 'group', items: [PROJECT_MENU] },
+			{ ...PROJECT_MENU, label: 'menu.other' },
+		]);
 		await render(undefined);
 
 		// Act
-		const labels: (string | undefined)[] = Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('sgdf-nav-item[slot="subnav"]'))
-			.map((item: HTMLElement): string | undefined => item.textContent?.trim());
+		const labels: (string | undefined)[] = Array.from<HTMLElement>(
+			fixture.nativeElement.querySelectorAll('sgdf-nav-item[slot="subnav"]'),
+		).map((item): string | undefined => item.textContent?.trim());
 
 		// Assert
 		expect(labels).toEqual(['menu.project', 'menu.other']);
@@ -161,7 +185,7 @@ describe('NavbarComponent', () => {
 		await render(undefined);
 
 		// Act
-		const link: RouterLink = ngMocks.get(ngMocks.find('[slot="context"] a'), RouterLink);
+		const link = ngMocks.get(ngMocks.find('[slot="context"] a'), RouterLink);
 
 		// Assert
 		expect(link.routerLink).toBe('projects/42');
@@ -181,8 +205,11 @@ describe('NavbarComponent', () => {
 	it('should sign the user out from the logout menu item', async () => {
 		// Arrange
 		await render({ firstName: 'Ada' });
-		const logoutItem: HTMLElement = Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('sgdf-menu-item'))
-			.find((item: HTMLElement): boolean => item.getAttribute('variant') === 'danger')!;
+		const logoutItem = defined(
+			Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('sgdf-menu-item')).find(
+				(item) => item.getAttribute('variant') === 'danger',
+			),
+		);
 
 		// Act
 		logoutItem.click();

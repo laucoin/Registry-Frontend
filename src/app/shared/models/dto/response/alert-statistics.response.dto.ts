@@ -1,6 +1,6 @@
 export interface AlertStatisticsResponseDto {
-    resolvedCount: number
-    canceledCount: number
-    averageResolutionSeconds: number | null
-    realAlertRate: number | null
+	resolvedCount: number;
+	canceledCount: number;
+	averageResolutionSeconds: number | null;
+	realAlertRate: number | null;
 }

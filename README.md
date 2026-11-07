@@ -7,6 +7,7 @@
 [![pnpm](https://img.shields.io/badge/pnpm-F69220?logo=pnpm&logoColor=white)](https://pnpm.io)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
 [![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributeurs-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
@@ -35,9 +36,9 @@ Il faut installer un environnement Node. Il y a deux possibilités.
 
 1. Install [NVM](https://github.com/nvm-sh/nvm#installing-and-updating)
 2. Installer ensuite Node (`^24.15`, la CI tourne sur Node 24 LTS)
-    ```shell
-    nvm install <version>
-    ```
+   ```shell
+   nvm install <version>
+   ```
 
 #### Installation classique
 
@@ -52,66 +53,63 @@ corepack enable pnpm
 ### Construire et lancer en local
 
 1. Cloner ce dépôt avec :
-    ```shell
-    git clone https://github.com/laucoin/Registry-Frontend.git
-    ```
+   ```shell
+   git clone https://github.com/laucoin/Registry-Frontend.git
+   ```
    OU
-    ```shell
-    git clone git@github.com:laucoin/Registry-Frontend.git
-    ```
+   ```shell
+   git clone git@github.com:laucoin/Registry-Frontend.git
+   ```
 2. Se placer dans le répertoire du projet
-    ```shell
-    cd Registry-Frontend/
-    ```
+   ```shell
+   cd Registry-Frontend/
+   ```
 3. Installer les dépendances
-    ```shell
-    pnpm install
-    ```
+   ```shell
+   pnpm install
+   ```
 4. Créer `public/settings/config.json` avec votre configuration
-    ```json
-    {
-        "defaultLanguage": "fr",
-        "languages": [
-            "fr",
-            "en"
-        ],
-        "logo": {
-            "normal": {
-                "light": "img/SGDF/logo.svg",
-                "dark": "img/SGDF/logo.svg"
-            },
-            "small": {
-                "light": "img/SGDF/small-logo.svg",
-                "dark": "img/SGDF/small-logo.svg"
-            }
-        },
-        "notification": {
-            "duration": {
-                "info": 5000,
-                "success": 3000,
-                "warn": 8000,
-                "error": 15000,
-                "secondary": 5000,
-                "contrast": 5000
-            }
-        }
-    }
-    ```
+   ```json
+   {
+   	"defaultLanguage": "fr",
+   	"languages": ["fr", "en"],
+   	"logo": {
+   		"normal": {
+   			"light": "img/SGDF/logo.svg",
+   			"dark": "img/SGDF/logo.svg"
+   		},
+   		"small": {
+   			"light": "img/SGDF/small-logo.svg",
+   			"dark": "img/SGDF/small-logo.svg"
+   		}
+   	},
+   	"notification": {
+   		"duration": {
+   			"info": 5000,
+   			"success": 3000,
+   			"warn": 8000,
+   			"error": 15000,
+   			"secondary": 5000,
+   			"contrast": 5000
+   		}
+   	}
+   }
+   ```
 5. Créer `public/settings/env.json` avec votre environnement
-    ```json
-    {
-        "production": "<true-for-non-local>",
-        "backend": {
-            "url": "<backend-url>",
-            "noAuthPaths": [
-                "/api/v2/authentication/login/uri",
-                "/api/v2/authentication/logout/uri",
-                "/api/v2/authentication/token",
-                "/api/v2/authentication/token/refresh"
-            ]
-        }
-    }
-    ```
+   ```json
+   {
+   	"production": "<true-for-non-local>",
+   	"backend": {
+   		"url": "<backend-url>",
+   		"noAuthPaths": [
+   			"/api/v2/authentication/login/uri",
+   			"/api/v2/authentication/logout/uri",
+   			"/api/v2/authentication/token",
+   			"/api/v2/authentication/token/refresh"
+   		]
+   	}
+   }
+   ```
    Les deux fichiers sont ignorés par git (`public/settings/*.json`) et récupérés à l'exécution : ils peuvent donc être
    remplacés selon l'environnement sans reconstruire l'application.
 

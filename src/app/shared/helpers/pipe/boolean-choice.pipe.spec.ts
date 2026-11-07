@@ -1,15 +1,16 @@
-import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest';
 
-describe( 'BooleanChoicePipe', () => {
-    it( 'gives the option value of each visibility choice', () => {
-        // Arrange
-        const pipe: BooleanChoicePipe = new BooleanChoicePipe()
+import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe';
 
-        // Act
-        const values: string[] = [ undefined, true, false ].map( (choice: boolean | undefined): string => pipe.transform( choice ) )
+describe('BooleanChoicePipe', () => {
+	it('gives the option value of each visibility choice', () => {
+		// Arrange
+		const pipe = new BooleanChoicePipe();
 
-        // Assert
-        expect( values ).toEqual( [ '', 'true', 'false' ] )
-    } )
-} )
+		// Act
+		const values: string[] = [undefined, true, false].map((choice): string => pipe.transform(choice));
+
+		// Assert
+		expect(values).toEqual(['', 'true', 'false']);
+	});
+});

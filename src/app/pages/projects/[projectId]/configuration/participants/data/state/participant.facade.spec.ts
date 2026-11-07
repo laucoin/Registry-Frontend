@@ -1,284 +1,338 @@
-import { signal } from '@angular/core'
-import { TestBed } from '@angular/core/testing'
-import { BrowserService } from '@core/browser/browser.service'
-import { TranslocoService } from '@jsverse/transloco'
-import { of, Subject } from 'rxjs'
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { MetadataApi } from '@core/registry/state/metadata.api'
-import { SessionFacade } from '@core/registry/state/session.facade'
-import { UiFacade } from '@core/registry/state/ui.facade'
-import { ParticipantApi } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.api'
-import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
-import { ParticipantStore } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.store'
-import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
-import { ERROR_500, ERROR_503, failing, pageOf, provideTestConfig } from '@shared/helpers/testing/test-fixtures'
-import { ErrorModel } from '@shared/models/model/error.model'
-import { ParticipantModel } from '@shared/models/model/participant.model'
+import { signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 
-describe( 'ParticipantFacade', () => {
-    let facade: ParticipantFacade
-    let findParticipants: Mock<ParticipantApi['findParticipants']>
-    let createParticipant: Mock<ParticipantApi['createParticipant']>
-    let updateParticipantById: Mock<ParticipantApi['updateParticipantById']>
-    let hardDeleteParticipantById: Mock<ParticipantApi['hardDeleteParticipantById']>
-    let exportParticipantById: Mock<ParticipantApi['exportParticipantById']>
-    let api: Record<string, Mock>
-    let downloadJson: Mock<BrowserService['downloadJson']>
-    let notify: Mock<(message: unknown) => void>
+import { TranslocoService } from '@jsverse/transloco';
+import { of, Subject } from 'rxjs';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-    beforeEach( () => {
-        provideTestConfig()
-        findParticipants = vi.fn( () => of( pageOf<ParticipantModel>( [], 2 ) ) )
-        createParticipant = vi.fn()
-        updateParticipantById = vi.fn()
-        hardDeleteParticipantById = vi.fn()
-        exportParticipantById = vi.fn()
-        api = { findParticipantTimeline: vi.fn( () => of( { planned: [], actual: [] } ) ), findParticipantById: vi.fn(), softDeleteParticipantById: vi.fn(), restoreParticipantById: vi.fn(), searchUsers: vi.fn( () => of( [] ) ), searchGroups: vi.fn( () => of( [] ) ) }
-        downloadJson = vi.spyOn( BrowserService.prototype, 'downloadJson' ).mockReset().mockImplementation( (): void => undefined )
-        notify = vi.fn()
-        TestBed.configureTestingModule( {
-            providers: [
-                ParticipantFacade,
-                ParticipantStore,
-                { provide: ParticipantApi, useValue: { findParticipants, createParticipant, updateParticipantById, hardDeleteParticipantById, exportParticipantById, ...api } },
-                { provide: MovementApi, useValue: { findMovementsContents: vi.fn( () => of( [] ) ) } },
-                { provide: MetadataApi, useValue: { getPresencesStatus: vi.fn( () => of( [] ) ) } },
-                { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ) } },
-                { provide: UiFacade, useValue: { notify } },
-                { provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}`, langChanges$: new Subject<string>().asObservable() } },
-            ],
-        } )
-        facade = TestBed.inject( ParticipantFacade )
-        facade.fetchParticipantsPage( 2, 10 )
-        findParticipants.mockClear()
-    } )
+import { BrowserService } from '@core/browser/browser.service';
+import { MetadataApi } from '@core/registry/state/metadata.api';
+import { SessionFacade } from '@core/registry/state/session.facade';
+import { UiFacade } from '@core/registry/state/ui.facade';
+import { ParticipantApi } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.api';
+import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade';
+import { ParticipantStore } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.store';
+import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api';
+import { ERROR_500, ERROR_503, failing, pageOf, provideTestConfig } from '@shared/helpers/testing/test-fixtures';
+import { ErrorModel } from '@shared/models/model/error.model';
+import { ParticipantModel } from '@shared/models/model/participant.model';
 
-    it( 'fetches the requested page for the selected project', () => {
-        // Arrange
-        const page: number = 3
+describe('ParticipantFacade', () => {
+	let facade: ParticipantFacade;
+	let findParticipants: Mock<ParticipantApi['findParticipants']>;
+	let createParticipant: Mock<ParticipantApi['createParticipant']>;
+	let updateParticipantById: Mock<ParticipantApi['updateParticipantById']>;
+	let hardDeleteParticipantById: Mock<ParticipantApi['hardDeleteParticipantById']>;
+	let exportParticipantById: Mock<ParticipantApi['exportParticipantById']>;
+	let api: Record<string, Mock>;
+	let downloadJson: Mock<BrowserService['downloadJson']>;
+	let notify: Mock<(message: unknown) => void>;
 
-        // Act
-        facade.fetchParticipantsPage( page, 10 )
+	beforeEach(() => {
+		provideTestConfig();
+		findParticipants = vi.fn(() => of(pageOf<ParticipantModel>([], 2)));
+		createParticipant = vi.fn();
+		updateParticipantById = vi.fn();
+		hardDeleteParticipantById = vi.fn();
+		exportParticipantById = vi.fn();
+		api = {
+			findParticipantTimeline: vi.fn(() => of({ planned: [], actual: [] })),
+			findParticipantById: vi.fn(),
+			softDeleteParticipantById: vi.fn(),
+			restoreParticipantById: vi.fn(),
+			searchUsers: vi.fn(() => of([])),
+			searchGroups: vi.fn(() => of([])),
+		};
+		downloadJson = vi
+			.spyOn(BrowserService.prototype, 'downloadJson')
+			.mockReset()
+			.mockImplementation((): void => undefined);
+		notify = vi.fn();
+		TestBed.configureTestingModule({
+			providers: [
+				ParticipantFacade,
+				ParticipantStore,
+				{
+					provide: ParticipantApi,
+					useValue: {
+						findParticipants,
+						createParticipant,
+						updateParticipantById,
+						hardDeleteParticipantById,
+						exportParticipantById,
+						...api,
+					},
+				},
+				{ provide: MovementApi, useValue: { findMovementsContents: vi.fn(() => of([])) } },
+				{ provide: MetadataApi, useValue: { getPresencesStatus: vi.fn(() => of([])) } },
+				{ provide: SessionFacade, useValue: { currentProjectId: signal('p1') } },
+				{ provide: UiFacade, useValue: { notify } },
+				{
+					provide: TranslocoService,
+					useValue: {
+						translate: (key: string): string => `t:${key}`,
+						langChanges$: new Subject<string>().asObservable(),
+					},
+				},
+			],
+		});
+		facade = TestBed.inject(ParticipantFacade);
+		facade.fetchParticipantsPage(2, 10);
+		findParticipants.mockClear();
+	});
 
-        // Assert
-        expect( findParticipants ).toHaveBeenCalledWith( 'p1', 3, 10, expect.anything() )
-    } )
+	it('fetches the requested page for the selected project', () => {
+		// Arrange
+		const page = 3;
 
-    it( 'restarts from the first page when the search changed', () => {
-        // Arrange
-        facade.inputPageSearchParameters( 'ada', undefined, undefined )
+		// Act
+		facade.fetchParticipantsPage(page, 10);
 
-        // Act
-        facade.fetchParticipantsPage( 4, 10 )
+		// Assert
+		expect(findParticipants).toHaveBeenCalledWith('p1', 3, 10, expect.anything());
+	});
 
-        // Assert
-        expect( findParticipants ).toHaveBeenCalledWith( 'p1', 0, 10, expect.anything() )
-    } )
+	it('restarts from the first page when the search changed', () => {
+		// Arrange
+		facade.inputPageSearchParameters('ada', undefined, undefined);
 
-    it( 'announces a creation but not an update on the first-page reload channel', () => {
-        // Arrange
-        const received: string[] = []
-        facade.handleParticipantFirstPageReload().subscribe( (event: unknown): number => received.push( (event as { command: string }).command ) )
-        createParticipant.mockReturnValue( of( { id: 'pa1', firstName: 'Ada', lastName: 'L' } as ParticipantModel ) )
-        updateParticipantById.mockReturnValue( of( { id: 'pa1', firstName: 'Ada', lastName: 'L' } as ParticipantModel ) )
+		// Act
+		facade.fetchParticipantsPage(4, 10);
 
-        // Act
-        facade.createParticipant( {} as never ).subscribe()
-        facade.updateParticipant( 'pa1', {} as never ).subscribe()
+		// Assert
+		expect(findParticipants).toHaveBeenCalledWith('p1', 0, 10, expect.anything());
+	});
 
-        // Assert
-        expect( received ).toEqual( [ 'create' ] )
-    } )
+	it('announces a creation but not an update on the first-page reload channel', () => {
+		// Arrange
+		const received: string[] = [];
+		facade
+			.handleParticipantFirstPageReload()
+			.subscribe((event) => received.push((event as { command: string }).command));
+		createParticipant.mockReturnValue(of({ id: 'pa1', firstName: 'Ada', lastName: 'L' } as ParticipantModel));
+		updateParticipantById.mockReturnValue(of({ id: 'pa1', firstName: 'Ada', lastName: 'L' } as ParticipantModel));
 
-    it( 'announces updates on the current-page reload channel', () => {
-        // Arrange
-        const received: string[] = []
-        facade.handleParticipantCurrentPageReload().subscribe( (event: unknown): number => received.push( (event as { command: string }).command ) )
-        updateParticipantById.mockReturnValue( of( { id: 'pa1', firstName: 'Ada', lastName: 'L' } as ParticipantModel ) )
+		// Act
+		facade.createParticipant({} as never).subscribe();
+		facade.updateParticipant('pa1', {} as never).subscribe();
 
-        // Act
-        facade.updateParticipant( 'pa1', {} as never ).subscribe()
+		// Assert
+		expect(received).toEqual(['create']);
+	});
 
-        // Assert
-        expect( received ).toEqual( [ 'update' ] )
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'participants.notifications.edit.title' } ) )
-    } )
+	it('announces updates on the current-page reload channel', () => {
+		// Arrange
+		const received: string[] = [];
+		facade
+			.handleParticipantCurrentPageReload()
+			.subscribe((event) => received.push((event as { command: string }).command));
+		updateParticipantById.mockReturnValue(of({ id: 'pa1', firstName: 'Ada', lastName: 'L' } as ParticipantModel));
 
-    it( 'lets the form handle a creation error other than 503', () => {
-        // Arrange
-        createParticipant.mockReturnValue( failing( ERROR_500 ) )
-        let received: ErrorModel | undefined
+		// Act
+		facade.updateParticipant('pa1', {} as never).subscribe();
 
-        // Act
-        facade.createParticipant( {} as never ).subscribe( { error: (error: ErrorModel): void => { received = error } } )
+		// Assert
+		expect(received).toEqual(['update']);
+		expect(notify).toHaveBeenCalledWith(
+			expect.objectContaining({ summary: 'participants.notifications.edit.title' }),
+		);
+	});
 
-        // Assert
-        expect( received ).toBe( ERROR_500 )
-        expect( notify ).not.toHaveBeenCalled()
-    } )
+	it('lets the form handle a creation error other than 503', () => {
+		// Arrange
+		createParticipant.mockReturnValue(failing(ERROR_500));
+		let received: ErrorModel | undefined;
 
-    it( 'notifies and refreshes the page after a deletion', () => {
-        // Arrange
-        hardDeleteParticipantById.mockReturnValue( of( undefined ) )
+		// Act
+		facade.createParticipant({} as never).subscribe({
+			error: (error: ErrorModel) => {
+				received = error;
+			},
+		});
 
-        // Act
-        facade.hardDeleteParticipant( { id: 'pa1', firstName: 'Ada', lastName: 'L' } as ParticipantModel ).subscribe()
+		// Assert
+		expect(received).toBe(ERROR_500);
+		expect(notify).not.toHaveBeenCalled();
+	});
 
-        // Assert
-        expect( hardDeleteParticipantById ).toHaveBeenCalledWith( undefined, 'pa1' )
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'participants.notifications.hardDelete.title' } ) )
-        expect( findParticipants ).toHaveBeenCalledWith( 'p1', 0, 30, expect.anything() )
-    } )
+	it('notifies and refreshes the page after a deletion', () => {
+		// Arrange
+		hardDeleteParticipantById.mockReturnValue(of(undefined));
 
-    it( 'downloads the export of a participant of the selected project', () => {
-        // Arrange
-        const data: unknown = { subjectType: 'PARTICIPANT' }
-        exportParticipantById.mockReturnValue( of( data ) )
+		// Act
+		facade.hardDeleteParticipant({ id: 'pa1', firstName: 'Ada', lastName: 'L' } as ParticipantModel).subscribe();
 
-        // Act
-        facade.exportParticipant( { id: 'pa1' } as ParticipantModel ).subscribe()
+		// Assert
+		expect(hardDeleteParticipantById).toHaveBeenCalledWith(undefined, 'pa1');
+		expect(notify).toHaveBeenCalledWith(
+			expect.objectContaining({ summary: 'participants.notifications.hardDelete.title' }),
+		);
+		expect(findParticipants).toHaveBeenCalledWith('p1', 0, 30, expect.anything());
+	});
 
-        // Assert
-        expect( exportParticipantById ).toHaveBeenCalledWith( 'p1', 'pa1' )
-        expect( downloadJson ).toHaveBeenCalledWith( data, 'registry-participant-pa1.json' )
-    } )
+	it('downloads the export of a participant of the selected project', () => {
+		// Arrange
+		const data: unknown = { subjectType: 'PARTICIPANT' };
+		exportParticipantById.mockReturnValue(of(data));
 
-    it( 'reloads every shown batch of the movements of a participant in one request', () => {
-        // Arrange
-        const finder: Mock = vi.fn( () => of( pageOf<never>( [], 1 ) ) )
-        ;(TestBed.inject( ParticipantApi ) as unknown as Record<string, Mock>)[ 'findParticipantMovements' ] = finder
-        facade.fetchParticipantMovementsPage( 'e1', 1, 10 )
-        finder.mockClear()
+		// Act
+		facade.exportParticipant({ id: 'pa1' } as ParticipantModel).subscribe();
 
-        // Act
-        facade.reloadParticipantMovementsPage( 'e1' )
+		// Assert
+		expect(exportParticipantById).toHaveBeenCalledWith('p1', 'pa1');
+		expect(downloadJson).toHaveBeenCalledWith(data, 'registry-participant-pa1.json');
+	});
 
-        // Assert
-        expect( finder ).toHaveBeenCalledWith( 'p1', 'e1', 0, expect.any( Number ), expect.anything() )
-    } )
+	it('reloads every shown batch of the movements of a participant in one request', () => {
+		// Arrange
+		const finder: Mock = vi.fn(() => of(pageOf<never>([], 1)));
+		(TestBed.inject(ParticipantApi) as unknown as Record<string, Mock>)['findParticipantMovements'] = finder;
+		facade.fetchParticipantMovementsPage('e1', 1, 10);
+		finder.mockClear();
 
-    it( 'fetches a participant of the selected project', () => {
-        // Arrange
-        api[ 'findParticipantById' ].mockReturnValue( of( { id: 'pa1' } as ParticipantModel ) )
-        let received: ParticipantModel | undefined
+		// Act
+		facade.reloadParticipantMovementsPage('e1');
 
-        // Act
-        facade.fetchParticipant( 'pa1' ).subscribe( (it: ParticipantModel): void => { received = it } )
+		// Assert
+		expect(finder).toHaveBeenCalledWith('p1', 'e1', 0, expect.any(Number), expect.anything());
+	});
 
-        // Assert
-        expect( api[ 'findParticipantById' ] ).toHaveBeenCalledWith( 'p1', 'pa1' )
-        expect( received?.id ).toBe( 'pa1' )
-    } )
+	it('fetches a participant of the selected project', () => {
+		// Arrange
+		api['findParticipantById'].mockReturnValue(of({ id: 'pa1' } as ParticipantModel));
+		let received: ParticipantModel | undefined;
 
-    it( 'notifies a failed participant fetch', () => {
-        // Arrange
-        api[ 'findParticipantById' ].mockReturnValue( failing( ERROR_500 ) )
+		// Act
+		facade.fetchParticipant('pa1').subscribe((it) => {
+			received = it;
+		});
 
-        // Act
-        facade.fetchParticipant( 'pa1' ).subscribe( { error: (): void => undefined } )
+		// Assert
+		expect(api['findParticipantById']).toHaveBeenCalledWith('p1', 'pa1');
+		expect(received?.id).toBe('pa1');
+	});
 
-        // Assert
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
-    } )
+	it('notifies a failed participant fetch', () => {
+		// Arrange
+		api['findParticipantById'].mockReturnValue(failing(ERROR_500));
 
-    it.each( [ 'softDelete', 'restore' ] as const )( 'announces the participant %s on the current-page reload channel', (command: 'softDelete' | 'restore') => {
-        // Arrange
-        const participant: ParticipantModel = { id: 'pa1', firstName: 'Ada', lastName: 'Lovelace' } as ParticipantModel
-        api[ `${ command }ParticipantById` ].mockReturnValue( of( participant ) )
-        const reloaded: Mock = vi.fn()
-        facade.handleParticipantCurrentPageReload().subscribe( reloaded )
+		// Act
+		facade.fetchParticipant('pa1').subscribe({ error: (): void => undefined });
 
-        // Act
-        ;( command === 'softDelete' ? facade.softDeleteParticipant( 'pa1' ) : facade.restoreParticipant( 'pa1' ) ).subscribe()
+		// Assert
+		expect(notify).toHaveBeenCalledWith(expect.objectContaining({ summary: 'Title' }));
+	});
 
-        // Assert
-        expect( reloaded ).toHaveBeenCalledTimes( 1 )
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: `participants.notifications.${ command }.title` } ) )
-    } )
+	it.each(['softDelete', 'restore'] as const)(
+		'announces the participant %s on the current-page reload channel',
+		(command) => {
+			// Arrange
+			const participant = {
+				id: 'pa1',
+				firstName: 'Ada',
+				lastName: 'Lovelace',
+			} as ParticipantModel;
+			api[`${command}ParticipantById`].mockReturnValue(of(participant));
+			const reloaded: Mock = vi.fn();
+			facade.handleParticipantCurrentPageReload().subscribe(reloaded);
 
-    it( 'notifies a failed export and downloads nothing', () => {
-        // Arrange
-        exportParticipantById.mockReturnValue( failing( ERROR_500 ) )
+			// Act
+			(command === 'softDelete'
+				? facade.softDeleteParticipant('pa1')
+				: facade.restoreParticipant('pa1')
+			).subscribe();
 
-        // Act
-        facade.exportParticipant( { id: 'pa1' } as ParticipantModel ).subscribe( { error: (): void => undefined } )
+			// Assert
+			expect(reloaded).toHaveBeenCalledTimes(1);
+			expect(notify).toHaveBeenCalledWith(
+				expect.objectContaining({ summary: `participants.notifications.${command}.title` }),
+			);
+		},
+	);
 
-        // Assert
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
-        expect( downloadJson ).not.toHaveBeenCalled()
-    } )
+	it('notifies a failed export and downloads nothing', () => {
+		// Arrange
+		exportParticipantById.mockReturnValue(failing(ERROR_500));
 
-    it( 'searches users and groups for the selected project', () => {
-        // Arrange
-        const query: string = 'ada'
+		// Act
+		facade.exportParticipant({ id: 'pa1' } as ParticipantModel).subscribe({ error: (): void => undefined });
 
-        // Act
-        facade.searchUsers( query )
-        facade.searchGroups( query )
+		// Assert
+		expect(notify).toHaveBeenCalledWith(expect.objectContaining({ summary: 'Title' }));
+		expect(downloadJson).not.toHaveBeenCalled();
+	});
 
-        // Assert
-        expect( api[ 'searchUsers' ] ).toHaveBeenCalledWith( 'p1', 'ada' )
-        expect( api[ 'searchGroups' ] ).toHaveBeenCalledWith( 'p1', 'ada' )
-    } )
+	it('searches users and groups for the selected project', () => {
+		// Arrange
+		const query = 'ada';
 
-    it( 'restarts the movements from the first page when their search changed', () => {
-        // Arrange
-        const finder: Mock = vi.fn( () => of( pageOf<never>( [], 1 ) ) )
-        ;(TestBed.inject( ParticipantApi ) as unknown as Record<string, Mock>)[ 'findParticipantMovements' ] = finder
-        facade.inputMovementsPageSearchParameters( 'IN', new Date( '2026-01-01T00:00:00.000Z' ), undefined, true )
+		// Act
+		facade.searchUsers(query);
+		facade.searchGroups(query);
 
-        // Act
-        facade.fetchParticipantMovementsPage( 'pa1', 4, 10 )
+		// Assert
+		expect(api['searchUsers']).toHaveBeenCalledWith('p1', 'ada');
+		expect(api['searchGroups']).toHaveBeenCalledWith('p1', 'ada');
+	});
 
-        // Assert
-        expect( finder ).toHaveBeenCalledWith( 'p1', 'pa1', 0, 10, expect.anything() )
-        expect( facade.participantMovementsPageTypeParam() ).toBe( 'IN' )
-    } )
+	it('restarts the movements from the first page when their search changed', () => {
+		// Arrange
+		const finder: Mock = vi.fn(() => of(pageOf<never>([], 1)));
+		(TestBed.inject(ParticipantApi) as unknown as Record<string, Mock>)['findParticipantMovements'] = finder;
+		facade.inputMovementsPageSearchParameters('IN', new Date('2026-01-01T00:00:00.000Z'), undefined, true);
 
-    it( 'keeps the movements search when the same values are input again', () => {
-        // Arrange
-        facade.inputMovementsPageSearchParameters( 'IN', undefined, undefined, undefined )
+		// Act
+		facade.fetchParticipantMovementsPage('pa1', 4, 10);
 
-        // Act
-        facade.inputMovementsPageSearchParameters( 'IN', undefined, undefined, undefined )
+		// Assert
+		expect(finder).toHaveBeenCalledWith('p1', 'pa1', 0, 10, expect.anything());
+		expect(facade.participantMovementsPageTypeParam()).toBe('IN');
+	});
 
-        // Assert
-        expect( facade.participantMovementsPageTypeParam() ).toBe( 'IN' )
-    } )
+	it('keeps the movements search when the same values are input again', () => {
+		// Arrange
+		facade.inputMovementsPageSearchParameters('IN', undefined, undefined, undefined);
 
-    it( 'loads the timeline of a participant for the selected project and exposes it as signals', () => {
-        // Arrange
+		// Act
+		facade.inputMovementsPageSearchParameters('IN', undefined, undefined, undefined);
 
-        // Act
-        facade.fetchParticipantTimeline( 'pa1' )
+		// Assert
+		expect(facade.participantMovementsPageTypeParam()).toBe('IN');
+	});
 
-        // Assert
-        expect( api[ 'findParticipantTimeline' ] ).toHaveBeenCalledWith( 'p1', 'pa1' )
-        expect( facade.participantTimeline() ).toEqual( { planned: [], actual: [] } )
-        expect( facade.participantTimelineLoading() ).toBe( false )
-        expect( facade.participantTimelineError() ).toBeUndefined()
-    } )
+	it('loads the timeline of a participant for the selected project and exposes it as signals', () => {
+		// Arrange
 
-    it( 'reloads the timeline of a participant', () => {
-        // Arrange
-        facade.fetchParticipantTimeline( 'pa1' )
+		// Act
+		facade.fetchParticipantTimeline('pa1');
 
-        // Act
-        facade.reloadParticipantTimeline( 'pa1' )
+		// Assert
+		expect(api['findParticipantTimeline']).toHaveBeenCalledWith('p1', 'pa1');
+		expect(facade.participantTimeline()).toEqual({ planned: [], actual: [] });
+		expect(facade.participantTimelineLoading()).toBe(false);
+		expect(facade.participantTimelineError()).toBeUndefined();
+	});
 
-        // Assert
-        expect( api[ 'findParticipantTimeline' ] ).toHaveBeenCalledTimes( 2 )
-    } )
+	it('reloads the timeline of a participant', () => {
+		// Arrange
+		facade.fetchParticipantTimeline('pa1');
 
-    it( 'exposes the failure of the timeline without touching the movements', () => {
-        // Arrange
-        api[ 'findParticipantTimeline' ].mockReturnValue( failing( ERROR_503 ) )
+		// Act
+		facade.reloadParticipantTimeline('pa1');
 
-        // Act
-        facade.fetchParticipantTimeline( 'pa1' )
+		// Assert
+		expect(api['findParticipantTimeline']).toHaveBeenCalledTimes(2);
+	});
 
-        // Assert
-        expect( facade.participantTimelineError()?.summary ).toBe( 'Down' )
-        expect( facade.participantMovementsPageError() ).toBeUndefined()
-    } )
-} )
+	it('exposes the failure of the timeline without touching the movements', () => {
+		// Arrange
+		api['findParticipantTimeline'].mockReturnValue(failing(ERROR_503));
+
+		// Act
+		facade.fetchParticipantTimeline('pa1');
+
+		// Assert
+		expect(facade.participantTimelineError()?.summary).toBe('Down');
+		expect(facade.participantMovementsPageError()).toBeUndefined();
+	});
+});

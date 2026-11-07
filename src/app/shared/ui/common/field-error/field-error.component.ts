@@ -1,8 +1,11 @@
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal, Signal } from '@angular/core'
-import '@sgdf/ui/field-error'
-import { TranslocoService } from '@jsverse/transloco'
-import { FieldErrorHelper } from '@shared/helpers/form/field-error.helper'
-import { FieldErrorState } from '@shared/helpers/form/field-state.helper'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal } from '@angular/core';
+
+import { TranslocoService } from '@jsverse/transloco';
+
+import { FieldErrorHelper } from '@shared/helpers/form/field-error.helper';
+import { FieldErrorState } from '@shared/helpers/form/field-state.helper';
+
+import '@sgdf/ui/field-error';
 
 /**
  * Purpose: Affiche la première erreur d'un champ de signal form.
@@ -10,23 +13,20 @@ import { FieldErrorState } from '@shared/helpers/form/field-state.helper'
  * Limits: N'affiche rien pour un champ valide ou vierge et non touché. Un champ `@sgdf/ui` affiche sa propre erreur avec la directive `appFieldError`.
  */
 @Component({
-    selector: 'app-field-error',
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    templateUrl: './field-error.component.html',
+	selector: 'app-field-error',
+	schemas: [CUSTOM_ELEMENTS_SCHEMA],
+	templateUrl: './field-error.component.html',
 })
 export class FieldErrorComponent {
-    private readonly translateService: TranslocoService = inject(TranslocoService)
+	private readonly translateService = inject(TranslocoService);
 
-    public readonly field: InputSignal<() => FieldErrorState> = input.required()
-    public readonly translationPrefix: InputSignal<string> = input.required()
-    public readonly translationArgs: InputSignal<object> = input({})
+	public readonly field: InputSignal<() => FieldErrorState> = input.required();
+	public readonly translationPrefix: InputSignal<string> = input.required();
+	public readonly translationArgs: InputSignal<object> = input({});
 
-    protected readonly errorText: Signal<string | undefined> = computed((): string | undefined =>
-        FieldErrorHelper.text(
-            this.field(),
-            this.translationPrefix(),
-            this.translationArgs(),
-            (key: string, params: object): string => this.translateService.translate( key, params ),
-        ),
-    )
+	protected readonly errorText = computed(() =>
+		FieldErrorHelper.text(this.field(), this.translationPrefix(), this.translationArgs(), (key, params) =>
+			this.translateService.translate(key, params),
+		),
+	);
 }

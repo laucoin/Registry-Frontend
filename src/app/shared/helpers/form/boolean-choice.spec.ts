@@ -1,21 +1,22 @@
-import { fromBooleanChoice, toBooleanChoice, BooleanChoice } from '@shared/helpers/form/boolean-choice'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest';
 
-describe( 'boolean choice', () => {
-    it.each( [
-        [ undefined, '' ],
-        [ true, 'true' ],
-        [ false, 'false' ],
-    ] )( 'turns %s into the option value "%s" and back', (value: boolean | undefined, choice: string) => {
-        // Arrange
-        const expected: BooleanChoice = choice as BooleanChoice
+import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice';
 
-        // Act
-        const forth: BooleanChoice = toBooleanChoice( value )
-        const back: boolean | undefined = fromBooleanChoice( forth )
+describe('boolean choice', () => {
+	it.each([
+		[undefined, ''],
+		[true, 'true'],
+		[false, 'false'],
+	])('turns %s into the option value "%s" and back', (value, choice) => {
+		// Arrange
+		const expected = choice as BooleanChoice;
 
-        // Assert
-        expect( forth ).toBe( expected )
-        expect( back ).toBe( value )
-    } )
-} )
+		// Act
+		const forth = toBooleanChoice(value);
+		const back = fromBooleanChoice(forth);
+
+		// Assert
+		expect(forth).toBe(expected);
+		expect(back).toBe(value);
+	});
+});

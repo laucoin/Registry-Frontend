@@ -1,17 +1,17 @@
-import { formatSort, parseSort, SortFields } from '@shared/helpers/search/sort-query'
-import { fromBooleanChoice, toBooleanChoice, BooleanChoice } from '@shared/helpers/form/boolean-choice'
+import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice';
+import { formatSort, parseSort, SortFields } from '@shared/helpers/search/sort-query';
 
-export const USERS_LIST_SORT_FIELDS: readonly string[] = [ 'lastName', 'firstName', 'email', 'lastLogin' ]
+export const USERS_LIST_SORT_FIELDS: readonly string[] = ['lastName', 'firstName', 'email', 'lastLogin'];
 
 interface UsersListSearch {
-    q: string | undefined
-    isVisible: boolean | undefined
-    sort: string | undefined
+	q: string | undefined;
+	isVisible: boolean | undefined;
+	sort: string | undefined;
 }
 
 export interface UsersListSearchModel extends SortFields {
-    q: string
-    isVisible: BooleanChoice
+	q: string;
+	isVisible: BooleanChoice;
 }
 
 /**
@@ -19,12 +19,12 @@ export interface UsersListSearchModel extends SortFields {
  * Scope: Remplit les paramètres vides avec les valeurs par défaut du formulaire.
  * Limits: Ne valide pas les paramètres.
  */
-export function toUsersListSearchModel (params: UsersListSearch): UsersListSearchModel {
-    return {
-        q: params.q ?? '',
-        isVisible: toBooleanChoice( params.isVisible ),
-        ...parseSort( params.sort, USERS_LIST_SORT_FIELDS ),
-    }
+export function toUsersListSearchModel(params: UsersListSearch): UsersListSearchModel {
+	return {
+		q: params.q ?? '',
+		isVisible: toBooleanChoice(params.isVisible),
+		...parseSort(params.sort, USERS_LIST_SORT_FIELDS),
+	};
 }
 
 /**
@@ -32,10 +32,10 @@ export function toUsersListSearchModel (params: UsersListSearch): UsersListSearc
  * Scope: Transforme les valeurs vides du formulaire en paramètres undefined.
  * Limits: Ne valide pas les valeurs du formulaire.
  */
-export function toUsersListSearchParams (model: UsersListSearchModel): UsersListSearch {
-    return {
-        q: model.q === '' ? undefined : model.q,
-        isVisible: fromBooleanChoice( model.isVisible ),
-        sort: formatSort( model ),
-    }
+export function toUsersListSearchParams(model: UsersListSearchModel): UsersListSearch {
+	return {
+		q: model.q === '' ? undefined : model.q,
+		isVisible: fromBooleanChoice(model.isVisible),
+		sort: formatSort(model),
+	};
 }

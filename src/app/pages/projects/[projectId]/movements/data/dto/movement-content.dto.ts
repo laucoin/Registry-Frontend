@@ -1,5 +1,5 @@
 export interface MovementContentDto {
-    poolName?: string
-    participantId: string
-    vehicleId?: string
+	poolName?: string;
+	participantId: string;
+	vehicleId?: string;
 }

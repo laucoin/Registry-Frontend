@@ -1,3 +1,3 @@
 export interface AuthenticationUriModel {
-    uri: string,
+	uri: string;
 }

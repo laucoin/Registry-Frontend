@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+
 import { TranslocoPipe } from '@jsverse/transloco';
 import { MockBuilder } from 'ng-mocks';
+
 import { MyAccountPage } from './my-account.page';
 
 describe('MyAccountPage', () => {
@@ -14,10 +16,15 @@ describe('MyAccountPage', () => {
 
 	it('should render the four account sections', () => {
 		// Arrange
-		const selectors: string[] = ['app-account-info', 'app-account-language', 'app-account-theme', 'app-account-personal-data'];
+		const selectors = [
+			'app-account-info',
+			'app-account-language',
+			'app-account-theme',
+			'app-account-personal-data',
+		];
 
 		// Act
-		const rendered: boolean[] = selectors.map((selector: string): boolean => fixture.nativeElement.querySelector(selector) !== null);
+		const rendered = selectors.map((selector) => fixture.nativeElement.querySelector(selector) !== null);
 
 		// Assert
 		expect(rendered).toEqual([true, true, true, true]);

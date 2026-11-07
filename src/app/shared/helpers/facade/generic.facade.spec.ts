@@ -1,45 +1,59 @@
-import { TestBed } from '@angular/core/testing'
-import { TranslocoService } from '@jsverse/transloco'
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { GenericFacade } from './generic.facade'
+import { TestBed } from '@angular/core/testing';
+
+import { TranslocoService } from '@jsverse/transloco';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+
+import { GenericFacade } from './generic.facade';
 
 class TestFacade extends GenericFacade {
-    public label (label: string): string {
-        return this.translateLabel( label )
-    }
+	public label(label: string | undefined): string | undefined {
+		return this.translateLabel(label);
+	}
 }
 
-describe( 'GenericFacade', () => {
-    const translate: Mock<(key: string) => string> = vi.fn( (key: string): string => `translated:${key}` )
-    let facade: TestFacade
+describe('GenericFacade', () => {
+	const translate: Mock<(key: string) => string> = vi.fn((key: string) => `translated:${key}`);
+	let facade: TestFacade;
 
-    beforeEach( () => {
-        translate.mockClear()
-        TestBed.configureTestingModule( { providers: [ { provide: TranslocoService, useValue: { translate } } ] } )
-        facade = TestBed.runInInjectionContext( (): TestFacade => new TestFacade() )
-    } )
+	beforeEach(() => {
+		translate.mockClear();
+		TestBed.configureTestingModule({ providers: [{ provide: TranslocoService, useValue: { translate } }] });
+		facade = TestBed.runInInjectionContext(() => new TestFacade());
+	});
 
-    it( 'translates a label key', () => {
-        // Arrange
-        const key: string = 'global.menu.projects'
+	it('translates a label key', () => {
+		// Arrange
+		const key = 'global.menu.projects';
 
-        // Act
-        const result: string = facade.label( key )
+		// Act
+		const result = facade.label(key);
 
-        // Assert
-        expect( result ).toBe( 'translated:global.menu.projects' )
-        expect( translate ).toHaveBeenCalledWith( key )
-    } )
+		// Assert
+		expect(result).toBe('translated:global.menu.projects');
+		expect(translate).toHaveBeenCalledWith(key);
+	});
 
-    it( 'keeps the empty option label untouched', () => {
-        // Arrange
-        const emptyLabel: string = '-'
+	it('keeps the empty option label untouched', () => {
+		// Arrange
+		const emptyLabel = '-';
 
-        // Act
-        const result: string = facade.label( emptyLabel )
+		// Act
+		const result = facade.label(emptyLabel);
 
-        // Assert
-        expect( result ).toBe( '-' )
-        expect( translate ).not.toHaveBeenCalled()
-    } )
-} )
+		// Assert
+		expect(result).toBe('-');
+		expect(translate).not.toHaveBeenCalled();
+	});
+
+	it('keeps a missing label undefined', () => {
+		// Arrange
+		const missingLabel = undefined;
+
+		// Act
+		const result = facade.label(missingLabel);
+
+		// Assert
+		expect(result).toBeUndefined();
+		expect(translate).not.toHaveBeenCalled();
+	});
+});

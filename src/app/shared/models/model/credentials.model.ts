@@ -1,4 +1,4 @@
 export interface CredentialsModel {
-    redirectUri: string,
-    authorizationCode: string,
+	redirectUri: string;
+	authorizationCode: string;
 }

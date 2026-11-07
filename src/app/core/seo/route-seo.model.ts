@@ -1,11 +1,11 @@
-export const SEO_DATA_KEY: string = 'seo'
+export const SEO_DATA_KEY = 'seo';
 
 export interface RouteSeoModel {
-    descriptionKey: string
+	descriptionKey: string;
 }
 
 export interface PageSeoModel {
-    titleKey: string
-    url: string
-    descriptionKey?: string
+	titleKey: string;
+	url: string;
+	descriptionKey?: string;
 }

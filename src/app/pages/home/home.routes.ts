@@ -1,7 +1,8 @@
-import { Routes } from '@angular/router'
-import { HomePage } from '@pages/home/home.page'
-import { HomeFacade } from '@pages/home/data/state/home.facade'
-import { HomeStore } from '@pages/home/data/state/home.store'
+import { Routes } from '@angular/router';
+
+import { HomeFacade } from '@pages/home/data/state/home.facade';
+import { HomeStore } from '@pages/home/data/state/home.store';
+import { HomePage } from '@pages/home/home.page';
 
 /**
  * Purpose: Déclare la route de la page d'accueil globale.
@@ -15,4 +16,4 @@ export const homeRoutes: Routes = [
 		component: HomePage,
 		providers: [HomeFacade, HomeStore],
 	},
-]
+];

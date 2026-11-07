@@ -1,34 +1,36 @@
-import { TestBed } from '@angular/core/testing'
-import { provideHttpClient } from '@angular/common/http'
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing'
-import { Translation } from '@jsverse/transloco'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { RegistryTranslationLoader } from './registry-translation.loader'
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 
-describe( 'RegistryTranslationLoader', () => {
-    let loader: RegistryTranslationLoader
-    let httpTesting: HttpTestingController
+import { Translation } from '@jsverse/transloco';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-    beforeEach( () => {
-        TestBed.configureTestingModule( { providers: [ provideHttpClient(), provideHttpClientTesting() ] } )
-        loader = TestBed.inject( RegistryTranslationLoader )
-        httpTesting = TestBed.inject( HttpTestingController )
-    } )
+import { RegistryTranslationLoader } from './registry-translation.loader';
 
-    afterEach( () => httpTesting.verify() )
+describe('RegistryTranslationLoader', () => {
+	let loader: RegistryTranslationLoader;
+	let httpTesting: HttpTestingController;
 
-    it( 'fetches the translation file of the requested language', () => {
-        // Arrange
-        const expected: Translation = { global: { title: 'Titre' } }
-        let received: Translation | undefined
+	beforeEach(() => {
+		TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
+		loader = TestBed.inject(RegistryTranslationLoader);
+		httpTesting = TestBed.inject(HttpTestingController);
+	});
 
-        // Act
-        loader.getTranslation( 'fr' ).subscribe( (translation: Translation): void => {
-            received = translation
-        } )
-        httpTesting.expectOne( 'i18n/fr.json' ).flush( expected )
+	afterEach(() => httpTesting.verify());
 
-        // Assert
-        expect( received ).toEqual( expected )
-    } )
-} )
+	it('fetches the translation file of the requested language', () => {
+		// Arrange
+		const expected: Translation = { global: { title: 'Titre' } };
+		let received: Translation | undefined;
+
+		// Act
+		loader.getTranslation('fr').subscribe((translation) => {
+			received = translation;
+		});
+		httpTesting.expectOne('i18n/fr.json').flush(expected);
+
+		// Assert
+		expect(received).toEqual(expected);
+	});
+});

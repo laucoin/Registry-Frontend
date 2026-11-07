@@ -1,3 +1,3 @@
 export interface AuthenticationUriResponseDto {
-    uri: string
+	uri: string;
 }

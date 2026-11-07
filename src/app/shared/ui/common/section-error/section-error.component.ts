@@ -1,8 +1,11 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, input, InputSignal, output, OutputEmitterRef } from '@angular/core'
-import { TranslocoPipe } from '@jsverse/transloco'
-import '@sgdf/ui/button'
-import '@sgdf/ui/callout'
-import { NotificationModel } from '@shared/models/model/notification.model'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, input, InputSignal, output } from '@angular/core';
+
+import { TranslocoPipe } from '@jsverse/transloco';
+
+import { NotificationModel } from '@shared/models/model/notification.model';
+
+import '@sgdf/ui/button';
+import '@sgdf/ui/callout';
 
 /**
  * Purpose: Affiche l'échec d'une section d'une page, avec une action de nouvel essai.
@@ -16,9 +19,9 @@ import { NotificationModel } from '@shared/models/model/notification.model'
 	templateUrl: './section-error.component.html',
 })
 export class SectionErrorComponent {
-	public readonly error: InputSignal<NotificationModel> = input.required()
-	public readonly retrying: InputSignal<boolean> = input(false)
-	public readonly retryable: InputSignal<boolean> = input(true)
+	public readonly error: InputSignal<NotificationModel> = input.required();
+	public readonly retrying = input(false);
+	public readonly retryable = input(true);
 
-	public readonly retry: OutputEmitterRef<void> = output()
+	public readonly retry = output();
 }

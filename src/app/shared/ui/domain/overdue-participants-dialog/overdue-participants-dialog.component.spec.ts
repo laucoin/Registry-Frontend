@@ -1,10 +1,13 @@
 import { signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { UiFacade } from '@core/registry/state/ui.facade';
+
 import { TranslocoPipe } from '@jsverse/transloco';
 import { MockBuilder, ngMocks } from 'ng-mocks';
+
+import { UiFacade } from '@core/registry/state/ui.facade';
 import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade';
 import { ListComponent } from '@shared/ui/common/list/list.component';
+
 import { OverdueParticipantsDialogComponent } from './overdue-participants-dialog.component';
 
 describe('OverdueParticipantsDialogComponent', () => {
@@ -70,12 +73,16 @@ describe('OverdueParticipantsDialogComponent', () => {
 	it('should take the whole screen on a small one only', async () => {
 		// Arrange
 		await fixture.whenStable();
-		const wide: boolean = fixture.nativeElement.querySelector('sgdf-dialog').classList.contains('dialog-fullscreen');
+		const wide: boolean = fixture.nativeElement
+			.querySelector('sgdf-dialog')
+			.classList.contains('dialog-fullscreen');
 
 		// Act
 		tinyScreen.set(true);
 		fixture.detectChanges();
-		const small: boolean = fixture.nativeElement.querySelector('sgdf-dialog').classList.contains('dialog-fullscreen');
+		const small: boolean = fixture.nativeElement
+			.querySelector('sgdf-dialog')
+			.classList.contains('dialog-fullscreen');
 
 		// Assert
 		expect(wide).toBe(false);

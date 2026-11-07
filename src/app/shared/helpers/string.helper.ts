@@ -1,57 +1,56 @@
-import { GenericHelper } from '@shared/helpers/generic.helper'
+import { GenericHelper } from '@shared/helpers/generic.helper';
 
-const EMAIL_PATTERN: RegExp = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
-const EMAIL_MAX_LENGTH: number = 320
+const EMAIL_PATTERN = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+const EMAIL_MAX_LENGTH = 320;
 
 /**
  * Purpose: Utilitaires de chaînes.
  * Scope: Invalidation de cache, troncature, vérifications de blancs, conversion de nombres, remplissage de chiffres et casse de titre.
  * Limits: Aucune traduction et aucun accès au navigateur.
  */
-export class StringHelper {
-    public static addCacheBustingToUrl (url: string): string {
-        const separator: string = url.includes( '?' ) ? '&' : '?'
-        return `${url}${separator}cache-bust=${Math.random()}`
-    }
+export const StringHelper = {
+	addCacheBustingToUrl(url: string): string {
+		const separator: string = url.includes('?') ? '&' : '?';
+		return `${url}${separator}cache-bust=${Math.random()}`;
+	},
 
-    public static truncate (text: string | undefined, maxLength: number, tail?: string): string {
-        if (GenericHelper.isNull( text )) return ''
-        if (text!.length > maxLength) return text!.substring( 0, maxLength ) + (tail ?? '')
-        return text!
-    }
+	truncate(text: string | undefined, maxLength: number, tail?: string): string {
+		if (GenericHelper.isNull(text)) return '';
+		if (text.length > maxLength) return text.substring(0, maxLength) + (tail ?? '');
+		return text;
+	},
 
-    public static isBlank (text: string | undefined): boolean {
-        if (GenericHelper.isNull( text )) return false
-        return text!.trim().length === 0
-    }
+	isBlank(text: string | undefined): boolean {
+		if (GenericHelper.isNull(text)) return false;
+		return text.trim().length === 0;
+	},
 
-    public static isNullOrBlank (text: string | undefined): boolean {
-        return GenericHelper.isNull( text ) || text!.trim().length === 0
-    }
+	isNullOrBlank(text: string | undefined): boolean {
+		return GenericHelper.isNull(text) || text.trim().length === 0;
+	},
 
-    public static isNotNullNorBlank (text: string | undefined): boolean {
-        return !this.isNullOrBlank( text )
-    }
+	isNotNullNorBlank(text: string | undefined): text is string {
+		return !this.isNullOrBlank(text);
+	},
 
-    public static isEmail (text: string | undefined): boolean {
-        return !GenericHelper.isNull( text ) && text!.length <= EMAIL_MAX_LENGTH && EMAIL_PATTERN.test( text! )
-    }
+	isEmail(text: string | undefined): boolean {
+		return !GenericHelper.isNull(text) && text.length <= EMAIL_MAX_LENGTH && EMAIL_PATTERN.test(text);
+	},
 
-    public static toNumber (value: number | string | null | undefined): number | undefined {
-        switch (true) {
-            case GenericHelper.isNull( value ):
-                return undefined
-            case typeof value == 'string': {
-                const parsed: number = Number.parseFloat( value as string )
-                return Number.isNaN( parsed ) ? undefined : parsed
-            }
-            default:
-                return value!
-        }
-    }
+	toNumber(value: number | string | null | undefined): number | undefined {
+		switch (true) {
+			case GenericHelper.isNull(value):
+				return undefined;
+			case typeof value == 'string': {
+				const parsed = Number.parseFloat(value as string);
+				return Number.isNaN(parsed) ? undefined : parsed;
+			}
+			default:
+				return value;
+		}
+	},
 
-    public static formatDigits (value: number, range: number): string {
-        return value.toString().padStart( range, '0' )
-    }
-
-}
+	formatDigits(value: number, range: number): string {
+		return value.toString().padStart(range, '0');
+	},
+} as const;

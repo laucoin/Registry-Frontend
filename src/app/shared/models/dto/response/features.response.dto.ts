@@ -1,3 +1,3 @@
 export interface FeaturesResponseDto {
-    inviteByEmail: boolean
+	inviteByEmail: boolean;
 }

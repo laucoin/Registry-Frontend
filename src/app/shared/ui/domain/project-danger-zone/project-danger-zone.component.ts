@@ -1,21 +1,24 @@
-import '@sgdf/ui/button'
-import '@sgdf/ui/callout'
-import '@sgdf/ui/icon'
-import '@sgdf/ui/table'
-import '@sgdf/ui/table-cell'
-import '@sgdf/ui/table-row'
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, Signal } from '@angular/core'
-import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco'
-import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper'
-import { SessionFacade } from '@core/registry/state/session.facade'
-import { ProjectFacade } from '@pages/projects/data/state/project/project.facade'
-import { ElementConfirmationService } from '@shared/helpers/facade/element-confirmation.service'
-import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
-import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
-import { StringHelper } from '@shared/helpers/string.helper'
-import { ProjectModel } from '@shared/models/model/project.model'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
 
-const NAME_MAX_LENGTH: number = 50
+import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
+
+import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper';
+import { SessionFacade } from '@core/registry/state/session.facade';
+import { ProjectFacade } from '@pages/projects/data/state/project/project.facade';
+import { ElementConfirmationService } from '@shared/helpers/facade/element-confirmation.service';
+import { StringHelper } from '@shared/helpers/string.helper';
+import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum';
+import { SeverityEnum } from '@shared/models/enumeration/severity.enum';
+import { ProjectModel } from '@shared/models/model/project.model';
+
+import '@sgdf/ui/button';
+import '@sgdf/ui/callout';
+import '@sgdf/ui/icon';
+import '@sgdf/ui/table';
+import '@sgdf/ui/table-cell';
+import '@sgdf/ui/table-row';
+
+const NAME_MAX_LENGTH = 50;
 
 /**
  * Purpose: Propose les commandes irréversibles ou restrictives du projet sélectionné : supprimer, restaurer et supprimer définitivement.
@@ -30,39 +33,50 @@ const NAME_MAX_LENGTH: number = 50
 	templateUrl: './project-danger-zone.component.html',
 })
 export class ProjectDangerZoneComponent {
-	private readonly sessionFacade: SessionFacade = inject(SessionFacade)
-	private readonly projectFacade: ProjectFacade = inject(ProjectFacade)
-	private readonly confirmation: ElementConfirmationService = inject(ElementConfirmationService)
+	private readonly sessionFacade = inject(SessionFacade);
+	private readonly projectFacade = inject(ProjectFacade);
+	private readonly confirmation = inject(ElementConfirmationService);
 
-	protected readonly project: Signal<ProjectModel | undefined> = this.sessionFacade.selectedProject
+	protected readonly project = this.sessionFacade.selectedProject;
 
-	protected readonly canSoftDelete: Signal<boolean> = computed((): boolean =>
-		(this.project()?.visible ?? false) && this.allowed(ProjectAuthorityEnum.REGISTRY_PROJECT_SOFT_DELETE))
-	protected readonly canRestore: Signal<boolean> = computed((): boolean =>
-		this.project()?.visible === false && this.allowed(ProjectAuthorityEnum.REGISTRY_PROJECT_RESTORE))
-	protected readonly canHardDelete: Signal<boolean> = computed((): boolean =>
-		this.allowed(ProjectAuthorityEnum.REGISTRY_PROJECT_D))
-	protected readonly shown: Signal<boolean> = computed((): boolean => this.canSoftDelete() || this.canRestore() || this.canHardDelete())
+	protected readonly canSoftDelete = computed(
+		() => (this.project()?.visible ?? false) && this.allowed(ProjectAuthorityEnum.REGISTRY_PROJECT_SOFT_DELETE),
+	);
+	protected readonly canRestore = computed(
+		() => this.project()?.visible === false && this.allowed(ProjectAuthorityEnum.REGISTRY_PROJECT_RESTORE),
+	);
+	protected readonly canHardDelete = computed(() => this.allowed(ProjectAuthorityEnum.REGISTRY_PROJECT_D));
+	protected readonly shown = computed(() => this.canSoftDelete() || this.canRestore() || this.canHardDelete());
 
 	protected softDelete(): void {
-		this.ask('softDelete', SeverityEnum.WARNING, (project: ProjectModel): void => this.projectFacade.softDeleteProject(project.id))
+		this.ask('softDelete', SeverityEnum.WARNING, (project) => this.projectFacade.softDeleteProject(project.id));
 	}
 
 	protected restore(): void {
-		this.ask('restore', SeverityEnum.INFO, (project: ProjectModel): void => this.projectFacade.restoreProject(project.id))
+		this.ask('restore', SeverityEnum.INFO, (project) => this.projectFacade.restoreProject(project.id));
 	}
 
 	protected hardDelete(): void {
-		this.ask('hardDelete', SeverityEnum.DANGER, (project: ProjectModel): void => this.projectFacade.hardDeleteProject(project), true)
+		this.ask('hardDelete', SeverityEnum.DANGER, (project) => this.projectFacade.hardDeleteProject(project), true);
 	}
 
-	private ask(id: string, severity: SeverityEnum, accept: (project: ProjectModel) => void, typed: boolean = false): void {
-		const project: ProjectModel | undefined = this.project()
-		if (!project) return
-		this.confirmation.confirm(`projects.actions.confirmations.${id}`, { ...project, name: StringHelper.truncate(project.name, NAME_MAX_LENGTH, '…') }, severity, (): void => accept(project), typed)
+	private ask(id: string, severity: SeverityEnum, accept: (project: ProjectModel) => void, typed = false): void {
+		const project = this.project();
+		if (!project) return;
+		this.confirmation.confirm(
+			`projects.actions.confirmations.${id}`,
+			{ ...project, name: StringHelper.truncate(project.name, NAME_MAX_LENGTH, '…') },
+			severity,
+			() => accept(project),
+			typed,
+		);
 	}
 
 	private allowed(authority: ProjectAuthorityEnum): boolean {
-		return CurrentUserHelper.hasProjectAuthority(this.sessionFacade.currentUser(), this.sessionFacade.currentProjectId(), authority)
+		return CurrentUserHelper.hasProjectAuthority(
+			this.sessionFacade.currentUser(),
+			this.sessionFacade.currentProjectId(),
+			authority,
+		);
 	}
 }

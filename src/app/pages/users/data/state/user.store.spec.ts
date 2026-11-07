@@ -1,143 +1,145 @@
-import { TestBed } from '@angular/core/testing'
-import { of } from 'rxjs'
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { ErrorReporter } from '@core/registry/state/error-reporter'
-import { UserApi } from '@core/registry/state/user.api'
-import { UserStore } from '@pages/users/data/state/user.store'
-import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures'
-import { UserModel } from '@shared/models/model/user.model'
+import { TestBed } from '@angular/core/testing';
 
-describe( 'UserStore', () => {
-    let store: InstanceType<typeof UserStore>
-    let findUsers: Mock<UserApi['findUsers']>
-    let findUserById: Mock<UserApi['findUserById']>
-    let getAssignableUserRoles: Mock<UserApi['getAssignableUserRoles']>
-    let notify: Mock<(message: unknown) => void>
+import { of } from 'rxjs';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-    beforeEach( () => {
-        findUsers = vi.fn()
-        findUserById = vi.fn()
-        getAssignableUserRoles = vi.fn()
-        notify = vi.fn()
-        TestBed.configureTestingModule( {
-            providers: [
-                { provide: UserApi, useValue: { findUsers, findUserById, getAssignableUserRoles } },
-                { provide: ErrorReporter, useValue: { notify } },
-            ],
-        } )
-        store = TestBed.inject( UserStore )
-    } )
+import { ErrorReporter } from '@core/registry/state/error-reporter';
+import { UserApi } from '@core/registry/state/user.api';
+import { UserStore } from '@pages/users/data/state/user.store';
+import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures';
+import { UserModel } from '@shared/models/model/user.model';
 
-    it( 'stores the fetched users page and clears the reset flag', () => {
-        // Arrange
-        store.updateUsersPageSearchParams( { ...store.users.params(), resetSearch: true } )
-        findUsers.mockReturnValue( of( pageOf<UserModel>( [ { id: 'u1' } as UserModel ] ) ) )
+describe('UserStore', () => {
+	let store: InstanceType<typeof UserStore>;
+	let findUsers: Mock<UserApi['findUsers']>;
+	let findUserById: Mock<UserApi['findUserById']>;
+	let getAssignableUserRoles: Mock<UserApi['getAssignableUserRoles']>;
+	let notify: Mock<(message: unknown) => void>;
 
-        // Act
-        store.fetchUsersPage( { page: 0, size: 10 } )
+	beforeEach(() => {
+		findUsers = vi.fn();
+		findUserById = vi.fn();
+		getAssignableUserRoles = vi.fn();
+		notify = vi.fn();
+		TestBed.configureTestingModule({
+			providers: [
+				{ provide: UserApi, useValue: { findUsers, findUserById, getAssignableUserRoles } },
+				{ provide: ErrorReporter, useValue: { notify } },
+			],
+		});
+		store = TestBed.inject(UserStore);
+	});
 
-        // Assert
-        expect( store.users.element()?.content ).toHaveLength( 1 )
-        expect( store.users.params.resetSearch() ).toBe( false )
-        expect( store.users.loading() ).toBe( false )
-    } )
+	it('stores the fetched users page and clears the reset flag', () => {
+		// Arrange
+		store.updateUsersPageSearchParams({ ...store.users.params(), resetSearch: true });
+		findUsers.mockReturnValue(of(pageOf<UserModel>([{ id: 'u1' } as UserModel])));
 
-    it( 'appends the next batch to the users already shown', () => {
-        // Arrange
-        findUsers
-            .mockReturnValueOnce( of( { ...pageOf<UserModel>( [ { id: 'u1' } as UserModel ] ), size: 1, totalPages: 2 } ) )
-            .mockReturnValueOnce( of( { ...pageOf<UserModel>( [ { id: 'u2' } as UserModel ], 1 ), size: 1, totalPages: 2 } ) )
-        store.fetchUsersPage( { page: 0, size: 1 } )
+		// Act
+		store.fetchUsersPage({ page: 0, size: 10 });
 
-        // Act
-        store.fetchUsersPage( { page: 1, size: 1 } )
+		// Assert
+		expect(store.users.element()?.content).toHaveLength(1);
+		expect(store.users.params.resetSearch()).toBe(false);
+		expect(store.users.loading()).toBe(false);
+	});
 
-        // Assert
-        expect( store.users.element()?.content.map( (user: UserModel): string => user.id ) ).toEqual( [ 'u1', 'u2' ] )
-    } )
+	it('appends the next batch to the users already shown', () => {
+		// Arrange
+		findUsers
+			.mockReturnValueOnce(of({ ...pageOf<UserModel>([{ id: 'u1' } as UserModel]), size: 1, totalPages: 2 }))
+			.mockReturnValueOnce(of({ ...pageOf<UserModel>([{ id: 'u2' } as UserModel], 1), size: 1, totalPages: 2 }));
+		store.fetchUsersPage({ page: 0, size: 1 });
 
-    it( 'keeps the error of a failed users fetch in the users block', () => {
-        // Arrange
-        findUsers.mockReturnValue( failing( ERROR_500 ) )
+		// Act
+		store.fetchUsersPage({ page: 1, size: 1 });
 
-        // Act
-        store.fetchUsersPage( { page: 0, size: 10 } )
+		// Assert
+		expect(store.users.element()?.content.map((user) => user.id)).toEqual(['u1', 'u2']);
+	});
 
-        // Assert
-        expect( store.users.error()?.summary ).toBe( 'Title' )
-        expect( store.users.element() ).toBeUndefined()
-    } )
+	it('keeps the error of a failed users fetch in the users block', () => {
+		// Arrange
+		findUsers.mockReturnValue(failing(ERROR_500));
 
-    it( 'keeps a 503 failure in its block', () => {
-        // Arrange
-        findUsers.mockReturnValue( failing( ERROR_503 ) )
+		// Act
+		store.fetchUsersPage({ page: 0, size: 10 });
 
-        // Act
-        store.fetchUsersPage( { page: 0, size: 10 } )
+		// Assert
+		expect(store.users.error()?.summary).toBe('Title');
+		expect(store.users.element()).toBeUndefined();
+	});
 
-        // Assert
-        expect( store.users.error() ).toBeDefined()
-    } )
+	it('keeps a 503 failure in its block', () => {
+		// Arrange
+		findUsers.mockReturnValue(failing(ERROR_503));
 
-    it( 'loads a single user and ends the loading state', () => {
-        // Arrange
-        findUserById.mockReturnValue( of( { id: 'u1', firstName: 'Ada' } as UserModel ) )
+		// Act
+		store.fetchUsersPage({ page: 0, size: 10 });
 
-        // Act
-        store.fetchUser( 'u1' )
+		// Assert
+		expect(store.users.error()).toBeDefined();
+	});
 
-        // Assert
-        expect( store.user.element()?.firstName ).toBe( 'Ada' )
-        expect( store.user.loading() ).toBe( false )
-    } )
+	it('loads a single user and ends the loading state', () => {
+		// Arrange
+		findUserById.mockReturnValue(of({ id: 'u1', firstName: 'Ada' } as UserModel));
 
-    it( 'clears the failure of a user fetch when the next one succeeds', () => {
-        // Arrange
-        findUserById.mockReturnValueOnce( failing( ERROR_500 ) )
-        findUserById.mockReturnValueOnce( of( { id: 'u2' } as UserModel ) )
-        store.fetchUser( 'u1' )
+		// Act
+		store.fetchUser('u1');
 
-        // Act
-        store.fetchUser( 'u2' )
+		// Assert
+		expect(store.user.element()?.firstName).toBe('Ada');
+		expect(store.user.loading()).toBe(false);
+	});
 
-        // Assert
-        expect( store.user.error() ).toBeUndefined()
-        expect( store.user.element()?.id ).toBe( 'u2' )
-    } )
+	it('clears the failure of a user fetch when the next one succeeds', () => {
+		// Arrange
+		findUserById.mockReturnValueOnce(failing(ERROR_500));
+		findUserById.mockReturnValueOnce(of({ id: 'u2' } as UserModel));
+		store.fetchUser('u1');
 
-    it( 'forgets the loaded user on reset', () => {
-        // Arrange
-        findUserById.mockReturnValue( of( { id: 'u1' } as UserModel ) )
-        store.fetchUser( 'u1' )
+		// Act
+		store.fetchUser('u2');
 
-        // Act
-        store.resetUser()
+		// Assert
+		expect(store.user.error()).toBeUndefined();
+		expect(store.user.element()?.id).toBe('u2');
+	});
 
-        // Assert
-        expect( store.user.element() ).toBeUndefined()
-    } )
+	it('forgets the loaded user on reset', () => {
+		// Arrange
+		findUserById.mockReturnValue(of({ id: 'u1' } as UserModel));
+		store.fetchUser('u1');
 
-    it( 'stores the assignable roles', () => {
-        // Arrange
-        getAssignableUserRoles.mockReturnValue( of( [ { label: 'Admin', value: 'ADMIN' } ] ) )
+		// Act
+		store.resetUser();
 
-        // Act
-        store.fetchAssignableRoles()
+		// Assert
+		expect(store.user.element()).toBeUndefined();
+	});
 
-        // Assert
-        expect( store.metadata.assignableRoles() ).toEqual( [ { label: 'Admin', value: 'ADMIN' } ] )
-    } )
+	it('stores the assignable roles', () => {
+		// Arrange
+		getAssignableUserRoles.mockReturnValue(of([{ label: 'Admin', value: 'ADMIN' }]));
 
-    it( 'toggles the user loader', () => {
-        // Arrange
-        store.startUserLoader()
-        const running: boolean = store.user.loading()
+		// Act
+		store.fetchAssignableRoles();
 
-        // Act
-        store.stopUserLoader()
+		// Assert
+		expect(store.metadata.assignableRoles()).toEqual([{ label: 'Admin', value: 'ADMIN' }]);
+	});
 
-        // Assert
-        expect( running ).toBe( true )
-        expect( store.user.loading() ).toBe( false )
-    } )
-} )
+	it('toggles the user loader', () => {
+		// Arrange
+		store.startUserLoader();
+		const running = store.user.loading();
+
+		// Act
+		store.stopUserLoader();
+
+		// Assert
+		expect(running).toBe(true);
+		expect(store.user.loading()).toBe(false);
+	});
+});

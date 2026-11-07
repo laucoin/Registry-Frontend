@@ -1,23 +1,23 @@
-import { fromBooleanChoice, toBooleanChoice, BooleanChoice } from '@shared/helpers/form/boolean-choice'
-import { formatSort, parseSort, SortFields } from '@shared/helpers/search/sort-query'
+import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice';
+import { formatSort, parseSort, SortFields } from '@shared/helpers/search/sort-query';
 
-export const PROJECTS_SORT_FIELDS: readonly string[] = [ 'name', 'begin', 'end' ]
+export const PROJECTS_SORT_FIELDS: readonly string[] = ['name', 'begin', 'end'];
 
 interface ProjectsListSearch {
-    q: string | undefined
-    at: Date | undefined
-    isVisible: boolean | undefined
-    isFavorite: boolean | undefined
-    withProfile: boolean | undefined
-    sort: string | undefined
+	q: string | undefined;
+	at: Date | undefined;
+	isVisible: boolean | undefined;
+	isFavorite: boolean | undefined;
+	withProfile: boolean | undefined;
+	sort: string | undefined;
 }
 
 export interface ProjectsListSearchModel extends SortFields {
-    q: string
-    at: Date | null
-    isVisible: BooleanChoice
-    isFavorite: BooleanChoice
-    withProfile: BooleanChoice
+	q: string;
+	at: Date | null;
+	isVisible: BooleanChoice;
+	isFavorite: BooleanChoice;
+	withProfile: BooleanChoice;
 }
 
 /**
@@ -25,15 +25,15 @@ export interface ProjectsListSearchModel extends SortFields {
  * Scope: Remplit les paramètres vides avec les valeurs par défaut du formulaire.
  * Limits: Ne valide pas les paramètres.
  */
-export function toProjectsListSearchModel (params: ProjectsListSearch): ProjectsListSearchModel {
-    return {
-        q: params.q ?? '',
-        at: params.at ?? null,
-        isVisible: toBooleanChoice(params.isVisible),
-        isFavorite: toBooleanChoice(params.isFavorite),
-        withProfile: toBooleanChoice(params.withProfile),
-        ...parseSort(params.sort, PROJECTS_SORT_FIELDS),
-    }
+export function toProjectsListSearchModel(params: ProjectsListSearch): ProjectsListSearchModel {
+	return {
+		q: params.q ?? '',
+		at: params.at ?? null,
+		isVisible: toBooleanChoice(params.isVisible),
+		isFavorite: toBooleanChoice(params.isFavorite),
+		withProfile: toBooleanChoice(params.withProfile),
+		...parseSort(params.sort, PROJECTS_SORT_FIELDS),
+	};
 }
 
 /**
@@ -41,13 +41,13 @@ export function toProjectsListSearchModel (params: ProjectsListSearch): Projects
  * Scope: Transforme les valeurs vides du formulaire en paramètres undefined.
  * Limits: Ne valide pas les valeurs du formulaire.
  */
-export function toProjectsListSearchParams (model: ProjectsListSearchModel): ProjectsListSearch {
-    return {
-        q: model.q === '' ? undefined : model.q,
-        at: model.at ?? undefined,
-        isVisible: fromBooleanChoice(model.isVisible),
-        isFavorite: fromBooleanChoice(model.isFavorite),
-        withProfile: fromBooleanChoice(model.withProfile),
-        sort: formatSort(model),
-    }
+export function toProjectsListSearchParams(model: ProjectsListSearchModel): ProjectsListSearch {
+	return {
+		q: model.q === '' ? undefined : model.q,
+		at: model.at ?? undefined,
+		isVisible: fromBooleanChoice(model.isVisible),
+		isFavorite: fromBooleanChoice(model.isFavorite),
+		withProfile: fromBooleanChoice(model.withProfile),
+		sort: formatSort(model),
+	};
 }

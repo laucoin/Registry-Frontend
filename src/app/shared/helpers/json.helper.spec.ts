@@ -1,37 +1,38 @@
-import { describe, expect, it } from 'vitest'
-import { Utils } from '@shared/helpers/json.helper'
+import { describe, expect, it } from 'vitest';
 
-describe( 'Utils', () => {
-    it.each( [ '{"a":1}', '[1,2]' ] )( 'recognizes %s as JSON', (item: string) => {
-        // Arrange
-        const candidate: string = item
+import { Utils } from '@shared/helpers/json.helper';
 
-        // Act
-        const result: boolean = Utils.isJson( candidate )
+describe('Utils', () => {
+	it.each(['{"a":1}', '[1,2]'])('recognizes %s as JSON', (item) => {
+		// Arrange
+		const candidate = item;
 
-        // Assert
-        expect( result ).toBe( true )
-    } )
+		// Act
+		const result = Utils.isJson(candidate);
 
-    it.each( [ 'plain text', '42', 'null', '', null ] )( 'does not take %s for a JSON object', (item: string | null) => {
-        // Arrange
-        const candidate: string | null = item
+		// Assert
+		expect(result).toBe(true);
+	});
 
-        // Act
-        const result: boolean = Utils.isJson( candidate )
+	it.each(['plain text', '42', 'null', '', null])('does not take %s for a JSON object', (item) => {
+		// Arrange
+		const candidate = item;
 
-        // Assert
-        expect( result ).toBe( false )
-    } )
+		// Act
+		const result = Utils.isJson(candidate);
 
-    it( 'tells objects from primitives and null', () => {
-        // Arrange
-        const values: unknown[] = [ {}, [], 'a', 1, null, undefined ]
+		// Assert
+		expect(result).toBe(false);
+	});
 
-        // Act
-        const results: boolean[] = values.map( (value: unknown): boolean => Utils.isObject( value ) )
+	it('tells objects from primitives and null', () => {
+		// Arrange
+		const values: unknown[] = [{}, [], 'a', 1, null, undefined];
 
-        // Assert
-        expect( results ).toEqual( [ true, true, false, false, false, false ] )
-    } )
-} )
+		// Act
+		const results = values.map((value: unknown) => Utils.isObject(value));
+
+		// Assert
+		expect(results).toEqual([true, true, false, false, false, false]);
+	});
+});

@@ -1,8 +1,10 @@
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, input, InputSignal, Signal } from '@angular/core'
-import { TranslocoPipe } from '@jsverse/transloco'
-import '@sgdf/ui/list'
-import '@sgdf/ui/list-item'
-import '@sgdf/ui/skeleton'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, input } from '@angular/core';
+
+import { TranslocoPipe } from '@jsverse/transloco';
+
+import '@sgdf/ui/list';
+import '@sgdf/ui/list-item';
+import '@sgdf/ui/skeleton';
 
 /**
  * Purpose: Affiche des lignes de squelette à la place d'une liste en cours de chargement.
@@ -16,9 +18,9 @@ import '@sgdf/ui/skeleton'
 	templateUrl: './skeleton-list.component.html',
 })
 export class SkeletonListComponent {
-	public readonly rows: InputSignal<number> = input(3)
-	public readonly appearance: InputSignal<'text' | 'soft'> = input<'text' | 'soft'>('text')
-	public readonly withDescription: InputSignal<boolean> = input(false)
+	public readonly rows = input(3);
+	public readonly appearance = input<'text' | 'soft'>('text');
+	public readonly withDescription = input(false);
 
-	protected readonly indexes: Signal<number[]> = computed((): number[] => Array.from({ length: this.rows() }, (_: unknown, index: number): number => index))
+	protected readonly indexes = computed(() => Array.from({ length: this.rows() }, (_, index) => index));
 }

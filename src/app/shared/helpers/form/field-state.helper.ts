@@ -1,11 +1,11 @@
-import { ValidationError } from '@angular/forms/signals'
+import { ValidationError } from '@angular/forms/signals';
 
 export interface FieldErrorState {
-    invalid: () => boolean
-    touched: () => boolean
-    dirty: () => boolean
-    errors: () => readonly ValidationError[]
-    value: () => unknown
+	invalid: () => boolean;
+	touched: () => boolean;
+	dirty: () => boolean;
+	errors: () => readonly ValidationError[];
+	value: () => unknown;
 }
 
 /**
@@ -13,9 +13,9 @@ export interface FieldErrorState {
  * Scope: Applique la règle d'affichage unique partagée par les messages d'erreur et le style invalide des champs.
  * Limits: Lit uniquement l'état du champ ; ne le valide ni ne le modifie.
  */
-export class FieldStateHelper {
-    public static showsError (field: () => FieldErrorState): boolean {
-        const state: FieldErrorState = field()
-        return state.invalid() && (state.touched() || state.dirty())
-    }
-}
+export const FieldStateHelper = {
+	showsError(field: () => FieldErrorState): boolean {
+		const state = field();
+		return state.invalid() && (state.touched() || state.dirty());
+	},
+} as const;

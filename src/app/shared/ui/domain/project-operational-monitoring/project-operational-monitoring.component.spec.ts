@@ -1,17 +1,29 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { DebugElement, signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+
 import { TranslocoPipe } from '@jsverse/transloco';
 import { MockBuilder, ngMocks } from 'ng-mocks';
+
 import { SessionFacade } from '@core/registry/state/session.facade';
 import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade';
-import { NotificationModel } from '@shared/models/model/notification.model';
-import { MovementModel } from '@shared/models/model/movement.model';
-import { PageModel } from '@shared/models/model/page.model';
-import { ProjectOperationalMonitoringComponent } from './project-operational-monitoring.component';
+import { defined } from '@shared/helpers/testing/defined';
 import { REFRESH_SERVICE_STUB } from '@shared/helpers/testing/refresh-service.stub';
+import { MovementModel } from '@shared/models/model/movement.model';
+import { NotificationModel } from '@shared/models/model/notification.model';
+import { PageModel } from '@shared/models/model/page.model';
 
-const page: PageModel<MovementModel> = { page: 0, size: 10, totalElements: 6, totalPages: 1, hasNext: false, content: [], lastRefresh: new Date() };
+import { ProjectOperationalMonitoringComponent } from './project-operational-monitoring.component';
+
+const page: PageModel<MovementModel> = {
+	page: 0,
+	size: 10,
+	totalElements: 6,
+	totalPages: 1,
+	hasNext: false,
+	content: [],
+	lastRefresh: new Date(),
+};
 
 describe('ProjectOperationalMonitoringComponent', () => {
 	let fixture: ComponentFixture<ProjectOperationalMonitoringComponent>;
@@ -36,18 +48,22 @@ describe('ProjectOperationalMonitoringComponent', () => {
 			currentMovementsPageWithoutActivityError: signal(undefined),
 			fetchCurrentMovementsPageWithoutActivity: fetchWithoutActivity,
 		};
-		await MockBuilder(ProjectOperationalMonitoringComponent).provide(REFRESH_SERVICE_STUB)
+		await MockBuilder(ProjectOperationalMonitoringComponent)
+			.provide(REFRESH_SERVICE_STUB)
 			.keep(NgTemplateOutlet)
 			.mock(TranslocoPipe, (key: string): string => key)
 			.provide({ provide: SelectedProjectFacade, useValue: facade })
-			.provide({ provide: SessionFacade, useValue: { selectedProjectHasOption: (): WritableSignal<boolean> => hasActivityOption } });
+			.provide({
+				provide: SessionFacade,
+				useValue: { selectedProjectHasOption: (): WritableSignal<boolean> => hasActivityOption },
+			});
 		fixture = TestBed.createComponent(ProjectOperationalMonitoringComponent);
 		await fixture.whenStable();
 	});
 
 	it('should display the activities and the other movements tabs only', () => {
 		// Arrange
-		const selector: string = 'sgdf-tab';
+		const selector = 'sgdf-tab';
 
 		// Act
 		const count: number = fixture.nativeElement.querySelectorAll(selector).length;
@@ -71,7 +87,7 @@ describe('ProjectOperationalMonitoringComponent', () => {
 
 	it('should render the list of every tab from the start', () => {
 		// Arrange
-		const selector: string = 'app-list';
+		const selector = 'app-list';
 
 		// Act
 		const count: number = fixture.nativeElement.querySelectorAll(selector).length;
@@ -93,7 +109,7 @@ describe('ProjectOperationalMonitoringComponent', () => {
 
 	it('should fetch the requested batch of the list of a tab', () => {
 		// Arrange
-		const request: { page: number, size: number } = { page: 1, size: 10 };
+		const request = { page: 1, size: 10 };
 
 		// Act
 		ngMocks.output('app-list', 'updateRequired').emit(request);
@@ -104,7 +120,7 @@ describe('ProjectOperationalMonitoringComponent', () => {
 
 	it('should hand the state of each list to its own tab', async () => {
 		// Arrange
-		const error: NotificationModel = { severity: 'error', detail: 'boom' } as NotificationModel;
+		const error = { severity: 'error', detail: 'boom' } as NotificationModel;
 		(facade['currentMovementsPageWithActivityError'] as WritableSignal<NotificationModel | undefined>).set(error);
 		(facade['currentMovementsPageWithActivityLoading'] as WritableSignal<boolean>).set(true);
 
@@ -121,7 +137,7 @@ describe('ProjectOperationalMonitoringComponent', () => {
 		const lists: DebugElement[] = ngMocks.findAll('app-list');
 
 		// Act
-		ngMocks.output(lists[1]!, 'updateRequired').emit({ page: 1, size: 10 });
+		ngMocks.output(defined(lists[1]), 'updateRequired').emit({ page: 1, size: 10 });
 
 		// Assert
 		expect(fetchWithoutActivity).toHaveBeenLastCalledWith(1, 10);
@@ -130,7 +146,7 @@ describe('ProjectOperationalMonitoringComponent', () => {
 
 	it('should name each list after its tab', () => {
 		// Arrange
-		const selector: string = 'app-list';
+		const selector = 'app-list';
 
 		// Act
 		const label: string = ngMocks.input(selector, 'label');
@@ -150,6 +166,8 @@ describe('ProjectOperationalMonitoringComponent', () => {
 		expect(fixture.nativeElement.querySelectorAll('sgdf-tab').length).toBe(0);
 		expect(ngMocks.findAll('app-list').length).toBe(1);
 		expect(ngMocks.input('app-list', 'label')).toBe('projectHome.operationalMonitoring.tabs.otherMovements');
-		expect(fixture.nativeElement.querySelector('h2').textContent.trim()).toBe('projectHome.operationalMonitoring.titleMovementsOnly');
+		expect(fixture.nativeElement.querySelector('h2').textContent.trim()).toBe(
+			'projectHome.operationalMonitoring.titleMovementsOnly',
+		);
 	});
 });

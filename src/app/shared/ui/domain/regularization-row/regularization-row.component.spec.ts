@@ -1,14 +1,17 @@
-import type { Mock } from 'vitest';
 import { signal } from '@angular/core';
-import { MovementPrefillService } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-prefill.service';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+
 import { TranslocoPipe } from '@jsverse/transloco';
 import { MockBuilder } from 'ng-mocks';
+import type { Mock } from 'vitest';
+
+import { MovementPrefillService } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-prefill.service';
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe';
 import { IntervalPipe } from '@shared/helpers/pipe/interval.pipe';
 import { PARTICIPANT_DTO } from '@shared/helpers/testing/response-fixtures';
 import { ParticipantMapper } from '@shared/mappers/participant.mapper';
 import { ParticipantModel } from '@shared/models/model/participant.model';
+
 import { RegularizationRowComponent } from './regularization-row.component';
 
 function participant(withEnd: boolean): ParticipantModel {
@@ -32,8 +35,8 @@ describe('RegularizationRowComponent', () => {
 	beforeEach(async () => {
 		await MockBuilder(RegularizationRowComponent)
 			.mock(TranslocoPipe, (key: string): string => key)
-			.mock(CustomDateFormatPipe, (): string => '16 juillet')
-			.mock(IntervalPipe, (): string => '2 jours')
+			.mock(CustomDateFormatPipe, () => '16 juillet')
+			.mock(IntervalPipe, () => '2 jours')
 			.mock(MovementPrefillService, { canCreate: signal(true), openRegularization });
 		openRegularization.mockClear();
 		fixture = TestBed.createComponent(RegularizationRowComponent);
@@ -41,10 +44,10 @@ describe('RegularizationRowComponent', () => {
 
 	it('should show the name, the planned end and how long the participant has been present', async () => {
 		// Arrange
-		const value: ParticipantModel = participant(true);
+		const value = participant(true);
 
 		// Act
-		const text: string = await render(value);
+		const text = await render(value);
 
 		// Assert
 		expect(text).toContain(value.firstName);
@@ -54,10 +57,10 @@ describe('RegularizationRowComponent', () => {
 
 	it('should show only the presence duration when the participant has no own planned end', async () => {
 		// Arrange
-		const value: ParticipantModel = participant(false);
+		const value = participant(false);
 
 		// Act
-		const text: string = await render(value);
+		const text = await render(value);
 
 		// Assert
 		expect(text).not.toContain('projectHome.participantRegularization.plannedEnd');
@@ -66,7 +69,7 @@ describe('RegularizationRowComponent', () => {
 
 	it('should open the movement form prefilled with the participant when clicked', async () => {
 		// Arrange
-		const value: ParticipantModel = participant(true);
+		const value = participant(true);
 		await render(value);
 
 		// Act

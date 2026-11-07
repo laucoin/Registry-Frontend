@@ -15,21 +15,21 @@ inclusive et saine.
 
 Voici des exemples de comportements qui contribuent à un environnement positif pour notre communauté :
 
-* Faire preuve d'empathie et de bienveillance envers les autres
-* Respecter les opinions, points de vue et expériences différents
-* Donner et accepter avec élégance les retours constructifs
-* Assumer ses responsabilités et s'excuser auprès des personnes touchées par nos erreurs, et en tirer des leçons
-* Se concentrer sur ce qui est le meilleur non seulement pour nous en tant qu'individus, mais pour la communauté dans son
+- Faire preuve d'empathie et de bienveillance envers les autres
+- Respecter les opinions, points de vue et expériences différents
+- Donner et accepter avec élégance les retours constructifs
+- Assumer ses responsabilités et s'excuser auprès des personnes touchées par nos erreurs, et en tirer des leçons
+- Se concentrer sur ce qui est le meilleur non seulement pour nous en tant qu'individus, mais pour la communauté dans son
   ensemble
 
 Voici des exemples de comportements inacceptables :
 
-* L'usage d'un langage ou d'images à caractère sexuel, et toute attention ou avance sexuelle
-* Le trolling, les commentaires insultants ou désobligeants, et les attaques personnelles ou politiques
-* Le harcèlement public ou privé
-* La publication d'informations privées d'autrui, comme une adresse postale ou électronique, sans leur autorisation
+- L'usage d'un langage ou d'images à caractère sexuel, et toute attention ou avance sexuelle
+- Le trolling, les commentaires insultants ou désobligeants, et les attaques personnelles ou politiques
+- Le harcèlement public ou privé
+- La publication d'informations privées d'autrui, comme une adresse postale ou électronique, sans leur autorisation
   explicite
-* Tout autre comportement raisonnablement considéré comme inapproprié dans un cadre professionnel
+- Tout autre comportement raisonnablement considéré comme inapproprié dans un cadre professionnel
 
 ## Responsabilités d'application
 

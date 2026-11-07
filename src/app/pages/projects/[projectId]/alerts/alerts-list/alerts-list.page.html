@@ -1,69 +1,122 @@
 <sgdf-page-title [eyebrow]="'projectEyebrow.monitoring' | transloco" [lede]="'alerts.list.subtitle' | transloco">
-    {{ 'alerts.list.title' | transloco }}
+	{{ 'alerts.list.title' | transloco }}
 </sgdf-page-title>
 
-<section data-testid="alerts-list-statistics-section" class="mt-(--spacing--block) grid grid-cols-1 gap-(--spacing--in-block-large) md:grid-cols-2">
-    @if (facade.alertStatisticsError(); as failure) {
-        <app-section-error data-testid="alerts-list-statistics-error" class="md:col-span-2" [error]="failure"
-                           [retrying]="facade.alertStatisticsLoading()" (retry)="facade.fetchAlertStatistics()"/>
-    } @else {
-        @let statistics = facade.alertStatistics();
-        @let rate = statistics?.realAlertRate;
-        <sgdf-stat data-testid="alerts-list-resolution-stat" [loading]="facade.alertStatisticsLoading()"
-                   [title]="'alerts.statistics.resolution.title' | transloco"
-                   [hint]="statistics ? ((resolutionDuration() ? 'alerts.statistics.resolution.hint' : 'alerts.statistics.resolution.empty') | transloco) : ''">
-            @if (resolutionDuration(); as duration) {
-                <sgdf-format-duration [value]="duration"/>
-            }
-        </sgdf-stat>
-        <sgdf-stat data-testid="alerts-list-rate-stat" [loading]="facade.alertStatisticsLoading()"
-                   [title]="'alerts.statistics.rate.title' | transloco"
-                   [hint]="statistics ? ((rate === undefined ? 'alerts.statistics.rate.empty' : 'alerts.statistics.rate.hint')
-                           | transloco: { resolved: statistics.resolvedCount, closed: closedAlertsCount() }) : ''">
-            @if (rate !== undefined) {
-                <sgdf-format-number type="percent" [value]="rate"/>
-            }
-        </sgdf-stat>
-    }
+<section
+	data-testid="alerts-list-statistics-section"
+	class="mt-(--spacing--block) grid grid-cols-1 gap-(--spacing--in-block-large) md:grid-cols-2"
+>
+	@if (facade.alertStatisticsError(); as failure) {
+		<app-section-error
+			data-testid="alerts-list-statistics-error"
+			class="md:col-span-2"
+			[error]="failure"
+			[retrying]="facade.alertStatisticsLoading()"
+			(retry)="facade.fetchAlertStatistics()"
+		/>
+	} @else {
+		@let statistics = facade.alertStatistics(); @let rate = statistics?.realAlertRate;
+		<sgdf-stat
+			data-testid="alerts-list-resolution-stat"
+			[loading]="facade.alertStatisticsLoading()"
+			[title]="'alerts.statistics.resolution.title' | transloco"
+			[hint]="
+				statistics
+					? ((resolutionDuration() ? 'alerts.statistics.resolution.hint' : 'alerts.statistics.resolution.empty')
+						| transloco)
+					: ''
+			"
+		>
+			@if (resolutionDuration(); as duration) {
+				<sgdf-format-duration [value]="duration" />
+			}
+		</sgdf-stat>
+		<sgdf-stat
+			data-testid="alerts-list-rate-stat"
+			[loading]="facade.alertStatisticsLoading()"
+			[title]="'alerts.statistics.rate.title' | transloco"
+			[hint]="
+				statistics
+					? ((rate === undefined ? 'alerts.statistics.rate.empty' : 'alerts.statistics.rate.hint')
+						| transloco: { resolved: statistics.resolvedCount, closed: closedAlertsCount() })
+					: ''
+			"
+		>
+			@if (rate !== undefined) {
+				<sgdf-format-number type="percent" [value]="rate" />
+			}
+		</sgdf-stat>
+	}
 </section>
 
-<app-list data-testid="alerts-list-list" class="mt-(--spacing--block) block"
-          emptyMessagePrefix="alerts.notifications.EMPTY"
-          [elementPage]="facade.alertsPage()"
-          [error]="facade.alertsPageError()"
-          [loading]="facade.alertsPageLoading()"
-          [loadingMore]="facade.alertsPageSilentLoading()"
-          [activeFilters]="activeFilters()"
-          (updateRequired)="loadBatch($event)"
-          (filtersReset)="resetFilters()">
-    <ng-template appTemplate="search">
-        <form data-testid="alerts-list-search-form" class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
-              (submit)="$event.preventDefault()">
-            <sgdf-input data-testid="alerts-list-q-input" enterkeyhint="search" (keydown.enter)="searchQuery.submit()" (focusout)="searchQuery.submit()" appSgdfField class="md:col-span-2" [label]="'alerts.search-and-filter.text' | transloco"
-                        [formField]="form.q"/>
-            <sgdf-select data-testid="alerts-list-status-select" appSgdfField [label]="'alerts.search-and-filter.status' | transloco"
-                         [formField]="form.status">
-                @for (item of facade.alertStatusMetadata(); track item.label) {
-                    <sgdf-option [value]="item.value ?? ''">{{ item.label }}</sgdf-option>
-                }
-            </sgdf-select>
-            <sgdf-select *appIfProjectAuthority="hiddenAuthority" data-testid="alerts-list-is-visible-select" appSgdfField [label]="'alerts.search-and-filter.visibility' | transloco"
-                         [formField]="form.isVisible">
-                @for (item of facade.visibilitiesMetadata(); track item.label) {
-                    <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
-                }
-            </sgdf-select>
-            <sgdf-date-time-picker data-testid="alerts-list-from-picker" appSgdfField with-time
-                                   [label]="'alerts.search-and-filter.start-datetime' | transloco"
-                                   [formField]="form.from"/>
-            <sgdf-date-time-picker data-testid="alerts-list-to-picker" appSgdfField with-time
-                                   [label]="'alerts.search-and-filter.end-datetime' | transloco"
-                                   [formField]="form.to"/>
-            <app-sort-fields [sortBy]="form.sortBy" [sortDirection]="form.sortDirection" [fields]="sortFields"/>
-        </form>
-    </ng-template>
+<app-list
+	data-testid="alerts-list-list"
+	class="mt-(--spacing--block) block"
+	emptyMessagePrefix="alerts.notifications.EMPTY"
+	[elementPage]="facade.alertsPage()"
+	[error]="facade.alertsPageError()"
+	[loading]="facade.alertsPageLoading()"
+	[loadingMore]="facade.alertsPageSilentLoading()"
+	[activeFilters]="activeFilters()"
+	(updateRequired)="loadBatch($event)"
+	(filtersReset)="resetFilters()"
+>
+	<ng-template appTemplate="search">
+		<form
+			data-testid="alerts-list-search-form"
+			class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
+			(submit)="$event.preventDefault()"
+		>
+			<sgdf-input
+				data-testid="alerts-list-q-input"
+				enterkeyhint="search"
+				(keydown.enter)="searchQuery.submit()"
+				(focusout)="searchQuery.submit()"
+				appSgdfField
+				class="md:col-span-2"
+				[label]="'alerts.search-and-filter.text' | transloco"
+				[formField]="form.q"
+			/>
+			<sgdf-select
+				data-testid="alerts-list-status-select"
+				appSgdfField
+				[label]="'alerts.search-and-filter.status' | transloco"
+				[formField]="form.status"
+			>
+				@for (item of facade.alertStatusMetadata(); track item.label) {
+					<sgdf-option [value]="item.value ?? ''">{{ item.label }}</sgdf-option>
+				}
+			</sgdf-select>
+			<sgdf-select
+				*appIfProjectAuthority="hiddenAuthority"
+				data-testid="alerts-list-is-visible-select"
+				appSgdfField
+				[label]="'alerts.search-and-filter.visibility' | transloco"
+				[formField]="form.isVisible"
+			>
+				@for (item of facade.visibilitiesMetadata(); track item.label) {
+					<sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+				}
+			</sgdf-select>
+			<sgdf-date-time-picker
+				data-testid="alerts-list-from-picker"
+				appSgdfField
+				with-time
+				[label]="'alerts.search-and-filter.start-datetime' | transloco"
+				[formField]="form.from"
+			/>
+			<sgdf-date-time-picker
+				data-testid="alerts-list-to-picker"
+				appSgdfField
+				with-time
+				[label]="'alerts.search-and-filter.end-datetime' | transloco"
+				[formField]="form.to"
+			/>
+			<app-sort-fields [sortBy]="form.sortBy" [sortDirection]="form.sortDirection" [fields]="sortFields" />
+		</form>
+	</ng-template>
 
-    <ng-template appTemplate="element" let-alert>
-        <sgdf-list-item data-testid="alert-row" [attr.data-id]="alert.id" appAlertElement [alert]="alert"/>
-    </ng-template>
+	<ng-template appTemplate="element" let-alert>
+		<sgdf-list-item data-testid="alert-row" [attr.data-id]="alert.id" appAlertElement [alert]="alert" />
+	</ng-template>
 </app-list>

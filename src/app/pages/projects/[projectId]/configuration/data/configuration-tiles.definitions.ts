@@ -1,7 +1,7 @@
-import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
-import { ConfigurationTileModel } from '@pages/projects/[projectId]/configuration/data/model/configuration-tile.model'
-import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
-import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
+import { RegistryRouteEnum } from '@core/routing/registry-route.enum';
+import { ConfigurationTileModel } from '@pages/projects/[projectId]/configuration/data/model/configuration-tile.model';
+import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum';
+import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum';
 
 export const CONFIGURATION_TILES: ConfigurationTileModel[] = [
 	{
@@ -41,4 +41,4 @@ export const CONFIGURATION_TILES: ConfigurationTileModel[] = [
 		count: 'acceptedProfiles',
 		requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_R,
 	},
-]
+];

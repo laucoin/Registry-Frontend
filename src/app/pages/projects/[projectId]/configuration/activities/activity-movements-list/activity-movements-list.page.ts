@@ -1,46 +1,61 @@
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { IfProjectAuthorityDirective } from '@shared/directives/if-project-authority.directive'
-import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, signal, Signal, WritableSignal, DestroyRef } from '@angular/core'
-import { FieldTree, FormField } from '@angular/forms/signals'
-import { ActivatedRoute, ParamMap } from '@angular/router'
-import { TranslocoPipe } from '@jsverse/transloco'
-import '@sgdf/ui/button'
-import '@sgdf/ui/date-time-picker'
-import '@sgdf/ui/format-duration'
-import '@sgdf/ui/format-number'
-import '@sgdf/ui/icon'
-import '@sgdf/ui/list-item'
-import '@sgdf/ui/option'
-import '@sgdf/ui/page-title'
-import '@sgdf/ui/select'
-import '@sgdf/ui/skeleton'
-import '@sgdf/ui/stat'
-import { distinctUntilChanged, map, tap } from 'rxjs'
-import { ActivityFacade } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
-import { ACTIVITY_MOVEMENTS_LIST_SORT_FIELDS,
-    ActivityMovementsListSearchModel,
-    toActivityMovementsListSearchModel,
-    toActivityMovementsListSearchParams,
-} from '@pages/projects/[projectId]/configuration/activities/activity-movements-list/activity-movements-list.search'
-import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
-import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
-import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
-import { createSearchForm } from '@shared/helpers/form/search.form'
-import { sortQueryCodec } from '@shared/helpers/search/sort-query'
-import { SortFieldsComponent } from '@shared/ui/common/sort-fields/sort-fields.component'
-import { injectSearchQuery, SearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query'
-import { DurationHelper } from '@shared/helpers/duration.helper'
-import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
-import { withLoading } from '@shared/helpers/rx.helper'
-import { PageEventModel } from '@shared/models/model/page-event.model'
-import { ActivityModel } from '@shared/models/model/activity.model'
-import { ListComponent } from '@shared/ui/common/list/list.component'
-import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
-import { MovementElementComponent } from '@shared/ui/domain/movement-element/movement-element.component'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, inject, signal, WritableSignal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormField } from '@angular/forms/signals';
+import { ActivatedRoute } from '@angular/router';
 
-const ACTIVITY_MOVEMENTS_LIST_DEFAULTS: ActivityMovementsListSearchModel = toActivityMovementsListSearchModel({ type: undefined, from: undefined, to: undefined, isVisible: undefined, sort: undefined })
-const ACTIVITY_MOVEMENTS_LIST_QUERY_SCHEMA: SearchQuerySchema<ActivityMovementsListSearchModel> = { type: 'text', from: 'date', to: 'date', isVisible: 'choice' }
+import { TranslocoPipe } from '@jsverse/transloco';
+import { distinctUntilChanged, map, tap } from 'rxjs';
+
+import {
+	ACTIVITY_MOVEMENTS_LIST_SORT_FIELDS,
+	ActivityMovementsListSearchModel,
+	toActivityMovementsListSearchModel,
+	toActivityMovementsListSearchParams,
+} from '@pages/projects/[projectId]/configuration/activities/activity-movements-list/activity-movements-list.search';
+import { ActivityFacade } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade';
+import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade';
+import { IfProjectAuthorityDirective } from '@shared/directives/if-project-authority.directive';
+import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive';
+import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive';
+import { DurationHelper } from '@shared/helpers/duration.helper';
+import { createSearchForm } from '@shared/helpers/form/search.form';
+import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe';
+import { withLoading } from '@shared/helpers/rx.helper';
+import { injectSearchQuery, SearchQuerySchema } from '@shared/helpers/search/search-query';
+import { sortQueryCodec } from '@shared/helpers/search/sort-query';
+import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum';
+import { ActivityModel } from '@shared/models/model/activity.model';
+import { PageEventModel } from '@shared/models/model/page-event.model';
+import { ListComponent } from '@shared/ui/common/list/list.component';
+import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component';
+import { SortFieldsComponent } from '@shared/ui/common/sort-fields/sort-fields.component';
+import { MovementElementComponent } from '@shared/ui/domain/movement-element/movement-element.component';
+
+import '@sgdf/ui/button';
+import '@sgdf/ui/date-time-picker';
+import '@sgdf/ui/format-duration';
+import '@sgdf/ui/format-number';
+import '@sgdf/ui/icon';
+import '@sgdf/ui/list-item';
+import '@sgdf/ui/option';
+import '@sgdf/ui/page-title';
+import '@sgdf/ui/select';
+import '@sgdf/ui/skeleton';
+import '@sgdf/ui/stat';
+
+const ACTIVITY_MOVEMENTS_LIST_DEFAULTS = toActivityMovementsListSearchModel({
+	type: undefined,
+	from: undefined,
+	to: undefined,
+	isVisible: undefined,
+	sort: undefined,
+});
+const ACTIVITY_MOVEMENTS_LIST_QUERY_SCHEMA: SearchQuerySchema<ActivityMovementsListSearchModel> = {
+	type: 'text',
+	from: 'date',
+	to: 'date',
+	isVisible: 'choice',
+};
 
 /**
  * Purpose: Page listant les mouvements d'une activité avec recherche et déclencheur « charger plus ».
@@ -48,126 +63,154 @@ const ACTIVITY_MOVEMENTS_LIST_QUERY_SCHEMA: SearchQuerySchema<ActivityMovementsL
  * Limits: Ne détient aucun état de domaine et n'appelle jamais le backend.
  */
 @Component({
-    selector: 'app-activity-movements-list',
-    imports: [
-        SortFieldsComponent,
-        IfProjectAuthorityDirective,
-        ListComponent,
-        SectionErrorComponent,
-        MovementElementComponent,
-        RegistryTemplateDirective,
-        SgdfFieldDirective,
-        BooleanChoicePipe,
-        TranslocoPipe,
-        FormField,
-    ],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    templateUrl: './activity-movements-list.page.html',
+	selector: 'app-activity-movements-list',
+	imports: [
+		SortFieldsComponent,
+		IfProjectAuthorityDirective,
+		ListComponent,
+		SectionErrorComponent,
+		MovementElementComponent,
+		RegistryTemplateDirective,
+		SgdfFieldDirective,
+		BooleanChoicePipe,
+		TranslocoPipe,
+		FormField,
+	],
+	schemas: [CUSTOM_ELEMENTS_SCHEMA],
+	templateUrl: './activity-movements-list.page.html',
 })
 export class ActivityMovementsListPage {
-    protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_RESTORE
+	protected readonly hiddenAuthority: ProjectAuthorityEnum = ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_RESTORE;
 
-    private readonly destroyRef: DestroyRef = inject( DestroyRef )
-    protected readonly facade: ActivityFacade = inject(ActivityFacade)
-    protected readonly movementFacade: MovementFacade = inject(MovementFacade)
-    private readonly route: ActivatedRoute = inject(ActivatedRoute)
+	private readonly destroyRef = inject(DestroyRef);
+	protected readonly facade = inject(ActivityFacade);
+	protected readonly movementFacade = inject(MovementFacade);
+	private readonly route = inject(ActivatedRoute);
 
-    protected readonly entity: WritableSignal<ActivityModel | undefined> = signal(undefined)
-    protected readonly entityLoading: WritableSignal<boolean> = signal(false)
+	protected readonly entity: WritableSignal<ActivityModel | undefined> = signal(undefined);
+	protected readonly entityLoading = signal(false);
 
-    protected readonly title: Signal<string> = computed((): string => {
-        const entity: ActivityModel | undefined = this.entity()
-        return entity ? entity.name : ''
-    })
+	protected readonly title = computed(() => this.buildTitle());
 
-    protected readonly movementDuration: Signal<string | undefined> = computed((): string | undefined => {
-        const seconds: number | undefined = this.facade.activityStatistics()?.movementSeconds
+	protected readonly movementDuration = computed(() => this.buildMovementDuration());
 
-        return seconds === undefined ? undefined : DurationHelper.toIsoHours(seconds)
-    })
+	protected readonly manDuration = computed(() => this.buildManDuration());
 
-    protected readonly manDuration: Signal<string | undefined> = computed((): string | undefined => {
-        const seconds: number | undefined = this.facade.activityStatistics()?.manSeconds
+	protected readonly activeFilters = computed(
+		() =>
+			[
+				this.facade.activityMovementsPageTypeParam() !== undefined,
+				this.facade.activityMovementsPageFromParam() !== undefined,
+				this.facade.activityMovementsPageToParam() !== undefined,
+				this.facade.activityMovementsPageIsVisibleParam() !== undefined,
+			].filter(Boolean).length,
+	);
 
-        return seconds === undefined ? undefined : DurationHelper.toIsoHours(seconds)
-    })
+	protected readonly sortFields: readonly string[] = ACTIVITY_MOVEMENTS_LIST_SORT_FIELDS;
+	protected readonly model = signal(ACTIVITY_MOVEMENTS_LIST_DEFAULTS);
+	protected readonly form = createSearchForm(this.model);
+	protected readonly searchQuery = injectSearchQuery({
+		schema: ACTIVITY_MOVEMENTS_LIST_QUERY_SCHEMA,
+		defaults: ACTIVITY_MOVEMENTS_LIST_DEFAULTS,
+		model: this.model,
+		extra: sortQueryCodec<ActivityMovementsListSearchModel>(ACTIVITY_MOVEMENTS_LIST_SORT_FIELDS),
+		search: (model) => this.search(model),
+		apply: (model, initial) => {
+			this.inputSearch(model);
+			if (!initial) {
+				this.facade.fetchActivityMovementsPage(this.id(), undefined, undefined);
+			}
+		},
+	});
 
-    protected readonly activeFilters: Signal<number> = computed((): number => [
-        this.facade.activityMovementsPageTypeParam() !== undefined,
-        this.facade.activityMovementsPageFromParam() !== undefined,
-        this.facade.activityMovementsPageToParam() !== undefined,
-        this.facade.activityMovementsPageIsVisibleParam() !== undefined,
-    ].filter(Boolean).length)
+	constructor() {
+		this.route.paramMap
+			.pipe(
+				map((params) => params.get('activityId')),
+				distinctUntilChanged(),
+			)
+			.pipe(takeUntilDestroyed(this.destroyRef))
+			.subscribe(() => this.loadData());
+		this.handleMovementActions();
+	}
 
-    protected readonly sortFields: readonly string[] = ACTIVITY_MOVEMENTS_LIST_SORT_FIELDS
-    protected readonly model: WritableSignal<ActivityMovementsListSearchModel> = signal(ACTIVITY_MOVEMENTS_LIST_DEFAULTS)
-    protected readonly form: FieldTree<ActivityMovementsListSearchModel> = createSearchForm(this.model)
-    protected readonly searchQuery: SearchQuery<ActivityMovementsListSearchModel> = injectSearchQuery({
-        schema: ACTIVITY_MOVEMENTS_LIST_QUERY_SCHEMA,
-        defaults: ACTIVITY_MOVEMENTS_LIST_DEFAULTS,
-        model: this.model,
-        extra: sortQueryCodec<ActivityMovementsListSearchModel>( ACTIVITY_MOVEMENTS_LIST_SORT_FIELDS ),
-        search: (model: ActivityMovementsListSearchModel): void => this.search(model),
-        apply: (model: ActivityMovementsListSearchModel, initial: boolean): void => {
-            this.inputSearch(model)
-            if (!initial) {
-                this.facade.fetchActivityMovementsPage(this.id(), undefined, undefined)
-            }
-        },
-    })
+	protected loadData(): void {
+		this.facade
+			.fetchActivity(this.id())
+			.pipe(withLoading(this.entityLoading))
+			.pipe(takeUntilDestroyed(this.destroyRef))
+			.subscribe((entity) => this.entity.set(entity));
+		this.facade.fetchActivityStatistics(this.id());
+		this.facade.fetchActivityMovementsPage(this.id(), undefined, undefined);
+	}
 
-    public constructor() {
-        this.route.paramMap.pipe(
-                map((params: ParamMap): string | null => params.get('activityId')),
-                distinctUntilChanged(),
-            ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe((): void => this.loadData())
-        this.handleMovementActions()
-    }
+	private handleMovementActions(): void {
+		this.movementFacade
+			.handleMovementFirstPageReload()
+			.pipe(
+				tap(() => this.facade.fetchActivityMovementsPage(this.id(), 0, undefined)),
+				tap(() => this.facade.reloadActivityStatistics(this.id())),
+			)
+			.pipe(takeUntilDestroyed(this.destroyRef))
+			.subscribe();
+		this.movementFacade
+			.handleMovementCurrentPageReload()
+			.pipe(
+				tap(() => this.facade.reloadActivityMovementsPage(this.id())),
+				tap(() => this.facade.reloadActivityStatistics(this.id())),
+			)
+			.pipe(takeUntilDestroyed(this.destroyRef))
+			.subscribe();
+	}
 
-    protected loadData(): void {
-        this.facade.fetchActivity(this.id()).pipe(
-                withLoading(this.entityLoading),
-            ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe((entity: ActivityModel): void => this.entity.set(entity))
-        this.facade.fetchActivityStatistics(this.id())
-        this.facade.fetchActivityMovementsPage(this.id(), undefined, undefined)
-    }
+	protected search(model: ActivityMovementsListSearchModel = this.model()): void {
+		this.inputSearch(model);
+		this.facade.fetchActivityMovementsPage(this.id(), 0, undefined);
+		this.searchQuery.write(model);
+	}
 
-    private handleMovementActions(): void {
-        this.movementFacade.handleMovementFirstPageReload().pipe(
-                tap((): void => this.facade.fetchActivityMovementsPage(this.id(), 0, undefined)),
-                tap((): void => this.facade.reloadActivityStatistics(this.id())),
-            ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe()
-        this.movementFacade.handleMovementCurrentPageReload().pipe(
-                tap((): void => this.facade.reloadActivityMovementsPage(this.id())),
-                tap((): void => this.facade.reloadActivityStatistics(this.id())),
-            ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe()
-    }
+	protected resetFilters(): void {
+		this.model.set(ACTIVITY_MOVEMENTS_LIST_DEFAULTS);
+		this.search();
+	}
 
-    protected search(model: ActivityMovementsListSearchModel = this.model()): void {
-        this.inputSearch(model)
-        this.facade.fetchActivityMovementsPage(this.id(), 0, undefined)
-        this.searchQuery.write(model)
-    }
+	private inputSearch(model: ActivityMovementsListSearchModel): void {
+		const search = toActivityMovementsListSearchParams(model);
+		this.facade.inputMovementsPageSearchParameters(
+			search.type,
+			search.from,
+			search.to,
+			search.isVisible,
+			search.sort,
+		);
+	}
 
-    protected resetFilters(): void {
-        this.model.set(ACTIVITY_MOVEMENTS_LIST_DEFAULTS)
-        this.search()
-    }
+	protected retryStatistics(): void {
+		this.facade.fetchActivityStatistics(this.id());
+	}
 
-    private inputSearch(model: ActivityMovementsListSearchModel): void {
-        const search: ReturnType<typeof toActivityMovementsListSearchParams> = toActivityMovementsListSearchParams(model)
-        this.facade.inputMovementsPageSearchParameters(search.type, search.from, search.to, search.isVisible, search.sort)
-    }
+	protected loadBatch(pageEvent: PageEventModel): void {
+		this.facade.fetchActivityMovementsPage(this.id(), pageEvent.page, pageEvent.size);
+	}
 
-    protected retryStatistics(): void {
-        this.facade.fetchActivityStatistics(this.id())
-    }
+	private id(): string {
+		return this.route.snapshot.params['activityId'];
+	}
 
-    protected loadBatch(pageEvent: PageEventModel): void {
-        this.facade.fetchActivityMovementsPage(this.id(), pageEvent.page, pageEvent.size)
-    }
+	private buildTitle(): string {
+		const entity: ActivityModel | undefined = this.entity();
+		return entity ? entity.name : '';
+	}
 
-    private id(): string {
-        return this.route.snapshot.params['activityId']
-    }
+	private buildMovementDuration(): string | undefined {
+		const seconds = this.facade.activityStatistics()?.movementSeconds;
+
+		return seconds === undefined ? undefined : DurationHelper.toIsoHours(seconds);
+	}
+
+	private buildManDuration(): string | undefined {
+		const seconds = this.facade.activityStatistics()?.manSeconds;
+
+		return seconds === undefined ? undefined : DurationHelper.toIsoHours(seconds);
+	}
 }

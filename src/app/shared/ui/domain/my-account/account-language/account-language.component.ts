@@ -1,14 +1,17 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, Signal } from '@angular/core';
-import { SessionFacade } from "@core/registry/state/session.facade";
-import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
-import '@sgdf/ui/icon'
-import '@sgdf/ui/option'
-import '@sgdf/ui/radio'
-import '@sgdf/ui/radio-group'
-import '@sgdf/ui/select'
-import '@sgdf/ui/table'
-import '@sgdf/ui/table-cell'
-import '@sgdf/ui/table-row'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
+
+import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
+
+import { SessionFacade } from '@core/registry/state/session.facade';
+
+import '@sgdf/ui/icon';
+import '@sgdf/ui/option';
+import '@sgdf/ui/radio';
+import '@sgdf/ui/radio-group';
+import '@sgdf/ui/select';
+import '@sgdf/ui/table';
+import '@sgdf/ui/table-cell';
+import '@sgdf/ui/table-row';
 
 /**
  * Purpose: Permet à l'utilisateur connecté de choisir la langue d'affichage de l'application.
@@ -16,9 +19,7 @@ import '@sgdf/ui/table-row'
  * Limits: Ne décide pas des langues existantes, ne charge pas les traductions et ne persiste rien lui-même ; la facade de session le fait.
  */
 @Component({
-	imports: [
-		TranslocoPipe,
-	],
+	imports: [TranslocoPipe],
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	providers: [provideTranslocoScope('my-account')],
 	selector: 'app-account-language',
@@ -26,17 +27,17 @@ import '@sgdf/ui/table-row'
 	templateUrl: './account-language.component.html',
 })
 export class AccountLanguageComponent {
-	private readonly sessionFacade: SessionFacade = inject(SessionFacade)
+	private readonly sessionFacade = inject(SessionFacade);
 
-	protected readonly availableLanguages: readonly string[] = this.sessionFacade.availableLanguages
-	protected readonly currentLanguage: Signal<string> = this.sessionFacade.currentUserLanguage
-	protected readonly pendingLanguage: Signal<string | undefined> = this.sessionFacade.pendingLanguage
+	protected readonly availableLanguages: readonly string[] = this.sessionFacade.availableLanguages;
+	protected readonly currentLanguage = this.sessionFacade.currentUserLanguage;
+	protected readonly pendingLanguage = this.sessionFacade.pendingLanguage;
 
 	protected select(language: string): void {
-		this.sessionFacade.updateCurrentUserLanguage(language)
+		this.sessionFacade.updateCurrentUserLanguage(language);
 	}
 
 	protected selectFromEvent(event: Event): void {
-		this.select((event.target as HTMLSelectElement).value)
+		this.select((event.target as HTMLSelectElement).value);
 	}
 }

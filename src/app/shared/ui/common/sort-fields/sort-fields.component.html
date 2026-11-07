@@ -1,12 +1,20 @@
-<sgdf-select data-testid="sort-fields-by-select" appSgdfField [label]="'global.sort.by' | transloco"
-             [formField]="sortBy()">
-    <sgdf-option value="">{{ 'global.sort.default' | transloco }}</sgdf-option>
-    @for (field of fields(); track field) {
-        <sgdf-option [value]="field">{{ 'global.sort.fields.' + field | transloco }}</sgdf-option>
-    }
+<sgdf-select
+	data-testid="sort-fields-by-select"
+	appSgdfField
+	[label]="'global.sort.by' | transloco"
+	[formField]="sortBy()"
+>
+	<sgdf-option value="">{{ 'global.sort.default' | transloco }}</sgdf-option>
+	@for (field of fields(); track field) {
+		<sgdf-option [value]="field">{{ 'global.sort.fields.' + field | transloco }}</sgdf-option>
+	}
 </sgdf-select>
-<sgdf-select data-testid="sort-fields-direction-select" appSgdfField [label]="'global.sort.direction' | transloco"
-             [formField]="sortDirection()">
-    <sgdf-option value="asc">{{ 'global.sort.asc' | transloco }}</sgdf-option>
-    <sgdf-option value="desc">{{ 'global.sort.desc' | transloco }}</sgdf-option>
+<sgdf-select
+	data-testid="sort-fields-direction-select"
+	appSgdfField
+	[label]="'global.sort.direction' | transloco"
+	[formField]="sortDirection()"
+>
+	<sgdf-option value="asc">{{ 'global.sort.asc' | transloco }}</sgdf-option>
+	<sgdf-option value="desc">{{ 'global.sort.desc' | transloco }}</sgdf-option>
 </sgdf-select>

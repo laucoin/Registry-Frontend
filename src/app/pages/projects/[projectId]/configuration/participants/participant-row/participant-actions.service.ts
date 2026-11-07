@@ -1,13 +1,14 @@
-import { inject, Injectable } from '@angular/core'
-import { Router } from '@angular/router'
-import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
-import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/data/state/group.facade'
-import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
-import { ElementActionsBase, ElementActionSpec } from '@shared/helpers/facade/element-actions.base'
-import { GenericHelper } from '@shared/helpers/generic.helper'
-import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
-import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
-import { ParticipantModel } from '@shared/models/model/participant.model'
+import { inject, Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+
+import { RegistryRouteEnum } from '@core/routing/registry-route.enum';
+import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/data/state/group.facade';
+import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade';
+import { ElementActionsBase, ElementActionSpec } from '@shared/helpers/facade/element-actions.base';
+import { GenericHelper } from '@shared/helpers/generic.helper';
+import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum';
+import { SeverityEnum } from '@shared/models/enumeration/severity.enum';
+import { ParticipantModel } from '@shared/models/model/participant.model';
 
 /**
  * Purpose: Indique quelles commandes un participant d'une liste offre à l'utilisateur connecté et les exécute.
@@ -16,102 +17,125 @@ import { ParticipantModel } from '@shared/models/model/participant.model'
  */
 @Injectable()
 export class ParticipantActions extends ElementActionsBase<ParticipantModel, string> {
-    protected readonly translationPrefix: string = 'participants'
-    protected override readonly primaryActionId: string = 'movements-history'
+	protected readonly translationPrefix: string = 'participants';
+	protected override readonly primaryActionId: string = 'movements-history';
 
-    private readonly facade: ParticipantFacade = inject(ParticipantFacade)
-    private readonly groupFacade: GroupFacade | null = inject(GroupFacade, { optional: true })
-    private readonly router: Router = inject(Router)
+	private readonly facade = inject(ParticipantFacade);
+	private readonly groupFacade = inject(GroupFacade, { optional: true });
+	private readonly router = inject(Router);
 
-    protected specsFor(participant: ParticipantModel, groupId?: string): ElementActionSpec[] {
-        return [
-            this.historySpec(participant),
-            this.editSpec(participant),
-            this.softDeleteSpec(participant),
-            this.restoreSpec(participant),
-            this.removeMemberSpec(participant, groupId),
-            this.exportSpec(participant),
-            this.hardDeleteSpec(participant),
-        ]
-    }
+	protected specsFor(participant: ParticipantModel, groupId?: string): ElementActionSpec[] {
+		return [
+			this.historySpec(participant),
+			this.editSpec(participant),
+			this.softDeleteSpec(participant),
+			this.restoreSpec(participant),
+			this.removeMemberSpec(participant, groupId),
+			this.exportSpec(participant),
+			this.hardDeleteSpec(participant),
+		];
+	}
 
-    private historySpec(participant: ParticipantModel): ElementActionSpec {
-        return {
-            id: 'movements-history',
-            icon: 'clock-rotate-left',
-            shown: true,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_HISTORY_R),
-            run: (): void => this.navigate(RegistryRouteEnum.PROJECTS_CONFIGURATION_PARTICIPANTS_MOVEMENTS, participant),
-        }
-    }
+	private historySpec(participant: ParticipantModel): ElementActionSpec {
+		return {
+			id: 'movements-history',
+			icon: 'clock-rotate-left',
+			shown: true,
+			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_HISTORY_R),
+			run: () => this.navigate(RegistryRouteEnum.PROJECTS_CONFIGURATION_PARTICIPANTS_MOVEMENTS, participant),
+		};
+	}
 
-    private editSpec(participant: ParticipantModel): ElementActionSpec {
-        return {
-            id: 'edit',
-            icon: 'pen-to-square',
-            shown: true,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U),
-            run: (): void => this.navigate(RegistryRouteEnum.PROJECTS_CONFIGURATION_PARTICIPANTS_EDITION, participant),
-        }
-    }
+	private editSpec(participant: ParticipantModel): ElementActionSpec {
+		return {
+			id: 'edit',
+			icon: 'pen-to-square',
+			shown: true,
+			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U),
+			run: () => this.navigate(RegistryRouteEnum.PROJECTS_CONFIGURATION_PARTICIPANTS_EDITION, participant),
+		};
+	}
 
-    private softDeleteSpec(participant: ParticipantModel): ElementActionSpec {
-        return {
-            id: 'softDelete',
-            icon: 'eye-slash',
-            shown: participant.visible,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_SOFT_DELETE),
-            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.softDeleteParticipant(participant.id)) },
-        }
-    }
+	private softDeleteSpec(participant: ParticipantModel): ElementActionSpec {
+		return {
+			id: 'softDelete',
+			icon: 'eye-slash',
+			shown: participant.visible,
+			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_SOFT_DELETE),
+			confirmation: {
+				severity: SeverityEnum.WARNING,
+				accept: () => this.run(this.facade.softDeleteParticipant(participant.id)),
+			},
+		};
+	}
 
-    private restoreSpec(participant: ParticipantModel): ElementActionSpec {
-        return {
-            id: 'restore',
-            icon: 'rotate-right',
-            shown: !participant.visible,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_RESTORE),
-            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.restoreParticipant(participant.id)) },
-        }
-    }
+	private restoreSpec(participant: ParticipantModel): ElementActionSpec {
+		return {
+			id: 'restore',
+			icon: 'rotate-right',
+			shown: !participant.visible,
+			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_RESTORE),
+			confirmation: {
+				severity: SeverityEnum.INFO,
+				accept: () => this.run(this.facade.restoreParticipant(participant.id)),
+			},
+		};
+	}
 
-    private removeMemberSpec(participant: ParticipantModel, groupId?: string): ElementActionSpec {
-        return {
-            id: 'remove-member',
-            icon: 'user-minus',
-            shown: GenericHelper.nonNull(groupId),
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U),
-            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.groupFacade!.removeMemberFromGroup(groupId!, participant)) },
-        }
-    }
+	private removeMemberSpec(participant: ParticipantModel, groupId?: string): ElementActionSpec {
+		return {
+			id: 'remove-member',
+			icon: 'user-minus',
+			shown: GenericHelper.nonNull(groupId),
+			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U),
+			confirmation: {
+				severity: SeverityEnum.WARNING,
+				accept: () => this.removeMember(participant, groupId),
+			},
+		};
+	}
 
-    private exportSpec(participant: ParticipantModel): ElementActionSpec {
-        return {
-            id: 'export',
-            icon: 'file-export',
-            shown: true,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_EXPORT) || this.isLinkedToCurrentUser(participant),
-            run: (): void => this.run(this.facade.exportParticipant(participant)),
-        }
-    }
+	private removeMember(participant: ParticipantModel, groupId?: string): void {
+		if (!this.groupFacade || GenericHelper.isNull(groupId)) return;
+		this.run(this.groupFacade.removeMemberFromGroup(groupId, participant));
+	}
 
-    private isLinkedToCurrentUser(participant: ParticipantModel): boolean {
-        return participant.user !== undefined && participant.user.id === this.sessionFacade.currentUser()?.id
-    }
+	private exportSpec(participant: ParticipantModel): ElementActionSpec {
+		return {
+			id: 'export',
+			icon: 'file-export',
+			shown: true,
+			allowed:
+				this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_EXPORT) ||
+				this.isLinkedToCurrentUser(participant),
+			run: () => this.run(this.facade.exportParticipant(participant)),
+		};
+	}
 
-    private hardDeleteSpec(participant: ParticipantModel): ElementActionSpec {
-        return {
-            id: 'hardDelete',
-            icon: 'trash',
-            shown: true,
-            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_D),
-            confirmation: { severity: SeverityEnum.DANGER, accept: (): void => this.run(this.facade.hardDeleteParticipant(participant)) },
-        }
-    }
+	private isLinkedToCurrentUser(participant: ParticipantModel): boolean {
+		return participant.user !== undefined && participant.user.id === this.sessionFacade.currentUser()?.id;
+	}
 
-    private navigate(route: RegistryRouteEnum, participant: ParticipantModel): void {
-        this.router.navigateByUrl(
-            route.replace(':participantId', participant.id).replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
-        ).catch((): void => undefined)
-    }
+	private hardDeleteSpec(participant: ParticipantModel): ElementActionSpec {
+		return {
+			id: 'hardDelete',
+			icon: 'trash',
+			shown: true,
+			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_D),
+			confirmation: {
+				severity: SeverityEnum.DANGER,
+				accept: () => this.run(this.facade.hardDeleteParticipant(participant)),
+			},
+		};
+	}
+
+	private navigate(route: RegistryRouteEnum, participant: ParticipantModel): void {
+		this.router
+			.navigateByUrl(
+				route
+					.replace(':participantId', participant.id)
+					.replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
+			)
+			.catch((): void => undefined);
+	}
 }

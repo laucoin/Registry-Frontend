@@ -1,4 +1,4 @@
 export interface AlertLastCommunicationModel {
-    dateTime: Date
-    message: string | undefined
+	dateTime: Date;
+	message: string | undefined;
 }

@@ -1,8 +1,10 @@
 import { signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+
 import { TranslocoPipe } from '@jsverse/transloco';
 import { MockBuilder, ngMocks } from 'ng-mocks';
+
 import { SessionFacade } from '@core/registry/state/session.facade';
 import { UiFacade } from '@core/registry/state/ui.facade';
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade';
@@ -10,17 +12,18 @@ import { SelectedProjectFacade } from '@pages/projects/data/state/selected-proje
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe';
 import { IntervalPipe } from '@shared/helpers/pipe/interval.pipe';
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe';
+import { PageStateHelper } from '@shared/helpers/store/page-state.helper';
+import { REFRESH_SERVICE_STUB } from '@shared/helpers/testing/refresh-service.stub';
 import { ALERT_DTO } from '@shared/helpers/testing/response-fixtures';
 import { ERROR_500, pageOf } from '@shared/helpers/testing/test-fixtures';
-import { PageStateHelper } from '@shared/helpers/store/page-state.helper';
 import { AlertMapper } from '@shared/mappers/alert.mapper';
 import { AlertModel } from '@shared/models/model/alert.model';
 import { NotificationModel } from '@shared/models/model/notification.model';
 import { PageModel } from '@shared/models/model/page.model';
-import { ProjectActiveAlertComponent } from './project-active-alert.component';
-import { REFRESH_SERVICE_STUB } from '@shared/helpers/testing/refresh-service.stub';
 
-function alert(id: string, criticality: string | undefined, withCommunication: boolean = true): AlertModel {
+import { ProjectActiveAlertComponent } from './project-active-alert.component';
+
+function alert(id: string, criticality: string | undefined, withCommunication = true): AlertModel {
 	return {
 		...AlertMapper.toModel(ALERT_DTO),
 		id,
@@ -44,7 +47,9 @@ describe('ProjectActiveAlertComponent', () => {
 	}
 
 	function variants(): string[] {
-		return Array.from<{ variant: string }>(fixture.nativeElement.querySelectorAll('sgdf-callout')).map((callout: { variant: string }): string => callout.variant);
+		return Array.from<{ variant: string }>(fixture.nativeElement.querySelectorAll('sgdf-callout')).map(
+			(callout) => callout.variant,
+		);
 	}
 
 	beforeEach(async () => {
@@ -53,19 +58,28 @@ describe('ProjectActiveAlertComponent', () => {
 		error = signal<NotificationModel | undefined>(undefined);
 		communicationEnabled = signal(true);
 		fetchCurrentAlertsPage = vi.fn();
-		await MockBuilder(ProjectActiveAlertComponent).provide(REFRESH_SERVICE_STUB)
+		await MockBuilder(ProjectActiveAlertComponent)
+			.provide(REFRESH_SERVICE_STUB)
 			.mock(TranslocoPipe, (key: string): string => key)
-			.mock(PluralTranslationPipe, (key: string): string => key)
-			.mock(DateFormatPipe, (): string => 'date')
-			.mock(IntervalPipe, (): string => '2 h')
+			.mock(PluralTranslationPipe, (key) => key)
+			.mock(DateFormatPipe, () => 'date')
+			.mock(IntervalPipe, () => '2 h')
 			.provide(provideRouter([]))
 			.provide({
 				provide: SelectedProjectFacade,
-				useValue: { currentAlertsPage: page, currentAlertsPageLoading: loading, currentAlertsPageError: error, fetchCurrentAlertsPage },
+				useValue: {
+					currentAlertsPage: page,
+					currentAlertsPageLoading: loading,
+					currentAlertsPageError: error,
+					fetchCurrentAlertsPage,
+				},
 			})
 			.provide({ provide: AlertFacade, useValue: { alertCriticalityRule: signal('Aging rule') } })
 			.provide({ provide: UiFacade, useValue: { tinyScreen: signal(false) } })
-			.provide({ provide: SessionFacade, useValue: { selectedProjectHasOption: () => communicationEnabled, currentProjectId: signal('p1') } });
+			.provide({
+				provide: SessionFacade,
+				useValue: { selectedProjectHasOption: () => communicationEnabled, currentProjectId: signal('p1') },
+			});
 	});
 
 	it('should load the first open alerts when displayed', async () => {
@@ -81,7 +95,9 @@ describe('ProjectActiveAlertComponent', () => {
 
 	it('should color each alert by its criticality', async () => {
 		// Arrange
-		page.set(pageOf([alert('a1', 'HIGH'), alert('a2', 'REINFORCED'), alert('a3', 'RECENT'), alert('a4', undefined)]));
+		page.set(
+			pageOf([alert('a1', 'HIGH'), alert('a2', 'REINFORCED'), alert('a3', 'RECENT'), alert('a4', undefined)]),
+		);
 
 		// Act
 		await render();
@@ -100,7 +116,9 @@ describe('ProjectActiveAlertComponent', () => {
 
 		// Assert
 		expect(text).toContain('Aging rule');
-		expect(fixture.nativeElement.querySelector('sgdf-tag').textContent.trim()).toBe('projectHome.activeAlert.total');
+		expect(fixture.nativeElement.querySelector('sgdf-tag').textContent.trim()).toBe(
+			'projectHome.activeAlert.total',
+		);
 	});
 
 	it('should offer to see the alerts that are not shown', async () => {
@@ -187,7 +205,7 @@ describe('ProjectActiveAlertComponent', () => {
 		// Act
 		fixture.nativeElement.querySelector('sgdf-callout sgdf-button').click();
 		await fixture.whenStable();
-		const opened: boolean = fixture.nativeElement.querySelector('app-alert-communications-list') !== null;
+		const opened = fixture.nativeElement.querySelector('app-alert-communications-list') !== null;
 		fixture.nativeElement.querySelector('sgdf-drawer').dispatchEvent(new CustomEvent('sgdf-hide'));
 		await fixture.whenStable();
 

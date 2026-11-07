@@ -15,14 +15,14 @@ inputs:
   keep-releases:
     description: How many of the most recent x.y.z releases to keep
     required: false
-    default: "5"
+    default: '5'
   token:
     description: PAT with read:packages and delete:packages
     required: true
   dry-run:
     description: If "true", only log what would be deleted
     required: false
-    default: "false"
+    default: 'false'
 
 runs:
   using: composite

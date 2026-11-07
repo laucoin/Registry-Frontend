@@ -22,7 +22,7 @@ on this Angular Client-Side Rendering (CSR) project.
   2. **Stakes:** why a decision is needed now and what it unblocks.
   3. **Options:** for each one, state concretely what changes, what is kept or lost, the risks and the follow-up work.
   4. **Recommendation:** first option, with the reason for the choice.
-  Use `preview` to compare before/after. A question the user must reject to ask for clarification is a failed question.
+     Use `preview` to compare before/after. A question the user must reject to ask for clarification is a failed question.
 - **Code & Comments:** All source code, variable names, functions, and commit messages **must** be written in
   **US English**. Comments (inline comments and JSDoc blocks) and the project's markdown documentation **must** be
   written in **French**.
@@ -57,14 +57,14 @@ The source code is organized into three core directories:
 1. **`core/`**: Contains essential application-wide elements. Without this folder, the application cannot run (e.g.,
    configuration, authentication, global theme abstraction).
 2. **`pages/`**: Contains all page components, organized strictly by their routing path.
-    - _Example:_ `/projects/{id}/movements` must be located in `pages/projects/[:id]/movements/`.
+   - _Example:_ `/projects/{id}/movements` must be located in `pages/projects/[:id]/movements/`.
 3. **`shared/`**: A structured directory for items that do not belong to `core` or `pages`. It must remain clean and
    organized into subfolders:
-    - `directives/`
-    - `helpers/`
-    - `mappers/`
-    - `models/`
-    - `ui/`
+   - `directives/`
+   - `helpers/`
+   - `mappers/`
+   - `models/`
+   - `ui/`
 
 ### Data Flow: api → store → facade
 
@@ -79,8 +79,8 @@ The source code is organized into three core directories:
 - **Documented exception:** `shared/ui/domain/` holds the cards and forms of the business entities. They read their
   domain facades and models from `pages/`, which is the only accepted `shared` to `pages` dependency (the 30 existing
   imports). They are reworked with the `@sgdf/ui` migration; do not add new `shared` to `pages` imports elsewhere.
-- **Documented exception (routing):** `core/routing/registry-route.enum.ts` composes the URLs of the whole application and
-  imports the route enums of each page; `core/routing/registry.routes.ts` lazy loads the pages. They are the only accepted
+- **Documented exception (routing):** `core/routing/registry-route.enum.ts` (an `as const` object with a type of the same name)
+  composes the URLs of the whole application and imports the route enums of each page; `core/routing/registry.routes.ts` lazy loads the pages. They are the only accepted
   `core` to `pages` dependencies. Stores, facades, apis and models of `core` never import from `pages/`: shared models
   live in `shared/models/`, and the stores of a page are provided by that page's own routes.
 - **Core facades:** `UiFacade` exposes what the shell displays (theme, screen, toasts and global error),
@@ -109,7 +109,7 @@ The source code is organized into three core directories:
   hardcoded or statically compiled into the source code bundle.
 - **Backend Abstraction:** Always decouple API responses from domain models. Implement strict DTO-to-Model mappers
   (`DTO -> model`), even if the structures are identical. Response DTOs live in `shared/models/dto/response/`
-  (`<name>.response.dto.ts`), mappers in `shared/mappers/` (`<Name>Mapper.toModel`), and every `*.api.ts` pipes its
+  (`<name>.response.dto.ts`), mappers in `shared/mappers/` (`<Name>Mapper`, an `as const` object exposing `toModel`), and every `*.api.ts` pipes its
   response through them. Metadata lists of `SelectItem` and request DTOs are the only responses not mapped.
 - **Browser access:** `window`, `document`, `location` and `navigator` are reached only through `BrowserService`
   (`core/browser/browser.service.ts`); storage goes through the storage helpers.
@@ -120,36 +120,48 @@ The source code is organized into three core directories:
 
 - **Formatting & Linting:** Strictly adhere to project linting rules (`ESLint`, Prettier, etc.).
 - **Code Quality:** Pay special attention to:
-    - **Accessibility (a11y):** Semantic HTML, ARIA attributes, keyboard navigation. `@sgdf/ui` sets accessibility
-      attributes from the properties passed to its components: check what the library handles (`custom-elements.json`,
-      `.d.ts`) before reporting a gap, and never duplicate what it already provides.
-    - **Performance:** CSR optimization, aggressive route lazy loading, minimal initial bundle size, change detection
-      efficiency with signals (`OnPush` by default where applicable).
-    - **Readability & Maintainability:** Clean code principles, descriptive naming conventions.
-    - **Best Practices:** Single Page Application routing, Title & Meta management via Angular `Title`/`Meta` services,
-      robust error handling.
-    - **Loading State:** Never a single global loading flag. Loading state must be scoped to the specific piece of data
-      being fetched (e.g. a signal per resource/section), so the rest of the UI stays interactive and correctly reflects
-      what is actually in flight.
-    - **Error Handling:** The default strategy is to display a user-friendly frontend message enriched with the
-      backend's error message. A feature may instead use log-only (silent to the user, failed widget hidden on the UI),
-      but only when this has been **defined with the developer** before implementation.
-    - **No Dead Code:** Remove unused code, methods, imports, and variables rather than leaving them in place "just in
-      case."
-    - **Method Size:** Methods should be **25 lines or fewer**. Split larger methods into smaller, well-named ones.
-    - **Naming:** Variable and method names must be explicit and self-descriptive. **Exception — RxJS operator
-      callbacks:** inside a reactive (`rxMethod`/pipe) operator's own callback, a **single** parameter may be named with
-      just one or two letters (e.g. `it`) instead of a full descriptive name; this exception applies only there and only
-      when the callback has no more than one parameter.
-    - **E2E Test Ids:** every interactive or asserted element of a template carries
-      `data-testid="<zone>-<element>-<role>"` (lowercase kebab words, `zone` = template name, unique within the
-      template). A list row uses `<entity>-row` plus `[attr.data-id]="<entity>.id"`; the children of shared components
-      keep fixed ids. `testid.spec.ts` enforces it.
-    - **RxJS Readability:** In reactive (`rxMethod`/pipe) flows, factor operators and intermediate steps into small,
-      well-named private methods so the overall flow stays easy to read at a glance rather than one long chained pipe.
-      Ideally, each operator call fits on a **single line**; if an operator's logic needs to spread onto a second line,
-      extract it into its own well-named method instead. Exceptions may be granted but **must be defined with the
-      developer** case by case, not assumed.
+  - **Accessibility (a11y):** Semantic HTML, ARIA attributes, keyboard navigation. `@sgdf/ui` sets accessibility
+    attributes from the properties passed to its components: check what the library handles (`custom-elements.json`,
+    `.d.ts`) before reporting a gap, and never duplicate what it already provides.
+  - **Performance:** CSR optimization, aggressive route lazy loading, minimal initial bundle size, change detection
+    efficiency with signals (`OnPush` by default where applicable).
+  - **Readability & Maintainability:** Clean code principles, descriptive naming conventions.
+  - **Best Practices:** Single Page Application routing, Title & Meta management via Angular `Title`/`Meta` services,
+    robust error handling.
+  - **Loading State:** Never a single global loading flag. Loading state must be scoped to the specific piece of data
+    being fetched (e.g. a signal per resource/section), so the rest of the UI stays interactive and correctly reflects
+    what is actually in flight.
+  - **Error Handling:** The default strategy is to display a user-friendly frontend message enriched with the
+    backend's error message. A feature may instead use log-only (silent to the user, failed widget hidden on the UI),
+    but only when this has been **defined with the developer** before implementation.
+  - **No Dead Code:** Remove unused code, methods, imports, and variables rather than leaving them in place "just in
+    case."
+  - **Method Size:** Methods should be **25 lines or fewer**. Split larger methods into smaller, well-named ones. A
+    `withMethods` callback of a store that grows past this is split into several chained `withMethods`, by theme.
+    `*.spec.ts` files are exempt: a `describe` is a container, but `beforeEach` and `it` stay short.
+  - **Complexity:** a function has a cyclomatic complexity of **6 or less** (`||`, `&&`, `??`, `?.`, ternaries and
+    default values all count). Split with small named helpers; flat mappings use `FormModelHelper.orEmpty` and `orNull`.
+  - **No non-null assertion:** `!` is forbidden. Narrow the type with the `GenericHelper.isNull`/`nonNull` type guards or
+    an early return, and use `GenericHelper.require` for a value the validation already guarantees. In specs, use
+    `defined()` (`shared/helpers/testing/defined.ts`).
+  - **Helpers and mappers:** they are `as const` objects, never static-only classes; private members become module
+    functions. Requests without a response body are typed `http.post<undefined>(...)`, and the application version is
+    read through the `@package` alias.
+  - **Naming:** Variable and method names must be explicit and self-descriptive. **Exception — RxJS operator
+    callbacks:** inside a reactive (`rxMethod`/pipe) operator's own callback, a **single** parameter may be named with
+    just one or two letters (e.g. `it`) instead of a full descriptive name; this exception applies only there and only
+    when the callback has no more than one parameter.
+  - **E2E Test Ids:** every interactive or asserted element of a template carries
+    `data-testid="<zone>-<element>-<role>"` (lowercase kebab words, `zone` = template name, unique within the
+    template). A list row uses `<entity>-row` plus `[attr.data-id]="<entity>.id"`; the children of shared components
+    keep fixed ids. `testid.spec.ts` enforces it.
+  - **Arrow functions:** an RxJS operator callback (`tap`, `map`, `catchError`...) never has a block body; extract a
+    well-named method. Other callbacks (`subscribe`, `forEach`, form schemas, `effect`) may keep a block body.
+  - **RxJS Readability:** In reactive (`rxMethod`/pipe) flows, factor operators and intermediate steps into small,
+    well-named private methods so the overall flow stays easy to read at a glance rather than one long chained pipe.
+    Ideally, each operator call fits on a **single line**; if an operator's logic needs to spread onto a second line,
+    extract it into its own well-named method instead. Exceptions may be granted but **must be defined with the
+    developer** case by case, not assumed.
 
 ---
 
@@ -158,7 +170,7 @@ The source code is organized into three core directories:
 When a request matches a skill, **load and follow it before doing anything else**. Do not improvise the procedure.
 
 | Request                                                    | Skill         |
-|------------------------------------------------------------|---------------|
+| ---------------------------------------------------------- | ------------- |
 | Review a diff, file or branch; "review", "check my change" | `code-review` |
 | Add, write, extend or fix tests                            | `test`        |
 | Create a commit, plan commit scopes                        | `commit`      |

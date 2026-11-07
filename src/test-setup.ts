@@ -4,54 +4,60 @@
  * Limits: Simples substituts ; chaque élément est valide, rien n'est validé ni soumis et un dialogue n'est pas affiché dans la top layer.
  */
 interface JsdomErrorEmitter {
-    removeAllListeners: (event: string) => void
-    on: (event: string, listener: (error: Error & { type?: string }) => void) => void
+	removeAllListeners: (event: string) => void;
+	on: (event: string, listener: (error: Error & { type?: string }) => void) => void;
 }
 
-const jsdomConsole: JsdomErrorEmitter | undefined = (globalThis as { jsdom?: { virtualConsole: JsdomErrorEmitter } }).jsdom?.virtualConsole
+const jsdomConsole: JsdomErrorEmitter | undefined = (globalThis as { jsdom?: { virtualConsole: JsdomErrorEmitter } })
+	.jsdom?.virtualConsole;
 
-jsdomConsole?.removeAllListeners( 'jsdomError' )
-jsdomConsole?.on( 'jsdomError', (error: Error & { type?: string }): void => {
-    if (error.type !== 'css-parsing') console.error( error )
-} )
+jsdomConsole?.removeAllListeners('jsdomError');
+jsdomConsole?.on('jsdomError', (error: Error & { type?: string }): void => {
+	if (error.type !== 'css-parsing') console.error(error);
+});
 
-const attachInternals: typeof HTMLElement.prototype.attachInternals = HTMLElement.prototype.attachInternals
+const attachInternals: typeof HTMLElement.prototype.attachInternals = HTMLElement.prototype.attachInternals;
+
+const INTERNALS_FALLBACKS: Record<string, () => unknown> = {
+	setFormValue: (): void => undefined,
+	setValidity: (): void => undefined,
+	checkValidity: (): boolean => true,
+	reportValidity: (): boolean => true,
+};
 
 HTMLElement.prototype.attachInternals = function (this: HTMLElement): ElementInternals {
-    const internals: ElementInternals = attachInternals.call( this )
-    internals.setFormValue ??= (): void => undefined
-    internals.setValidity ??= (): void => undefined
-    internals.checkValidity ??= (): boolean => true
-    internals.reportValidity ??= (): boolean => true
-    return Object.defineProperties( internals, {
-        validity: { value: internals.validity ?? { valid: true } },
-        validationMessage: { value: internals.validationMessage ?? '' },
-        states: { value: internals.states ?? new Set<string>() },
-    } )
-}
+	const internals: ElementInternals = attachInternals.call(this);
+	const members: Record<string, unknown> = internals as unknown as Record<string, unknown>;
+	for (const [name, fallback] of Object.entries(INTERNALS_FALLBACKS)) members[name] ??= fallback;
+	return Object.defineProperties(internals, {
+		validity: { value: internals.validity ?? { valid: true } },
+		validationMessage: { value: internals.validationMessage ?? '' },
+		states: { value: internals.states ?? new Set<string>() },
+	});
+};
 
 HTMLDialogElement.prototype.showModal ??= function (this: HTMLDialogElement): void {
-    this.open = true
-}
+	this.open = true;
+};
 
 HTMLDialogElement.prototype.close ??= function (this: HTMLDialogElement): void {
-    this.open = false
-}
+	this.open = false;
+};
 
 Element.prototype.getAnimations ??= function (): Animation[] {
-    return []
-}
+	return [];
+};
 
 globalThis.ResizeObserver ??= class implements ResizeObserver {
-    public observe (): void {
-        return undefined
-    }
+	public observe(): void {
+		return undefined;
+	}
 
-    public unobserve (): void {
-        return undefined
-    }
+	public unobserve(): void {
+		return undefined;
+	}
 
-    public disconnect (): void {
-        return undefined
-    }
-}
+	public disconnect(): void {
+		return undefined;
+	}
+};

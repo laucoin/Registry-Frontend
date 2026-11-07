@@ -1,38 +1,41 @@
-import { describe, expect, it } from 'vitest'
-import { UserHelper } from '@shared/helpers/user.helper'
-import { InvitedUserModel } from '@shared/models/model/invited-user.model'
-import { SelectOptionModel } from '@shared/models/model/select-option.model'
+import { describe, expect, it } from 'vitest';
 
-describe( 'UserHelper', () => {
-    it( 'labels a user with its email and its name', () => {
-        // Arrange
-        const user: InvitedUserModel = { id: 'u1', email: 'ada@x.test', firstName: 'Ada', lastName: 'L' }
+import { UserHelper } from '@shared/helpers/user.helper';
+import { InvitedUserModel } from '@shared/models/model/invited-user.model';
+import { SelectOptionModel } from '@shared/models/model/select-option.model';
 
-        // Act
-        const item: SelectOptionModel<InvitedUserModel> = UserHelper.toSelectItem( user )
+describe('UserHelper', () => {
+	it('labels a user with its email and its name', () => {
+		// Arrange
+		const user: InvitedUserModel = { id: 'u1', email: 'ada@x.test', firstName: 'Ada', lastName: 'L' };
 
-        // Assert
-        expect( item ).toEqual( { label: 'ada@x.test (Ada L)', value: user } )
-    } )
+		// Act
+		const item: SelectOptionModel<InvitedUserModel> = UserHelper.toSelectItem(user);
 
-    it( 'labels a user without any name with its email only', () => {
-        // Arrange
-        const user: InvitedUserModel = { id: 'u1', email: 'ada@x.test', firstName: undefined, lastName: undefined }
+		// Assert
+		expect(item).toEqual({ label: 'ada@x.test (Ada L)', value: user });
+	});
 
-        // Act
-        const item: SelectOptionModel<InvitedUserModel> = UserHelper.toSelectItem( user )
+	it('labels a user without any name with its email only', () => {
+		// Arrange
+		const user: InvitedUserModel = { id: 'u1', email: 'ada@x.test', firstName: undefined, lastName: undefined };
 
-        // Assert
-        expect( item.label ).toBe( 'ada@x.test' )
-    } )
+		// Act
+		const item: SelectOptionModel<InvitedUserModel> = UserHelper.toSelectItem(user);
 
-    it( 'builds an invited by email user with a stable id per address', () => {
-        // Arrange & Act
-        const upper: InvitedUserModel = UserHelper.toInvitedByEmail( 'Ada@X.test' )
-        const lower: InvitedUserModel = UserHelper.toInvitedByEmail( 'ada@x.test' )
+		// Assert
+		expect(item.label).toBe('ada@x.test');
+	});
 
-        // Assert
-        expect( upper.id ).toBe( lower.id )
-        expect( upper ).toEqual( expect.objectContaining( { email: 'Ada@X.test', firstName: undefined, lastName: undefined } ) )
-    } )
-} )
+	it('builds an invited by email user with a stable id per address', () => {
+		// Arrange & Act
+		const upper = UserHelper.toInvitedByEmail('Ada@X.test');
+		const lower = UserHelper.toInvitedByEmail('ada@x.test');
+
+		// Assert
+		expect(upper.id).toBe(lower.id);
+		expect(upper).toEqual(
+			expect.objectContaining({ email: 'Ada@X.test', firstName: undefined, lastName: undefined }),
+		);
+	});
+});

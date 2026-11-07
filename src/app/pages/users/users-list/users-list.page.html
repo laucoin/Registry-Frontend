@@ -1,62 +1,87 @@
-<sgdf-page-title [eyebrow]="'users.list.eyebrow' | transloco"
-                 [lede]="'users.list.subtitle' | transloco">
-    {{ 'users.list.title' | transloco }}
+<sgdf-page-title [eyebrow]="'users.list.eyebrow' | transloco" [lede]="'users.list.subtitle' | transloco">
+	{{ 'users.list.title' | transloco }}
 </sgdf-page-title>
 
-<app-list data-testid="users-list-list" class="mt-(--spacing--block) block"
-          emptyMessagePrefix="users.notifications.EMPTY"
-          [elementPage]="facade.usersPage()"
-          [error]="facade.usersPageError()"
-          [loading]="facade.usersPageLoading()"
-          [loadingMore]="facade.usersPageSilentLoading()"
-          [activeFilters]="activeFilters()"
-          (updateRequired)="loadBatch($event)"
-          (filtersReset)="resetFilters()">
-    <ng-template appTemplate="search">
-        <form data-testid="users-list-search-form" class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
-              (submit)="$event.preventDefault()">
-            <sgdf-input data-testid="users-list-q-input" enterkeyhint="search" (keydown.enter)="searchQuery.submit()" (focusout)="searchQuery.submit()" appSgdfField [label]="'users.search-and-filter.text' | transloco"
-                        [formField]="form.q"/>
-            <sgdf-select data-testid="users-list-is-visible-select" appSgdfField [label]="'users.search-and-filter.visibility' | transloco"
-                         [formField]="form.isVisible">
-                @for (item of facade.statusMetadata(); track item.label) {
-                    <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
-                }
-            </sgdf-select>
-            <app-sort-fields [sortBy]="form.sortBy" [sortDirection]="form.sortDirection" [fields]="sortFields"/>
-        </form>
-    </ng-template>
+<app-list
+	data-testid="users-list-list"
+	class="mt-(--spacing--block) block"
+	emptyMessagePrefix="users.notifications.EMPTY"
+	[elementPage]="facade.usersPage()"
+	[error]="facade.usersPageError()"
+	[loading]="facade.usersPageLoading()"
+	[loadingMore]="facade.usersPageSilentLoading()"
+	[activeFilters]="activeFilters()"
+	(updateRequired)="loadBatch($event)"
+	(filtersReset)="resetFilters()"
+>
+	<ng-template appTemplate="search">
+		<form
+			data-testid="users-list-search-form"
+			class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
+			(submit)="$event.preventDefault()"
+		>
+			<sgdf-input
+				data-testid="users-list-q-input"
+				enterkeyhint="search"
+				(keydown.enter)="searchQuery.submit()"
+				(focusout)="searchQuery.submit()"
+				appSgdfField
+				[label]="'users.search-and-filter.text' | transloco"
+				[formField]="form.q"
+			/>
+			<sgdf-select
+				data-testid="users-list-is-visible-select"
+				appSgdfField
+				[label]="'users.search-and-filter.visibility' | transloco"
+				[formField]="form.isVisible"
+			>
+				@for (item of facade.statusMetadata(); track item.label) {
+					<sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+				}
+			</sgdf-select>
+			<app-sort-fields [sortBy]="form.sortBy" [sortDirection]="form.sortDirection" [fields]="sortFields" />
+		</form>
+	</ng-template>
 
-    <ng-template appTemplate="element" let-user>
-        <sgdf-list-item data-testid="user-row" [attr.data-id]="user.id" [disabled]="!user.visible">
-            <sgdf-avatar slot="start" variant="primary" aria-hidden="true" [initials]="initials(user)"/>
-            <span appEllipsis>{{ fullName(user) }}</span>
-            <span slot="description" class="flex flex-wrap items-center gap-x-2">
-                <span class="truncate">{{ user.email }}</span>
-                <sgdf-copy-button data-testid="users-list-copy-email-copy" [value]="user.email" [label]="'users.actions.copy-email' | transloco: { element: user }"/>
-                <span>·</span>
-                @if (user.lastLogin) {
-                    <span class="inline-flex items-center gap-1">
-                        {{ 'users.last-login.label' | transloco }}
-                        <sgdf-relative-time [date]="user.lastLogin" sync/>
-                    </span>
-                } @else {
-                    <span>{{ 'users.last-login.never' | transloco }}</span>
-                }
-            </span>
-            <span slot="end" class="flex flex-wrap items-center gap-2">
-                @if (user.role; as role) {
-                    <sgdf-tag appearance="outlined" pill>{{ role.label }}</sgdf-tag>
-                }
-                @if (!user.visible) {
-                    <sgdf-tag appearance="soft" pill variant="warning">
-                        {{ user | visibilityName: 'users' | transloco }}
-                    </sgdf-tag>
-                }
-            </span>
-            <app-element-actions data-testid="users-list-actions" slot="actions" [subject]="fullName(user)" [actions]="userActions.actionsFor(user)"/>
-        </sgdf-list-item>
-    </ng-template>
+	<ng-template appTemplate="element" let-user>
+		<sgdf-list-item data-testid="user-row" [attr.data-id]="user.id" [disabled]="!user.visible">
+			<sgdf-avatar slot="start" variant="primary" aria-hidden="true" [initials]="initials(user)" />
+			<span appEllipsis>{{ fullName(user) }}</span>
+			<span slot="description" class="flex flex-wrap items-center gap-x-2">
+				<span class="truncate">{{ user.email }}</span>
+				<sgdf-copy-button
+					data-testid="users-list-copy-email-copy"
+					[value]="user.email"
+					[label]="'users.actions.copy-email' | transloco: { element: user }"
+				/>
+				<span>·</span>
+				@if (user.lastLogin) {
+					<span class="inline-flex items-center gap-1">
+						{{ 'users.last-login.label' | transloco }}
+						<sgdf-relative-time [date]="user.lastLogin" sync />
+					</span>
+				} @else {
+					<span>{{ 'users.last-login.never' | transloco }}</span>
+				}
+			</span>
+			<span slot="end" class="flex flex-wrap items-center gap-2">
+				@if (user.role; as role) {
+					<sgdf-tag appearance="outlined" pill>{{ role.label }}</sgdf-tag>
+				}
+				@if (!user.visible) {
+					<sgdf-tag appearance="soft" pill variant="warning">
+						{{ user | visibilityName: 'users' | transloco }}
+					</sgdf-tag>
+				}
+			</span>
+			<app-element-actions
+				data-testid="users-list-actions"
+				slot="actions"
+				[subject]="fullName(user)"
+				[actions]="userActions.actionsFor(user)"
+			/>
+		</sgdf-list-item>
+	</ng-template>
 </app-list>
 
-<router-outlet/>
+<router-outlet />

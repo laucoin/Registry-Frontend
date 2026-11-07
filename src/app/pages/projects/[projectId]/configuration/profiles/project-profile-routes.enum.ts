@@ -1,4 +1,4 @@
 export enum ProjectProfileRoutesEnum {
-    INVITE = 'invite',
-    EDIT = ':profileId/edit',
+	INVITE = 'invite',
+	EDIT = ':profileId/edit',
 }

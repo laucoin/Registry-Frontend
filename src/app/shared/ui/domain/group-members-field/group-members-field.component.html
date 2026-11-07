@@ -1,9 +1,14 @@
 <h2 class="section-title">{{ 'groups.form.members' | pluralTranslation: field()().value() | transloco }}</h2>
-<app-select-elements-field data-testid="group-members-field-participants-field" [formField]="field()" [appFieldError]="field()" translationPrefix="groups.form.error.add-members"
-                           [label]="'groups.form.members.search' | transloco"
-                           [suggestions]="suggestions()"
-                           [selectItemBuilder]="ParticipantHelper.toSelectItem"
-                           [selectionLabel]="'groups.form.members.selected' | pluralTranslation: field()().value() | transloco"
-                           [emptyMessage]="'groups.form.members.empty' | transloco"
-                           [emptySelectionMessage]="'groups.form.members.empty-search' | transloco"
-                           (handleSearch)="handleSearch($event.query)"/>
+<app-select-elements-field
+	data-testid="group-members-field-participants-field"
+	[formField]="field()"
+	[appFieldError]="field()"
+	translationPrefix="groups.form.error.add-members"
+	[label]="'groups.form.members.search' | transloco"
+	[suggestions]="suggestions()"
+	[selectItemBuilder]="ParticipantHelper.toSelectItem"
+	[selectionLabel]="'groups.form.members.selected' | pluralTranslation: field()().value() | transloco"
+	[emptyMessage]="'groups.form.members.empty' | transloco"
+	[emptySelectionMessage]="'groups.form.members.empty-search' | transloco"
+	(handleSearch)="handleSearch($event.query)"
+/>

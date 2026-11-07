@@ -1,22 +1,29 @@
-import { By } from '@angular/platform-browser';
 import { signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+
 import { TranslocoPipe } from '@jsverse/transloco';
 import { MockBuilder, ngMocks } from 'ng-mocks';
+
 import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade';
-import { PARTICIPANT_DTO } from '@shared/helpers/testing/response-fixtures';
-import { ERROR_500 } from '@shared/helpers/testing/test-fixtures';
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe';
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper';
+import { REFRESH_SERVICE_STUB } from '@shared/helpers/testing/refresh-service.stub';
+import { PARTICIPANT_DTO } from '@shared/helpers/testing/response-fixtures';
+import { ERROR_500 } from '@shared/helpers/testing/test-fixtures';
 import { ParticipantMapper } from '@shared/mappers/participant.mapper';
 import { NotificationModel } from '@shared/models/model/notification.model';
 import { ParticipantModel } from '@shared/models/model/participant.model';
-import { ProjectBirthdayComponent } from './project-birthday.component';
-import { REFRESH_SERVICE_STUB } from '@shared/helpers/testing/refresh-service.stub';
 import { SkeletonListComponent } from '@shared/ui/common/skeleton-list/skeleton-list.component';
 
+import { ProjectBirthdayComponent } from './project-birthday.component';
+
 function participants(count: number): ParticipantModel[] {
-	return Array.from({ length: count }, (_: unknown, index: number): ParticipantModel => ({ ...ParticipantMapper.toModel(PARTICIPANT_DTO), id: `p${index}`, firstName: `Name${index}` }));
+	return Array.from({ length: count }, (_, index): ParticipantModel => ({
+		...ParticipantMapper.toModel(PARTICIPANT_DTO),
+		id: `p${index}`,
+		firstName: `Name${index}`,
+	}));
 }
 
 describe('ProjectBirthdayComponent', () => {
@@ -36,12 +43,18 @@ describe('ProjectBirthdayComponent', () => {
 		loading = signal(false);
 		error = signal<NotificationModel | undefined>(undefined);
 		fetchParticipantsBirthdays = vi.fn();
-		await MockBuilder(ProjectBirthdayComponent).provide(REFRESH_SERVICE_STUB)
+		await MockBuilder(ProjectBirthdayComponent)
+			.provide(REFRESH_SERVICE_STUB)
 			.mock(TranslocoPipe, (key: string): string => key)
-			.mock(PluralTranslationPipe, (key: string): string => key)
+			.mock(PluralTranslationPipe, (key) => key)
 			.provide({
 				provide: SelectedProjectFacade,
-				useValue: { participantsBirthdays: birthdays, participantsBirthdaysLoading: loading, participantsBirthdaysError: error, fetchParticipantsBirthdays },
+				useValue: {
+					participantsBirthdays: birthdays,
+					participantsBirthdaysLoading: loading,
+					participantsBirthdaysError: error,
+					fetchParticipantsBirthdays,
+				},
 			});
 	});
 
@@ -103,7 +116,10 @@ describe('ProjectBirthdayComponent', () => {
 
 		// Act
 		await render();
-		const skeletons: number = ngMocks.input(fixture.debugElement.query(By.directive(SkeletonListComponent)), 'rows');
+		const skeletons: number = ngMocks.input(
+			fixture.debugElement.query(By.directive(SkeletonListComponent)),
+			'rows',
+		);
 
 		// Assert
 		expect(skeletons).toBe(3);
@@ -125,7 +141,7 @@ describe('ProjectBirthdayComponent', () => {
 
 	it('should show the age and the group of a participant', async () => {
 		// Arrange
-		const today: number = new Date().getFullYear();
+		const today = new Date().getFullYear();
 		birthdays.set([{ ...ParticipantMapper.toModel(PARTICIPANT_DTO), birthday: `${today - 12}-01-01` }]);
 
 		// Act
@@ -139,7 +155,9 @@ describe('ProjectBirthdayComponent', () => {
 
 	it('should list a participant whose status the backend does not send', async () => {
 		// Arrange
-		birthdays.set([{ ...ParticipantMapper.toModel(PARTICIPANT_DTO), status: undefined as never, groups: undefined }]);
+		birthdays.set([
+			{ ...ParticipantMapper.toModel(PARTICIPANT_DTO), status: undefined as never, groups: undefined },
+		]);
 
 		// Act
 		await render();

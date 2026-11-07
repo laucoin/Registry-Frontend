@@ -1,38 +1,78 @@
-import { describe, expect, it } from 'vitest'
-import { toAlertsListSearchModel, toAlertsListSearchParams } from '@pages/projects/[projectId]/alerts/alerts-list/alerts-list.search'
+import { describe, expect, it } from 'vitest';
+
+import {
+	toAlertsListSearchModel,
+	toAlertsListSearchParams,
+} from '@pages/projects/[projectId]/alerts/alerts-list/alerts-list.search';
 
 describe('AlertsList search mapping', () => {
-    it('turns absent parameters into empty form values', () => {
-        // Arrange
-        const params: Parameters<typeof toAlertsListSearchModel>[0] = { q: undefined, status: undefined, isVisible: undefined, from: undefined, to: undefined, sort: undefined }
+	it('turns absent parameters into empty form values', () => {
+		// Arrange
+		const params: Parameters<typeof toAlertsListSearchModel>[0] = {
+			q: undefined,
+			status: undefined,
+			isVisible: undefined,
+			from: undefined,
+			to: undefined,
+			sort: undefined,
+		};
 
-        // Act
-        const model: ReturnType<typeof toAlertsListSearchModel> = toAlertsListSearchModel(params)
+		// Act
+		const model = toAlertsListSearchModel(params);
 
-        // Assert
-        expect(model).toEqual({ q: '', status: '', isVisible: '', from: null, to: null, sortBy: '', sortDirection: 'asc' })
-    })
+		// Assert
+		expect(model).toEqual({
+			q: '',
+			status: '',
+			isVisible: '',
+			from: null,
+			to: null,
+			sortBy: '',
+			sortDirection: 'asc',
+		});
+	});
 
-    it('turns the filled parameters, with both dates of the range, into form values and back', () => {
-        // Arrange
-        const params: Parameters<typeof toAlertsListSearchModel>[0] = { q: 'fire', status: 'IN_PROGRESS', isVisible: false, from: new Date(2026, 9, 3), to: new Date(2026, 9, 5), sort: undefined }
+	it('turns the filled parameters, with both dates of the range, into form values and back', () => {
+		// Arrange
+		const params: Parameters<typeof toAlertsListSearchModel>[0] = {
+			q: 'fire',
+			status: 'IN_PROGRESS',
+			isVisible: false,
+			from: new Date(2026, 9, 3),
+			to: new Date(2026, 9, 5),
+			sort: undefined,
+		};
 
-        // Act
-        const model: ReturnType<typeof toAlertsListSearchModel> = toAlertsListSearchModel(params)
+		// Act
+		const model = toAlertsListSearchModel(params);
 
-        // Assert
-        expect(model.isVisible).toBe('false')
-        expect(toAlertsListSearchParams(model)).toEqual(params)
-    })
+		// Assert
+		expect(model.isVisible).toBe('false');
+		expect(toAlertsListSearchParams(model)).toEqual(params);
+	});
 
-    it('turns empty form values into absent parameters', () => {
-        // Arrange
-        const model: ReturnType<typeof toAlertsListSearchModel> = { q: '', status: '', isVisible: '', from: null, to: null, sortBy: '', sortDirection: 'asc' }
+	it('turns empty form values into absent parameters', () => {
+		// Arrange
+		const model: ReturnType<typeof toAlertsListSearchModel> = {
+			q: '',
+			status: '',
+			isVisible: '',
+			from: null,
+			to: null,
+			sortBy: '',
+			sortDirection: 'asc',
+		};
 
-        // Act
-        const params: ReturnType<typeof toAlertsListSearchParams> = toAlertsListSearchParams(model)
+		// Act
+		const params = toAlertsListSearchParams(model);
 
-        // Assert
-        expect(params).toEqual({ q: undefined, status: undefined, isVisible: undefined, from: undefined, to: undefined })
-    })
-})
+		// Assert
+		expect(params).toEqual({
+			q: undefined,
+			status: undefined,
+			isVisible: undefined,
+			from: undefined,
+			to: undefined,
+		});
+	});
+});

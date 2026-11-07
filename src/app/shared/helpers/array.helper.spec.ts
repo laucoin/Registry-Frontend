@@ -1,56 +1,57 @@
-import { describe, it, expect } from 'vitest'
-import { ArrayHelper } from './array.helper'
+import { describe, expect, it } from 'vitest';
 
-describe( 'ArrayHelper', () => {
-    it( 'detects null or empty arrays', () => {
-        // Arrange
-        const filled: number[] = [ 1 ]
+import { ArrayHelper } from './array.helper';
 
-        // Act
-        const undefinedResult: boolean = ArrayHelper.isNullOrEmpty( undefined )
-        const emptyResult: boolean = ArrayHelper.isNullOrEmpty( [] )
-        const filledResult: boolean = ArrayHelper.isNullOrEmpty( filled )
+describe('ArrayHelper', () => {
+	it('detects null or empty arrays', () => {
+		// Arrange
+		const filled = [1];
 
-        // Assert
-        expect( undefinedResult ).toBe( true )
-        expect( emptyResult ).toBe( true )
-        expect( filledResult ).toBe( false )
-    } )
+		// Act
+		const undefinedResult = ArrayHelper.isNullOrEmpty(undefined);
+		const emptyResult = ArrayHelper.isNullOrEmpty([]);
+		const filledResult = ArrayHelper.isNullOrEmpty(filled);
 
-    it( 'checks inclusion in strict mode', () => {
-        // Arrange
-        const array: string[] = [ 'a' ]
+		// Assert
+		expect(undefinedResult).toBe(true);
+		expect(emptyResult).toBe(true);
+		expect(filledResult).toBe(false);
+	});
 
-        // Act
-        const present: boolean = ArrayHelper.includes( array, 'a', true )
-        const absent: boolean = ArrayHelper.includes( array, 'b', true )
+	it('checks inclusion in strict mode', () => {
+		// Arrange
+		const array = ['a'];
 
-        // Assert
-        expect( present ).toBe( true )
-        expect( absent ).toBe( false )
-    } )
+		// Act
+		const present = ArrayHelper.includes(array, 'a', true);
+		const absent = ArrayHelper.includes(array, 'b', true);
 
-    it( 'splits an array into chunks of the given size', () => {
-        // Arrange
-        const array: number[] = [ 1, 2, 3, 4, 5 ]
+		// Assert
+		expect(present).toBe(true);
+		expect(absent).toBe(false);
+	});
 
-        // Act
-        const chunks: number[][] = ArrayHelper.chunk( array, 2 )
+	it('splits an array into chunks of the given size', () => {
+		// Arrange
+		const array = [1, 2, 3, 4, 5];
 
-        // Assert
-        expect( chunks ).toEqual( [ [ 1, 2 ], [ 3, 4 ], [ 5 ] ] )
-    } )
+		// Act
+		const chunks = ArrayHelper.chunk(array, 2);
 
-    it( 'keeps a single empty chunk for a missing or empty array', () => {
-        // Arrange
-        const missing: number[] | undefined = undefined
+		// Assert
+		expect(chunks).toEqual([[1, 2], [3, 4], [5]]);
+	});
 
-        // Act
-        const missingChunks: number[][] = ArrayHelper.chunk( missing, 2 )
-        const emptyChunks: number[][] = ArrayHelper.chunk( [], 2 )
+	it('keeps a single empty chunk for a missing or empty array', () => {
+		// Arrange
+		const missing: number[] | undefined = undefined;
 
-        // Assert
-        expect( missingChunks ).toEqual( [ [] ] )
-        expect( emptyChunks ).toEqual( [ [] ] )
-    } )
-} )
+		// Act
+		const missingChunks: number[][] = ArrayHelper.chunk(missing, 2);
+		const emptyChunks: number[][] = ArrayHelper.chunk([], 2);
+
+		// Assert
+		expect(missingChunks).toEqual([[]]);
+		expect(emptyChunks).toEqual([[]]);
+	});
+});

@@ -1,8 +1,8 @@
-import { MenuItemModel } from '@core/layout/data/model/menu-item.model'
-import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
-import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
-import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
-import { UserAuthorityEnum } from '@shared/models/enumeration/user-authority.enum'
+import { MenuItemModel } from '@core/layout/data/model/menu-item.model';
+import { RegistryRouteEnum } from '@core/routing/registry-route.enum';
+import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum';
+import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum';
+import { UserAuthorityEnum } from '@shared/models/enumeration/user-authority.enum';
 
 export const APP_LEVEL_MENUS: MenuItemModel[] = [
 	{
@@ -19,7 +19,7 @@ export const APP_LEVEL_MENUS: MenuItemModel[] = [
 		url: RegistryRouteEnum.USERS,
 		requiredUserAuthority: UserAuthorityEnum.REGISTRY_USER_R,
 	},
-]
+];
 
 export const USER_LEVEL_MENUS: MenuItemModel[] = [
 	{
@@ -32,12 +32,12 @@ export const USER_LEVEL_MENUS: MenuItemModel[] = [
 		icon: { library: 'solid', name: 'envelope' },
 		url: RegistryRouteEnum.MY_ACCOUNT_INVITATIONS,
 	},
-]
+];
 
 export const LOGOUT_MENU: MenuItemModel = {
 	label: 'navbar.user.logout',
 	icon: { library: 'solid', name: 'right-from-bracket' },
-}
+};
 
 export const PROJECT_LEVEL_MENUS: MenuItemModel[] = [
 	{
@@ -65,4 +65,4 @@ export const PROJECT_LEVEL_MENUS: MenuItemModel[] = [
 		url: RegistryRouteEnum.PROJECTS_CONFIGURATION,
 		requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_R,
 	},
-]
+];

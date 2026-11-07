@@ -1,21 +1,27 @@
-import { formatSort, parseSort, SortFields } from '@shared/helpers/search/sort-query'
-import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice'
+import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice';
+import { formatSort, parseSort, SortFields } from '@shared/helpers/search/sort-query';
 
-export const GROUPS_LIST_SORT_FIELDS: readonly string[] = [ 'name', 'membersCount', 'status', 'startAvailability', 'endAvailability' ]
+export const GROUPS_LIST_SORT_FIELDS: readonly string[] = [
+	'name',
+	'membersCount',
+	'status',
+	'startAvailability',
+	'endAvailability',
+];
 
 interface GroupsListSearch {
-    q: string | undefined
-    at: Date | undefined
-    isPresent: boolean | undefined
-    isVisible: boolean | undefined
-    sort: string | undefined
+	q: string | undefined;
+	at: Date | undefined;
+	isPresent: boolean | undefined;
+	isVisible: boolean | undefined;
+	sort: string | undefined;
 }
 
 export interface GroupsListSearchModel extends SortFields {
-    q: string
-    at: Date | null
-    isPresent: BooleanChoice
-    isVisible: BooleanChoice
+	q: string;
+	at: Date | null;
+	isPresent: BooleanChoice;
+	isVisible: BooleanChoice;
 }
 
 /**
@@ -23,14 +29,14 @@ export interface GroupsListSearchModel extends SortFields {
  * Scope: Remplit les paramètres vides avec les valeurs par défaut du formulaire.
  * Limits: Ne valide pas les paramètres.
  */
-export function toGroupsListSearchModel (params: GroupsListSearch): GroupsListSearchModel {
-    return {
-        q: params.q ?? '',
-        at: params.at ?? null,
-        isPresent: toBooleanChoice( params.isPresent ),
-        isVisible: toBooleanChoice( params.isVisible ),
-        ...parseSort( params.sort, GROUPS_LIST_SORT_FIELDS ),
-    }
+export function toGroupsListSearchModel(params: GroupsListSearch): GroupsListSearchModel {
+	return {
+		q: params.q ?? '',
+		at: params.at ?? null,
+		isPresent: toBooleanChoice(params.isPresent),
+		isVisible: toBooleanChoice(params.isVisible),
+		...parseSort(params.sort, GROUPS_LIST_SORT_FIELDS),
+	};
 }
 
 /**
@@ -38,12 +44,12 @@ export function toGroupsListSearchModel (params: GroupsListSearch): GroupsListSe
  * Scope: Transforme les valeurs vides du formulaire en paramètres undefined.
  * Limits: Ne valide pas les valeurs du formulaire.
  */
-export function toGroupsListSearchParams (model: GroupsListSearchModel): GroupsListSearch {
-    return {
-        q: model.q === '' ? undefined : model.q,
-        at: model.at ?? undefined,
-        isPresent: fromBooleanChoice( model.isPresent ),
-        isVisible: fromBooleanChoice( model.isVisible ),
-        sort: formatSort( model ),
-    }
+export function toGroupsListSearchParams(model: GroupsListSearchModel): GroupsListSearch {
+	return {
+		q: model.q === '' ? undefined : model.q,
+		at: model.at ?? undefined,
+		isPresent: fromBooleanChoice(model.isPresent),
+		isVisible: fromBooleanChoice(model.isVisible),
+		sort: formatSort(model),
+	};
 }

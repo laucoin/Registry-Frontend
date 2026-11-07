@@ -1,93 +1,96 @@
-import { signal } from '@angular/core'
-import { ComponentFixture, TestBed } from '@angular/core/testing'
-import { provideRouter } from '@angular/router'
-import { RegistryConfig } from '@core/config/registry.config'
-import { FooterComponent } from '@core/layout/footer/footer.component'
-import { UiFacade } from '@core/registry/state/ui.facade'
-import { TranslocoTestingModule } from '@jsverse/transloco'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
-describe( 'FooterComponent', () => {
-    function create (issuesUrl: string | null, tinyScreen: boolean = false): HTMLElement {
-        RegistryConfig.config = {
-            application: {
-                name: 'Registry',
-                organization: 'Org',
-                creator: { name: 'Creator', email: 'creator@example.org', website: 'https://example.org' },
-                support: { issuesUrl },
-            },
-        } as typeof RegistryConfig.config
-        TestBed.configureTestingModule( {
-            imports: [ TranslocoTestingModule.forRoot( { langs: { fr: {} }, translocoConfig: { defaultLang: 'fr' } } ) ],
-            providers: [ provideRouter( [] ), { provide: UiFacade, useValue: { tinyScreen: signal( tinyScreen ) } } ],
-        } )
-        const fixture: ComponentFixture<FooterComponent> = TestBed.createComponent( FooterComponent )
-        fixture.detectChanges()
-        return fixture.nativeElement as HTMLElement
-    }
+import { TranslocoTestingModule } from '@jsverse/transloco';
+import { beforeEach, describe, expect, it } from 'vitest';
 
-    beforeEach( () => {
-        TestBed.resetTestingModule()
-    } )
+import { RegistryConfig } from '@core/config/registry.config';
+import { FooterComponent } from '@core/layout/footer/footer.component';
+import { UiFacade } from '@core/registry/state/ui.facade';
 
-    it( 'links the privacy policy and the terms to their internal routes', () => {
-        // Arrange
-        const footer: HTMLElement = create( null )
+describe('FooterComponent', () => {
+	function create(issuesUrl: string | null, tinyScreen = false): HTMLElement {
+		RegistryConfig.config = {
+			application: {
+				name: 'Registry',
+				organization: 'Org',
+				creator: { name: 'Creator', email: 'creator@example.org', website: 'https://example.org' },
+				support: { issuesUrl },
+			},
+		} as typeof RegistryConfig.config;
+		TestBed.configureTestingModule({
+			imports: [TranslocoTestingModule.forRoot({ langs: { fr: {} }, translocoConfig: { defaultLang: 'fr' } })],
+			providers: [provideRouter([]), { provide: UiFacade, useValue: { tinyScreen: signal(tinyScreen) } }],
+		});
+		const fixture = TestBed.createComponent(FooterComponent);
+		fixture.detectChanges();
+		return fixture.nativeElement as HTMLElement;
+	}
 
-        // Act
-        const hrefs: (string | null)[] = Array.from( footer.querySelectorAll( 'a[href^="/"]' ) ).map( (it: Element): string | null => it.getAttribute( 'href' ) )
+	beforeEach(() => {
+		TestBed.resetTestingModule();
+	});
 
-        // Assert
-        expect( hrefs ).toEqual( [ '/privacy', '/terms' ] )
-    } )
+	it('links the privacy policy and the terms to their internal routes', () => {
+		// Arrange
+		const footer = create(null);
 
-    it( 'opens the support link in a new tab', () => {
-        // Arrange
-        const footer: HTMLElement = create( 'https://example.org/issues' )
+		// Act
+		const hrefs = Array.from(footer.querySelectorAll('a[href^="/"]')).map((it) => it.getAttribute('href'));
 
-        // Act
-        const support: Element | null = footer.querySelector( 'a[href="https://example.org/issues"]' )
+		// Assert
+		expect(hrefs).toEqual(['/privacy', '/terms']);
+	});
 
-        // Assert
-        expect( support?.getAttribute( 'target' ) ).toBe( '_blank' )
-        expect( support?.getAttribute( 'rel' ) ).toBe( 'noopener noreferrer' )
-        expect( support?.querySelector( '.sr-only' )?.textContent ).toContain( 'footer.new-tab' )
-    } )
+	it('opens the support link in a new tab', () => {
+		// Arrange
+		const footer = create('https://example.org/issues');
 
-    it( 'announces every external link as opening in a new tab', () => {
-        // Arrange
-        const footer: HTMLElement = create( 'https://example.org/issues' )
+		// Act
+		const support = footer.querySelector('a[href="https://example.org/issues"]');
 
-        // Act
-        const hints: (string | undefined)[] = Array.from( footer.querySelectorAll( 'a[target="_blank"]' ) )
-            .map( (link: Element): string | undefined => link.querySelector( '.sr-only' )?.textContent?.trim() )
+		// Assert
+		expect(support?.getAttribute('target')).toBe('_blank');
+		expect(support?.getAttribute('rel')).toBe('noopener noreferrer');
+		expect(support?.querySelector('.sr-only')?.textContent).toContain('footer.new-tab');
+	});
 
-        // Assert
-        expect( hints ).toEqual( [ '(fr.footer.new-tab)', '(fr.footer.new-tab)' ] )
-    } )
+	it('announces every external link as opening in a new tab', () => {
+		// Arrange
+		const footer = create('https://example.org/issues');
 
-    it.each( [
-        [ 'wide', false, true ],
-        [ 'tiny', true, false ],
-    ] )( 'draws the torn edge only on a %s screen', (_label: string, tinyScreen: boolean, torn: boolean) => {
-        // Arrange
-        const footer: HTMLElement = create( null, tinyScreen )
+		// Act
+		const hints = Array.from(footer.querySelectorAll('a[target="_blank"]')).map((link) =>
+			link.querySelector('.sr-only')?.textContent?.trim(),
+		);
 
-        // Act
-        const shown: boolean = (footer.querySelector( 'sgdf-footer' ) as HTMLElement & { torn: boolean }).torn
+		// Assert
+		expect(hints).toEqual(['(fr.footer.new-tab)', '(fr.footer.new-tab)']);
+	});
 
-        // Assert
-        expect( shown ).toBe( torn )
-    } )
+	it.each([
+		['wide', false, true],
+		['tiny', true, false],
+	])('draws the torn edge only on a %s screen', (_label, tinyScreen, torn) => {
+		// Arrange
+		const footer = create(null, tinyScreen);
 
-    it( 'hides the support link when no support url is configured', () => {
-        // Arrange
-        const footer: HTMLElement = create( null )
+		// Act
+		const shown = (footer.querySelector('sgdf-footer') as HTMLElement & { torn: boolean }).torn;
 
-        // Act
-        const external: NodeListOf<Element> = footer.querySelectorAll( 'a[target="_blank"]' )
+		// Assert
+		expect(shown).toBe(torn);
+	});
 
-        // Assert
-        expect( external.length ).toBe( 1 )
-    } )
-} )
+	it('hides the support link when no support url is configured', () => {
+		// Arrange
+		const footer = create(null);
+
+		// Act
+		const external = footer.querySelectorAll('a[target="_blank"]');
+
+		// Assert
+		expect(external.length).toBe(1);
+	});
+});

@@ -1,111 +1,112 @@
-import { describe, expect, it } from 'vitest'
-import { FormButtonPipe } from '@shared/helpers/pipe/form-button.pipe'
-import { FormTitlePipe } from '@shared/helpers/pipe/form-title.pipe'
-import { ProjectOptionIconPipe } from '@shared/helpers/pipe/project-option-icon.pipe'
-import { TruncatePipe } from '@shared/helpers/pipe/truncate.pipe'
-import { VisibilityNamePipe } from '@shared/helpers/pipe/visibility.pipe'
-import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
-import { GenericModel } from '@shared/models/model/generic.model'
+import { describe, expect, it } from 'vitest';
 
-describe( 'FormButtonPipe', () => {
-    it( 'offers to edit an existing element and to create a new one', () => {
-        // Arrange
-        const pipe: FormButtonPipe = new FormButtonPipe()
+import { FormButtonPipe } from '@shared/helpers/pipe/form-button.pipe';
+import { FormTitlePipe } from '@shared/helpers/pipe/form-title.pipe';
+import { ProjectOptionIconPipe } from '@shared/helpers/pipe/project-option-icon.pipe';
+import { TruncatePipe } from '@shared/helpers/pipe/truncate.pipe';
+import { VisibilityNamePipe } from '@shared/helpers/pipe/visibility.pipe';
+import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum';
+import { GenericModel } from '@shared/models/model/generic.model';
 
-        // Act
-        const editing: string = pipe.transform( { id: '1' } )
-        const creating: string = pipe.transform( undefined )
+describe('FormButtonPipe', () => {
+	it('offers to edit an existing element and to create a new one', () => {
+		// Arrange
+		const pipe = new FormButtonPipe();
 
-        // Assert
-        expect( editing ).toBe( 'global.actions.edit' )
-        expect( creating ).toBe( 'global.actions.create' )
-    } )
-} )
+		// Act
+		const editing = pipe.transform({ id: '1' });
+		const creating = pipe.transform(undefined);
 
-describe( 'FormTitlePipe', () => {
-    it( 'suffixes the title key with edit or create', () => {
-        // Arrange
-        const pipe: FormTitlePipe = new FormTitlePipe()
+		// Assert
+		expect(editing).toBe('global.actions.edit');
+		expect(creating).toBe('global.actions.create');
+	});
+});
 
-        // Act
-        const editing: string = pipe.transform( 'groups.form.title', { id: '1' } )
-        const creating: string = pipe.transform( 'groups.form.title', undefined )
+describe('FormTitlePipe', () => {
+	it('suffixes the title key with edit or create', () => {
+		// Arrange
+		const pipe = new FormTitlePipe();
 
-        // Assert
-        expect( editing ).toBe( 'groups.form.title.edit' )
-        expect( creating ).toBe( 'groups.form.title.create' )
-    } )
-} )
+		// Act
+		const editing = pipe.transform('groups.form.title', { id: '1' });
+		const creating = pipe.transform('groups.form.title', undefined);
 
-describe( 'ProjectOptionIconPipe', () => {
-    it.each( [
-        [ ProjectOptionEnum.VEHICLE, 'car' ],
-        [ ProjectOptionEnum.ACTIVITY, 'hammer' ],
-        [ ProjectOptionEnum.COMMUNICATION, 'comment' ],
-        [ ProjectOptionEnum.ALERT, 'triangle-exclamation' ],
-    ] )( 'gives the %s option its icon', (option: ProjectOptionEnum, icon: string) => {
-        // Arrange
-        const pipe: ProjectOptionIconPipe = new ProjectOptionIconPipe()
+		// Assert
+		expect(editing).toBe('groups.form.title.edit');
+		expect(creating).toBe('groups.form.title.create');
+	});
+});
 
-        // Act
-        const result: string = pipe.transform( option )
+describe('ProjectOptionIconPipe', () => {
+	it.each([
+		[ProjectOptionEnum.VEHICLE, 'car'],
+		[ProjectOptionEnum.ACTIVITY, 'hammer'],
+		[ProjectOptionEnum.COMMUNICATION, 'comment'],
+		[ProjectOptionEnum.ALERT, 'triangle-exclamation'],
+	])('gives the %s option its icon', (option, icon) => {
+		// Arrange
+		const pipe = new ProjectOptionIconPipe();
 
-        // Assert
-        expect( result ).toBe( icon )
-    } )
+		// Act
+		const result = pipe.transform(option);
 
-    it( 'gives an unknown option no icon', () => {
-        // Arrange
-        const pipe: ProjectOptionIconPipe = new ProjectOptionIconPipe()
+		// Assert
+		expect(result).toBe(icon);
+	});
 
-        // Act
-        const result: string = pipe.transform( 'UNKNOWN' as ProjectOptionEnum )
+	it('gives an unknown option no icon', () => {
+		// Arrange
+		const pipe = new ProjectOptionIconPipe();
 
-        // Assert
-        expect( result ).toBe( '' )
-    } )
-} )
+		// Act
+		const result = pipe.transform('UNKNOWN' as ProjectOptionEnum);
 
-describe( 'TruncatePipe', () => {
-    it( 'cuts long text with a trail and keeps short text', () => {
-        // Arrange
-        const pipe: TruncatePipe = new TruncatePipe()
+		// Assert
+		expect(result).toBe('');
+	});
+});
 
-        // Act
-        const cut: string = pipe.transform( 'a very long sentence indeed', 6 )
-        const kept: string = pipe.transform( 'short', 6 )
+describe('TruncatePipe', () => {
+	it('cuts long text with a trail and keeps short text', () => {
+		// Arrange
+		const pipe = new TruncatePipe();
 
-        // Assert
-        expect( cut ).toBe( 'a very…' )
-        expect( kept ).toBe( 'short' )
-    } )
+		// Act
+		const cut = pipe.transform('a very long sentence indeed', 6);
+		const kept = pipe.transform('short', 6);
 
-    it( 'uses twenty characters and an ellipsis by default', () => {
-        // Arrange
-        const pipe: TruncatePipe = new TruncatePipe()
-        const text: string = 'x'.repeat( 30 )
+		// Assert
+		expect(cut).toBe('a very…');
+		expect(kept).toBe('short');
+	});
 
-        // Act
-        const result: string = pipe.transform( text )
+	it('uses twenty characters and an ellipsis by default', () => {
+		// Arrange
+		const pipe = new TruncatePipe();
+		const text = 'x'.repeat(30);
 
-        // Assert
-        expect( result ).toBe( 'x'.repeat( 20 ) + '…' )
-    } )
-} )
+		// Act
+		const result = pipe.transform(text);
 
-describe( 'VisibilityNamePipe', () => {
-    it( 'names the visible state with an optional prefix', () => {
-        // Arrange
-        const pipe: VisibilityNamePipe<GenericModel> = new VisibilityNamePipe<GenericModel>()
+		// Assert
+		expect(result).toBe('x'.repeat(20) + '…');
+	});
+});
 
-        // Act
-        const visible: string = pipe.transform( { visible: true } as GenericModel, 'groups' )
-        const hidden: string = pipe.transform( { visible: false } as GenericModel, undefined )
-        const missing: string = pipe.transform( undefined, 'groups' )
+describe('VisibilityNamePipe', () => {
+	it('names the visible state with an optional prefix', () => {
+		// Arrange
+		const pipe = new VisibilityNamePipe<GenericModel>();
 
-        // Assert
-        expect( visible ).toBe( 'groups.visible.true' )
-        expect( hidden ).toBe( 'visible.false' )
-        expect( missing ).toBe( 'groups.visible.false' )
-    } )
-} )
+		// Act
+		const visible = pipe.transform({ visible: true } as GenericModel, 'groups');
+		const hidden = pipe.transform({ visible: false } as GenericModel, undefined);
+		const missing = pipe.transform(undefined, 'groups');
+
+		// Assert
+		expect(visible).toBe('groups.visible.true');
+		expect(hidden).toBe('visible.false');
+		expect(missing).toBe('groups.visible.false');
+	});
+});

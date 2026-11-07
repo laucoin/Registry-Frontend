@@ -1,144 +1,172 @@
-import { describe, expect, it } from 'vitest'
-import { MonitoringRowHelper } from '@shared/helpers/monitoring-row.helper'
-import { PARTICIPANT_DTO, GROUP_DTO, VEHICLE_DTO } from '@shared/helpers/testing/response-fixtures'
-import { GroupMapper } from '@shared/mappers/group.mapper'
-import { ParticipantMapper } from '@shared/mappers/participant.mapper'
-import { VehicleMapper } from '@shared/mappers/vehicle.mapper'
-import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
-import { GroupModel } from '@shared/models/model/group.model'
-import { MonitoringRowModel, MonitoringStatusVariant } from '@shared/models/model/monitoring-row.model'
-import { ParticipantModel } from '@shared/models/model/participant.model'
-import { VehicleModel } from '@shared/models/model/vehicle.model'
+import { describe, expect, it } from 'vitest';
 
-describe( 'MonitoringRowHelper', () => {
-    it.each<[ PresenceStatusEnum, MonitoringStatusVariant ]>( [
-        [ PresenceStatusEnum.IN, 'success' ],
-        [ PresenceStatusEnum.OUT, 'warning' ],
-        [ PresenceStatusEnum.OVERDUE, 'danger' ],
-        [ PresenceStatusEnum.UNAVAILABLE, 'neutral' ],
-    ] )( 'colors the %s presence status %s', (status: PresenceStatusEnum, expected: MonitoringStatusVariant) => {
-        // Arrange
-        const given: PresenceStatusEnum = status
+import { MonitoringRowHelper } from '@shared/helpers/monitoring-row.helper';
+import { GROUP_DTO, PARTICIPANT_DTO, VEHICLE_DTO } from '@shared/helpers/testing/response-fixtures';
+import { GroupMapper } from '@shared/mappers/group.mapper';
+import { ParticipantMapper } from '@shared/mappers/participant.mapper';
+import { VehicleMapper } from '@shared/mappers/vehicle.mapper';
+import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum';
+import { MonitoringStatusVariant } from '@shared/models/model/monitoring-row.model';
+import { ParticipantModel } from '@shared/models/model/participant.model';
+import { VehicleModel } from '@shared/models/model/vehicle.model';
 
-        // Act
-        const variant: MonitoringStatusVariant = MonitoringRowHelper.statusVariant( given )
+describe('MonitoringRowHelper', () => {
+	it.each<[PresenceStatusEnum, MonitoringStatusVariant]>([
+		[PresenceStatusEnum.IN, 'success'],
+		[PresenceStatusEnum.OUT, 'warning'],
+		[PresenceStatusEnum.OVERDUE, 'danger'],
+		[PresenceStatusEnum.UNAVAILABLE, 'neutral'],
+	])('colors the %s presence status %s', (status, expected) => {
+		// Arrange
+		const given = status;
 
-        // Assert
-        expect( variant ).toBe( expected )
-    } )
+		// Act
+		const variant = MonitoringRowHelper.statusVariant(given);
 
-    it( 'falls back to the neutral color for an unknown status', () => {
-        // Arrange
-        const unknown: PresenceStatusEnum = 'OTHER' as PresenceStatusEnum
+		// Assert
+		expect(variant).toBe(expected);
+	});
 
-        // Act
-        const variant: MonitoringStatusVariant = MonitoringRowHelper.statusVariant( unknown )
+	it('falls back to the neutral color for an unknown status', () => {
+		// Arrange
+		const unknown = 'OTHER' as PresenceStatusEnum;
 
-        // Assert
-        expect( variant ).toBe( 'neutral' )
-    } )
+		// Act
+		const variant = MonitoringRowHelper.statusVariant(unknown);
 
-    it( 'builds a participant row with the upper-cased last name and the names of the groups', () => {
-        // Arrange
-        const group: GroupModel = GroupMapper.toModel( GROUP_DTO )
-        const participant: ParticipantModel = { ...ParticipantMapper.toModel( PARTICIPANT_DTO ), groups: [ group, { ...group, name: 'Owls' } ] }
+		// Assert
+		expect(variant).toBe('neutral');
+	});
 
-        // Act
-        const row: MonitoringRowModel = MonitoringRowHelper.fromParticipant( participant )
+	it('builds a participant row with the upper-cased last name and the names of the groups', () => {
+		// Arrange
+		const group = GroupMapper.toModel(GROUP_DTO);
+		const participant: ParticipantModel = {
+			...ParticipantMapper.toModel(PARTICIPANT_DTO),
+			groups: [group, { ...group, name: 'Owls' }],
+		};
 
-        // Assert
-        expect( row ).toEqual( { id: 'pa1', title: 'A B', subtitle: 'Wolves, Owls', statusLabel: 'In', statusVariant: 'success', icon: 'user', overdue: false } )
-    } )
+		// Act
+		const row = MonitoringRowHelper.fromParticipant(participant);
 
-    it( 'flags a participant whose planned presence is over without any departure', () => {
-        // Arrange
-        const participant: ParticipantModel = { ...ParticipantMapper.toModel( PARTICIPANT_DTO ), status: { label: 'Overdue', value: PresenceStatusEnum.OVERDUE } }
+		// Assert
+		expect(row).toEqual({
+			id: 'pa1',
+			title: 'A B',
+			subtitle: 'Wolves, Owls',
+			statusLabel: 'In',
+			statusVariant: 'success',
+			icon: 'user',
+			overdue: false,
+		});
+	});
 
-        // Act
-        const row: MonitoringRowModel = MonitoringRowHelper.fromParticipant( participant )
+	it('flags a participant whose planned presence is over without any departure', () => {
+		// Arrange
+		const participant: ParticipantModel = {
+			...ParticipantMapper.toModel(PARTICIPANT_DTO),
+			status: { label: 'Overdue', value: PresenceStatusEnum.OVERDUE },
+		};
 
-        // Assert
-        expect( row.overdue ).toBe( true )
-    } )
+		// Act
+		const row = MonitoringRowHelper.fromParticipant(participant);
 
-    it( 'describes a participant without group by its type', () => {
-        // Arrange
-        const participant: ParticipantModel = ParticipantMapper.toModel( PARTICIPANT_DTO )
+		// Assert
+		expect(row.overdue).toBe(true);
+	});
 
-        // Act
-        const row: MonitoringRowModel = MonitoringRowHelper.fromParticipant( participant )
+	it('describes a participant without group by its type', () => {
+		// Arrange
+		const participant = ParticipantMapper.toModel(PARTICIPANT_DTO);
 
-        // Assert
-        expect( row.subtitle ).toBe( 'Registered' )
-    } )
+		// Act
+		const row = MonitoringRowHelper.fromParticipant(participant);
 
-    it( 'builds a vehicle row with its brand, model and license plate', () => {
-        // Arrange
-        const vehicle: VehicleModel = VehicleMapper.toModel( VEHICLE_DTO )
+		// Assert
+		expect(row.subtitle).toBe('Registered');
+	});
 
-        // Act
-        const row: MonitoringRowModel = MonitoringRowHelper.fromVehicle( vehicle )
+	it('builds a vehicle row with its brand, model and license plate', () => {
+		// Arrange
+		const vehicle = VehicleMapper.toModel(VEHICLE_DTO);
 
-        // Assert
-        expect( row ).toEqual( { id: 'v1', title: 'Ford T', subtitle: 'AB-123', statusLabel: 'In', statusVariant: 'success', icon: 'car' } )
-    } )
+		// Act
+		const row = MonitoringRowHelper.fromVehicle(vehicle);
 
-    it( 'keeps the title of a participant without last name free of stray spaces', () => {
-        // Arrange
-        const participant: ParticipantModel = { ...ParticipantMapper.toModel( PARTICIPANT_DTO ), lastName: undefined as never }
+		// Assert
+		expect(row).toEqual({
+			id: 'v1',
+			title: 'Ford T',
+			subtitle: 'AB-123',
+			statusLabel: 'In',
+			statusVariant: 'success',
+			icon: 'car',
+		});
+	});
 
-        // Act
-        const row: MonitoringRowModel = MonitoringRowHelper.fromParticipant( participant )
+	it('keeps the title of a participant without last name free of stray spaces', () => {
+		// Arrange
+		const participant: ParticipantModel = {
+			...ParticipantMapper.toModel(PARTICIPANT_DTO),
+			lastName: undefined as never,
+		};
 
-        // Assert
-        expect( row.title ).toBe( 'A' )
-    } )
+		// Act
+		const row = MonitoringRowHelper.fromParticipant(participant);
 
-    it( 'describes a participant whose groups are empty by its type', () => {
-        // Arrange
-        const participant: ParticipantModel = { ...ParticipantMapper.toModel( PARTICIPANT_DTO ), groups: [] }
+		// Assert
+		expect(row.title).toBe('A');
+	});
 
-        // Act
-        const row: MonitoringRowModel = MonitoringRowHelper.fromParticipant( participant )
+	it('describes a participant whose groups are empty by its type', () => {
+		// Arrange
+		const participant: ParticipantModel = { ...ParticipantMapper.toModel(PARTICIPANT_DTO), groups: [] };
 
-        // Assert
-        expect( row.subtitle ).toBe( 'Registered' )
-    } )
+		// Act
+		const row = MonitoringRowHelper.fromParticipant(participant);
 
-    it( 'titles a vehicle without brand by its model only', () => {
-        // Arrange
-        const vehicle: VehicleModel = { ...VehicleMapper.toModel( VEHICLE_DTO ), brand: '' }
+		// Assert
+		expect(row.subtitle).toBe('Registered');
+	});
 
-        // Act
-        const row: MonitoringRowModel = MonitoringRowHelper.fromVehicle( vehicle )
+	it('titles a vehicle without brand by its model only', () => {
+		// Arrange
+		const vehicle: VehicleModel = { ...VehicleMapper.toModel(VEHICLE_DTO), brand: '' };
 
-        // Assert
-        expect( row.title ).toBe( 'T' )
-    } )
+		// Act
+		const row = MonitoringRowHelper.fromVehicle(vehicle);
 
-    it( 'builds a participant row without status when the backend sends none', () => {
-        // Arrange
-        const participant: ParticipantModel = { ...ParticipantMapper.toModel( PARTICIPANT_DTO ), status: undefined as never, groups: undefined }
+		// Assert
+		expect(row.title).toBe('T');
+	});
 
-        // Act
-        const row: MonitoringRowModel = MonitoringRowHelper.fromParticipant( participant )
+	it('builds a participant row without status when the backend sends none', () => {
+		// Arrange
+		const participant: ParticipantModel = {
+			...ParticipantMapper.toModel(PARTICIPANT_DTO),
+			status: undefined as never,
+			groups: undefined,
+		};
 
-        // Assert
-        expect( row.statusLabel ).toBeUndefined()
-        expect( row.statusVariant ).toBe( 'neutral' )
-        expect( row.title ).toBe( 'A B' )
-    } )
+		// Act
+		const row = MonitoringRowHelper.fromParticipant(participant);
 
-    it( 'names a participant and describes him by his group or his type', () => {
-        // Arrange
-        const participant: ParticipantModel = ParticipantMapper.toModel( PARTICIPANT_DTO )
+		// Assert
+		expect(row.statusLabel).toBeUndefined();
+		expect(row.statusVariant).toBe('neutral');
+		expect(row.title).toBe('A B');
+	});
 
-        // Act
-        const name: string = MonitoringRowHelper.fullName( participant )
-        const detail: string | undefined = MonitoringRowHelper.participantDetail( participant )
+	it('names a participant and describes him by his group or his type', () => {
+		// Arrange
+		const participant = ParticipantMapper.toModel(PARTICIPANT_DTO);
 
-        // Assert
-        expect( name ).toBe( 'A B' )
-        expect( detail ).toBe( 'Registered' )
-    } )
-} )
+		// Act
+		const name = MonitoringRowHelper.fullName(participant);
+		const detail = MonitoringRowHelper.participantDetail(participant);
+
+		// Assert
+		expect(name).toBe('A B');
+		expect(detail).toBe('Registered');
+	});
+});

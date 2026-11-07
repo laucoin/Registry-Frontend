@@ -1,22 +1,23 @@
-import { EnvironmentProviders, inject, Injectable, Injector, provideAppInitializer, Provider } from '@angular/core'
-import { BrowserService, PREFERENCE_COOKIE_MAX_AGE_SECONDS } from '@core/browser/browser.service'
-import { ConfigModel, DEFAULT_LIST_CONFIG } from '@core/config/model/config.model';
-import { EnvironmentModel } from '@core/config/model/environment.model'
-import { RegistryTranslationLoader } from '@core/config/registry-translation.loader'
-import { UiFacade } from '@core/registry/state/ui.facade'
-import { ErrorModel } from '@shared/models/model/error.model'
+import { EnvironmentProviders, inject, Injectable, Injector, provideAppInitializer, Provider } from '@angular/core';
+
 import {
-    provideTransloco,
-    TRANSLOCO_CONFIG,
-    TranslocoConfig,
-    translocoConfig,
-    TranslocoService
-} from '@jsverse/transloco'
-import { GenericHelper } from '@shared/helpers/generic.helper'
-import { LOCALE } from '@shared/helpers/request.helper'
-import { StringHelper } from '@shared/helpers/string.helper'
-import { firstValueFrom } from 'rxjs'
-import { version } from '../../../../package.json';
+	provideTransloco,
+	TRANSLOCO_CONFIG,
+	TranslocoConfig,
+	translocoConfig,
+	TranslocoService,
+} from '@jsverse/transloco';
+import { firstValueFrom } from 'rxjs';
+
+import { BrowserService, PREFERENCE_COOKIE_MAX_AGE_SECONDS } from '@core/browser/browser.service';
+import { ConfigModel, DEFAULT_LIST_CONFIG } from '@core/config/model/config.model';
+import { EnvironmentModel } from '@core/config/model/environment.model';
+import { RegistryTranslationLoader } from '@core/config/registry-translation.loader';
+import { UiFacade } from '@core/registry/state/ui.facade';
+import { LOCALE } from '@shared/helpers/request.helper';
+import { StringHelper } from '@shared/helpers/string.helper';
+import { ErrorModel } from '@shared/models/model/error.model';
+import { version } from '@package';
 
 /**
  * Purpose: Charge la configuration d'exécution et construit les providers qui en dépendent.
@@ -27,93 +28,108 @@ import { version } from '../../../../package.json';
 	providedIn: 'root',
 })
 export class RegistryConfig {
-	private static readonly _configJsonURL: string = 'settings/config.json'
-	public static config: ConfigModel
+	private static readonly _configJsonURL: string = 'settings/config.json';
+	public static config: ConfigModel;
 
-	private static readonly _envJsonURL: string = 'settings/env.json'
-	public static environment: EnvironmentModel
+	private static readonly _envJsonURL: string = 'settings/env.json';
+	public static environment: EnvironmentModel;
 
 	public static provideRuntimeConfig(): EnvironmentProviders {
-		return provideAppInitializer((): Promise<void> => RegistryConfig.loadOrFail())
+		return provideAppInitializer(() => RegistryConfig.loadOrFail());
 	}
 
-	private static loading: Promise<unknown> | undefined
+	private static loading: Promise<unknown> | undefined;
 
 	private static readonly FALLBACK_CONFIG: ConfigModel = {
 		defaultLanguage: 'fr',
 		languages: ['fr'],
 		application: { name: 'Registry', organization: '', creator: { name: '', email: '', website: '' }, support: {} },
 		list: DEFAULT_LIST_CONFIG,
-		notification: { duration: { info: undefined, success: undefined, warn: undefined, error: undefined, secondary: undefined, contrast: undefined } },
-	}
+		notification: {
+			duration: {
+				info: undefined,
+				success: undefined,
+				warn: undefined,
+				error: undefined,
+				secondary: undefined,
+				contrast: undefined,
+			},
+		},
+	};
 	private static readonly FALLBACK_ENVIRONMENT: EnvironmentModel = {
 		production: true,
 		backend: { url: 'about:blank', noAuthPaths: [] },
 		hosting: { providerName: null, providerAddress: null },
-	}
+	};
 
-	private static startupError: unknown
+	private static startupError: unknown;
 
 	private static async loadOrFail(): Promise<void> {
 		try {
-			await RegistryConfig.load()
+			await RegistryConfig.load();
 		} catch (error: unknown) {
-			RegistryConfig.config ??= RegistryConfig.FALLBACK_CONFIG
-			RegistryConfig.environment ??= RegistryConfig.FALLBACK_ENVIRONMENT
-			RegistryConfig.startupError ??= error
+			RegistryConfig.config ??= RegistryConfig.FALLBACK_CONFIG;
+			RegistryConfig.environment ??= RegistryConfig.FALLBACK_ENVIRONMENT;
+			RegistryConfig.startupError ??= error;
 		}
 	}
 
 	private static reportStartupFailure(injector: Injector): void {
-		if (RegistryConfig.startupError === undefined) return
-		const error: unknown = RegistryConfig.startupError
-		RegistryConfig.startupError = undefined
-		const translateService: TranslocoService = injector.get(TranslocoService)
-		injector.get(UiFacade).setGlobalError(ErrorModel.of(
-			translateService.translate('global.notifications.startup.title'),
-			error instanceof Error ? error.message : String(error),
-		))
+		if (RegistryConfig.startupError === undefined) return;
+		const error: unknown = RegistryConfig.startupError;
+		RegistryConfig.startupError = undefined;
+		const translateService = injector.get(TranslocoService);
+		injector
+			.get(UiFacade)
+			.setGlobalError(
+				ErrorModel.of(
+					translateService.translate('global.notifications.startup.title'),
+					error instanceof Error ? error.message : String(error),
+				),
+			);
 	}
 
 	private static load(): Promise<unknown> {
-		return this.loading ??= Promise.all([
-			RegistryConfig.fetchJson<ConfigModel>(this._configJsonURL).then((res: ConfigModel): ConfigModel => RegistryConfig.config = {
-				...res,
-				application: { ...res.application, version }
-			}),
-			RegistryConfig.fetchJson<EnvironmentModel>(this._envJsonURL).then((res: EnvironmentModel): EnvironmentModel => RegistryConfig.environment = res),
-		])
+		return (this.loading ??= Promise.all([
+			RegistryConfig.fetchJson<ConfigModel>(this._configJsonURL).then(
+				(res): ConfigModel =>
+					(RegistryConfig.config = {
+						...res,
+						application: { ...res.application, version },
+					}),
+			),
+			RegistryConfig.fetchJson<EnvironmentModel>(this._envJsonURL).then(
+				(res) => (RegistryConfig.environment = res),
+			),
+		]));
 	}
 
 	private static async fetchJson<T>(url: string): Promise<T> {
-		const response: Response = await fetch(StringHelper.addCacheBustingToUrl(url))
+		const response = await fetch(StringHelper.addCacheBustingToUrl(url));
 		if (!response.ok) {
-			throw new Error(`Unable to load ${url} (${response.status})`)
+			throw new Error(`Unable to load ${url} (${response.status})`);
 		}
-		return response.json()
+		return response.json();
 	}
 
 	private static resolveLocale(browser: BrowserService): string {
-		let lang: string | undefined = browser.readCookie(LOCALE)
+		const lang =
+			RegistryConfig.supportedLanguage(browser.readCookie(LOCALE)) ??
+			RegistryConfig.preferredLanguage(browser) ??
+			RegistryConfig.config.defaultLanguage;
+		browser.writeCookie(LOCALE, lang, PREFERENCE_COOKIE_MAX_AGE_SECONDS);
 
-		if (GenericHelper.nonNull(lang) && lang && !RegistryConfig.config.languages.includes(lang)) {
-			lang = undefined
-		}
+		return lang;
+	}
 
-		if (GenericHelper.isNull(lang) || !RegistryConfig.config.languages.includes(lang!)) {
-			browser.preferredLanguages.forEach((nextLang: string): void => {
-				const base: string = nextLang.split('-')[0]
-				const match: string | undefined = [nextLang, base].find((candidate: string): boolean => RegistryConfig.config.languages.includes(candidate))
-				if (match && !lang) {
-					lang = match
-				}
-			})
-		}
+	private static supportedLanguage(lang: string | undefined): string | undefined {
+		return lang && RegistryConfig.config.languages.includes(lang) ? lang : undefined;
+	}
 
-		lang = lang ?? RegistryConfig.config.defaultLanguage
-		browser.writeCookie(LOCALE, lang, PREFERENCE_COOKIE_MAX_AGE_SECONDS)
-
-		return lang
+	private static preferredLanguage(browser: BrowserService): string | undefined {
+		return browser.preferredLanguages
+			.flatMap((language) => [language, language.split('-')[0]])
+			.find((candidate) => RegistryConfig.supportedLanguage(candidate) !== undefined);
 	}
 
 	private static buildTranslocoConfig(browser: BrowserService): TranslocoConfig {
@@ -123,7 +139,7 @@ export class RegistryConfig {
 			fallbackLang: RegistryConfig.config.defaultLanguage,
 			reRenderOnLangChange: true,
 			prodMode: RegistryConfig.environment.production,
-		})
+		});
 	}
 
 	public static provideTranslatorService(): (Provider | EnvironmentProviders)[] {
@@ -131,23 +147,23 @@ export class RegistryConfig {
 			provideTransloco({ config: {}, loader: RegistryTranslationLoader }),
 			{
 				provide: TRANSLOCO_CONFIG,
-				useFactory: (): TranslocoConfig => RegistryConfig.buildTranslocoConfig(inject(BrowserService))
+				useFactory: () => RegistryConfig.buildTranslocoConfig(inject(BrowserService)),
 			},
-			provideAppInitializer(async (): Promise<void> => {
-				const injector: Injector = inject(Injector)
-				await RegistryConfig.loadOrFail()
-				const translateService: TranslocoService = injector.get(TranslocoService)
+			provideAppInitializer(async () => {
+				const injector = inject(Injector);
+				await RegistryConfig.loadOrFail();
+				const translateService = injector.get(TranslocoService);
 
-				const activeLang: string = translateService.getActiveLang()
-				injector.get(BrowserService).setRootLanguage(activeLang)
+				const activeLang = translateService.getActiveLang();
+				injector.get(BrowserService).setRootLanguage(activeLang);
 
 				try {
-					await firstValueFrom(translateService.load(activeLang))
+					await firstValueFrom(translateService.load(activeLang));
 				} catch (error: unknown) {
-					RegistryConfig.startupError ??= error
+					RegistryConfig.startupError ??= error;
 				}
-				RegistryConfig.reportStartupFailure(injector)
+				RegistryConfig.reportStartupFailure(injector);
 			}),
-		]
+		];
 	}
 }

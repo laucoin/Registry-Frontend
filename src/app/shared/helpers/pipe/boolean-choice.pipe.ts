@@ -1,5 +1,6 @@
-import { Pipe, PipeTransform } from '@angular/core'
-import { toBooleanChoice, BooleanChoice } from '@shared/helpers/form/boolean-choice'
+import { Pipe, PipeTransform } from '@angular/core';
+
+import { BooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice';
 
 /**
  * Purpose: Donne la valeur de l'option de select d'un filtre booléen.
@@ -8,7 +9,7 @@ import { toBooleanChoice, BooleanChoice } from '@shared/helpers/form/boolean-cho
  */
 @Pipe({ name: 'booleanChoice', standalone: true })
 export class BooleanChoicePipe implements PipeTransform {
-    public transform(value: boolean | undefined): BooleanChoice {
-        return toBooleanChoice(value)
-    }
+	public transform(value: boolean | undefined): BooleanChoice {
+		return toBooleanChoice(value);
+	}
 }

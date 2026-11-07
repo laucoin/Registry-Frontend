@@ -1,4 +1,4 @@
-import { NgTemplateOutlet } from '@angular/common'
+import { NgTemplateOutlet } from '@angular/common';
 import {
 	Component,
 	computed,
@@ -11,29 +11,32 @@ import {
 	OutputEmitterRef,
 	Signal,
 	TemplateRef,
-} from '@angular/core'
-import { UiFacade } from '@core/registry/state/ui.facade'
-import { TranslocoPipe } from '@jsverse/transloco'
-import '@sgdf/ui/accordion'
-import '@sgdf/ui/accordion-item'
-import '@sgdf/ui/button'
-import '@sgdf/ui/callout'
-import '@sgdf/ui/list'
-import '@sgdf/ui/list-item'
-import '@sgdf/ui/skeleton'
-import '@sgdf/ui/tag'
-import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
-import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
-import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
-import { GenericModel } from '@shared/models/model/generic.model'
-import { NotificationModel } from '@shared/models/model/notification.model'
-import { PageEventModel } from '@shared/models/model/page-event.model'
-import { PageModel } from '@shared/models/model/page.model'
-import { LoadMoreComponent } from '@shared/ui/common/load-more/load-more.component'
-import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
-import { SkeletonListComponent } from '@shared/ui/common/skeleton-list/skeleton-list.component'
+} from '@angular/core';
 
-const DEFAULT_PAGE_SIZE: number = 20
+import { TranslocoPipe } from '@jsverse/transloco';
+
+import { UiFacade } from '@core/registry/state/ui.facade';
+import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive';
+import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe';
+import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper';
+import { GenericModel } from '@shared/models/model/generic.model';
+import { NotificationModel } from '@shared/models/model/notification.model';
+import { PageModel } from '@shared/models/model/page.model';
+import { PageEventModel } from '@shared/models/model/page-event.model';
+import { LoadMoreComponent } from '@shared/ui/common/load-more/load-more.component';
+import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component';
+import { SkeletonListComponent } from '@shared/ui/common/skeleton-list/skeleton-list.component';
+
+import '@sgdf/ui/accordion';
+import '@sgdf/ui/accordion-item';
+import '@sgdf/ui/button';
+import '@sgdf/ui/callout';
+import '@sgdf/ui/list';
+import '@sgdf/ui/list-item';
+import '@sgdf/ui/skeleton';
+import '@sgdf/ui/tag';
+
+const DEFAULT_PAGE_SIZE = 20;
 
 /**
  * Purpose: Affiche une liste d'éléments chargée paresseusement avec sa zone de recherche, ses états de chargement, d'erreur et de vide et un déclencheur « charger plus ».
@@ -42,41 +45,50 @@ const DEFAULT_PAGE_SIZE: number = 20
  */
 @Component({
 	selector: 'app-list',
-	imports: [NgTemplateOutlet, SkeletonListComponent, TranslocoPipe, DateFormatPipe, SectionErrorComponent, LoadMoreComponent],
+	imports: [
+		NgTemplateOutlet,
+		SkeletonListComponent,
+		TranslocoPipe,
+		DateFormatPipe,
+		SectionErrorComponent,
+		LoadMoreComponent,
+	],
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	templateUrl: './list.component.html',
 })
 export class ListComponent<T extends GenericModel> {
-	private readonly templates: Signal<readonly RegistryTemplateDirective[]> = contentChildren(RegistryTemplateDirective)
-	private readonly uiFacade: UiFacade = inject(UiFacade)
+	private readonly templates = contentChildren(RegistryTemplateDirective);
+	private readonly uiFacade = inject(UiFacade);
 
-	public readonly elementPage: InputSignal<PageModel<T> | undefined> = input.required()
-	public readonly loading: InputSignal<boolean> = input.required()
-	public readonly error: InputSignal<NotificationModel | undefined> = input.required()
-	public readonly loadingMore: InputSignal<boolean> = input(false)
-	public readonly activeFilters: InputSignal<number> = input(0)
-	public readonly emptyMessagePrefix: InputSignal<string> = input('global.notifications.EMPTY')
-	public readonly label: InputSignal<string | undefined> = input()
+	public readonly elementPage: InputSignal<PageModel<T> | undefined> = input.required();
+	public readonly loading: InputSignal<boolean> = input.required();
+	public readonly error: InputSignal<NotificationModel | undefined> = input.required();
+	public readonly loadingMore = input(false);
+	public readonly activeFilters = input(0);
+	public readonly emptyMessagePrefix = input('global.notifications.EMPTY');
+	public readonly label: InputSignal<string | undefined> = input();
 
-	public readonly updateRequired: OutputEmitterRef<PageEventModel> = output()
-	public readonly filtersReset: OutputEmitterRef<void> = output()
+	public readonly updateRequired: OutputEmitterRef<PageEventModel> = output();
+	public readonly filtersReset = output();
 
-	protected readonly searchExpanded: Signal<boolean> = computed((): boolean => !this.uiFacade.tinyScreen())
-	protected readonly size: Signal<number> = computed((): number => this.elementPage()?.size ?? DEFAULT_PAGE_SIZE)
-	protected readonly hasMore: Signal<boolean> = computed((): boolean => CumulativePageHelper.hasMore(this.elementPage()))
-	protected readonly isEmpty: Signal<boolean> = computed((): boolean => this.elementPage()?.content.length === 0 && !this.loading())
-	protected readonly showSkeleton: Signal<boolean> = computed((): boolean => this.loading() && !this.elementPage()?.content.length)
+	protected readonly searchExpanded = computed(() => !this.uiFacade.tinyScreen());
+	protected readonly size: Signal<number> = computed((): number => this.elementPage()?.size ?? DEFAULT_PAGE_SIZE);
+	protected readonly hasMore = computed(() => CumulativePageHelper.hasMore(this.elementPage()));
+	protected readonly isEmpty = computed(() => this.elementPage()?.content.length === 0 && !this.loading());
+	protected readonly showSkeleton: Signal<boolean> = computed(
+		(): boolean => this.loading() && !this.elementPage()?.content.length,
+	);
 
 	protected loadMore(): void {
-		this.updateRequired.emit({ page: (this.elementPage()?.page ?? -1) + 1, size: this.size() })
+		this.updateRequired.emit({ page: (this.elementPage()?.page ?? -1) + 1, size: this.size() });
 	}
 
 	protected retry(): void {
-		const shown: PageModel<T> | undefined = this.elementPage()
-		this.updateRequired.emit({ page: shown ? shown.page + 1 : 0, size: this.size() })
+		const shown: PageModel<T> | undefined = this.elementPage();
+		this.updateRequired.emit({ page: shown ? shown.page + 1 : 0, size: this.size() });
 	}
 
 	protected getTemplate(name: string): TemplateRef<unknown> | null {
-		return this.templates().find((template: RegistryTemplateDirective): boolean => template.appTemplate() === name)?.template ?? null
+		return this.templates().find((template) => template.appTemplate() === name)?.template ?? null;
 	}
 }

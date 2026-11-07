@@ -1,43 +1,49 @@
-import { NotificationModel } from '@shared/models/model/notification.model'
-import { describe, it, expect } from 'vitest'
-import { PageStateHelper } from './page-state.helper'
-import { ErrorModel } from '@shared/models/model/error.model'
-import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
-import { GenericModel } from '@shared/models/model/generic.model'
+import { describe, expect, it } from 'vitest';
 
-describe( 'PageStateHelper', () => {
-    it( 'builds an idle initial block', () => {
-        // Arrange
-        const params: { a: number } = { a: 1 }
+import { ErrorModel } from '@shared/models/model/error.model';
+import { GenericModel } from '@shared/models/model/generic.model';
 
-        // Act
-        const block: PageRequestInformationModel<{ a: number }, GenericModel> = PageStateHelper.initial<{ a: number }, GenericModel>( params )
+import { PageStateHelper } from './page-state.helper';
 
-        // Assert
-        expect( block ).toEqual( { element: undefined, params: params, loading: false, silentLoading: false, error: undefined } )
-    } )
+describe('PageStateHelper', () => {
+	it('builds an idle initial block', () => {
+		// Arrange
+		const params = { a: 1 };
 
-    it( 'sets an error toast without touching the rest', () => {
-        // Arrange
-        const block: PageRequestInformationModel<object, GenericModel> = PageStateHelper.initial<object, GenericModel>( {} )
-        const error: ErrorModel = { title: 'T', message: 'M', status: 500 } as ErrorModel
+		// Act
+		const block = PageStateHelper.initial<{ a: number }, GenericModel>(params);
 
-        // Act
-        const result: PageRequestInformationModel<object, GenericModel> = PageStateHelper.withError( block, error )
+		// Assert
+		expect(block).toEqual({
+			element: undefined,
+			params: params,
+			loading: false,
+			silentLoading: false,
+			error: undefined,
+		});
+	});
 
-        // Assert
-        expect( result.error?.summary ).toBe( 'T' )
-        expect( result.loading ).toBe( false )
-    } )
+	it('sets an error toast without touching the rest', () => {
+		// Arrange
+		const block = PageStateHelper.initial<object, GenericModel>({});
+		const error = { title: 'T', message: 'M', status: 500 } as ErrorModel;
 
-    it( 'turns a backend error into the notification a section shows', () => {
-        // Arrange
-        const error: ErrorModel = { title: 'T', message: 'M', status: 503 } as ErrorModel
+		// Act
+		const result = PageStateHelper.withError(block, error);
 
-        // Act
-        const notification: NotificationModel = PageStateHelper.toNotification( error )
+		// Assert
+		expect(result.error?.summary).toBe('T');
+		expect(result.loading).toBe(false);
+	});
 
-        // Assert
-        expect( notification ).toEqual( expect.objectContaining( { severity: 'error', summary: 'T', detail: 'M' } ) )
-    } )
-} )
+	it('turns a backend error into the notification a section shows', () => {
+		// Arrange
+		const error = { title: 'T', message: 'M', status: 503 } as ErrorModel;
+
+		// Act
+		const notification = PageStateHelper.toNotification(error);
+
+		// Assert
+		expect(notification).toEqual(expect.objectContaining({ severity: 'error', summary: 'T', detail: 'M' }));
+	});
+});

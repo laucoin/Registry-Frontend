@@ -1,19 +1,20 @@
-import { describe, expect, it, Mock, vi } from 'vitest'
-import { ProfileResetService } from './profile-reset.service'
+import { describe, expect, it, Mock, vi } from 'vitest';
 
-describe( 'ProfileResetService', () => {
-    it( 'runs registered resets until unregistered', () => {
-        // Arrange
-        const service: ProfileResetService = new ProfileResetService()
-        const reset: Mock<() => void> = vi.fn()
-        const unregister: () => void = service.register( reset )
+import { ProfileResetService } from './profile-reset.service';
 
-        // Act
-        service.resetAll()
-        unregister()
-        service.resetAll()
+describe('ProfileResetService', () => {
+	it('runs registered resets until unregistered', () => {
+		// Arrange
+		const service = new ProfileResetService();
+		const reset: Mock<() => void> = vi.fn();
+		const unregister = service.register(reset);
 
-        // Assert
-        expect( reset ).toHaveBeenCalledTimes( 1 )
-    } )
-} )
+		// Act
+		service.resetAll();
+		unregister();
+		service.resetAll();
+
+		// Assert
+		expect(reset).toHaveBeenCalledTimes(1);
+	});
+});

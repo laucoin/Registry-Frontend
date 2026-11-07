@@ -1,206 +1,219 @@
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, model, ModelSignal, Signal, signal, WritableSignal } from '@angular/core'
-import { FieldTree, FormField } from '@angular/forms/signals'
-import { TranslocoPipe } from '@jsverse/transloco'
-import '@sgdf/ui/button'
-import '@sgdf/ui/card'
-import '@sgdf/ui/date-time-picker'
-import '@sgdf/ui/divider'
-import '@sgdf/ui/icon'
-import '@sgdf/ui/icon-button'
-import '@sgdf/ui/input'
-import '@sgdf/ui/option'
-import '@sgdf/ui/select'
-import '@sgdf/ui/step'
-import '@sgdf/ui/stepper'
-import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
-import { GuestMovementDto } from '@pages/projects/[projectId]/movements/data/dto/guest-movement.dto'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, model, signal, WritableSignal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormField } from '@angular/forms/signals';
+
+import { TranslocoPipe } from '@jsverse/transloco';
+
+import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade';
 import {
-    contentOfChoice,
-    reasonChoices,
-    reasonKeyOf,
-} from '@pages/projects/[projectId]/movements/movement-form/shared/movement-form.shared'
+	createGuestMovementForm,
+	emptyGuest,
+	emptyGuestMovementFormModel,
+	GuestMovementFormModel,
+	isArrival,
+	toGuestMovementDto,
+	toGuestMovementFormModel,
+	withGuestPrefill,
+	withGuestType,
+} from '@pages/projects/[projectId]/movements/movement-form/guest/guest-movement.form';
 import {
-    createGuestMovementForm,
-    emptyGuest,
-    emptyGuestMovementFormModel,
-    GuestMovementFormModel,
-    isArrival,
-    MovementGuestModel,
-    toGuestMovementDto,
-    toGuestMovementFormModel,
-    withGuestPrefill,
-    withGuestType,
-} from '@pages/projects/[projectId]/movements/movement-form/guest/guest-movement.form'
-import { MovementPrefillService } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-prefill.service'
-import { MovementPrefillModel } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-prefill.model'
-import { FieldErrorDirective } from '@shared/directives/field-error.directive'
-import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
-import { ETagHelper } from '@shared/helpers/etag.helper'
-import { EventHelper } from '@shared/helpers/event.helper'
-import { GenericHelper } from '@shared/helpers/generic.helper'
-import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
-import { FormButtonPipe } from '@shared/helpers/pipe/form-button.pipe'
-import { FormTitlePipe } from '@shared/helpers/pipe/form-title.pipe'
-import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
-import { withLoading } from '@shared/helpers/rx.helper'
-import { ParticipantHelper } from '@shared/helpers/participant.helper'
-import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
-import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
-import { GroupModel } from '@shared/models/model/group.model'
-import { MovementContentModel } from '@shared/models/model/movement-content.model'
-import { MovementReasonModel } from '@shared/models/model/movement-reason.model'
-import { MovementModel } from '@shared/models/model/movement.model'
-import { ParticipantModel } from '@shared/models/model/participant.model'
-import { ProjectModel } from '@shared/models/model/project.model'
-import { SelectOptionGroupModel, SelectOptionModel } from '@shared/models/model/select-option.model'
-import { BaseFormComponent } from '@shared/ui/base/base-form.component'
-import { FieldErrorComponent } from '@shared/ui/common/field-error/field-error.component'
-import { FormComponent } from '@shared/ui/common/form/form.component'
-import { SelectElementsFieldComponent } from '@shared/ui/common/select-elements-field/select-elements-field.component'
+	contentOfChoice,
+	reasonChoices,
+	reasonKeyOf,
+} from '@pages/projects/[projectId]/movements/movement-form/shared/movement-form.shared';
+import { MovementPrefillService } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-prefill.service';
+import { FieldErrorDirective } from '@shared/directives/field-error.directive';
+import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive';
+import { ETagHelper } from '@shared/helpers/etag.helper';
+import { EventHelper } from '@shared/helpers/event.helper';
+import { GenericHelper } from '@shared/helpers/generic.helper';
+import { ParticipantHelper } from '@shared/helpers/participant.helper';
+import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe';
+import { FormButtonPipe } from '@shared/helpers/pipe/form-button.pipe';
+import { FormTitlePipe } from '@shared/helpers/pipe/form-title.pipe';
+import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe';
+import { withLoading } from '@shared/helpers/rx.helper';
+import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum';
+import { MovementModel } from '@shared/models/model/movement.model';
+import { MovementContentModel } from '@shared/models/model/movement-content.model';
+import { ParticipantModel } from '@shared/models/model/participant.model';
+import { ProjectModel } from '@shared/models/model/project.model';
+import { SelectOptionModel } from '@shared/models/model/select-option.model';
+import { BaseFormComponent } from '@shared/ui/base/base-form.component';
+import { FieldErrorComponent } from '@shared/ui/common/field-error/field-error.component';
+import { FormComponent } from '@shared/ui/common/form/form.component';
+import { SelectElementsFieldComponent } from '@shared/ui/common/select-elements-field/select-elements-field.component';
+
+import '@sgdf/ui/button';
+import '@sgdf/ui/card';
+import '@sgdf/ui/date-time-picker';
+import '@sgdf/ui/divider';
+import '@sgdf/ui/icon';
+import '@sgdf/ui/icon-button';
+import '@sgdf/ui/input';
+import '@sgdf/ui/option';
+import '@sgdf/ui/select';
+import '@sgdf/ui/step';
+import '@sgdf/ui/stepper';
 
 /**
  * Purpose: Page avec le formulaire de création ou d'édition d'un mouvement d'invités.
  * Scope: Parcourt les étapes d'information et de contenu, enregistre les invités qui arrivent ou sélectionne ceux qui partent, soumet via la facade et navigue en arrière.
  * Limits: Ne détient aucun état de domaine, n'appelle jamais le backend et n'a pas d'étape véhicule.
  */
-@Component( {
-    selector: 'app-guest-movement-form',
-    imports: [
-        FormComponent,
-        FormField,
-        FieldErrorComponent,
-        FieldErrorDirective,
-        SgdfFieldDirective,
-        SelectElementsFieldComponent,
-        TranslocoPipe,
-        DateFormatPipe,
-        FormTitlePipe,
-        FormButtonPipe,
-        PluralTranslationPipe,
-    ],
-    schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
-    templateUrl: './guest-movement-form.page.html',
-} )
+@Component({
+	selector: 'app-guest-movement-form',
+	imports: [
+		FormComponent,
+		FormField,
+		FieldErrorComponent,
+		FieldErrorDirective,
+		SgdfFieldDirective,
+		SelectElementsFieldComponent,
+		TranslocoPipe,
+		DateFormatPipe,
+		FormTitlePipe,
+		FormButtonPipe,
+		PluralTranslationPipe,
+	],
+	schemas: [CUSTOM_ELEMENTS_SCHEMA],
+	templateUrl: './guest-movement-form.page.html',
+})
 export class GuestMovementFormPage extends BaseFormComponent {
-    protected readonly facade: MovementFacade = inject( MovementFacade )
-    private readonly prefillService: MovementPrefillService = inject( MovementPrefillService )
+	protected readonly facade = inject(MovementFacade);
+	private readonly prefillService = inject(MovementPrefillService);
 
-    protected readonly now: Date = new Date()
-    protected readonly movement: WritableSignal<MovementModel | undefined> = signal( undefined )
-    protected readonly contextProject: WritableSignal<ProjectModel | undefined> = signal( undefined )
-    protected readonly model: WritableSignal<GuestMovementFormModel> = signal( emptyGuestMovementFormModel( this.now ) )
-    protected readonly form: FieldTree<GuestMovementFormModel> = createGuestMovementForm( this.model, {
-        project: this.contextProject,
-        formatDate: (date: CustomDatetimeModel): string | undefined => this.datePipe.transform( date ),
-        editing: (): boolean => GenericHelper.nonNull( this.idParam ),
-    } )
+	protected readonly now = new Date();
+	protected readonly movement: WritableSignal<MovementModel | undefined> = signal(undefined);
+	protected readonly contextProject: WritableSignal<ProjectModel | undefined> = signal(undefined);
+	protected readonly model = signal(emptyGuestMovementFormModel(this.now));
+	protected readonly form = createGuestMovementForm(this.model, {
+		project: this.contextProject,
+		formatDate: (date) => this.datePipe.transform(date),
+		editing: () => GenericHelper.nonNull(this.idParam),
+	});
 
-    protected readonly activeTab: ModelSignal<number> = model<number>( 1 )
+	protected readonly activeTab = model<number>(1);
 
-    protected readonly arrival: Signal<boolean> = computed( (): boolean => isArrival( this.model().information ) )
-    protected readonly reasonOptions: Signal<MovementReasonModel[]> = computed(
-        (): MovementReasonModel[] => reasonChoices( this.facade.searchedReasonAndActivityMetadata(), this.model().content.reason ),
-    )
-    protected readonly suggestions: Signal<SelectOptionModel<ParticipantModel | GroupModel>[]> = computed(
-        (): SelectOptionModel<ParticipantModel | GroupModel>[] => this.facade.searchedParticipantAndGroupMetadata()
-            .flatMap( (group: SelectOptionGroupModel<ParticipantModel | GroupModel>): SelectOptionModel<ParticipantModel | GroupModel>[] => group.items )
-            .filter( (option: SelectOptionModel<ParticipantModel | GroupModel>): boolean => !('name' in option.value) ),
-    )
+	protected readonly arrival = computed(() => isArrival(this.model().information));
+	protected readonly reasonOptions = computed(() =>
+		reasonChoices(this.facade.searchedReasonAndActivityMetadata(), this.model().content.reason),
+	);
+	protected readonly suggestions = computed(() =>
+		this.facade
+			.searchedParticipantAndGroupMetadata()
+			.flatMap((group) => group.items)
+			.filter((option) => !('name' in option.value)),
+	);
 
-    protected readonly reasonKeyOf: typeof reasonKeyOf = reasonKeyOf
-    protected readonly contentOfChoice: (chosen: ParticipantModel | GroupModel) => MovementContentModel[] = contentOfChoice
-    protected readonly identifyContent: (content: MovementContentModel) => string = (content: MovementContentModel): string => content.participant.id
-    protected readonly contentLabel: (content: MovementContentModel) => SelectOptionModel<ParticipantModel> =
-        (content: MovementContentModel): SelectOptionModel<ParticipantModel> => ParticipantHelper.toSelectItem( content.participant )
+	protected readonly reasonKeyOf = reasonKeyOf;
+	protected readonly contentOfChoice = contentOfChoice;
+	protected readonly identifyContent: (content: MovementContentModel) => string = (content) => content.participant.id;
+	protected readonly contentLabel: (content: MovementContentModel) => SelectOptionModel<ParticipantModel> = (
+		content,
+	) => ParticipantHelper.toSelectItem(content.participant);
 
-    public constructor () {
-        super()
+	constructor() {
+		super();
 
-        this.loadData()
+		this.loadData();
 
-        this.handleLoadedElement()
-    }
+		this.handleLoadedElement();
+	}
 
-    protected override loadData (): void {
-        if (GenericHelper.nonNull( this.idParam )) {
-            this.facade.fetchMovement( this.idParam! ).pipe(
-                    withLoading( this.loading ),
-                ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe( (movement: MovementModel): void => {
-                    this.movement.set( movement )
-                    this.applyMovement( movement )
-                } )
-        }
-    }
+	protected override loadData(): void {
+		if (GenericHelper.nonNull(this.idParam)) {
+			this.facade
+				.fetchMovement(this.idParam)
+				.pipe(withLoading(this.loading))
+				.pipe(takeUntilDestroyed(this.destroyRef))
+				.subscribe((movement) => {
+					this.movement.set(movement);
+					this.applyMovement(movement);
+				});
+		}
+	}
 
-    protected handleLoadedElement (): void {
-        if (!GenericHelper.nonNull( this.idParam )) this.applyMovement( undefined )
-    }
+	protected handleLoadedElement(): void {
+		if (!GenericHelper.nonNull(this.idParam)) this.applyMovement(undefined);
+	}
 
-    private applyMovement (movement: MovementModel | undefined): void {
-        this.contextProject.set( this.sessionFacade.selectedProject() )
-        if (movement) this.model.set( toGuestMovementFormModel( movement ) )
-        else this.applyPrefill()
-    }
+	private applyMovement(movement: MovementModel | undefined): void {
+		this.contextProject.set(this.sessionFacade.selectedProject());
+		if (movement) this.model.set(toGuestMovementFormModel(movement));
+		else this.applyPrefill();
+	}
 
-    private applyPrefill (): void {
-        const prefill: MovementPrefillModel | undefined = this.prefillService.read()
-        if (!prefill) return
-        this.model.update( (current: GuestMovementFormModel): GuestMovementFormModel => withGuestPrefill( current, prefill ) )
-        this.goTo( 2 )
-    }
+	private applyPrefill(): void {
+		const prefill = this.prefillService.read();
+		if (!prefill) return;
+		this.model.update((current) => withGuestPrefill(current, prefill));
+		this.goTo(2);
+	}
 
-    protected handleTypeChange (event: Event): void {
-        this.model.update( (current: GuestMovementFormModel): GuestMovementFormModel => withGuestType( current, EventHelper.valueOf( event ) ) )
-    }
+	protected handleTypeChange(event: Event): void {
+		this.model.update((current) => withGuestType(current, EventHelper.valueOf(event)));
+	}
 
-    protected handleReasonChoice (event: Event): void {
-        const reason: MovementReasonModel | null = this.reasonOptions().find( (option: MovementReasonModel): boolean => reasonKeyOf( option ) === EventHelper.valueOf( event ) ) ?? null
-        this.model.update( (current: GuestMovementFormModel): GuestMovementFormModel => ({ ...current, content: { ...current.content, reason } }) )
-    }
+	protected handleReasonChoice(event: Event): void {
+		const reason =
+			this.reasonOptions().find((option) => reasonKeyOf(option) === EventHelper.valueOf(event)) ?? null;
+		this.model.update((current): GuestMovementFormModel => ({
+			...current,
+			content: { ...current.content, reason },
+		}));
+	}
 
-    protected handleReasonSearch (query: string): void {
-        this.facade.searchReasonsAndActivities( query, this.model().information.type, ParticipantTypeEnum.GUEST )
-    }
+	protected handleReasonSearch(query: string): void {
+		this.facade.searchReasonsAndActivities(query, this.model().information.type, ParticipantTypeEnum.GUEST);
+	}
 
-    protected handleGuestsSearch (searched: { query: string }): void {
-        this.facade.searchParticipantsAndGroups( ParticipantTypeEnum.GUEST, searched.query, this.model().information.dateTime ?? new Date() )
-    }
+	protected handleGuestsSearch(searched: { query: string }): void {
+		this.facade.searchParticipantsAndGroups(
+			ParticipantTypeEnum.GUEST,
+			searched.query,
+			this.model().information.dateTime ?? new Date(),
+		);
+	}
 
-    protected addGuest (): void {
-        this.model.update( (current: GuestMovementFormModel): GuestMovementFormModel => ({
-            ...current,
-            content: { ...current.content, guests: [ ...current.content.guests, emptyGuest() ] },
-        }) )
-    }
+	protected addGuest(): void {
+		this.model.update((current): GuestMovementFormModel => ({
+			...current,
+			content: { ...current.content, guests: [...current.content.guests, emptyGuest()] },
+		}));
+	}
 
-    protected removeGuest (index: number): void {
-        this.model.update( (current: GuestMovementFormModel): GuestMovementFormModel => ({
-            ...current,
-            content: { ...current.content, guests: current.content.guests.filter( (_: MovementGuestModel, position: number): boolean => position !== index ) },
-        }) )
-    }
+	protected removeGuest(index: number): void {
+		this.model.update((current): GuestMovementFormModel => ({
+			...current,
+			content: {
+				...current.content,
+				guests: current.content.guests.filter((_, position) => position !== index),
+			},
+		}));
+	}
 
-    protected goTo (step: number): void {
-        this.activeTab.set( step )
-    }
+	protected goTo(step: number): void {
+		this.activeTab.set(step);
+	}
 
-    protected nextFromInformation (): void {
-        if (this.isFormValid( this.form.information )) this.goTo( 2 )
-    }
+	protected nextFromInformation(): void {
+		if (this.isFormValid(this.form.information)) this.goTo(2);
+	}
 
-    protected submit (): void {
-        if (this.saving() || this.loading()) return
-        if (GenericHelper.nonNull( this.idParam ) && !this.movement()) return
-        if (!this.isFormValid( this.form )) {
-            return
-        }
-        const dto: GuestMovementDto = toGuestMovementDto( this.model() )
-        const current: MovementModel | undefined = this.movement()
-        this.save( current ? this.facade.updateGuestMovement( current.id, dto, ETagHelper.ifMatch( current ) ) : this.facade.createGuestMovement( dto ) )
-    }
+	protected submit(): void {
+		const current: MovementModel | undefined = this.movement();
+		if (!this.canSubmit(current, () => this.isFormValid(this.form))) return;
 
-    protected get idParam (): string | undefined {
-        return this.route.snapshot.params['movementId']
-    }
+		const dto = toGuestMovementDto(this.model());
+		this.save(
+			current
+				? this.facade.updateGuestMovement(current.id, dto, ETagHelper.ifMatch(current))
+				: this.facade.createGuestMovement(dto),
+		);
+	}
+
+	protected get idParam(): string | undefined {
+		return this.route.snapshot.params['movementId'];
+	}
 }
