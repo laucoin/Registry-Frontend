@@ -1,0 +1,62 @@
+import { describe, expect, it } from 'vitest';
+
+import {
+	toGroupsListSearchModel,
+	toGroupsListSearchParams,
+} from '@pages/projects/[projectId]/configuration/groups/groups-list/groups-list.search';
+
+describe('groups-list search mapping', () => {
+	it('turns absent parameters into empty form values', () => {
+		// Arrange
+		const params: Parameters<typeof toGroupsListSearchModel>[0] = {
+			q: undefined,
+			at: undefined,
+			isPresent: undefined,
+			isVisible: undefined,
+			sort: undefined,
+		};
+
+		// Act
+		const model = toGroupsListSearchModel(params);
+
+		// Assert
+		expect(model).toEqual({ q: '', at: null, isPresent: '', isVisible: '', sortBy: '', sortDirection: 'asc' });
+	});
+
+	it('turns the filled parameters into form values and back', () => {
+		// Arrange
+		const when = new Date(2026, 9, 3);
+		const params: Parameters<typeof toGroupsListSearchModel>[0] = {
+			q: 'camp',
+			at: when,
+			isPresent: false,
+			isVisible: false,
+			sort: undefined,
+		};
+
+		// Act
+		const model = toGroupsListSearchModel(params);
+
+		// Assert
+		expect(model.isPresent).toBe('false');
+		expect(toGroupsListSearchParams(model)).toEqual(params);
+	});
+
+	it('turns empty form values into absent parameters', () => {
+		// Arrange
+		const model: ReturnType<typeof toGroupsListSearchModel> = {
+			q: '',
+			at: null,
+			isPresent: '',
+			isVisible: '',
+			sortBy: '',
+			sortDirection: 'asc',
+		};
+
+		// Act
+		const params = toGroupsListSearchParams(model);
+
+		// Assert
+		expect(params).toEqual({ q: undefined, at: undefined, isPresent: undefined, isVisible: undefined });
+	});
+});

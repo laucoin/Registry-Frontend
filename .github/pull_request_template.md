@@ -1,6 +1,6 @@
 ## 📝 Summary
 
-<!-- What does this change do, and why? -->
+<!-- Que fait ce changement, et pourquoi ? -->
 
 ## 🏗️ Type
 
@@ -12,8 +12,8 @@
 
 ## 💥 Breaking changes
 
-<!-- delete if none -->
+<!-- supprimer si aucun -->
 
 ## 💬️ Notes for reviewers
 
-<!-- focus areas, tradeoffs, follow-ups -->
+<!-- points d'attention, compromis, suites -->

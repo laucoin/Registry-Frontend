@@ -1,0 +1,314 @@
+import {
+	Component,
+	computed,
+	CUSTOM_ELEMENTS_SCHEMA,
+	effect,
+	inject,
+	model,
+	Signal,
+	signal,
+	untracked,
+	WritableSignal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormField } from '@angular/forms/signals';
+
+import { TranslocoPipe } from '@jsverse/transloco';
+
+import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade';
+import {
+	createRegisteredMovementForm,
+	driversOf,
+	emptyRegisteredMovementFormModel,
+	isRegisteredReasonRequired,
+	RegisteredMovementFormModel,
+	toRegisteredMovementDto,
+	toRegisteredMovementFormModel,
+	withRegisteredPrefill,
+	withRegisteredType,
+} from '@pages/projects/[projectId]/movements/movement-form/registered/registered-movement.form';
+import {
+	contentOfChoice,
+	interpretedPresence,
+	reasonChoices,
+	reasonKeyOf,
+} from '@pages/projects/[projectId]/movements/movement-form/shared/movement-form.shared';
+import { MovementPrefillService } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-prefill.service';
+import { FieldErrorDirective } from '@shared/directives/field-error.directive';
+import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive';
+import { ETagHelper } from '@shared/helpers/etag.helper';
+import { EventHelper } from '@shared/helpers/event.helper';
+import { FormModelHelper } from '@shared/helpers/form/form-model.helper';
+import { GenericHelper } from '@shared/helpers/generic.helper';
+import { ParticipantHelper } from '@shared/helpers/participant.helper';
+import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe';
+import { FormButtonPipe } from '@shared/helpers/pipe/form-button.pipe';
+import { FormTitlePipe } from '@shared/helpers/pipe/form-title.pipe';
+import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe';
+import { withLoading } from '@shared/helpers/rx.helper';
+import { VehicleHelper } from '@shared/helpers/vehicle.helper';
+import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum';
+import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum';
+import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum';
+import { MovementModel } from '@shared/models/model/movement.model';
+import { MovementContentModel } from '@shared/models/model/movement-content.model';
+import { ParticipantModel } from '@shared/models/model/participant.model';
+import { ProjectModel } from '@shared/models/model/project.model';
+import { SelectOptionModel } from '@shared/models/model/select-option.model';
+import { VehicleModel } from '@shared/models/model/vehicle.model';
+import { BaseFormComponent } from '@shared/ui/base/base-form.component';
+import { FormComponent } from '@shared/ui/common/form/form.component';
+import { SelectElementsFieldComponent } from '@shared/ui/common/select-elements-field/select-elements-field.component';
+
+import '@sgdf/ui/card';
+import '@sgdf/ui/date-time-picker';
+import '@sgdf/ui/divider';
+import '@sgdf/ui/icon';
+import '@sgdf/ui/icon-button';
+import '@sgdf/ui/button';
+import '@sgdf/ui/option';
+import '@sgdf/ui/select';
+import '@sgdf/ui/step';
+import '@sgdf/ui/stepper';
+import '@sgdf/ui/switch';
+import '@sgdf/ui/tag';
+
+/**
+ * Purpose: Page avec le formulaire de création ou d'édition d'un mouvement de participants inscrits.
+ * Scope: Parcourt les étapes d'information, de contenu et de véhicule, soumet via la facade et navigue en arrière.
+ * Limits: Ne détient aucun état de domaine, n'appelle jamais le backend et ne connaît rien des invités.
+ */
+@Component({
+	selector: 'app-registered-movement-form',
+	imports: [
+		FormComponent,
+		FormField,
+		FieldErrorDirective,
+		SgdfFieldDirective,
+		SelectElementsFieldComponent,
+		TranslocoPipe,
+		DateFormatPipe,
+		FormTitlePipe,
+		FormButtonPipe,
+		PluralTranslationPipe,
+	],
+	schemas: [CUSTOM_ELEMENTS_SCHEMA],
+	templateUrl: './registered-movement-form.page.html',
+})
+export class RegisteredMovementFormPage extends BaseFormComponent {
+	protected readonly facade = inject(MovementFacade);
+	private readonly prefillService = inject(MovementPrefillService);
+
+	protected readonly VehicleHelper = VehicleHelper;
+
+	protected readonly now = new Date();
+	protected readonly movement: WritableSignal<MovementModel | undefined> = signal(undefined);
+	protected readonly contextProject: WritableSignal<ProjectModel | undefined> = signal(undefined);
+	protected readonly model = signal(emptyRegisteredMovementFormModel(this.now));
+	protected readonly form = createRegisteredMovementForm(this.model, {
+		project: this.contextProject,
+		formatDate: (date) => this.datePipe.transform(date),
+		editing: () => GenericHelper.nonNull(this.idParam),
+	});
+
+	protected readonly activeTab = model<number>(1);
+	protected readonly allParticipants = signal(false);
+	private lastParticipantsQuery: string | undefined = undefined;
+
+	protected readonly reasonRequired = computed(() => isRegisteredReasonRequired(this.model().information));
+	protected readonly reasonOptions = computed(() =>
+		reasonChoices(this.facade.searchedReasonAndActivityMetadata(), this.model().content.reason),
+	);
+	protected readonly suggestions = computed(() =>
+		this.facade.searchedParticipantAndGroupMetadata().flatMap((group) => group.items),
+	);
+	protected readonly interpretedMovementType = computed(() => interpretedPresence(this.model().information.type));
+	protected readonly drivers = computed(() => driversOf(this.model()));
+	private readonly hasVehicleOption = this.sessionFacade.selectedProjectHasOption(ProjectOptionEnum.VEHICLE);
+	protected readonly vehicleStep: Signal<boolean> = computed(
+		(): boolean =>
+			this.hasVehicleOption() ||
+			(this.movement()?.content.some((content: MovementContentModel) => GenericHelper.nonNull(content.vehicle)) ??
+				false),
+	);
+
+	protected readonly reasonKeyOf = reasonKeyOf;
+	protected readonly contentOfChoice = contentOfChoice;
+	protected readonly identifyContent: (content: MovementContentModel) => string = (content) => content.participant.id;
+	protected readonly groupOfContent: (content: MovementContentModel) => string | undefined = (content) =>
+		content.poolName;
+	protected readonly contentLabel: (content: MovementContentModel) => SelectOptionModel<ParticipantModel> = (
+		content,
+	) => ParticipantHelper.toSelectItem(content.participant);
+	protected readonly groupLabel: (name: string) => string = (name) =>
+		this.translateService.translate('movements.form.content.registered.group', { name });
+	protected readonly participantWarning: (content: MovementContentModel) => string | undefined = (content) =>
+		this.warningOf('participant', content.participant.status?.value);
+
+	constructor() {
+		super();
+
+		this.loadData();
+
+		this.handleLoadedElement();
+
+		effect(() => {
+			const at = this.model().information.dateTime;
+			untracked(() => this.refreshParticipantsOnDateChange(at));
+		});
+	}
+
+	protected override loadData(): void {
+		if (GenericHelper.nonNull(this.idParam)) {
+			this.facade
+				.fetchMovement(this.idParam)
+				.pipe(withLoading(this.loading))
+				.pipe(takeUntilDestroyed(this.destroyRef))
+				.subscribe((movement) => {
+					this.movement.set(movement);
+					this.applyMovement(movement);
+				});
+		}
+	}
+
+	protected handleLoadedElement(): void {
+		if (!GenericHelper.nonNull(this.idParam)) this.applyMovement(undefined);
+	}
+
+	private applyMovement(movement: MovementModel | undefined): void {
+		this.contextProject.set(this.sessionFacade.selectedProject());
+		if (movement) this.model.set(toRegisteredMovementFormModel(movement));
+		else this.applyPrefill();
+	}
+
+	private applyPrefill(): void {
+		const prefill = this.prefillService.read();
+		if (!prefill) return;
+		this.model.update((current) => withRegisteredPrefill(current, prefill));
+		this.goTo(2);
+	}
+
+	protected handleTypeChange(event: Event): void {
+		this.model.update((current) => withRegisteredType(current, EventHelper.valueOf(event)));
+	}
+
+	protected handleReasonChoice(event: Event): void {
+		const reason =
+			this.reasonOptions().find((option) => reasonKeyOf(option) === EventHelper.valueOf(event)) ?? null;
+		this.model.update((current): RegisteredMovementFormModel => ({
+			...current,
+			content: { ...current.content, reason },
+		}));
+	}
+
+	protected handleReasonSearch(query: string): void {
+		this.facade.searchReasonsAndActivities(query, this.model().information.type, ParticipantTypeEnum.REGISTERED);
+	}
+
+	protected handleParticipantsAndGroupsSearch(searched: { query: string }): void {
+		this.lastParticipantsQuery = searched.query;
+		this.searchParticipantsAndGroups();
+	}
+
+	protected handleAllParticipantsChange(event: Event): void {
+		this.allParticipants.set((event.target as HTMLElement & { checked: boolean }).checked);
+		this.searchParticipantsAndGroups();
+	}
+
+	private refreshParticipantsOnDateChange(at: Date | null): void {
+		if (this.lastParticipantsQuery !== undefined) this.searchParticipantsAndGroups(at);
+	}
+
+	private searchParticipantsAndGroups(at: Date | null = this.model().information.dateTime): void {
+		if (at)
+			this.facade.searchParticipantsAndGroups(
+				ParticipantTypeEnum.REGISTERED,
+				this.lastParticipantsQuery,
+				at,
+				this.allParticipants(),
+			);
+	}
+
+	protected handleVehicleSearch(query: string): void {
+		this.facade.searchVehicles(query);
+	}
+
+	protected handleVehicleChoice(event: Event): void {
+		const id = EventHelper.valueOf(event);
+		const vehicle = this.facade.searchedVehicleMetadata().find((option) => option.value.id === id)?.value;
+		if (vehicle) this.addVehicle(vehicle);
+		const input = event.target as HTMLElement & { value: string };
+		input.value = '';
+	}
+
+	protected handleDriverChoice(index: number, event: Event): void {
+		const id = EventHelper.valueOf(event);
+		const driver = this.drivers().find((option) => option.value.id === id)?.value ?? null;
+		this.model.update((current): RegisteredMovementFormModel => ({
+			...current,
+			vehicles: current.vehicles.map((item, position) => (position === index ? { ...item, driver } : item)),
+		}));
+	}
+
+	protected vehicleWarning(vehicle: VehicleModel): string | undefined {
+		return this.warningOf('vehicle', vehicle.status.value);
+	}
+
+	private warningOf(kind: 'participant' | 'vehicle', status: PresenceStatusEnum | undefined): string | undefined {
+		return status !== undefined && this.interpretedMovementType().includes(status)
+			? this.translateService.translate(`movements.form.warning.${kind}.${status}`)
+			: undefined;
+	}
+
+	private addVehicle(vehicle: VehicleModel): void {
+		this.model.update((current): RegisteredMovementFormModel => ({
+			...current,
+			vehicles: [...current.vehicles, { vehicle: FormModelHelper.copy(vehicle), driver: null }],
+		}));
+	}
+
+	protected removeVehicle(index: number): void {
+		this.model.update((current): RegisteredMovementFormModel => ({
+			...current,
+			vehicles: current.vehicles.filter((_, position) => position !== index),
+		}));
+	}
+
+	protected goTo(step: number): void {
+		this.activeTab.set(step);
+	}
+
+	protected nextFromInformation(): void {
+		if (this.isFormValid(this.form.information)) this.goTo(2);
+	}
+
+	protected nextFromContent(): void {
+		if (!this.isFormValid(this.form.content)) return;
+		if (this.vehicleStep()) this.goTo(3);
+		else this.submit();
+	}
+
+	protected submit(): void {
+		const current: MovementModel | undefined = this.movement();
+		if (!this.canSubmit(current, () => this.sectionsValid())) return;
+
+		const dto = toRegisteredMovementDto(this.model());
+		this.save(
+			current
+				? this.facade.updateRegisteredMovement(current.id, dto, ETagHelper.ifMatch(current))
+				: this.facade.createRegisteredMovement(dto),
+		);
+	}
+
+	private sectionsValid(): boolean {
+		return [
+			this.isFormValid(this.form.information),
+			this.isFormValid(this.form.content),
+			this.isFormValid(this.form.vehicles),
+		].every(Boolean);
+	}
+
+	protected get idParam(): string | undefined {
+		return this.route.snapshot.params['movementId'];
+	}
+}

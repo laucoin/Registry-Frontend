@@ -30,7 +30,7 @@ jobs:
       - name: Set up Node (with pnpm store cache)
         uses: actions/setup-node@v4
         with:
-          node-version: "24"
+          node-version: '24'
           cache: pnpm
 
       - name: Install dependencies
@@ -38,6 +38,9 @@ jobs:
 
       - name: Lint
         run: pnpm lint
+
+      - name: Test
+        run: pnpm test:coverage
 
       # Produces dist/browser, which the Dockerfile copies into nginx.
       - name: Build

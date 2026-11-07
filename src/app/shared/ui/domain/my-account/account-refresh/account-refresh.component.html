@@ -1,0 +1,33 @@
+<sgdf-table class="h-full [&::part(grid)]:h-full" appearance="soft">
+	<sgdf-table-row>
+		<sgdf-table-cell header class="flex items-center gap-1">
+			<sgdf-icon name="rotate" library="solid" />
+			<h2>{{ 'myAccount.refresh.title' | transloco }}</h2>
+		</sgdf-table-cell>
+	</sgdf-table-row>
+
+	<sgdf-table-row>
+		<sgdf-table-cell row-header>
+			<sgdf-radio-group
+				data-testid="account-refresh-modes-group"
+				appearance="segmented"
+				without-label
+				[label]="'myAccount.refresh.choose' | transloco"
+				[value]="currentMode()"
+				(change)="select($any($event.target).value)"
+			>
+				@for (choice of choices; track choice.mode) {
+					<sgdf-radio data-testid="account-refresh-mode-radio" [value]="choice.mode">
+						{{ choice.labelKey | transloco }}
+					</sgdf-radio>
+				}
+			</sgdf-radio-group>
+		</sgdf-table-cell>
+	</sgdf-table-row>
+
+	<sgdf-table-row class="h-full">
+		<sgdf-table-cell class="align-bottom text-sm opacity-80">
+			{{ 'myAccount.refresh.hint' | transloco }}
+		</sgdf-table-cell>
+	</sgdf-table-row>
+</sgdf-table>

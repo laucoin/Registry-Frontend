@@ -1,0 +1,351 @@
+import { Signal, signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute, Router } from '@angular/router';
+
+import { TranslocoService } from '@jsverse/transloco';
+import { describe, expect, it, Mock, MockInstance, vi } from 'vitest';
+
+import { SessionFacade } from '@core/registry/state/session.facade';
+import { UiFacade } from '@core/registry/state/ui.facade';
+import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade';
+import { MovementPrefillService } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-prefill.service';
+import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe';
+import { IntervalPipe } from '@shared/helpers/pipe/interval.pipe';
+import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe';
+import { autoMock } from '@shared/helpers/testing/auto-mock';
+import { defined } from '@shared/helpers/testing/defined';
+import { ElementActionModel } from '@shared/models/model/element-action.model';
+import { MovementActions } from '@shared/ui/domain/movement-element/movement-actions.service';
+import { MovementElementComponent } from '@shared/ui/domain/movement-element/movement-element.component';
+
+const ELEMENT: object = {
+	id: 'e1',
+	visible: true,
+	title: 'x',
+	status: { value: 'IN_PROGRESS', label: 'x' },
+	content: [],
+};
+
+function hideEvent(own: boolean): Event {
+	const target = new EventTarget();
+	return Object.defineProperties(new Event('sgdf-hide'), {
+		target: { value: target },
+		currentTarget: { value: own ? target : new EventTarget() },
+	});
+}
+
+describe('MovementElementComponent', () => {
+	let confirm: Mock<(confirmation: { accept: () => void }) => void>;
+	let facade: Record<string, Mock>;
+	let fixture: ComponentFixture<MovementElementComponent>;
+
+	function create(element: object): MovementElementComponent {
+		confirm = vi.fn();
+		facade = autoMock(undefined);
+		TestBed.configureTestingModule({
+			providers: [
+				{ provide: MovementFacade, useValue: facade },
+				{
+					provide: SessionFacade,
+					useValue: {
+						currentUser: signal({
+							id: 'u1',
+							authorities: [
+								'p1_REGISTRY_PROJECT_MOVEMENT_U',
+								'p1_REGISTRY_PROJECT_MOVEMENT_SOFT_DELETE',
+								'p1_REGISTRY_PROJECT_MOVEMENT_RESTORE',
+							],
+						}),
+						selectedProject: signal({ id: 'p1', options: [] }),
+						selectedProjectHasOption: (): Signal<boolean> => signal(false),
+						currentProjectId: signal('p1'),
+					},
+				},
+				{ provide: UiFacade, useValue: { tinyScreen: signal(false), notify: vi.fn(), confirm } },
+				{ provide: TranslocoService, useValue: { translate: (key: string): string => key } },
+				{ provide: Router, useValue: { navigateByUrl: vi.fn(() => Promise.resolve(true)) } },
+				{ provide: ActivatedRoute, useValue: {} },
+				{ provide: PluralTranslationPipe, useValue: { transform: (key: string): string => key } },
+				{ provide: IntervalPipe, useValue: { transform: (): string => '' } },
+				{ provide: DateFormatPipe, useValue: { transform: (): string => '' } },
+			],
+		});
+		TestBed.overrideComponent(MovementElementComponent, {
+			set: { template: '', imports: [], providers: [MovementActions], styleUrl: undefined, styleUrls: [] },
+		});
+		fixture = TestBed.createComponent(MovementElementComponent);
+		fixture.componentRef.setInput('movement', element);
+		return fixture.componentInstance;
+	}
+
+	function labelsOf(component: MovementElementComponent): string[] {
+		const actions = (component as unknown as { actions: () => ElementActionModel[] }).actions();
+		return actions.map((action) => action.id);
+	}
+
+	function actionOf(component: MovementElementComponent, id: string): ElementActionModel {
+		return defined(
+			(component as unknown as { actions: () => ElementActionModel[] })
+				.actions()
+				.find((action) => action.id === id),
+		);
+	}
+
+	it('lists the actions of a visible element in a stable order', () => {
+		// Arrange
+		const component = create(ELEMENT);
+
+		// Act
+		const ids = labelsOf(component);
+
+		// Assert
+		expect(ids).toEqual(['edit', 'softDelete', 'hardDelete']);
+	});
+
+	it('offers restore instead of softDelete for a hidden element', () => {
+		// Arrange
+		const component = create({ ...ELEMENT, visible: false });
+
+		// Act
+		const ids = labelsOf(component);
+
+		// Assert
+		expect(ids).toContain('restore');
+		expect(ids).not.toContain('softDelete');
+	});
+
+	it('disables the host of a hidden element only', () => {
+		// Arrange
+		create({ ...ELEMENT, visible: false });
+
+		// Act
+		fixture.detectChanges();
+		const hiddenDisabled: boolean = fixture.nativeElement.disabled;
+		fixture.componentRef.setInput('movement', ELEMENT);
+		fixture.detectChanges();
+
+		// Assert
+		expect(hiddenDisabled).toBe(true);
+		expect(fixture.nativeElement.disabled).toBe(false);
+	});
+
+	it('asks for a confirmation before deleting, then deletes the element', () => {
+		// Arrange
+		const component = create(ELEMENT);
+
+		// Act
+		actionOf(component, 'hardDelete').run();
+		confirm.mock.calls[0][0].accept();
+
+		// Assert
+		expect(confirm).toHaveBeenCalledTimes(1);
+		expect(facade['hardDeleteMovement']).toHaveBeenCalledTimes(1);
+	});
+
+	it('closes the participantsLayerOpened drawer when the drawer itself asks for it', () => {
+		// Arrange
+		const component = create(ELEMENT);
+		const internals: Record<string, { set: (value: boolean) => void; (): boolean }> = component as never;
+		internals['participantsLayerOpened'].set(true);
+
+		// Act
+		(component as unknown as Record<string, (event: Event) => void>)['closeParticipants'](hideEvent(true));
+
+		// Assert
+		expect(internals['participantsLayerOpened']()).toBe(false);
+	});
+
+	it('keeps the participantsLayerOpened drawer open when a nested element asks to hide', () => {
+		// Arrange
+		const component = create(ELEMENT);
+		const internals: Record<string, { set: (value: boolean) => void; (): boolean }> = component as never;
+		internals['participantsLayerOpened'].set(true);
+
+		// Act
+		(component as unknown as Record<string, (event: Event) => void>)['closeParticipants'](hideEvent(false));
+
+		// Assert
+		expect(internals['participantsLayerOpened']()).toBe(true);
+	});
+
+	it('closes the communicationsLayerOpened drawer when the drawer itself asks for it', () => {
+		// Arrange
+		const component = create(ELEMENT);
+		const internals: Record<string, { set: (value: boolean) => void; (): boolean }> = component as never;
+		internals['communicationsLayerOpened'].set(true);
+
+		// Act
+		(component as unknown as Record<string, (event: Event) => void>)['closeCommunications'](hideEvent(true));
+
+		// Assert
+		expect(internals['communicationsLayerOpened']()).toBe(false);
+	});
+
+	it('keeps the communicationsLayerOpened drawer open when a nested element asks to hide', () => {
+		// Arrange
+		const component = create(ELEMENT);
+		const internals: Record<string, { set: (value: boolean) => void; (): boolean }> = component as never;
+		internals['communicationsLayerOpened'].set(true);
+
+		// Act
+		(component as unknown as Record<string, (event: Event) => void>)['closeCommunications'](hideEvent(false));
+
+		// Assert
+		expect(internals['communicationsLayerOpened']()).toBe(true);
+	});
+
+	it('closes the vehiclesLayerOpened drawer when the drawer itself asks for it', () => {
+		// Arrange
+		const component = create(ELEMENT);
+		const internals: Record<string, { set: (value: boolean) => void; (): boolean }> = component as never;
+		internals['vehiclesLayerOpened'].set(true);
+
+		// Act
+		(component as unknown as Record<string, (event: Event) => void>)['closeVehicles'](hideEvent(true));
+
+		// Assert
+		expect(internals['vehiclesLayerOpened']()).toBe(false);
+	});
+
+	it('keeps the vehiclesLayerOpened drawer open when a nested element asks to hide', () => {
+		// Arrange
+		const component = create(ELEMENT);
+		const internals: Record<string, { set: (value: boolean) => void; (): boolean }> = component as never;
+		internals['vehiclesLayerOpened'].set(true);
+
+		// Act
+		(component as unknown as Record<string, (event: Event) => void>)['closeVehicles'](hideEvent(false));
+
+		// Assert
+		expect(internals['vehiclesLayerOpened']()).toBe(true);
+	});
+
+	it('counts each distinct vehicle of the movement once', () => {
+		// Arrange
+		const content: object[] = [{ vehicle: { id: 'v1' } }, { vehicle: { id: 'v1' } }, { vehicle: { id: 'v2' } }, {}];
+		const component = create({ ...ELEMENT, content });
+
+		// Act
+		const count = (component as unknown as { vehiclesCount: () => number }).vehiclesCount();
+
+		// Assert
+		expect(count).toBe(2);
+	});
+
+	it('counts no vehicle for a movement without content', () => {
+		// Arrange
+		const component = create({ ...ELEMENT, content: [] });
+
+		// Act
+		const count = (component as unknown as { vehiclesCount: () => number }).vehiclesCount();
+
+		// Assert
+		expect(count).toBe(0);
+	});
+
+	function read<T>(component: MovementElementComponent, name: string): T {
+		return (component as unknown as Record<string, () => T>)[name]();
+	}
+
+	it.each([
+		['OUT', 'arrow-up'],
+		['IN', 'arrow-down'],
+	])('shows the %s movement with the %s icon', (value, icon) => {
+		// Arrange
+		const component = create({ ...ELEMENT, type: { value, label: 'Type' } });
+
+		// Act
+		const iconName: string = read(component, 'typeIconName');
+
+		// Assert
+		expect(iconName).toBe(icon);
+	});
+
+	it('appends the reason to the type when the movement has one', () => {
+		// Arrange
+		const component = create({
+			...ELEMENT,
+			type: { value: 'IN', label: 'Arrival' },
+			reason: { label: 'Camp' },
+		});
+
+		// Act
+		const text: string = read(component, 'typeAndReason');
+
+		// Assert
+		expect(text).toBe('Arrival - Camp');
+	});
+
+	it('shows only the type when the movement has no reason', () => {
+		// Arrange
+		const component = create({
+			...ELEMENT,
+			type: { value: 'IN', label: 'Arrival' },
+			reason: undefined,
+		});
+
+		// Act
+		const text: string = read(component, 'typeAndReason');
+
+		// Assert
+		expect(text).toBe('Arrival');
+	});
+
+	it('finds the driver of the shown vehicle and writes the family name in capitals', () => {
+		// Arrange
+		const content: object[] = [
+			{ vehicle: { id: 'v1' }, participant: { firstName: 'Ada', lastName: 'Lovelace' } },
+			{ vehicle: { id: 'v2' }, participant: { firstName: 'Bob', lastName: 'Martin' } },
+		];
+		const component = create({ ...ELEMENT, content });
+		fixture.componentRef.setInput('vehicleId', 'v1');
+
+		// Act
+		const name: string = read(component, 'driverName');
+
+		// Assert
+		expect(name).toBe('Ada LOVELACE');
+		expect(read<number>(component, 'total')).toBe(2);
+	});
+
+	it('has no driver name when no vehicle is shown', () => {
+		// Arrange
+		const component = create({
+			...ELEMENT,
+			content: [{ vehicle: { id: 'v1' }, participant: { firstName: 'Ada', lastName: 'Lovelace' } }],
+		});
+
+		// Act
+		const name: string = read(component, 'driverName');
+
+		// Assert
+		expect(name).toBe('');
+	});
+
+	it('asks the prefill service for the reverse movement of the shown one', () => {
+		// Arrange
+		const component = create(ELEMENT);
+		const openReverse: MockInstance = vi
+			.spyOn((component as unknown as { prefillService: MovementPrefillService }).prefillService, 'openReverse')
+			.mockImplementation((): void => undefined);
+
+		// Act
+		(component as unknown as { reverse: (contents?: unknown[]) => void }).reverse([]);
+
+		// Assert
+		expect(openReverse).toHaveBeenCalledWith(ELEMENT, []);
+	});
+
+	it('has no communication data when the movement is not communicable', () => {
+		// Arrange
+		const component = create({ ...ELEMENT, lastCommunicationDateTime: new Date() });
+
+		// Act
+		const communication: boolean = read(component, 'communication');
+
+		// Assert
+		expect(communication).toBe(false);
+		expect(read<number>(component, 'daysSinceLastCommunication')).toBe(0);
+		expect(read<string | undefined>(component, 'sinceLastCommunication')).toBeUndefined();
+	});
+});

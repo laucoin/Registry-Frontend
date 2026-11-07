@@ -1,0 +1,104 @@
+import { WritableSignal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { ActivatedRoute, convertToParamMap, Params, provideRouter } from '@angular/router';
+
+import { of } from 'rxjs';
+import { beforeEach, describe, expect, it, Mock } from 'vitest';
+
+import { UserFacade } from '@pages/users/data/state/user.facade';
+import { UserActions } from '@pages/users/users-list/user-actions.service';
+import { UsersListPage } from '@pages/users/users-list/users-list.page';
+import { UsersListSearchModel } from '@pages/users/users-list/users-list.search';
+import { autoMock } from '@shared/helpers/testing/auto-mock';
+import { UserModel } from '@shared/models/model/user.model';
+
+interface UsersListApi {
+	model: WritableSignal<UsersListSearchModel>;
+	activeFilters: () => number;
+	fullName: (user: UserModel) => string;
+	initials: (user: UserModel) => string;
+}
+
+describe('UsersListPage', () => {
+	let facade: Record<string, Mock>;
+
+	function create(query: Params = {}): UsersListApi {
+		facade = autoMock();
+		facade['usersPageQueryParam'].mockReturnValue(undefined);
+		facade['actualUsersPageIsVisibleParam'].mockReturnValue(undefined);
+		TestBed.configureTestingModule({
+			providers: [
+				provideRouter([]),
+				...(Object.keys(query).length > 0
+					? [
+							{
+								provide: ActivatedRoute,
+								useValue: {
+									snapshot: { queryParamMap: convertToParamMap(query) },
+									queryParamMap: of(convertToParamMap(query)),
+								},
+							},
+						]
+					: []),
+				{ provide: UserFacade, useValue: facade },
+				{ provide: UserActions, useValue: {} },
+			],
+		});
+		TestBed.overrideComponent(UsersListPage, { set: { template: '', imports: [], providers: [] } });
+		return TestBed.createComponent(UsersListPage).componentInstance as unknown as UsersListApi;
+	}
+
+	beforeEach(() => {
+		TestBed.resetTestingModule();
+	});
+
+	it('starts from the default filters when the url carries none', () => {
+		// Arrange
+		const page = create();
+
+		// Act
+		const model = page.model();
+
+		// Assert
+		expect(model).toEqual({ q: '', isVisible: '', sortBy: '', sortDirection: 'asc' });
+	});
+
+	it('starts from the filters carried by the url', () => {
+		// Arrange
+		// Act
+		const page = create({ q: 'ada', isVisible: 'false' });
+
+		// Assert
+		expect(page.model()).toEqual({ q: 'ada', isVisible: 'false', sortBy: '', sortDirection: 'asc' });
+		expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith('ada', false, undefined);
+		expect(facade['fetchUsersPage']).toHaveBeenCalledWith(undefined, undefined);
+	});
+
+	it('counts the filters applied by the facade', () => {
+		// Arrange
+		const page = create();
+		facade['usersPageQueryParam'].mockReturnValue('ada');
+		facade['actualUsersPageIsVisibleParam'].mockReturnValue(false);
+
+		// Act
+		const count = page.activeFilters();
+
+		// Assert
+		expect(count).toBe(2);
+	});
+
+	it.each([
+		[{ firstName: 'ada', lastName: 'Lovelace', email: 'a@b.c' }, 'ada LOVELACE', 'AL'],
+		[{ firstName: undefined, lastName: undefined, email: 'grace@b.c' }, 'grace@b.c', 'G'],
+	])('shows %j as "%s" with the initials "%s"', (partial: Partial<UserModel>, name, initials) => {
+		// Arrange
+		const page = create();
+		const user = partial as UserModel;
+
+		// Act
+		const result = [page.fullName(user), page.initials(user)];
+
+		// Assert
+		expect(result).toEqual([name, initials]);
+	});
+});

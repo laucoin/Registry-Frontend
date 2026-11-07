@@ -24,7 +24,7 @@ inputs:
   context:
     description: Docker build context
     required: false
-    default: "."
+    default: '.'
   file:
     description: Path to the Dockerfile
     required: false
@@ -32,11 +32,11 @@ inputs:
   push:
     description: Whether to push the built image
     required: false
-    default: "true"
+    default: 'true'
   build-args:
     description: Newline-delimited build args passed to docker build
     required: false
-    default: ""
+    default: ''
 
 runs:
   using: composite

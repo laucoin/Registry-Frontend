@@ -1,0 +1,121 @@
+import { signal, WritableSignal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+
+import { MockBuilder } from 'ng-mocks';
+import { of } from 'rxjs';
+
+import { ProjectApi } from '@core/registry/state/project.api';
+import { UiFacade } from '@core/registry/state/ui.facade';
+import { HomeStore } from '@pages/home/data/state/home.store';
+import { PROJECT_DTO } from '@shared/helpers/testing/response-fixtures';
+import { ProjectMapper } from '@shared/mappers/project.mapper';
+import { ProjectModel } from '@shared/models/model/project.model';
+
+import { HomeFacade } from './home.facade';
+
+function project(id: string, activeAlerts: number | undefined): ProjectModel {
+	return {
+		...ProjectMapper.toModel(PROJECT_DTO),
+		id,
+		counts: {
+			participants: 1,
+			groups: 1,
+			acceptedProfiles: 1,
+			vehicles: undefined,
+			activities: undefined,
+			activeAlerts,
+		},
+	};
+}
+
+describe('HomeFacade', () => {
+	let facade: HomeFacade;
+	let fetchFavorites: ReturnType<typeof vi.fn>;
+	let fetchAttention: ReturnType<typeof vi.fn>;
+	let setFavoriteById: ReturnType<typeof vi.fn>;
+
+	beforeEach(async () => {
+		fetchFavorites = vi.fn();
+		fetchAttention = vi.fn();
+		setFavoriteById = vi.fn().mockReturnValue(of(undefined));
+		const page = (content: ProjectModel[]): WritableSignal<{ content: ProjectModel[]; totalElements: number }> =>
+			signal({ content, totalElements: content.length });
+		await MockBuilder(HomeFacade)
+			.provide({
+				provide: HomeStore,
+				useValue: {
+					favorites: { element: page([project('a', 0)]), loading: signal(false), error: signal(undefined) },
+					attention: {
+						element: page([project('b', 3), project('c', 0), project('d', undefined)]),
+						loading: signal(false),
+						error: signal(undefined),
+					},
+					fetchFavorites,
+					fetchAttention,
+				},
+			})
+			.provide({ provide: ProjectApi, useValue: { setFavoriteById } })
+			.provide({ provide: UiFacade, useValue: { notify: vi.fn() } });
+		facade = TestBed.inject(HomeFacade);
+	});
+
+	it('should keep only the projects with an active alert in the attention list', () => {
+		// Arrange
+
+		// Act
+		const ids = facade.attention().map((item) => item.id);
+
+		// Assert
+		expect(ids).toEqual(['b']);
+	});
+
+	it('should request a small first page of favorites and of alerted projects', () => {
+		// Arrange
+
+		// Act
+		facade.fetchFavorites();
+		facade.fetchAttention();
+
+		// Assert
+		expect(fetchFavorites).toHaveBeenCalledWith({ page: 0, size: 3 });
+		expect(fetchAttention).toHaveBeenCalledWith({ page: 0, size: 5 });
+	});
+
+	it('should remove a favorite then reload the favorites', () => {
+		// Arrange
+		const favorite = project('a', 0);
+
+		// Act
+		facade.removeFavorite(favorite);
+
+		// Assert
+		expect(setFavoriteById).toHaveBeenCalledWith('a', false);
+		expect(fetchFavorites).toHaveBeenCalledTimes(1);
+	});
+
+	it('should refresh silently the first page of favorites and of alerted projects', () => {
+		// Arrange
+		const refreshFavorites: ReturnType<typeof vi.fn> = vi.fn();
+		const refreshAttention: ReturnType<typeof vi.fn> = vi.fn();
+		Object.assign(TestBed.inject(HomeStore), { refreshFavorites, refreshAttention });
+
+		// Act
+		facade.refreshFavorites();
+		facade.refreshAttention();
+
+		// Assert
+		expect(refreshFavorites).toHaveBeenCalledWith({ page: 0, size: 3 });
+		expect(refreshAttention).toHaveBeenCalledWith({ page: 0, size: 5 });
+	});
+
+	it('should expose the number of favorites', () => {
+		// Arrange
+
+		// Act
+		const total = facade.favoritesTotal();
+
+		// Assert
+		expect(total).toBe(1);
+		expect(facade.favorites()).toHaveLength(1);
+	});
+});
