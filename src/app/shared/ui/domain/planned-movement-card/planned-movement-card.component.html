@@ -1,0 +1,50 @@
+<app-widget-card
+	[icon]="icon()"
+	[heading]="titleKey() | transloco"
+	[totalLabel]="
+		total() === undefined ? undefined : (totalKey() | pluralTranslation: total() | transloco: { count: total() })
+	"
+	[state]="state()"
+	[emptyMessage]="emptyKey() | transloco"
+	[error]="error()"
+	[retrying]="loading()"
+	(retry)="retry.emit()"
+>
+	@if (view(); as shown) {
+		<sgdf-list appearance="text" [label]="titleKey() | transloco">
+			@for (row of shown.rows; track row.key) {
+				<sgdf-list-item
+					data-test-id="planned-movement-card-row"
+					[attr.data-id]="row.key"
+					[href]="row.href"
+					(sgdf-navigate)="navigate($event, row.movement)"
+				>
+					<sgdf-avatar slot="start" aria-hidden="true" [variant]="rowVariant()">
+						<sgdf-icon slot="icon" [name]="rowIcon()" library="solid" />
+					</sgdf-avatar>
+					<span data-test-id="planned-movement-card-row-title">{{ row.title }}</span>
+					<span data-test-id="planned-movement-card-row-description" slot="description" class="text-xs">
+						{{ 'projectHome.plannedMovement.people' | pluralTranslation: row.count | transloco: { count: row.count } }}
+						@if (row.detail) {
+							· {{ row.detail }}
+						}
+					</span>
+					@if (row.time) {
+						<strong data-test-id="planned-movement-card-row-time" slot="end" class="text-base">{{
+							row.time | customDateFormat
+						}}</strong>
+					}
+				</sgdf-list-item>
+			}
+		</sgdf-list>
+		@if (shown.remaining > 0) {
+			<p data-test-id="planned-movement-card-more" class="m-0 px-4 pb-3 text-xs opacity-80">
+				{{
+					'projectHome.plannedMovement.more'
+						| pluralTranslation: shown.remaining
+						| transloco: { count: shown.remaining }
+				}}
+			</p>
+		}
+	}
+</app-widget-card>
