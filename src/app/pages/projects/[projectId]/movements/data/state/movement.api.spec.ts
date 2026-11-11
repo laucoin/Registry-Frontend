@@ -139,6 +139,15 @@ const CASES: ApiCase<MovementApi>[] = [
 		verify: (result: unknown, response: unknown) => expect(result).toEqual(response),
 	},
 	{
+		name: 'searches participants and groups without sending a blank text',
+		method: 'GET',
+		url: `${BASE}/search/participants-and-groups?contentType=REGISTERED&at=2026-01-01T10:00:00.000Z&all=false`,
+		call: (api: MovementApi) =>
+			api.searchParticipantsAndGroups('p1', 'REGISTERED' as never, '', new Date('2026-01-01T10:00:00Z'), false),
+		response: { participants: [], groups: [] },
+		verify: (result: unknown, response: unknown) => expect(result).toEqual(response),
+	},
+	{
 		name: 'searches vehicles with a text',
 		method: 'GET',
 		url: `${BASE}/search/vehicles?q=ab`,

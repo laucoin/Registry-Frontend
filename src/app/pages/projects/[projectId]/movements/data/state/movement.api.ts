@@ -9,7 +9,6 @@ import { MovementDto } from '@pages/projects/[projectId]/movements/data/dto/move
 import { GenericProjectApi } from '@shared/helpers/api/generic-project.api';
 import { ArrayHelper } from '@shared/helpers/array.helper';
 import { ETagHelper } from '@shared/helpers/etag.helper';
-import { GenericHelper } from '@shared/helpers/generic.helper';
 import { QueryHelper } from '@shared/helpers/query.helper';
 import { SELECT_PROFILE_PROJECT_ID } from '@shared/helpers/request.helper';
 import { StringHelper } from '@shared/helpers/string.helper';
@@ -194,7 +193,7 @@ export class MovementApi extends GenericProjectApi {
 	): Observable<MovementParticipantsAndGroupsModel> {
 		let params = new HttpParams().set('contentType', type.toString()).set('at', at.toISOString()).set('all', all);
 
-		if (GenericHelper.nonNull(q)) params = params.set('q', q);
+		if (StringHelper.isNotNullNorBlank(q)) params = params.set('q', q);
 
 		return this.http
 			.get<MovementParticipantsAndGroupsResponseDto>(
