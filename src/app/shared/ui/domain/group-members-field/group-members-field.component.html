@@ -10,7 +10,7 @@
 	[suggestions]="suggestions()"
 	[selectItemBuilder]="ParticipantHelper.toSelectItem"
 	[selectionLabel]="'groups.form.members.selected' | pluralTranslation: field()().value() | transloco"
-	[emptyMessage]="'groups.form.members.empty' | transloco"
-	[emptySelectionMessage]="'groups.form.members.empty-search' | transloco"
+	[emptyMessage]="'groups.form.members.empty-search' | transloco"
+	[emptySelectionMessage]="'groups.form.members.empty' | transloco"
 	(handleSearch)="handleSearch($event.query)"
 />

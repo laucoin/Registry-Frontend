@@ -77,4 +77,18 @@ describe('GroupMembersFieldComponent', () => {
 		expect(searched).toEqual(['ad']);
 		expect(field().touched()).toBe(true);
 	});
+
+	it('says no one was found on a search and no one is selected on an empty selection', async () => {
+		// Arrange
+		const harness = await create();
+
+		// Act
+		const selection = await harness.selection();
+
+		// Assert
+		expect([await selection.noResultsLabel(), await selection.emptyMessage()]).toEqual([
+			'groups.form.members.empty-search',
+			'groups.form.members.empty',
+		]);
+	});
 });
