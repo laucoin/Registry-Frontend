@@ -1,0 +1,57 @@
+<form
+	data-test-id="projects-search-fields-search-form"
+	class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-4"
+	(submit)="$event.preventDefault()"
+>
+	<sgdf-input
+		data-test-id="projects-search-fields-q-input"
+		enterkeyhint="search"
+		(keydown.enter)="searched.emit()"
+		(focusout)="searched.emit()"
+		appSgdfField
+		[label]="'projects.search-and-filter.text' | transloco"
+		[formField]="form().q"
+	/>
+	<sgdf-date-time-picker
+		data-test-id="projects-search-fields-at-picker"
+		appSgdfField
+		with-time
+		[label]="'projects.search-and-filter.datetime' | transloco"
+		[formField]="form().at"
+	/>
+	@if (canSeeHidden()) {
+		<sgdf-select
+			data-test-id="projects-search-fields-is-visible-select"
+			appSgdfField
+			[label]="'projects.search-and-filter.visibility' | transloco"
+			[formField]="form().isVisible"
+		>
+			@for (item of facade.visibilitiesMetadata(); track item.label) {
+				<sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+			}
+		</sgdf-select>
+	}
+	<sgdf-select
+		data-test-id="projects-search-fields-is-favorite-select"
+		appSgdfField
+		[label]="'projects.search-and-filter.favorite' | transloco"
+		[formField]="form().isFavorite"
+	>
+		@for (item of facade.favoritesMetadata(); track item.label) {
+			<sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+		}
+	</sgdf-select>
+	@if (canReadAll()) {
+		<sgdf-select
+			data-test-id="projects-search-fields-with-profile-select"
+			appSgdfField
+			[label]="'projects.search-and-filter.with-profile' | transloco"
+			[formField]="form().withProfile"
+		>
+			@for (item of facade.withProfilesMetadata(); track item.label) {
+				<sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+			}
+		</sgdf-select>
+	}
+	<app-sort-fields [sortBy]="form().sortBy" [sortDirection]="form().sortDirection" [fields]="sortFields" />
+</form>

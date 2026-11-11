@@ -1,0 +1,59 @@
+import { describe, expect, it } from 'vitest';
+
+import {
+	toParticipantsListSearchModel,
+	toParticipantsListSearchParams,
+} from '@pages/projects/[projectId]/configuration/participants/participants-list/participants-list.search';
+import { SortDirectionEnum } from '@shared/models/enumeration/sort-direction.enum';
+
+describe('participants-list search mapping', () => {
+	it('turns absent parameters into empty form values', () => {
+		// Arrange
+		const params: Parameters<typeof toParticipantsListSearchModel>[0] = {
+			q: undefined,
+			status: undefined,
+			isVisible: undefined,
+			sort: undefined,
+		};
+
+		// Act
+		const model = toParticipantsListSearchModel(params);
+
+		// Assert
+		expect(model).toEqual({ q: '', status: '', isVisible: '', sortBy: '', sortDirection: SortDirectionEnum.ASC });
+	});
+
+	it('turns the filled parameters into form values and back', () => {
+		// Arrange
+		const params: Parameters<typeof toParticipantsListSearchModel>[0] = {
+			q: 'camp',
+			status: 'IN',
+			isVisible: false,
+			sort: undefined,
+		};
+
+		// Act
+		const model = toParticipantsListSearchModel(params);
+
+		// Assert
+		expect(model.isVisible).toBe('false');
+		expect(toParticipantsListSearchParams(model)).toEqual(params);
+	});
+
+	it('turns empty form values into absent parameters', () => {
+		// Arrange
+		const model: ReturnType<typeof toParticipantsListSearchModel> = {
+			q: '',
+			status: '',
+			isVisible: '',
+			sortBy: '',
+			sortDirection: SortDirectionEnum.ASC,
+		};
+
+		// Act
+		const params = toParticipantsListSearchParams(model);
+
+		// Assert
+		expect(params).toEqual({ q: undefined, status: undefined, isVisible: undefined });
+	});
+});

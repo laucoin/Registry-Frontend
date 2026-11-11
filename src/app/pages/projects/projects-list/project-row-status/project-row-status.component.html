@@ -1,0 +1,61 @@
+<span class="flex flex-wrap items-center gap-2">
+	@if (!project().visible) {
+		<sgdf-tag data-test-id="project-row-status-hidden-tag" appearance="outlined" variant="neutral" pill>{{
+			'projects.visible.false' | transloco
+		}}</sgdf-tag>
+	}
+	@if (project().status; as status) {
+		<sgdf-tag
+			data-test-id="project-row-status-status-tag"
+			appearance="soft"
+			pill
+			[variant]="available() ? 'success' : 'info'"
+			>{{ status.label }}</sgdf-tag
+		>
+	}
+	@if (options().length > 1) {
+		<sgdf-button
+			data-test-id="project-row-status-options-button"
+			size="small"
+			variant="neutral"
+			appearance="outlined"
+			(click)="optionsRequested.emit()"
+		>
+			{{
+				'projects.options'
+					| pluralTranslation: options()
+					| transloco: { name: options()[0].label, others: options().length - 1 }
+			}}
+			<span class="sr-only">({{ 'projects.options-open' | transloco: { name: project().name } }})</span>
+		</sgdf-button>
+	} @else {
+		<sgdf-tag data-test-id="project-row-status-options-tag" appearance="outlined" variant="neutral" pill>
+			{{ 'projects.options' | pluralTranslation: options() | transloco: { name: options()[0]?.label, others: 0 } }}
+		</sgdf-tag>
+	}
+</span>
+<span class="flex items-center gap-2 max-sm:basis-full">
+	@if (projectActions.canJoin(project())) {
+		<sgdf-button
+			data-test-id="project-row-status-select-button"
+			size="small"
+			appearance="outlined"
+			[variant]="project().visible ? 'primary' : 'neutral'"
+			[attr.aria-disabled]="!project().visible"
+			(click)="project().visible ? projectActions.join(project()) : hiddenNoticeRequested.emit()"
+		>
+			{{ 'projects.actions.select' | transloco }}
+		</sgdf-button>
+	} @else if (projectActions.canCreateSupport(project())) {
+		<sgdf-button
+			data-test-id="project-row-status-create-support-button"
+			size="small"
+			appearance="outlined"
+			[variant]="project().visible ? 'primary' : 'neutral'"
+			[attr.aria-disabled]="!project().visible"
+			(click)="project().visible ? projectActions.confirmSupportProfile(project()) : hiddenNoticeRequested.emit()"
+		>
+			{{ 'projects.actions.create-support' | transloco }}
+		</sgdf-button>
+	}
+</span>

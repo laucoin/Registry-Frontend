@@ -1,0 +1,42 @@
+<sgdf-page-title
+	data-test-id="activities-list-title"
+	[eyebrow]="'projectEyebrow.configuration' | transloco"
+	[lede]="'activities.list.subtitle' | transloco"
+>
+	{{ 'activities.list.title' | transloco }}
+	<ng-container *appIfProjectAuthority="createAuthority">
+		<sgdf-button
+			data-test-id="activities-list-create-button"
+			slot="actions"
+			variant="primary"
+			[routerLink]="createRoute"
+			queryParamsHandling="preserve"
+		>
+			<sgdf-icon slot="prefix" name="plus" library="solid" />
+			{{ 'global.actions.create' | transloco }}
+		</sgdf-button>
+	</ng-container>
+</sgdf-page-title>
+
+<app-list
+	data-test-id="activities-list-list"
+	class="mt-(--spacing--block) block"
+	emptyMessagePrefix="activities.notifications.EMPTY"
+	[elementPage]="facade.activitiesPage()"
+	[error]="facade.activitiesPageError()"
+	[loading]="facade.activitiesPageLoading()"
+	[loadingMore]="facade.activitiesPageSilentLoading()"
+	[activeFilters]="activeFilters()"
+	(updateRequired)="loadBatch($event)"
+	(filtersReset)="resetFilters()"
+>
+	<ng-template appTemplate="search">
+		<app-activities-search-fields [form]="form" (searched)="searchQuery.submit()" />
+	</ng-template>
+
+	<ng-template appTemplate="element" let-activity>
+		<sgdf-list-item data-test-id="activity-row" [attr.data-id]="activity.id" appActivityRow [activity]="activity" />
+	</ng-template>
+</app-list>
+
+<router-outlet />

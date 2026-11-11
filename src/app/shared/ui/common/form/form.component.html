@@ -1,0 +1,11 @@
+@if (untouched() && loading()) {
+	<div class="flex justify-center">
+		<sgdf-spinner data-test-id="form-spinner" />
+	</div>
+} @else {
+	@if (title() && showTitle()) {
+		<sgdf-page-title data-test-id="form-title" [title]="title()" />
+	}
+	<app-form-error data-test-id="form-error" [error]="error()" />
+	<ng-content />
+}

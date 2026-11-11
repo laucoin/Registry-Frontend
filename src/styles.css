@@ -1,0 +1,32 @@
+:root {
+	/* --- Constantes de mise en page --- */
+	--layout--content-width: 90rem;
+	--layout--touch-target: 2.75rem;
+
+	/* --- Constantes d'espacement --- */
+	--spacing--in-block-small: var(--sgdf-spacing-x-small);
+	--spacing--in-block: var(--sgdf-spacing-small);
+	--spacing--in-block-large: var(--sgdf-spacing-medium);
+	--spacing--page-gutter: var(--sgdf-spacing-large);
+	--spacing--block: var(--sgdf-spacing-x-large);
+}
+
+:root {
+	background-color: var(--sgdf-nav-bg, var(--sgdf-color-default));
+}
+
+body {
+	min-height: 100dvh;
+	background-color: var(--sgdf-color-bg-default);
+}
+
+sgdf-table-cell[header] > h2 {
+	display: inline;
+	margin: 0;
+	color: inherit;
+	font: inherit;
+}
+
+h2.section-title {
+	font-size: var(--sgdf-text-2xl);
+}

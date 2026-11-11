@@ -1,0 +1,17 @@
+@let title = 'participants.group-layer-title' | pluralTranslation: participant()?.groups | transloco;
+<sgdf-dialog
+	data-test-id="participant-groups-dialog-dialog"
+	light-dismiss
+	[open]="!!participant()"
+	[title]="title"
+	(sgdf-hide)="close($event)"
+>
+	<sgdf-list appearance="text" [label]="title">
+		@for (group of participant()?.groups; track group.id) {
+			<sgdf-list-item data-test-id="participant-groups-dialog-group-item">
+				<sgdf-icon slot="start" name="sitemap" library="solid" />
+				{{ group.name }}
+			</sgdf-list-item>
+		}
+	</sgdf-list>
+</sgdf-dialog>

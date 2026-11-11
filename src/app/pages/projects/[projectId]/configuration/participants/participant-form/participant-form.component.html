@@ -1,0 +1,112 @@
+<app-form
+	data-test-id="participant-form-page"
+	[form]="form"
+	[loading]="loading()"
+	[error]="error()"
+	[showTitle]="showTitle()"
+	[title]="
+		'participants.form.title'
+			| formTitle: element()
+			| transloco
+				: {
+						firstName: element()?.firstName,
+						lastName: element()?.lastName,
+				  }
+	"
+>
+	<form novalidate data-test-id="participant-form-submit-form" (submit)="$event.preventDefault(); submit()">
+		<sgdf-card>
+			<div class="flex flex-col gap-3">
+				@if (!defaultGroup()) {
+					<app-participant-user-select [user]="model().user" (chosen)="handleUserSelection($event)" />
+					<sgdf-divider />
+				}
+				<div class="grid gap-3 md:grid-cols-2">
+					<sgdf-input
+						data-test-id="participant-form-first-name-input"
+						appSgdfField
+						required
+						[label]="'participants.form.firstname' | transloco"
+						[placeholder]="'participants.form.placeholder.firstname' | transloco"
+						[hint]="firstNameHint() | transloco: { firstName: previousFirstName() }"
+						[formField]="form.firstName"
+						[appFieldError]="form.firstName"
+						translationPrefix="participants.form.error.firstname"
+					/>
+					<sgdf-input
+						data-test-id="participant-form-last-name-input"
+						appSgdfField
+						required
+						[label]="'participants.form.lastname' | transloco"
+						[placeholder]="'participants.form.placeholder.lastname' | transloco"
+						[hint]="lastNameHint() | transloco: { lastName: previousLastName() }"
+						[formField]="form.lastName"
+						[appFieldError]="form.lastName"
+						translationPrefix="participants.form.error.lastname"
+					/>
+				</div>
+				<sgdf-date-time-picker
+					data-test-id="participant-form-birthday-picker"
+					appSgdfField
+					required
+					[label]="'participants.form.birthday' | transloco"
+					[formField]="form.birthday"
+					[appFieldError]="form.birthday"
+					translationPrefix="participants.form.error.birthday"
+				/>
+				@if (!defaultGroup()) {
+					<div class="grid gap-3 md:grid-cols-2">
+						<sgdf-date-time-picker
+							data-test-id="participant-form-begin-date-time-picker"
+							appSgdfField
+							with-time
+							value-format="separate"
+							[label]="'participants.form.begin-datetime' | transloco"
+							[hint]="'participants.form.hint.begin-date-time' | transloco"
+							[formField]="form.beginDateTime"
+							[appFieldError]="form.beginDateTime"
+							translationPrefix="participants.form.error.begin-datetime"
+						/>
+						<sgdf-date-time-picker
+							data-test-id="participant-form-end-date-time-picker"
+							appSgdfField
+							with-time
+							value-format="separate"
+							[label]="'participants.form.end-datetime' | transloco"
+							[hint]="'participants.form.hint.end-date-time' | transloco"
+							[formField]="form.endDateTime"
+							[appFieldError]="form.endDateTime"
+							translationPrefix="participants.form.error.end-datetime"
+						/>
+					</div>
+					<sgdf-divider />
+					<div>
+						<h2 class="section-title">
+							{{ 'participants.form.groups' | pluralTranslation: model().groups.length | transloco }}
+						</h2>
+						<app-select-elements-field
+							data-test-id="participant-form-groups-field"
+							[formField]="form.groups"
+							[label]="'participants.form.groups.search' | transloco"
+							[selectItemBuilder]="groupItem"
+							[selectionLabel]="
+								'participants.form.groups.selected' | pluralTranslation: model().groups.length | transloco
+							"
+							[emptyMessage]="'participants.form.groups.empty-search' | transloco"
+							[emptySelectionMessage]="'participants.form.groups.empty' | transloco"
+							[suggestions]="facade.searchedGroupsMetadata()"
+							(handleSearch)="handleGroupSearch($event)"
+						/>
+					</div>
+				}
+			</div>
+		</sgdf-card>
+		<app-form-actions
+			data-test-id="participant-form-actions"
+			[submitLabel]="element() | formButton"
+			[submitIcon]="element() ? 'pen-to-square' : 'plus'"
+			[saving]="saving()"
+			(cancelled)="cancel()"
+		/>
+	</form>
+</app-form>

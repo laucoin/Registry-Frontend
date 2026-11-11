@@ -1,0 +1,115 @@
+<sgdf-page-title
+	data-test-id="participants-monitoring-title"
+	[eyebrow]="'projectEyebrow.dashboard' | transloco"
+	[lede]="'projectHome.participantsPage.subtitle' | transloco"
+>
+	{{ 'projectHome.participantsPage.title' | transloco }}
+</sgdf-page-title>
+
+<div class="mt-(--spacing--block) flex flex-col gap-(--spacing--block)">
+	<app-project-participant-overview class="hidden md:block" [showLink]="false" />
+
+	@if (groups.myGroupsPageError(); as failure) {
+		<app-section-error
+			data-test-id="participants-monitoring-error"
+			[error]="failure"
+			[retrying]="groups.myGroupsPageLoading()"
+			(retry)="fetchFirstMyGroups()"
+		/>
+	}
+
+	<app-participants-roll-call [checkedCount]="checkedIds().size" (uncheckedAll)="uncheckAll()" />
+
+	@if (ready()) {
+		<sgdf-tab-group
+			data-test-id="participants-monitoring-tabs"
+			appearance="text"
+			[attr.active]="activeTab()"
+			(sgdf-tab-show)="onTabShow($event)"
+		>
+			@for (tab of tabs(); track tab) {
+				<sgdf-tab data-test-id="participants-monitoring-tab" [panel]="tab" [attr.data-id]="tab">
+					{{ 'projectHome.participantsPage.tabs.' + tab | transloco }}
+					@if (counts()[tab] !== undefined) {
+						<sgdf-badge data-test-id="participants-monitoring-tab-total">{{ counts()[tab] }}</sgdf-badge>
+					}
+				</sgdf-tab>
+			}
+			@if (hasMine()) {
+				<sgdf-tab-panel [name]="ParticipantsTabEnum.MINE">
+					@if (activeTab() === ParticipantsTabEnum.MINE) {
+						<app-group-status-list
+							[groupPage]="groups.myGroupsPage()"
+							[loading]="groups.myGroupsPageLoading()"
+							[loadingMore]="groups.myGroupsPageSilentLoading()"
+							[error]="groups.myGroupsPageError()"
+							[membersByGroup]="groups.membersByGroup()"
+							[checkedIds]="checkedIds()"
+							(checkedChange)="setChecked($event)"
+							(updateRequired)="loadMyGroups($event)"
+							(membersRequired)="loadGroupMembers($event)"
+						/>
+					}
+				</sgdf-tab-panel>
+			}
+
+			<sgdf-tab-panel [name]="ParticipantsTabEnum.GROUPS">
+				@if (activeTab() === ParticipantsTabEnum.GROUPS) {
+					<app-group-status-list
+						[groupPage]="groups.groupsPage()"
+						[loading]="groups.groupsPageLoading()"
+						[loadingMore]="groups.groupsPageSilentLoading()"
+						[error]="groups.groupsPageError()"
+						[membersByGroup]="groups.membersByGroup()"
+						[checkedIds]="checkedIds()"
+						(checkedChange)="setChecked($event)"
+						(updateRequired)="loadGroups($event)"
+						(membersRequired)="loadGroupMembers($event)"
+					/>
+				}
+			</sgdf-tab-panel>
+
+			<sgdf-tab-panel [name]="ParticipantsTabEnum.INDIVIDUAL">
+				@if (activeTab() === ParticipantsTabEnum.INDIVIDUAL) {
+					<app-list
+						data-test-id="participants-monitoring-individual-list"
+						emptyMessagePrefix="participants.notifications.EMPTY"
+						[label]="'projectHome.participantsPage.tabs.individual' | transloco"
+						[elementPage]="participants.participantsPage()"
+						[error]="participants.participantsPageError()"
+						[loading]="participants.participantsPageLoading()"
+						[loadingMore]="participants.participantsPageSilentLoading()"
+						[activeFilters]="activeFilters()"
+						(updateRequired)="loadParticipants($event)"
+						(filtersReset)="resetFilters()"
+					>
+						<ng-template appTemplate="search">
+							<app-participants-search-fields
+								[form]="form"
+								[sortFields]="sortFields"
+								(searched)="searchQuery.submit()"
+							/>
+						</ng-template>
+
+						<ng-template appTemplate="element" let-participant>
+							<sgdf-list-item
+								data-test-id="participant-row"
+								[attr.data-id]="participant.id"
+								appMonitoringRow
+								[row]="rowOf(participant)"
+								[selectable]="true"
+								[checked]="checkedIds().has(participant.id)"
+								(checkedChange)="setChecked({ ids: [participant.id], checked: $event })"
+							/>
+						</ng-template>
+					</app-list>
+				}
+			</sgdf-tab-panel>
+		</sgdf-tab-group>
+	} @else {
+		<span data-test-id="participants-monitoring-loading" class="sr-only" role="status">{{
+			'global.list.loading' | transloco
+		}}</span>
+		<sgdf-skeleton class="w-full h-[10rem]" shape="rounded" effect="pulse" aria-hidden="true" />
+	}
+</div>

@@ -1,0 +1,87 @@
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal, signal } from '@angular/core';
+import { FieldTree, FormField } from '@angular/forms/signals';
+
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+
+import { ProjectProfileFacade } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.facade';
+import { ProjectProfileInvitationFormModel } from '@pages/projects/[projectId]/configuration/profiles/project-profile-form/project-profile.form';
+import { FieldErrorDirective } from '@shared/directives/field-error.directive';
+import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive';
+import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe';
+import { StringHelper } from '@shared/helpers/string.helper';
+import { UserHelper } from '@shared/helpers/user.helper';
+import { InvitedUserModel } from '@shared/models/model/invited-user.model';
+import { SelectOptionModel } from '@shared/models/model/select-option.model';
+import { UserModel } from '@shared/models/model/user.model';
+import { SelectElementsFieldComponent } from '@shared/ui/common/select-elements-field/select-elements-field.component';
+
+import '@sgdf/ui/date-time-picker';
+import '@sgdf/ui/divider';
+import '@sgdf/ui/option';
+import '@sgdf/ui/select';
+
+/**
+ * Objectif: Champs d'une invitation à un projet : le rôle, la période d'accès et les utilisateurs invités.
+ * Périmètre: Lie les champs du formulaire d'invitation donné, recherche par adresse email complète l'utilisateur à inviter pour le projet donné ou le projet sélectionné, propose d'inviter par email une adresse inconnue quand la fonctionnalité est activée, et affiche les rôles assignables chargés par son hôte.
+ * Limites: Ne possède aucun modèle de formulaire, ne charge aucun rôle et ne soumet jamais ; la page qui l'héberge le fait.
+ */
+@Component({
+	selector: 'app-project-profile-invitation-fields',
+	imports: [
+		TranslocoPipe,
+		FormField,
+		FieldErrorDirective,
+		SgdfFieldDirective,
+		SelectElementsFieldComponent,
+		PluralTranslationPipe,
+	],
+	schemas: [CUSTOM_ELEMENTS_SCHEMA],
+	templateUrl: './project-profile-invitation-fields.component.html',
+})
+export class ProjectProfileInvitationFieldsComponent {
+	private readonly transloco = inject(TranslocoService);
+	private readonly query = signal('');
+
+	protected readonly facade = inject(ProjectProfileFacade);
+	protected readonly UserHelper = UserHelper;
+	protected readonly suggestions = computed(() =>
+		this.withInvitationByEmail(this.matching(this.facade.searchedUsersMetadata(), this.query()), this.query()),
+	);
+
+	public readonly fields: InputSignal<FieldTree<ProjectProfileInvitationFormModel>> = input.required();
+	public readonly projectId = input<string | undefined>();
+
+	constructor() {
+		this.facade.fetchFeatures();
+	}
+
+	protected handleSearch(searched: { query: string }): void {
+		const email = searched.query.trim();
+		this.query.set(email);
+		if (StringHelper.isEmail(email))
+			this.facade.searchUsers(email, this.projectId() ?? this.facade.selectedProjectId());
+	}
+
+	private withInvitationByEmail(
+		found: SelectOptionModel<UserModel>[],
+		email: string,
+	): SelectOptionModel<InvitedUserModel>[] {
+		if (!this.canInviteByEmail(found, email)) return found;
+
+		return [
+			...found,
+			{
+				label: this.transloco.translate('project-profiles.form.users.invite', { email }),
+				value: UserHelper.toInvitedByEmail(email),
+			},
+		];
+	}
+
+	private matching(found: SelectOptionModel<UserModel>[], email: string): SelectOptionModel<UserModel>[] {
+		return found.filter((item) => item.value.email.toLowerCase() === email.toLowerCase());
+	}
+
+	private canInviteByEmail(found: SelectOptionModel<UserModel>[], email: string): boolean {
+		return this.facade.inviteByEmailEnabled() && StringHelper.isEmail(email) && found.length === 0;
+	}
+}

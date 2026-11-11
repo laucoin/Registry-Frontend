@@ -1,0 +1,41 @@
+<app-widget-card
+	icon="cake-candles"
+	[heading]="'projectHome.birthday.title' | transloco"
+	[totalLabel]="
+		view() === undefined
+			? undefined
+			: ('projectHome.birthday.total' | pluralTranslation: view()?.total | transloco: { count: view()?.total })
+	"
+	[state]="state()"
+	[emptyMessage]="'projectHome.birthday.empty' | transloco"
+	[error]="error()"
+	[retrying]="loading()"
+	(retry)="reload()"
+>
+	@if (view(); as shown) {
+		<sgdf-list appearance="text" [label]="'projectHome.birthday.title' | transloco">
+			@for (row of shown.rows; track row.id) {
+				<sgdf-list-item data-test-id="birthday-row" [attr.data-id]="row.id">
+					<sgdf-avatar slot="start" variant="warning" aria-hidden="true">
+						<sgdf-icon slot="icon" name="cake-candles" library="solid" />
+					</sgdf-avatar>
+					{{ row.name }}
+					<span data-test-id="birthday-row-detail" slot="description" class="text-xs">
+						@if (row.age !== undefined) {
+							{{ 'projectHome.birthday.age' | transloco: { count: row.age } }}
+						}
+						@if (row.age !== undefined && row.detail) {
+							·
+						}
+						{{ row.detail }}
+					</span>
+				</sgdf-list-item>
+			}
+		</sgdf-list>
+		@if (shown.remaining > 0) {
+			<p data-test-id="project-birthday-more" class="m-0 px-4 pb-3 text-xs opacity-80">
+				{{ 'projectHome.birthday.more' | pluralTranslation: shown.remaining | transloco: { count: shown.remaining } }}
+			</p>
+		}
+	}
+</app-widget-card>

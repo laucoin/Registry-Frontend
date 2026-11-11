@@ -1,0 +1,20 @@
+<sgdf-menu placement="top-start">
+	<sgdf-icon-button
+		data-test-id="communication-field-menu-button"
+		slot="trigger"
+		name="plus"
+		library="solid"
+		[label]="'communications.form.actions.add-to-message' | transloco"
+	/>
+	@for (action of actions(); track action.label) {
+		<sgdf-menu-item
+			data-test-id="communication-field-menu-item"
+			[attr.data-id]="action.label"
+			[disabled]="action.disabled"
+			(click)="action.command?.($any($event))"
+		>
+			<sgdf-icon slot="icon" [attr.name]="action.icon" library="solid" />
+			{{ action.label | transloco }}
+		</sgdf-menu-item>
+	}
+</sgdf-menu>

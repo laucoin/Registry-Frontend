@@ -1,0 +1,18 @@
+import { inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+import { TranslocoService } from '@jsverse/transloco';
+import { skip } from 'rxjs';
+
+/**
+ * Objectif: Garde les données traduites d'un store en phase avec la langue active.
+ * Périmètre: Exécute les loaders une fois, puis à nouveau à chaque changement de langue après le premier.
+ * Limites: Doit être appelé dans un contexte d'injection comme un hook onInit de store ; n'annule pas les loaders en cours.
+ */
+export function refreshOnLanguageChange(...loaders: (() => void)[]): void {
+	const translateService = inject(TranslocoService);
+	loaders.forEach((load) => load());
+	translateService.langChanges$
+		.pipe(skip(1), takeUntilDestroyed())
+		.subscribe(() => loaders.forEach((load) => load()));
+}

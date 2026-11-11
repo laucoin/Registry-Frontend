@@ -1,0 +1,18 @@
+<app-account-preference icon="palette" titleKey="myAccount.theme.title" hintKey="myAccount.theme.hint">
+	<sgdf-radio-group
+		data-test-id="account-theme-choices-group"
+		appearance="segmented"
+		orientation="horizontal"
+		without-label
+		[label]="'myAccount.theme.choose' | transloco"
+		[value]="currentTheme()"
+		(change)="select($event)"
+	>
+		@for (choice of choices; track choice.theme) {
+			<sgdf-radio data-test-id="account-theme-choice-radio" [value]="choice.theme">
+				<sgdf-icon class="max-sm:hidden" [name]="choice.icon" library="solid" />
+				{{ choice.labelKey | transloco }}
+			</sgdf-radio>
+		}
+	</sgdf-radio-group>
+</app-account-preference>

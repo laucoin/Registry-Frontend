@@ -1,0 +1,88 @@
+<div class="mb-3 flex flex-wrap items-end justify-between gap-x-3 gap-y-1">
+	<div class="min-w-0">
+		<h2 data-test-id="home-favorite-projects-title" class="m-0 text-lg font-semibold">
+			{{ 'home.favorites.title' | transloco }}
+		</h2>
+		@if (total() !== undefined) {
+			<small data-test-id="home-favorite-projects-total" class="opacity-80">{{
+				'home.favorites.summary' | pluralTranslation: total() | transloco: { count: total() }
+			}}</small>
+		}
+	</div>
+	<sgdf-button
+		data-test-id="home-favorite-projects-see-all-button"
+		size="small"
+		appearance="text"
+		[routerLink]="projectsLink"
+		[queryParams]="favoritesQuery"
+		>{{ 'home.favorites.seeAll' | transloco }}</sgdf-button
+	>
+</div>
+
+@if (error(); as failure) {
+	<app-section-error
+		data-test-id="home-favorite-projects-error"
+		[error]="failure"
+		[retrying]="loading()"
+		(retry)="reload()"
+	/>
+}
+
+@if (showSkeleton()) {
+	<span data-test-id="home-favorite-projects-loading" class="sr-only" role="status">{{
+		'global.list.loading' | transloco
+	}}</span>
+	<div class="grid grid-cols-1 gap-(--spacing--in-block-large) sm:grid-cols-2 lg:grid-cols-3">
+		@for (card of skeletonCards; track card) {
+			<sgdf-skeleton class="h-[10rem]" shape="rounded" effect="pulse" aria-hidden="true" />
+		}
+	</div>
+} @else if (total() === 0) {
+	<p data-test-id="home-favorite-projects-empty" class="m-0 text-sm opacity-80">
+		{{ 'home.favorites.empty' | transloco }}
+	</p>
+} @else {
+	<div
+		class="grid grid-cols-1 gap-(--spacing--in-block-large) sm:grid-cols-2 lg:grid-cols-3"
+		data-test-id="home-favorite-projects-grid"
+	>
+		@for (card of cards(); track card.project.id) {
+			<div data-test-id="home-favorite-projects-card" class="relative min-w-0" [attr.data-id]="card.project.id">
+				<sgdf-tile
+					data-test-id="home-favorite-projects-tile"
+					class="block h-full"
+					[href]="card.link"
+					(click)="open($event, card.link)"
+				>
+					<span slot="icon" class="text-sm font-semibold">{{ card.initials }}</span>
+					<span slot="title" class="block truncate pe-8" [attr.title]="card.project.name">{{ card.project.name }}</span>
+					@if (card.summary; as summary) {
+						<span data-test-id="home-favorite-projects-summary" class="block">{{ summary }}</span>
+					}
+					@if (card.project.status; as status) {
+						<span class="mt-2 block"
+							><sgdf-tag size="small" variant="neutral" appearance="soft">{{ status.label }}</sgdf-tag></span
+						>
+					}
+					<small data-test-id="home-favorite-projects-period" class="mt-2 block text-xs opacity-80">
+						@if (card.period; as period) {
+							{{ 'home.favorites.period' | transloco: period }}
+						} @else {
+							{{ 'home.favorites.permanent' | transloco }}
+						}
+						@if (card.project.lastEdition; as edition) {
+							· {{ 'home.favorites.updated' | transloco }} <sgdf-relative-time [date]="edition.dateTime" sync />
+						}
+					</small>
+				</sgdf-tile>
+				<app-favorite-toggle
+					data-test-id="home-favorite-projects-toggle"
+					class="absolute right-2 top-2"
+					[favorite]="true"
+					[name]="card.project.name"
+					(toggled)="remove(card.project)"
+				/>
+			</div>
+		}
+	</div>
+}

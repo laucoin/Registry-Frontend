@@ -1,0 +1,20 @@
+<sgdf-stat
+	data-test-id="vehicle-statistics-out-stat"
+	[loading]="facade.vehicleTimelineLoading()"
+	[title]="'vehicles.statistics.out.title' | transloco"
+	[hint]="outHint() | transloco"
+>
+	@if (outDuration(); as duration) {
+		<sgdf-format-duration [value]="duration" />
+	}
+</sgdf-stat>
+<sgdf-stat
+	data-test-id="vehicle-statistics-usage-stat"
+	[loading]="facade.vehicleTimelineLoading()"
+	[title]="'vehicles.statistics.usage.title' | transloco"
+	[hint]="usageHint() | transloco"
+>
+	@if (usage() !== undefined) {
+		<sgdf-format-number type="percent" [value]="usage()" />
+	}
+</sgdf-stat>

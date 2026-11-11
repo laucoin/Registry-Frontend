@@ -1,0 +1,44 @@
+@if (error(); as failure) {
+	<app-section-error
+		data-test-id="presence-timeline-error"
+		[error]="failure"
+		[retrying]="loading()"
+		(retry)="retry.emit()"
+	/>
+} @else if (loading()) {
+	<div data-test-id="presence-timeline-loading" class="grid gap-(--spacing--in-block-large)" aria-busy="true">
+		<sgdf-skeleton effect="pulse" shape="rounded" class="h-12 w-full" />
+		<sgdf-skeleton effect="pulse" shape="rounded" class="h-12 w-full" />
+	</div>
+} @else if (timeline(); as view) {
+	<section data-test-id="presence-timeline-section" class="grid gap-(--spacing--in-block-large)">
+		<div>
+			<h2 class="text-sm font-semibold uppercase">{{ 'timeline.planned.title' | transloco }}</h2>
+			<sgdf-timeline
+				data-test-id="presence-timeline-planned-timeline"
+				[start]="view.period.start"
+				[end]="view.period.end"
+				[ranges]="view.planned"
+				[label]="'timeline.planned.title' | transloco"
+			/>
+			@if (!view.planned.length) {
+				<p data-test-id="presence-timeline-planned-empty">{{ 'timeline.planned.empty' | transloco }}</p>
+			}
+		</div>
+		<div>
+			<h2 class="text-sm font-semibold uppercase">{{ 'timeline.actual.title' | transloco }}</h2>
+			<sgdf-timeline
+				data-test-id="presence-timeline-actual-timeline"
+				[start]="view.period.start"
+				[end]="view.period.end"
+				[ranges]="view.actual"
+				[label]="'timeline.actual.title' | transloco"
+			/>
+			@if (!view.actual.length) {
+				<p data-test-id="presence-timeline-actual-empty">{{ 'timeline.actual.empty' | transloco }}</p>
+			}
+		</div>
+	</section>
+} @else {
+	<p data-test-id="presence-timeline-no-period">{{ 'timeline.no-period' | transloco }}</p>
+}

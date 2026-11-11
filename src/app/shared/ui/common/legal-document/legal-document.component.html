@@ -1,0 +1,55 @@
+<article class="legal-doc">
+	<sgdf-page-title
+		data-test-id="legal-document-title"
+		appBackNavigation
+		[eyebrow]="prefix() + '.eyebrow' | transloco"
+		[lede]="prefix() + '.updatedAt' | transloco: { updatedAt: updatedAtLabel() }"
+		[backLabel]="prefix() + '.back' | transloco"
+	>
+		{{ prefix() + '.title' | transloco }}
+	</sgdf-page-title>
+
+	@for (paragraph of prefix() + '.intro' | transloco: orgParams; track $index) {
+		<p data-test-id="legal-document-intro" [innerHTML]="paragraph"></p>
+	}
+
+	@for (section of sections(); track section.titleKey) {
+		<section data-test-id="legal-document-section" [attr.data-id]="section.titleKey">
+			<h2 data-test-id="legal-document-section-title">{{ section.titleKey | transloco }}</h2>
+			@for (block of section.blocks; track $index) {
+				@switch (block.kind) {
+					@case (LegalBlockKindEnum.PARAGRAPHS) {
+						@for (paragraph of block.key | transloco: orgParams; track $index) {
+							<p [innerHTML]="paragraph"></p>
+						}
+					}
+					@case (LegalBlockKindEnum.LIST) {
+						<ul>
+							@for (item of block.key | transloco: orgParams; track $index) {
+								<li [innerHTML]="item"></li>
+							}
+						</ul>
+					}
+					@case (LegalBlockKindEnum.LINE) {
+						<p [innerHTML]="block.key | transloco: orgParams"></p>
+					}
+					@case (LegalBlockKindEnum.HOSTING) {
+						@if (hosted) {
+							<p data-test-id="legal-document-hosting-clause">
+								{{
+									block.key
+										| transloco: { providerName: hosting.providerName, providerAddress: hosting.providerAddress }
+								}}
+							</p>
+						} @else {
+							<p
+								data-test-id="legal-document-hosting-fallback"
+								[innerHTML]="block.fallbackKey | transloco: orgParams"
+							></p>
+						}
+					}
+				}
+			}
+		</section>
+	}
+</article>

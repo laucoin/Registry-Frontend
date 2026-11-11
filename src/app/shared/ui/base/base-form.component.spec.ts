@@ -1,0 +1,326 @@
+import { Location } from '@angular/common';
+import { createEnvironmentInjector, EnvironmentInjector, runInInjectionContext, signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { FieldTree, form, required, SchemaPathTree } from '@angular/forms/signals';
+import { ActivatedRoute, Router } from '@angular/router';
+
+import { TranslocoService } from '@jsverse/transloco';
+import { Observable, of, Subject, throwError } from 'rxjs';
+import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+
+import { ConfigModel } from '@core/config/model/config.model';
+import { RegistryConfig } from '@core/config/registry.config';
+import { SessionFacade } from '@core/registry/state/session.facade';
+import { UiFacade } from '@core/registry/state/ui.facade';
+import { RegistryRouteEnum } from '@core/routing/registry-route.enum';
+import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe';
+import { autoMock } from '@shared/helpers/testing/auto-mock';
+import { ERROR_500 } from '@shared/helpers/testing/test-fixtures';
+import { ErrorModel } from '@shared/models/model/error.model';
+import { BaseFormComponent } from '@shared/ui/base/base-form.component';
+
+class TestForm extends BaseFormComponent {
+	public readonly calls: string[] = [];
+
+	constructor() {
+		super();
+	}
+
+	protected loadData(): void {
+		this.calls.push('loadData');
+	}
+
+	protected handleLoadedElement(): void {
+		this.calls.push('handleLoadedElement');
+	}
+
+	protected submit(): void {
+		this.calls.push('submit');
+	}
+
+	protected get idParam(): string | undefined {
+		return undefined;
+	}
+
+	public run<T>(command: Observable<T>, redirect?: boolean): void {
+		this.save(command, redirect);
+	}
+
+	public get flags(): { saving: boolean; error: ErrorModel | undefined } {
+		return { saving: this.saving(), error: this.error() };
+	}
+
+	public goTo(route?: RegistryRouteEnum): void {
+		this.navigateToRedirectUri(route);
+	}
+
+	public checkValidity<T>(form: FieldTree<T>): boolean {
+		return this.isFormValid(form);
+	}
+
+	public allowsSubmit(loaded: unknown, valid: boolean): boolean {
+		return this.canSubmit(loaded, () => valid);
+	}
+
+	public setBusy(flag: 'saving' | 'loading'): void {
+		this[flag].set(true);
+	}
+}
+
+class TestEditForm extends TestForm {
+	protected override get idParam(): string | undefined {
+		return 'e1';
+	}
+}
+
+class TestDialogForm extends TestForm {
+	protected override readonly closesToParentRoute: boolean = true;
+}
+
+describe('BaseFormComponent', () => {
+	let back: Mock<() => void>;
+	let navigateByUrl: Mock<(url: string) => Promise<boolean>>;
+	let navigate: Mock<(commands: string[]) => Promise<boolean>>;
+
+	function create(): TestForm {
+		return TestBed.runInInjectionContext(() => new TestForm());
+	}
+
+	beforeEach(() => {
+		back = vi.fn();
+		navigateByUrl = vi.fn(() => Promise.resolve(true));
+		navigate = vi.fn(() => Promise.resolve(true));
+		RegistryConfig.environment = {
+			production: false,
+			backend: { url: 'http://backend.test', noAuthPaths: [] },
+			hosting: { providerName: null, providerAddress: null },
+		};
+		RegistryConfig.config = { notification: { duration: {} } } as unknown as ConfigModel;
+		TestBed.configureTestingModule({
+			providers: [
+				{ provide: Location, useValue: { back } },
+				{ provide: Router, useValue: { navigateByUrl, navigate } },
+				{ provide: ActivatedRoute, useValue: {} },
+				{ provide: SessionFacade, useValue: autoMock() },
+				{ provide: UiFacade, useValue: autoMock() },
+				{
+					provide: CustomDateFormatPipe,
+					useValue: { transform: (value: { date?: string } | undefined): string => value?.date ?? '' },
+				},
+				{ provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}` } },
+			],
+		});
+	});
+
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	it('judges a signal form valid only once its rules pass, and reveals the errors', () => {
+		// Arrange
+		const page = create();
+		const model = signal({ name: '' });
+		const tree: FieldTree<{ name: string }> = TestBed.runInInjectionContext(() =>
+			form(model, (path: SchemaPathTree<{ name: string }>) => required(path.name)),
+		);
+
+		// Act
+		const whenEmpty = page.checkValidity(tree);
+		const touchedAfterCheck = tree.name().touched();
+		model.set({ name: 'Ada' });
+
+		// Assert
+		expect([whenEmpty, touchedAfterCheck, page.checkValidity(tree)]).toEqual([false, true, true]);
+	});
+
+	it('goes back once a save succeeds', () => {
+		// Arrange
+		const form = create();
+
+		// Act
+		form.run(of('saved'));
+
+		// Assert
+		expect(back).toHaveBeenCalledTimes(1);
+		expect(form.flags.saving).toBe(false);
+	});
+
+	it.each([
+		['a create route of one segment', [{ path: 'create' }], ['..']],
+		['an edit route of two segments', [{ path: 'v1' }, { path: 'edit' }], ['../..']],
+		['a route without segment', [], ['..']],
+	])('closes a dialog form on the parent route from %s', (_label, url: object[], expected) => {
+		// Arrange : le cas vient de la table
+		TestBed.overrideProvider(ActivatedRoute, { useValue: { snapshot: { url } } });
+		const form = TestBed.runInInjectionContext(() => new TestDialogForm());
+
+		// Act
+		form.run(of('saved'));
+
+		// Assert
+		expect(navigate.mock.calls[0][0]).toEqual(expected);
+		expect(back).not.toHaveBeenCalled();
+	});
+
+	it('goes to the given route instead of the parent one', () => {
+		// Arrange
+		TestBed.overrideProvider(ActivatedRoute, { useValue: { snapshot: { url: [{ path: 'create' }] } } });
+		const form = TestBed.runInInjectionContext(() => new TestDialogForm());
+
+		// Act
+		form.goTo(RegistryRouteEnum.PROJECTS);
+
+		// Assert
+		expect(navigateByUrl).toHaveBeenCalledWith(RegistryRouteEnum.PROJECTS);
+		expect(navigate).not.toHaveBeenCalled();
+	});
+
+	it('stays on the form when the redirect is switched off', () => {
+		// Arrange
+		const form = create();
+
+		// Act
+		form.run(of('saved'), false);
+
+		// Assert
+		expect(back).not.toHaveBeenCalled();
+	});
+
+	it('shows the saving state while the command runs', () => {
+		// Arrange
+		const form = create();
+		const pending = new Subject<string>();
+		form.run(pending);
+		const whileSaving = form.flags.saving;
+
+		// Act
+		pending.complete();
+
+		// Assert
+		expect(whileSaving).toBe(true);
+		expect(form.flags.saving).toBe(false);
+	});
+
+	it('keeps the error of a failed save for display and does not leave the page', () => {
+		// Arrange
+		const form = create();
+
+		// Act
+		form.run(throwError(() => ERROR_500));
+
+		// Assert
+		expect(form.flags.error).toBe(ERROR_500);
+		expect(back).not.toHaveBeenCalled();
+	});
+
+	it('clears the previous error when saving again', () => {
+		// Arrange
+		const form = create();
+		form.run(throwError(() => ERROR_500));
+
+		// Act
+		form.run(of('saved'), false);
+
+		// Assert
+		expect(form.flags.error).toBeUndefined();
+	});
+
+	it('finishes a save sent before the page was left but skips the redirect', () => {
+		// Arrange
+		const injector = createEnvironmentInjector([], TestBed.inject(EnvironmentInjector));
+		const form = runInInjectionContext(injector, () => new TestForm());
+		const pending = new Subject<string>();
+		form.run(pending);
+
+		// Act
+		injector.destroy();
+		pending.next('saved');
+
+		// Assert
+		expect(back).not.toHaveBeenCalled();
+		expect(form.flags.saving).toBe(true);
+	});
+
+	it('navigates to the given route and falls back to the previous page when it fails', async () => {
+		// Arrange
+		const form = create();
+		navigateByUrl.mockReturnValueOnce(Promise.reject(new Error('no route')));
+
+		// Act
+		form.goTo(RegistryRouteEnum.PROJECTS);
+		await Promise.resolve();
+		await Promise.resolve();
+
+		// Assert
+		expect(navigateByUrl).toHaveBeenCalledWith(RegistryRouteEnum.PROJECTS);
+		expect(back).toHaveBeenCalledTimes(1);
+	});
+
+	it.each([
+		{
+			name: 'refuses to submit while saving',
+			form: TestForm,
+			busy: 'saving' as const,
+			loaded: undefined,
+			valid: true,
+			expected: false,
+		},
+		{
+			name: 'refuses to submit while loading',
+			form: TestForm,
+			busy: 'loading' as const,
+			loaded: undefined,
+			valid: true,
+			expected: false,
+		},
+		{
+			name: 'refuses to submit an edit form before its element is loaded',
+			form: TestEditForm,
+			busy: undefined,
+			loaded: undefined,
+			valid: true,
+			expected: false,
+		},
+		{
+			name: 'submits a loaded edit form when it is valid',
+			form: TestEditForm,
+			busy: undefined,
+			loaded: { id: 'e1' },
+			valid: true,
+			expected: true,
+		},
+		{
+			name: 'refuses to submit an invalid form',
+			form: TestForm,
+			busy: undefined,
+			loaded: undefined,
+			valid: false,
+			expected: false,
+		},
+	])('$name', ({ form, busy, loaded, valid, expected }) => {
+		// Arrange
+		const page = TestBed.runInInjectionContext(() => new form());
+		if (busy) page.setBusy(busy);
+
+		// Act
+		const allowed = page.allowsSubmit(loaded, valid);
+
+		// Assert
+		expect(allowed).toBe(expected);
+	});
+
+	it('stays on a dialog form when the parent route cannot be reached', async () => {
+		// Arrange
+		TestBed.overrideProvider(ActivatedRoute, { useValue: { snapshot: { url: [{ path: 'create' }] } } });
+		navigate.mockReturnValueOnce(Promise.reject(new Error('no route')));
+		const form = TestBed.runInInjectionContext(() => new TestDialogForm());
+
+		// Act
+		form.run(of('saved'));
+		await Promise.resolve();
+
+		// Assert
+		expect(navigate).toHaveBeenCalledTimes(1);
+		expect(back).not.toHaveBeenCalled();
+	});
+});

@@ -1,0 +1,42 @@
+<form
+	data-test-id="movements-search-fields-search-form"
+	class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
+	(submit)="$event.preventDefault()"
+>
+	<sgdf-date-time-picker
+		data-test-id="movements-search-fields-from-picker"
+		appSgdfField
+		with-time
+		[label]="'movements.search-and-filter.start-datetime' | transloco"
+		[formField]="form().from"
+	/>
+	<sgdf-date-time-picker
+		data-test-id="movements-search-fields-to-picker"
+		appSgdfField
+		with-time
+		[label]="'movements.search-and-filter.end-datetime' | transloco"
+		[formField]="form().to"
+	/>
+	<sgdf-select
+		data-test-id="movements-search-fields-type-select"
+		appSgdfField
+		[label]="'movements.search-and-filter.type' | transloco"
+		[formField]="form().type"
+	>
+		@for (item of facade.movementTypesMetadata(); track item.label) {
+			<sgdf-option [value]="item.value ?? ''">{{ item.label }}</sgdf-option>
+		}
+	</sgdf-select>
+	<sgdf-select
+		*appIfProjectAuthority="hiddenAuthority"
+		data-test-id="movements-search-fields-is-visible-select"
+		appSgdfField
+		[label]="'movements.search-and-filter.visibility' | transloco"
+		[formField]="form().isVisible"
+	>
+		@for (item of facade.visibilitiesMetadata(); track item.label) {
+			<sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+		}
+	</sgdf-select>
+	<app-sort-fields [sortBy]="form().sortBy" [sortDirection]="form().sortDirection" [fields]="sortFields" />
+</form>

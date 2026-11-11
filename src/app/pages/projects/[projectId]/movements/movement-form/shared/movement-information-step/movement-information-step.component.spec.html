@@ -1,0 +1,6 @@
+<app-movement-information-step
+	[form]="form.information"
+	(typeChanged)="types.push($event)"
+	(next)="nexts = nexts + 1"
+	(cancelled)="cancels = cancels + 1"
+/>

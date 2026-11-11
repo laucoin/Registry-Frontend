@@ -1,0 +1,5 @@
+@if (shown(); as error) {
+	<sgdf-callout data-test-id="form-error-callout" variant="danger" role="alert" [title]="error.title | transloco">
+		{{ error.message | transloco }}
+	</sgdf-callout>
+}

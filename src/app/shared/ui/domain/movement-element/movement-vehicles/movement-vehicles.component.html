@@ -1,0 +1,13 @@
+<sgdf-list appearance="text" [label]="'movements.vehicles-layer-title' | pluralTranslation: vehicles() | transloco">
+	@for (entry of vehicles(); track entry.vehicle.id) {
+		<sgdf-list-item data-test-id="vehicle-row" [attr.data-id]="entry.vehicle.id">
+			<sgdf-avatar slot="start" variant="primary" aria-hidden="true">
+				<sgdf-icon slot="icon" name="car" library="solid" />
+			</sgdf-avatar>
+			<span data-test-id="movement-vehicles-label">{{ VehicleHelper.toSelectItem(entry.vehicle).label }}</span>
+			<span data-test-id="movement-vehicles-driver" slot="description">{{
+				(entry.participant.firstName | titlecase) + ' ' + (entry.participant.lastName | uppercase)
+			}}</span>
+		</sgdf-list-item>
+	}
+</sgdf-list>

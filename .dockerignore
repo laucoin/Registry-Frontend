@@ -1,4 +1,4 @@
-# The image only needs nginx.conf and dist/browser — keep the context small.
+# The image only needs nginx.conf, docker/ and dist/browser — keep the context small.
 .git
 .github
 node_modules

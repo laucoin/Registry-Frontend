@@ -1,0 +1,44 @@
+@if (shownCommands().length > 0) {
+	<sgdf-table data-test-id="project-danger-zone" appearance="soft">
+		<sgdf-table-row>
+			<sgdf-table-cell header class="flex items-center gap-1">
+				<sgdf-icon name="triangle-exclamation" library="solid" />
+				<h2>{{ 'projectConfiguration.dangerZone.title' | transloco }}</h2>
+			</sgdf-table-cell>
+		</sgdf-table-row>
+
+		<sgdf-table-row>
+			<sgdf-table-cell row-header>
+				<div class="grid gap-4 md:grid-cols-2">
+					@for (command of shownCommands(); track command.id) {
+						<sgdf-callout
+							data-test-id="project-danger-zone-command-callout"
+							class="h-full [&::part(base)]:h-full [&::part(content)]:h-full [&::part(message)]:h-full"
+							without-icon
+							[attr.data-id]="command.id"
+							[variant]="command.variant"
+						>
+							<span slot="title">{{ 'projectConfiguration.dangerZone.' + command.id + '.title' | transloco }}</span>
+							<div class="flex h-full flex-col">
+								<p class="mt-0 mb-3 font-normal">
+									{{ 'projectConfiguration.dangerZone.' + command.id + '.description' | transloco }}
+								</p>
+								<sgdf-button
+									data-test-id="project-danger-zone-command-button"
+									class="mt-auto self-start"
+									[attr.data-id]="command.id"
+									[variant]="command.buttonVariant"
+									[appearance]="command.buttonAppearance"
+									(click)="run(command)"
+								>
+									<sgdf-icon slot="prefix" library="solid" [attr.name]="command.icon" />
+									{{ 'projectConfiguration.dangerZone.' + command.id + '.action' | transloco }}
+								</sgdf-button>
+							</div>
+						</sgdf-callout>
+					}
+				</div>
+			</sgdf-table-cell>
+		</sgdf-table-row>
+	</sgdf-table>
+}

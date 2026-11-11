@@ -1,0 +1,41 @@
+<sgdf-page-title
+	data-test-id="project-profiles-list-title"
+	[eyebrow]="'projectEyebrow.configuration' | transloco"
+	[lede]="'project-profiles.pages.project.subtitle' | transloco"
+>
+	{{ 'project-profiles.pages.project.title' | transloco }}
+	<ng-container *appIfProjectAuthority="inviteAuthority">
+		<sgdf-button
+			data-test-id="project-profiles-list-few-button"
+			slot="actions"
+			variant="primary"
+			[routerLink]="inviteRoute"
+		>
+			<sgdf-icon slot="prefix" name="user-plus" library="solid" />
+			{{ 'project-profiles.actions.invite-user.few' | transloco }}
+		</sgdf-button>
+	</ng-container>
+</sgdf-page-title>
+
+<app-list
+	data-test-id="project-profiles-list-list"
+	class="mt-(--spacing--block) block"
+	emptyMessagePrefix="project-profiles.notifications.EMPTY"
+	[elementPage]="facade.projectProfilesPage()"
+	[error]="facade.projectProfilesPageError()"
+	[loading]="facade.projectProfilesPageLoading()"
+	[loadingMore]="facade.projectProfilesPageSilentLoading()"
+	[activeFilters]="activeFilters()"
+	(updateRequired)="loadBatch($event)"
+	(filtersReset)="resetFilters()"
+>
+	<ng-template appTemplate="search">
+		<app-project-profiles-search-fields [form]="form" (searched)="searchQuery.submit()" />
+	</ng-template>
+
+	<ng-template appTemplate="element" let-profile>
+		<sgdf-list-item data-test-id="profile-row" [attr.data-id]="profile.id" appProjectProfileRow [profile]="profile" />
+	</ng-template>
+</app-list>
+
+<router-outlet />

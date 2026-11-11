@@ -1,0 +1,42 @@
+<sgdf-page-title
+	data-test-id="vehicles-list-title"
+	[eyebrow]="'projectEyebrow.configuration' | transloco"
+	[lede]="'vehicles.list.subtitle' | transloco"
+>
+	{{ 'vehicles.list.title' | transloco }}
+	<ng-container *appIfProjectAuthority="createAuthority">
+		<sgdf-button
+			data-test-id="vehicles-list-create-button"
+			slot="actions"
+			variant="primary"
+			[routerLink]="createRoute"
+			queryParamsHandling="preserve"
+		>
+			<sgdf-icon slot="prefix" name="plus" library="solid" />
+			{{ 'global.actions.create' | transloco }}
+		</sgdf-button>
+	</ng-container>
+</sgdf-page-title>
+
+<app-list
+	data-test-id="vehicles-list-list"
+	class="mt-(--spacing--block) block"
+	emptyMessagePrefix="vehicles.notifications.EMPTY"
+	[elementPage]="facade.vehiclesPage()"
+	[error]="facade.vehiclesPageError()"
+	[loading]="facade.vehiclesPageLoading()"
+	[loadingMore]="facade.vehiclesPageSilentLoading()"
+	[activeFilters]="activeFilters()"
+	(updateRequired)="loadBatch($event)"
+	(filtersReset)="resetFilters()"
+>
+	<ng-template appTemplate="search">
+		<app-vehicles-search-fields [form]="form" (searched)="searchQuery.submit()" />
+	</ng-template>
+
+	<ng-template appTemplate="element" let-vehicle>
+		<sgdf-list-item data-test-id="vehicle-row" [attr.data-id]="vehicle.id" appVehicleRow [vehicle]="vehicle" />
+	</ng-template>
+</app-list>
+
+<router-outlet />

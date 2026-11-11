@@ -1,0 +1,17 @@
+<sgdf-select
+	data-test-id="participant-user-select-user-select"
+	with-search
+	without-filter
+	with-clear
+	[label]="'participants.form.user.title' | transloco"
+	[placeholder]="'participants.form.placeholder.user' | transloco"
+	[attr.no-results-label]="'participants.form.user.empty-search' | transloco"
+	[value]="user()?.value?.id ?? ''"
+	(sgdf-show)="search('')"
+	(sgdf-search)="search($any($event).detail.query)"
+	(change)="choose($event)"
+>
+	@for (choice of choices(); track choice.value.id) {
+		<sgdf-option [value]="choice.value.id">{{ choice.label }}</sgdf-option>
+	}
+</sgdf-select>

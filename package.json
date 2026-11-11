@@ -1,42 +1,57 @@
 {
-  "name": "registry-frontend",
-  "version": "1.7.0",
-  "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "lint": "ng lint"
-  },
-  "private": true,
-  "packageManager": "pnpm@12.4.1",
-  "dependencies": {
-    "@angular/cdk": "^22.1.5",
-    "@angular/common": "^22.1.5",
-    "@angular/compiler": "^22.1.5",
-    "@angular/core": "^22.1.5",
-    "@angular/forms": "^22.1.5",
-    "@angular/platform-browser": "^22.1.5",
-    "@angular/router": "^22.1.5",
-    "@ngx-translate/core": "^18.0.0",
-    "@ngx-translate/http-loader": "^18.0.0",
-    "@ngxs/store": "^22.0.0",
-    "@primeuix/themes": "^3.0.0",
-    "angular-eslint": "^22.2.0",
-    "bootstrap": "^5.3.8",
-    "primeicons": "^8.0.0",
-    "primeng": "^22.1.0",
-    "rxjs": "~7.8.2",
-    "tslib": "^2.8.1",
-    "zone.js": "~0.16.3"
-  },
-  "devDependencies": {
-    "@angular/build": "^22.1.7",
-    "@angular/cli": "^22.1.7",
-    "@angular/compiler-cli": "^22.1.5",
-    "@eslint/js": "^10.0.1",
-    "@ngxs/devtools-plugin": "^22.0.0",
-    "eslint": "^10.8.1",
-    "typescript": "~6.0.3",
-    "typescript-eslint": "^8.69.0"
-  }
+	"name": "registry-frontend",
+	"version": "1.7.0",
+	"scripts": {
+		"ng": "ng",
+		"start": "ng serve",
+		"build": "ng build",
+		"lint": "ng lint",
+		"test:coverage": "ng test --watch=false --coverage",
+		"test": "ng test",
+		"prepare": "husky"
+	},
+	"private": true,
+	"engines": {
+		"node": ">=26"
+	},
+	"packageManager": "pnpm@12.18.0+sha512.9d7882d5dc82147ecfc4e062aa34834e0ad0296710a1837a1115ae012127d36b7109e321ac1598a1dd0a65597681b1e99917e12ed0d749eae91187943363beb3",
+	"dependencies": {
+		"@angular/common": "^22.2.5",
+		"@angular/compiler": "^22.2.5",
+		"@angular/core": "^22.2.5",
+		"@angular/forms": "^22.2.5",
+		"@angular/platform-browser": "^22.2.5",
+		"@angular/router": "^22.2.5",
+		"@awesome.me/webawesome": "~3.14.0",
+		"@jsverse/transloco": "^8.4.0",
+		"@ngrx/signals": "^22.0.1",
+		"@sgdf/ui": "2.1.0",
+		"rxjs": "~7.8.2",
+		"tslib": "^2.9.1"
+	},
+	"devDependencies": {
+		"@angular-devkit/schematics": "^22.2.2",
+		"@angular/build": "^22.2.6",
+		"@angular/cdk": "^22.2.6",
+		"@angular/cli": "^22.2.6",
+		"@angular/compiler-cli": "^22.2.5",
+		"@eslint/js": "^10.0.1",
+		"@schematics/angular": "22.2.2",
+		"@tailwindcss/postcss": "^4.3.3",
+		"@vitest/coverage-v8": "4.1.11",
+		"angular-eslint": "^22.6.0",
+		"eslint": "^10.14.0",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-prettier": "^5.5.7",
+		"eslint-plugin-simple-import-sort": "^14.0.0",
+		"husky": "^9.1.7",
+		"jsdom": "^30.1.2",
+		"ng-mocks": "^14.18.1",
+		"postcss": "^8.5.29",
+		"prettier": "^3.9.10",
+		"tailwindcss": "^4.3.3",
+		"typescript": "~6.0.3",
+		"typescript-eslint": "^8.72.2",
+		"vitest": "^4.1.11"
+	}
 }
