@@ -94,6 +94,21 @@ describe('CumulativePageHelper', () => {
 			expect(merged.hasNext).toBe(current.hasNext);
 		});
 
+		it.each([
+			{ name: 'drops a deleted row the reload no longer returns', reloaded: ['a', 'c'], expected: ['a', 'c'] },
+			{ name: 'empties the list when the reload returns no row', reloaded: [], expected: [] },
+		])('$name', ({ reloaded, expected }) => {
+			// Arrange
+			const current = page(['a', 'b', 'c'], 0, 20, 3);
+			const fetched = page(reloaded, 0, 20, reloaded.length);
+
+			// Act
+			const merged = CumulativePageHelper.merge(current, fetched, { page: 0, size: 20, batchSize: 20 });
+
+			// Assert
+			expect(merged.content.map((it): string | undefined => it.id)).toEqual(expected);
+		});
+
 		it('keeps one batch when a reload comes back empty', () => {
 			// Arrange
 			const fetched = page([], 0, 4, 0);

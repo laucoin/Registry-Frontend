@@ -27,7 +27,7 @@ function rebuilt<M extends GenericModel>(
 	fetched: PageModel<M>,
 	batchSize: number,
 ): PageModel<M> {
-	if (current && current.content.length > fetched.content.length) {
+	if (current && fetched.hasNext && current.content.length > fetched.content.length) {
 		return {
 			...fetched,
 			size: batchSize,
@@ -49,7 +49,7 @@ function rebuilt<M extends GenericModel>(
 /**
  * Objectif: Construit la page affichée par une liste qui charge ses éléments lot après lot.
  * Périmètre: Ajoute un lot fraîchement récupéré à la page déjà affichée, ou reconstruit la page affichée à partir d'une seule requête de rechargement.
- * Limites: Fonctions pures ; un rechargement ne demande jamais plus de lignes que le plafond de taille de page du backend, donc seules les lignes sous ce plafond sont rafraîchies et celles au-delà sont conservées telles qu'affichées.
+ * Limites: Fonctions pures ; un rechargement ne demande jamais plus de lignes que le plafond de taille de page du backend, donc seules les lignes sous ce plafond sont rafraîchies et celles au-delà, quand il en reste, sont conservées telles qu'affichées.
  */
 export const CumulativePageHelper = {
 	merge<M extends GenericModel>(
