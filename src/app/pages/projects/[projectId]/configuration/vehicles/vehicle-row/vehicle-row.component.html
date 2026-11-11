@@ -1,0 +1,27 @@
+<sgdf-avatar slot="start" variant="primary" shape="rounded" aria-hidden="true" [initials]="initials()" />
+<span data-test-id="vehicle-row-plate" appEllipsis>{{ vehicle().licensePlate }}</span>
+<span data-test-id="vehicle-row-description" slot="description" class="flex flex-wrap items-center gap-x-3">
+	<span appEllipsis>{{ vehicle().brand }} {{ vehicle().model }}</span>
+	@if (vehicle().startAvailability || vehicle().endAvailability) {
+		<app-availability-period [start]="vehicle().startAvailability" [end]="vehicle().endAvailability" />
+	}
+</span>
+<span slot="end" class="flex flex-wrap items-center gap-2">
+	@if (!vehicle().visible) {
+		<sgdf-tag data-test-id="vehicle-row-hidden-tag" appearance="outlined" variant="neutral" pill>
+			{{ 'vehicles.visible.false' | transloco }}
+		</sgdf-tag>
+	}
+	<sgdf-tag data-test-id="vehicle-row-status-tag" appearance="soft" pill [variant]="statusVariant()">
+		{{ vehicle().status.label }}
+	</sgdf-tag>
+	@if (primary(); as action) {
+		<app-element-primary-action [action]="action" />
+	}
+</span>
+<app-element-actions
+	data-test-id="vehicle-row-actions"
+	slot="actions"
+	[subject]="vehicle().licensePlate"
+	[actions]="menu()"
+/>

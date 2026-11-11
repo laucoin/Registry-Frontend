@@ -1,0 +1,39 @@
+<sgdf-avatar slot="start" variant="primary" aria-hidden="true" [initials]="initials()" />
+<span data-test-id="participant-row-name" appEllipsis>{{ fullName() }}</span>
+<span data-test-id="participant-row-description" slot="description" class="flex flex-wrap items-center gap-x-3">
+	@if (firstGroup(); as group) {
+		@if (otherGroups() > 0) {
+			<sgdf-button
+				data-test-id="participant-row-groups-button"
+				size="small"
+				appearance="text"
+				(click)="groupsRequested.emit(participant())"
+			>
+				{{
+					'participants.group'
+						| pluralTranslation: otherGroups() + 1
+						| transloco: { name: group.name, others: otherGroups() }
+				}}
+			</sgdf-button>
+		} @else {
+			<span>{{ group.name }}</span>
+		}
+	}
+	@if (participant().startAvailability || participant().endAvailability) {
+		<app-availability-period [start]="participant().startAvailability" [end]="participant().endAvailability" />
+	}
+</span>
+<span slot="end" class="flex flex-wrap items-center gap-2">
+	@if (!participant().visible) {
+		<sgdf-tag data-test-id="participant-row-hidden-tag" appearance="outlined" variant="neutral" pill>
+			{{ 'participants.visible.false' | transloco }}
+		</sgdf-tag>
+	}
+	<sgdf-tag data-test-id="participant-row-status-tag" appearance="soft" pill [variant]="statusVariant()">
+		{{ participant().status.label }}
+	</sgdf-tag>
+	@if (primary(); as action) {
+		<app-element-primary-action [action]="action" />
+	}
+</span>
+<app-element-actions data-test-id="participant-row-actions" slot="actions" [subject]="fullName()" [actions]="menu()" />

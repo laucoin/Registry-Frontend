@@ -1,0 +1,70 @@
+import { describe, expect, it } from 'vitest';
+
+import {
+	toVehiclesListSearchModel,
+	toVehiclesListSearchParams,
+} from '@pages/projects/[projectId]/configuration/vehicles/vehicles-list/vehicles-list.search';
+import { SortDirectionEnum } from '@shared/models/enumeration/sort-direction.enum';
+
+describe('vehicles-list search mapping', () => {
+	it('turns absent parameters into empty form values', () => {
+		// Arrange
+		const params: Parameters<typeof toVehiclesListSearchModel>[0] = {
+			q: undefined,
+			at: undefined,
+			status: undefined,
+			isVisible: undefined,
+			sort: undefined,
+		};
+
+		// Act
+		const model = toVehiclesListSearchModel(params);
+
+		// Assert
+		expect(model).toEqual({
+			q: '',
+			at: null,
+			status: '',
+			isVisible: '',
+			sortBy: '',
+			sortDirection: SortDirectionEnum.ASC,
+		});
+	});
+
+	it('turns the filled parameters into form values and back', () => {
+		// Arrange
+		const when = new Date(2026, 9, 3);
+		const params: Parameters<typeof toVehiclesListSearchModel>[0] = {
+			q: 'camp',
+			at: when,
+			status: 'IN',
+			isVisible: false,
+			sort: undefined,
+		};
+
+		// Act
+		const model = toVehiclesListSearchModel(params);
+
+		// Assert
+		expect(model.isVisible).toBe('false');
+		expect(toVehiclesListSearchParams(model)).toEqual(params);
+	});
+
+	it('turns empty form values into absent parameters', () => {
+		// Arrange
+		const model: ReturnType<typeof toVehiclesListSearchModel> = {
+			q: '',
+			at: null,
+			status: '',
+			isVisible: '',
+			sortBy: '',
+			sortDirection: SortDirectionEnum.ASC,
+		};
+
+		// Act
+		const params = toVehiclesListSearchParams(model);
+
+		// Assert
+		expect(params).toEqual({ q: undefined, at: undefined, status: undefined, isVisible: undefined });
+	});
+});

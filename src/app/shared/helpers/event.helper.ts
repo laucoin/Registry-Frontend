@@ -1,0 +1,14 @@
+/**
+ * Objectif: Lit les événements levés par les web components.
+ * Périmètre: Indique si un événement vient de l'élément qui l'écoute et non d'un élément imbriqué, et lit la valeur du champ qui l'a levé.
+ * Limites: Aucun état ; n'arrête pas la propagation.
+ */
+export const EventHelper = {
+	isFromHost(event: Event): boolean {
+		return event.target === event.currentTarget;
+	},
+
+	valueOf(event: Event): string {
+		return (event.target as HTMLElement & { value: string }).value;
+	},
+} as const;
