@@ -4,13 +4,14 @@ import { ProjectFormStepperHarness } from '@pages/projects/project-form/project-
 import { ProjectInformationFieldsHarness } from '@pages/projects/project-form/project-information-fields/testing/project-information-fields.harness';
 import { ProjectOptionsFieldsHarness } from '@pages/projects/project-form/project-options-fields/testing/project-options-fields.harness';
 import { byTestId } from '@shared/helpers/testing/harness/test-id';
+import { FormErrorHarness } from '@shared/ui/common/form-error/testing/form-error.harness';
 import { SectionErrorHarness } from '@shared/ui/common/section-error/testing/section-error.harness';
 import { SelectElementsFieldHarness } from '@shared/ui/common/select-elements-field/testing/select-elements-field.harness';
 
 /**
  * Objectif: Pilote le formulaire de création et de modification d'un projet dans les tests.
- * Périmètre: Lit le titre, le chargement et l'erreur de chargement ; donne les étapes et les champs de chaque étape ;
- * passe d'une étape à l'autre, enregistre, invite des utilisateurs ou passe l'invitation.
+ * Périmètre: Lit le titre, le chargement, l'erreur de chargement et celle de l'envoi ; donne les étapes et les champs
+ * de chaque étape ; passe d'une étape à l'autre, enregistre, invite des utilisateurs ou passe l'invitation.
  * Limites: Ne saisit pas les dates des invitations.
  */
 export class ProjectFormHarness extends ComponentHarness {
@@ -28,6 +29,7 @@ export class ProjectFormHarness extends ComponentHarness {
 	private readonly roleSelect = this.locatorFor(byTestId('project-profile-invitation-fields-role-select'));
 
 	public readonly loadError = this.locatorForOptional(SectionErrorHarness);
+	public readonly submitError = this.locatorFor(FormErrorHarness);
 	public readonly stepper = this.locatorForOptional(ProjectFormStepperHarness);
 	public readonly information = this.locatorForOptional(ProjectInformationFieldsHarness);
 	public readonly options = this.locatorForOptional(ProjectOptionsFieldsHarness);

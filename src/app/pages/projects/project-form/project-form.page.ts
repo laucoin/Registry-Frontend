@@ -34,6 +34,7 @@ import { RouteHelper } from '@shared/helpers/route.helper';
 import { ProjectModel } from '@shared/models/model/project.model';
 import { ProjectOptionModel } from '@shared/models/model/project-option.model';
 import { BaseFormComponent } from '@shared/ui/base/base-form.component';
+import { FormErrorComponent } from '@shared/ui/common/form-error/form-error.component';
 import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component';
 
 import '@sgdf/ui/button';
@@ -55,6 +56,7 @@ import '@sgdf/ui/spinner';
 		PluralTranslationPipe,
 		FormButtonPipe,
 		FormTitlePipe,
+		FormErrorComponent,
 		SectionErrorComponent,
 		ProjectProfileInvitationFieldsComponent,
 		ProjectFormStepperComponent,

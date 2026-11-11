@@ -152,7 +152,6 @@ export class ProjectFacade extends GenericFacade {
 	public createProject(project: ProjectDto): Observable<unknown> {
 		return this.api.createProject(project).pipe(
 			this.trackProjectLoader,
-			notifyOnError(this.uiFacade),
 			tap((created) => this.onProjectCreated(created)),
 			switchMap((): Observable<unknown> => this.sessionFacade.fetchCurrentUser()),
 		);
@@ -161,7 +160,6 @@ export class ProjectFacade extends GenericFacade {
 	public updateProject(id: string, project: ProjectDto, ifMatch?: string): Observable<ProjectModel> {
 		return this.api.updateProjectById(id, project, ifMatch).pipe(
 			this.trackProjectLoader,
-			notifyOnError(this.uiFacade),
 			tap((updated) => this.onProjectUpdated(updated)),
 		);
 	}

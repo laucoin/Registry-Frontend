@@ -21,6 +21,7 @@
 		[options]="facade.projectOptionsMetadata()"
 		[withInvitation]="!idParam"
 	/>
+	<app-form-error data-test-id="project-form-submit-error" [error]="error()" />
 
 	@if (activeTab() === 1) {
 		<form

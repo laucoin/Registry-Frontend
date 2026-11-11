@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 
 import { TranslocoService } from '@jsverse/transloco';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { beforeEach, describe, expect, it, Mock, MockInstance, vi } from 'vitest';
 
 import { ProjectApi } from '@core/registry/state/project.api';
@@ -208,12 +208,35 @@ describe('ProjectFacade', () => {
 		createProject.mockReturnValue(failing(ERROR_500));
 
 		// Act
-		facade.createProject({} as never).subscribe();
+		facade.createProject({} as never).subscribe({ error: () => undefined });
 
 		// Assert
 		expect(fetchCurrentUser).not.toHaveBeenCalled();
 		expect(facade.createdProjectId()).toBeUndefined();
 		expect(facade.projectLoading()).toBe(false);
+	});
+
+	it.each([
+		{
+			name: 'hands a failed creation to the form instead of a toast',
+			run: (): Observable<unknown> => facade.createProject({} as never),
+			api: (): Mock => createProject,
+		},
+		{
+			name: 'hands a failed update to the form instead of a toast',
+			run: (): Observable<unknown> => facade.updateProject('p1', {} as never),
+			api: (): Mock => updateProjectById,
+		},
+	])('$name', ({ run, api }) => {
+		// Arrange
+		api().mockReturnValue(failing(ERROR_500));
+		const received: unknown[] = [];
+
+		// Act
+		run().subscribe({ error: (error: unknown) => received.push(error) });
+
+		// Assert
+		expect([received, notify.mock.calls]).toEqual([[ERROR_500], []]);
 	});
 
 	it('reloads the user after an update only for the selected project', () => {

@@ -328,6 +328,37 @@ describe('ProjectFormPage', () => {
 			expect(back).toHaveBeenCalledTimes(1);
 		});
 
+		it.each([
+			{
+				name: 'shows the backend error inside the form when the creation fails',
+				id: undefined,
+				command: 'createProject',
+			},
+			{
+				name: 'shows the backend error inside the form when the update fails',
+				id: 'p1',
+				command: 'updateProject',
+			},
+		])('$name', async ({ id, command }) => {
+			// Arrange
+			mock(facade, command).mockReturnValue(throwError(() => ERROR_500));
+			project.set(id ? PROJECT : undefined);
+			const harness = await create(id);
+			project$.next(id ? PROJECT : undefined);
+			await toOptions(harness);
+
+			// Act
+			await harness.save();
+
+			// Assert
+			const error = await harness.submitError();
+			expect([await error.title(), await error.text(), back.mock.calls.length]).toEqual([
+				'fr.Title',
+				'fr.Message',
+				0,
+			]);
+		});
+
 		it('updates the loaded project and goes back', async () => {
 			// Arrange
 			project.set(PROJECT);
@@ -422,6 +453,19 @@ describe('ProjectFormPage', () => {
 
 			// Assert
 			expect([navigateByUrl.mock.calls, await (await harness.stepper())?.active()]).toEqual([[], 'step-3']);
+		});
+
+		it('shows the backend error inside the form when the invitation fails', async () => {
+			// Arrange
+			mock(profileFacade, 'createProjectProfiles').mockReturnValue(throwError(() => ERROR_500));
+			const harness = await toInvitation();
+			await chooseInvitation(harness);
+
+			// Act
+			await harness.invite();
+
+			// Assert
+			expect(await (await harness.submitError()).shown()).toBe(true);
 		});
 	});
 });
