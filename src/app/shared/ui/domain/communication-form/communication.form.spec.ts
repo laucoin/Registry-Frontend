@@ -41,16 +41,17 @@ describe('communication form', () => {
 		expect(kinds).toEqual([['blank'], ['maxLength']]);
 	});
 
-	it('asks for a movement or an alert on the form itself', () => {
+	it('asks for a movement or an alert on the form itself, unless the message opens a new alert', () => {
 		// Arrange
 		const none = build({ ...LINKED, movement: null });
 		const withAlert = build({ ...LINKED, movement: null, alert: ALERT_ITEM });
+		const newAlert = build({ ...LINKED, movement: null, newAlertTitle: 'Fire' }, true);
 
 		// Act
-		const kinds = [kindsOf(none()), kindsOf(withAlert())];
+		const kinds = [kindsOf(none()), kindsOf(withAlert()), kindsOf(newAlert())];
 
 		// Assert
-		expect(kinds).toEqual([['atLeastOneRequired'], []]);
+		expect(kinds).toEqual([['atLeastOneRequired'], [], []]);
 	});
 
 	it('requires the title of a new alert only while an alert is being created', () => {

@@ -55,7 +55,11 @@ export function createCommunicationForm(
 ): FieldTree<CommunicationFormModel> {
 	return form(model, (path: SchemaPathTree<CommunicationFormModel>) => {
 		RegistrySchemas.requiredText(path.message, 250);
-		RegistrySchemas.atLeastOneRequired(path, 'movement', 'alert');
+		applyWhen(
+			path,
+			() => !context.newAlert(),
+			(link) => RegistrySchemas.atLeastOneRequired(link, 'movement', 'alert'),
+		);
 		applyWhen(path.newAlertTitle, context.newAlert, (title) => RegistrySchemas.requiredText(title, 50));
 	});
 }
