@@ -1,0 +1,115 @@
+<div class="composer">
+	@if (facade.communicationError(); as failure) {
+		<app-section-error
+			data-test-id="communication-form-load-error"
+			[error]="failure"
+			[retrying]="facade.communicationLoading()"
+			(retry)="loadData()"
+		/>
+	}
+	@if (searchError(); as failure) {
+		<app-section-error data-test-id="communication-form-search-error" [error]="failure" [retryable]="false" />
+	}
+	<app-form-error data-test-id="communication-form-submit-error" [error]="error()" />
+	<app-field-error
+		data-test-id="communication-form-link-error"
+		[field]="form"
+		translationPrefix="communications.form.error.link"
+	/>
+	@if (movementSelectorVisible() || GenericHelper.nonNull(alertSelectorMode())) {
+		<sgdf-divider />
+	}
+	@if (GenericHelper.isNull(facade.communication())) {
+		@if (movementSelectorVisible()) {
+			<app-communication-link-select
+				data-test-id="communication-form-movement-field"
+				translationPrefix="communications.form.error.movement"
+				[label]="'communications.form.movement.title' | transloco"
+				[placeholder]="
+					'communications.form.placeholder.movement'
+						| transloco: { date: now | dateFormat: DateFormatTypeEnum.DATETIME }
+				"
+				[emptyLabel]="'communications.form.movement.empty-search' | transloco"
+				[removeLabel]="'communications.form.actions.remove-movement' | transloco"
+				[choices]="movementChoices()"
+				[selectedKey]="selectedMovementKey()"
+				[field]="form.movement"
+				(searched)="handleMovementSearch($event)"
+				(selected)="selectMovement($event)"
+				(left)="form.movement().markAsTouched()"
+				(removed)="removeMovementField()"
+			/>
+		}
+		@if (alertSelectorMode() === AlertModulableFieldEnum.SELECT) {
+			<app-communication-link-select
+				data-test-id="communication-form-alert-field"
+				translationPrefix="communications.form.error.alert"
+				[label]="'communications.form.alert.title' | transloco"
+				[placeholder]="
+					'communications.form.placeholder.alert' | transloco: { date: now | dateFormat: DateFormatTypeEnum.DATETIME }
+				"
+				[emptyLabel]="'communications.form.alert.empty-search' | transloco"
+				[removeLabel]="'communications.form.actions.remove-alert' | transloco"
+				[choices]="alertChoices()"
+				[selectedKey]="selectedAlertKey()"
+				[field]="form.alert"
+				(searched)="handleAlertSearch($event)"
+				(selected)="selectAlert($event)"
+				(left)="form.alert().markAsTouched()"
+				(removed)="removeAlertField()"
+			/>
+		}
+		@if (alertSelectorMode() === AlertModulableFieldEnum.NEW) {
+			<app-communication-new-alert-field
+				data-test-id="communication-form-new-alert-field"
+				[field]="form.newAlertTitle"
+				(submitted)="submit()"
+				(removed)="removeAlertField()"
+			/>
+		}
+	}
+	@if (hasLinkField()) {
+		<span class="font-semibold" aria-hidden="true">{{ 'communications.form.message' | transloco }}</span>
+	}
+	<div class="composer-row">
+		@if (GenericHelper.nonNull(facade.communication())) {
+			<sgdf-icon-button
+				data-test-id="communication-form-reset-form-button"
+				name="xmark"
+				library="solid"
+				[label]="'global.actions.reset' | transloco"
+				(click)="resetForm()"
+			/>
+		} @else if (actions().length > 0) {
+			<app-communication-field-menu data-test-id="communication-form-field-menu" [actions]="actions()" />
+		}
+		<sgdf-textarea
+			data-test-id="communication-form-message-textarea"
+			appSgdfField
+			rows="1"
+			resize="auto"
+			without-label
+			[label]="('communications.form.message' | transloco) + '. ' + ('communications.form.hint.message' | transloco)"
+			[placeholder]="'communications.form.message' | transloco"
+			[formField]="form.message"
+			[appFieldError]="form.message"
+			translationPrefix="communications.form.error.message"
+			(keydown)="submitOnShortcut($any($event))"
+		/>
+		<sgdf-icon-button
+			data-test-id="communication-form-submit-button"
+			variant="primary"
+			library="solid"
+			[disabled]="saving()"
+			[name]="GenericHelper.nonNull(facade.communication()) ? 'check' : 'paper-plane'"
+			[label]="
+				(GenericHelper.nonNull(facade.communication()) ? 'global.actions.edit' : 'global.actions.create') | transloco
+			"
+			(click)="submit()"
+		/>
+	</div>
+	<small data-test-id="communication-form-hint" class="hint" aria-hidden="true"
+		>{{ 'communications.form.hint.message' | transloco }}
+		{{ 'communications.form.hint.shortcut' | transloco: { keys: shortcutLabel } }}</small
+	>
+</div>

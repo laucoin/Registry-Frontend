@@ -1,0 +1,34 @@
+<sgdf-page-title
+	data-test-id="groups-list-title"
+	[eyebrow]="'projectEyebrow.configuration' | transloco"
+	[lede]="'groups.list.subtitle' | transloco"
+>
+	{{ 'groups.list.title' | transloco }}
+	<ng-container *appIfProjectAuthority="createAuthority">
+		<sgdf-button data-test-id="groups-list-create-button" slot="actions" variant="primary" [routerLink]="createRoute">
+			<sgdf-icon slot="prefix" name="plus" library="solid" />
+			{{ 'global.actions.create' | transloco }}
+		</sgdf-button>
+	</ng-container>
+</sgdf-page-title>
+
+<app-list
+	data-test-id="groups-list-list"
+	class="mt-(--spacing--block) block"
+	emptyMessagePrefix="activities.notifications.EMPTY"
+	[elementPage]="facade.groupsPage()"
+	[error]="facade.groupsPageError()"
+	[loading]="facade.groupsPageLoading()"
+	[loadingMore]="facade.groupsPageSilentLoading()"
+	[activeFilters]="activeFilters()"
+	(updateRequired)="loadBatch($event)"
+	(filtersReset)="resetFilters()"
+>
+	<ng-template appTemplate="search">
+		<app-groups-search-fields [form]="form" (searched)="searchQuery.submit()" />
+	</ng-template>
+
+	<ng-template appTemplate="element" let-group>
+		<sgdf-list-item data-test-id="group-row" [attr.data-id]="group.id" appGroupRow [group]="group" />
+	</ng-template>
+</app-list>

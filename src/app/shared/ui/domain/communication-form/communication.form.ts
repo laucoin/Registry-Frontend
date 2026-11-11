@@ -1,0 +1,61 @@
+import { WritableSignal } from '@angular/core';
+import { applyWhen, FieldTree, form, SchemaPathTree } from '@angular/forms/signals';
+
+import { RegistrySchemas } from '@shared/helpers/form/registry.schemas';
+import { AlertDto } from '@shared/models/dto/alert.dto';
+import { CommunicationDto } from '@shared/models/dto/communication.dto';
+import { AlertModel } from '@shared/models/model/alert.model';
+import { CommunicationModel } from '@shared/models/model/communication.model';
+import { MovementModel } from '@shared/models/model/movement.model';
+import { SelectOptionModel } from '@shared/models/model/select-option.model';
+
+export interface CommunicationFormModel {
+	message: string;
+	movement: SelectOptionModel<MovementModel> | null;
+	alert: SelectOptionModel<AlertModel> | null;
+	newAlertTitle: string;
+}
+
+interface CommunicationFormContext {
+	newAlert: () => boolean;
+}
+
+export function emptyCommunicationFormModel(): CommunicationFormModel {
+	return { message: '', movement: null, alert: null, newAlertTitle: '' };
+}
+
+function dateTimeOf(communication: CommunicationModel | undefined): string {
+	return (communication?.dateTime ? new Date(communication.dateTime) : new Date()).toISOString();
+}
+
+export function toCommunicationDto(
+	model: CommunicationFormModel,
+	communication?: CommunicationModel,
+): CommunicationDto {
+	return {
+		dateTime: dateTimeOf(communication),
+		message: model.message,
+		movementId: model.movement?.value.id,
+		alertId: model.alert?.value.id,
+	};
+}
+
+export function toNewAlertDto(model: CommunicationFormModel, communication?: CommunicationModel): AlertDto {
+	return {
+		title: model.newAlertTitle,
+		dateTime: dateTimeOf(communication),
+		message: model.message,
+		movementId: model.movement?.value.id,
+	};
+}
+
+export function createCommunicationForm(
+	model: WritableSignal<CommunicationFormModel>,
+	context: CommunicationFormContext,
+): FieldTree<CommunicationFormModel> {
+	return form(model, (path: SchemaPathTree<CommunicationFormModel>) => {
+		RegistrySchemas.requiredText(path.message, 250);
+		RegistrySchemas.atLeastOneRequired(path, 'movement', 'alert');
+		applyWhen(path.newAlertTitle, context.newAlert, (title) => RegistrySchemas.requiredText(title, 50));
+	});
+}

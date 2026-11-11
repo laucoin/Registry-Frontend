@@ -1,0 +1,30 @@
+<sgdf-page-title
+	data-test-id="alerts-list-title"
+	[eyebrow]="'projectEyebrow.monitoring' | transloco"
+	[lede]="'alerts.list.subtitle' | transloco"
+>
+	{{ 'alerts.list.title' | transloco }}
+</sgdf-page-title>
+
+<app-alerts-statistics data-test-id="alerts-list-statistics" class="mt-(--spacing--block) block" />
+
+<app-list
+	data-test-id="alerts-list-list"
+	class="mt-(--spacing--block) block"
+	emptyMessagePrefix="alerts.notifications.EMPTY"
+	[elementPage]="facade.alertsPage()"
+	[error]="facade.alertsPageError()"
+	[loading]="facade.alertsPageLoading()"
+	[loadingMore]="facade.alertsPageSilentLoading()"
+	[activeFilters]="activeFilters()"
+	(updateRequired)="loadBatch($event)"
+	(filtersReset)="resetFilters()"
+>
+	<ng-template appTemplate="search">
+		<app-alerts-search-fields [form]="form" (searched)="searchQuery.submit()" />
+	</ng-template>
+
+	<ng-template appTemplate="element" let-alert>
+		<sgdf-list-item data-test-id="alert-row" [attr.data-id]="alert.id" appAlertElement [alert]="alert" />
+	</ng-template>
+</app-list>

@@ -1,0 +1,52 @@
+<sgdf-page-title
+	data-test-id="participants-list-title"
+	[eyebrow]="'projectEyebrow.configuration' | transloco"
+	[lede]="'participants.list.subtitle' | transloco"
+>
+	{{ 'participants.list.title' | transloco }}
+	<ng-container *appIfProjectAuthority="createAuthority">
+		<sgdf-button
+			data-test-id="participants-list-create-button"
+			slot="actions"
+			variant="primary"
+			[routerLink]="createRoute"
+		>
+			<sgdf-icon slot="prefix" name="plus" library="solid" />
+			{{ 'global.actions.create' | transloco }}
+		</sgdf-button>
+	</ng-container>
+</sgdf-page-title>
+
+<app-list
+	data-test-id="participants-list-list"
+	class="mt-(--spacing--block) block"
+	emptyMessagePrefix="participants.notifications.EMPTY"
+	[elementPage]="facade.participantsPage()"
+	[error]="facade.participantsPageError()"
+	[loading]="facade.participantsPageLoading()"
+	[loadingMore]="facade.participantsPageSilentLoading()"
+	[activeFilters]="activeFilters()"
+	(updateRequired)="loadBatch($event)"
+	(filtersReset)="resetFilters()"
+>
+	<ng-template appTemplate="search">
+		<app-participants-search-fields
+			[form]="form"
+			[sortFields]="sortFields"
+			[hiddenAuthority]="hiddenAuthority"
+			(searched)="searchQuery.submit()"
+		/>
+	</ng-template>
+
+	<ng-template appTemplate="element" let-participant>
+		<sgdf-list-item
+			data-test-id="participant-row"
+			[attr.data-id]="participant.id"
+			appParticipantRow
+			[participant]="participant"
+			(groupsRequested)="groupsOf.set($event)"
+		/>
+	</ng-template>
+</app-list>
+
+<app-participant-groups-dialog [participant]="groupsOf()" (closed)="groupsOf.set(undefined)" />

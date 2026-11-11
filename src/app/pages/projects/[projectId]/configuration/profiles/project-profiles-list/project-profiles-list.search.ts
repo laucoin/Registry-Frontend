@@ -1,0 +1,53 @@
+import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice';
+import { formatSort, parseSort, SortFields } from '@shared/helpers/search/sort-query';
+
+export const PROJECT_PROFILES_LIST_SORT_FIELDS: readonly string[] = ['startAccess', 'endAccess', 'status'];
+
+interface ProjectProfilesListSearch {
+	q: string | undefined;
+	at: Date | undefined;
+	status: string | undefined;
+	isAvailable: boolean | undefined;
+	isVisible: boolean | undefined;
+	sort: string | undefined;
+}
+
+export interface ProjectProfilesListSearchModel extends SortFields {
+	q: string;
+	at: Date | null;
+	status: string;
+	isAvailable: BooleanChoice;
+	isVisible: BooleanChoice;
+}
+
+/**
+ * Objectif: Convertit les paramètres de recherche de la liste des profils de projet en valeurs liées au formulaire de recherche.
+ * Périmètre: Remplit les paramètres vides avec les valeurs par défaut du formulaire.
+ * Limites: Ne valide pas les paramètres.
+ */
+export function toProjectProfilesListSearchModel(params: ProjectProfilesListSearch): ProjectProfilesListSearchModel {
+	return {
+		q: params.q ?? '',
+		at: params.at ?? null,
+		status: params.status ?? '',
+		isAvailable: toBooleanChoice(params.isAvailable),
+		isVisible: toBooleanChoice(params.isVisible),
+		...parseSort(params.sort, PROJECT_PROFILES_LIST_SORT_FIELDS),
+	};
+}
+
+/**
+ * Objectif: Convertit les valeurs du formulaire de recherche en paramètres de recherche de la liste des profils de projet.
+ * Périmètre: Transforme les valeurs vides du formulaire en paramètres undefined.
+ * Limites: Ne valide pas les valeurs du formulaire.
+ */
+export function toProjectProfilesListSearchParams(model: ProjectProfilesListSearchModel): ProjectProfilesListSearch {
+	return {
+		q: model.q === '' ? undefined : model.q,
+		at: model.at ?? undefined,
+		status: model.status === '' ? undefined : model.status,
+		isAvailable: fromBooleanChoice(model.isAvailable),
+		isVisible: fromBooleanChoice(model.isVisible),
+		sort: formatSort(model),
+	};
+}

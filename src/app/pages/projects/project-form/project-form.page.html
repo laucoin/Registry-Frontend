@@ -1,0 +1,113 @@
+@if (loadError(); as error) {
+	<app-section-error
+		data-test-id="project-form-error"
+		[error]="error"
+		[retrying]="facade.projectLoading()"
+		(retry)="loadData()"
+	/>
+} @else if (!form().touched() && facade.projectLoading()) {
+	<div class="flex justify-center">
+		<sgdf-spinner />
+	</div>
+} @else {
+	@let title = 'projects.form.title' | formTitle: facade.project() | transloco: { name: facade.project()?.name };
+	<sgdf-page-title data-test-id="project-form-title">{{
+		activeTab() === 3 ? ('project-profiles.form.title.create' | transloco: { name: createdProjectName() }) : title
+	}}</sgdf-page-title>
+	<app-project-form-stepper
+		data-test-id="project-form-stepper"
+		[active]="activeTab()"
+		[label]="title"
+		[options]="facade.projectOptionsMetadata()"
+		[withInvitation]="!idParam"
+	/>
+
+	@if (activeTab() === 1) {
+		<form
+			novalidate
+			data-test-id="project-form-information-form"
+			class="mt-4"
+			(submit)="$event.preventDefault(); next()"
+		>
+			<app-project-information-fields data-test-id="project-form-information-fields" [form]="form" />
+			<div class="flex items-center justify-between pt-4">
+				<sgdf-button
+					data-test-id="project-form-information-cancel-button"
+					variant="neutral"
+					appearance="text"
+					(click)="navigateToRedirectUri()"
+				>
+					{{ 'global.actions.cancel' | transloco }}
+				</sgdf-button>
+				<sgdf-button data-test-id="project-form-information-next-submit" variant="primary" appearance="outlined" submit>
+					{{ 'global.actions.next' | transloco }}
+					<sgdf-icon slot="suffix" class="max-sm:hidden" name="arrow-right" library="solid" />
+				</sgdf-button>
+			</div>
+		</form>
+	} @else if (activeTab() === 3) {
+		<sgdf-callout
+			data-test-id="project-form-created-callout"
+			class="mt-4"
+			variant="success"
+			[title]="'projects.form.invitation.created.title' | transloco: { name: createdProjectName() }"
+		>
+			{{ 'projects.form.invitation.created.message' | transloco }}
+		</sgdf-callout>
+		<form
+			novalidate
+			data-test-id="project-form-invitation-form"
+			class="mt-4"
+			(submit)="$event.preventDefault(); invite()"
+		>
+			<sgdf-card>
+				<app-project-profile-invitation-fields [fields]="invitationForm" [projectId]="createdProjectId()" />
+			</sgdf-card>
+			<div class="flex items-center justify-between pt-4">
+				<sgdf-button
+					data-test-id="project-form-invitation-skip-button"
+					variant="neutral"
+					appearance="text"
+					[disabled]="saving()"
+					(click)="skip()"
+				>
+					{{ 'projects.form.invitation.skip' | transloco }}
+					<sgdf-icon slot="suffix" name="arrow-right" library="solid" />
+				</sgdf-button>
+				<sgdf-button data-test-id="project-form-invitation-submit" variant="primary" submit [loading]="saving()">
+					<sgdf-icon slot="prefix" class="max-sm:hidden" name="user-plus" library="solid" />
+					{{ 'project-profiles.actions.invite-user' | pluralTranslation: invitationModel().users.length | transloco }}
+				</sgdf-button>
+			</div>
+		</form>
+	} @else {
+		<form novalidate data-test-id="project-form-options-form" class="mt-4" (submit)="$event.preventDefault(); submit()">
+			<app-project-options-fields
+				data-test-id="project-form-options-fields"
+				[form]="optionsForm"
+				[options]="facade.projectOptionsMetadata()"
+				[(model)]="optionsModel"
+			/>
+			<div class="flex items-center justify-between pt-4">
+				<sgdf-button
+					data-test-id="project-form-options-previous-button"
+					variant="neutral"
+					appearance="text"
+					(click)="activeTab.set(1)"
+				>
+					<sgdf-icon slot="prefix" class="max-sm:hidden" name="arrow-left" library="solid" />
+					{{ 'global.actions.previous' | transloco }}
+				</sgdf-button>
+				<sgdf-button data-test-id="project-form-options-submit" variant="primary" submit [loading]="saving()">
+					<sgdf-icon
+						slot="prefix"
+						class="max-sm:hidden"
+						[name]="facade.project() ? 'pen-to-square' : 'plus'"
+						library="solid"
+					/>
+					{{ facade.project() | formButton | transloco }}
+				</sgdf-button>
+			</div>
+		</form>
+	}
+}

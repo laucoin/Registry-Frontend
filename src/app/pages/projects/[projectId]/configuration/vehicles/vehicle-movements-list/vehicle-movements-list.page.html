@@ -1,0 +1,16 @@
+<app-element-movements-list [movements]="movements">
+	<app-presence-timeline
+		data-test-id="vehicle-movements-list-timeline"
+		class="mt-(--spacing--block) block"
+		[planned]="facade.vehicleTimeline()?.planned ?? []"
+		[actual]="facade.vehicleTimeline()?.actual ?? []"
+		[projectBegin]="session.selectedProject()?.begin"
+		[projectEnd]="session.selectedProject()?.end"
+		[loading]="facade.vehicleTimelineLoading()"
+		[error]="facade.vehicleTimelineError()"
+		(retry)="movements.retryDetails()"
+	/>
+	@if (!facade.vehicleTimelineError()) {
+		<app-vehicle-statistics data-test-id="vehicle-movements-list-statistics" />
+	}
+</app-element-movements-list>
