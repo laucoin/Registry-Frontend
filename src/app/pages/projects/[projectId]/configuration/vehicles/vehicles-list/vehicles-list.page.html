@@ -20,6 +20,7 @@
 
 <app-list
 	data-test-id="vehicles-list-list"
+	[label]="'vehicles.list.title' | transloco"
 	class="mt-(--spacing--block) block"
 	emptyMessagePrefix="vehicles.notifications.EMPTY"
 	[elementPage]="facade.vehiclesPage()"

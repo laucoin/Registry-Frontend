@@ -16,6 +16,7 @@ import { autoMock } from '@shared/helpers/testing/auto-mock';
 import { REFRESH_SERVICE_STUB } from '@shared/helpers/testing/refresh-service.stub';
 import { GroupModel } from '@shared/models/model/group.model';
 import { PageModel } from '@shared/models/model/page.model';
+import { ListHarness } from '@shared/ui/common/list/testing/list.harness';
 
 @Component({ template: '' })
 class EmptyComponent {}
@@ -105,6 +106,30 @@ describe('GroupsListPage', () => {
 			[[undefined, undefined, undefined, undefined, undefined]],
 			[[undefined, undefined]],
 		]);
+	});
+
+	it.each([
+		{
+			name: 'names the list after the groups',
+			page: pageOf(['g1']),
+			read: (list: ListHarness): Promise<string | undefined> => list.listLabel(),
+			expected: 'groups.list.title',
+		},
+		{
+			name: 'shows the empty message of the groups',
+			page: pageOf([]),
+			read: (list: ListHarness): Promise<string | undefined> => list.emptyTitle(),
+			expected: 'groups.notifications.EMPTY.title',
+		},
+	])('$name', async ({ page, read, expected }) => {
+		// Arrange
+		const harness = await create(page);
+
+		// Act
+		const text = await read(await harness.list());
+
+		// Assert
+		expect(text).toBe(expected);
 	});
 
 	it('starts from the text and the sort carried by the url', async () => {

@@ -29,7 +29,7 @@ class HostComponent {
 	public readonly loadingMore = signal(false);
 	public readonly filters = signal(0);
 	public readonly withEmpty = signal(true);
-	public readonly label: WritableSignal<string | undefined> = signal(undefined);
+	public readonly label = signal('Elements');
 	public events: PageEventModel[] = [];
 	public resets = 0;
 }
@@ -111,23 +111,16 @@ describe('ListComponent', () => {
 		expect(await list.lastRefreshText()).toBe('fr.global.date-and-time-format.last-refresh');
 	});
 
-	it.each([
-		{
-			name: 'names the list after the empty message prefix by default',
-			label: undefined,
-			expected: 'fr.global.notifications.EMPTY.title',
-		},
-		{ name: 'names the list with the label given by the page', label: 'Users', expected: 'Users' },
-	])('$name', async ({ label, expected }) => {
+	it('names the list with the label given by the page, not with the empty message', async () => {
 		// Arrange
-		host.label.set(label);
+		host.label.set('Users');
 		host.page.set(pageOf(['a'], 0, 1));
 
 		// Act
 		const { list } = await harnesses();
 
 		// Assert
-		expect(await list.listLabel()).toBe(expected);
+		expect(await list.listLabel()).toBe('Users');
 	});
 
 	it('shows the search template in the search area, with the count of active filters', async () => {

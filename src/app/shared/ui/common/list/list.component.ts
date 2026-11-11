@@ -68,7 +68,7 @@ export class ListComponent<T extends GenericModel> {
 	public readonly loadingMore = input(false);
 	public readonly activeFilters = input(0);
 	public readonly emptyMessagePrefix = input('global.notifications.EMPTY');
-	public readonly label: InputSignal<string | undefined> = input();
+	public readonly label: InputSignal<string> = input.required<string>();
 
 	public readonly updateRequired: OutputEmitterRef<PageEventModel> = output();
 	public readonly filtersReset = output();

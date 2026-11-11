@@ -8,6 +8,7 @@
 
 <app-list
 	data-test-id="users-list-list"
+	[label]="'users.list.title' | transloco"
 	class="mt-(--spacing--block) block"
 	emptyMessagePrefix="users.notifications.EMPTY"
 	[elementPage]="facade.usersPage()"

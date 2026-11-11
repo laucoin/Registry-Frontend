@@ -10,6 +10,7 @@
 
 <app-list
 	data-test-id="alerts-list-list"
+	[label]="'alerts.list.title' | transloco"
 	class="mt-(--spacing--block) block"
 	emptyMessagePrefix="alerts.notifications.EMPTY"
 	[elementPage]="facade.alertsPage()"

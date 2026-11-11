@@ -29,6 +29,7 @@
 
 <app-list
 	data-test-id="movements-list-list"
+	[label]="'movements.list.title' | transloco"
 	class="mt-(--spacing--block) block"
 	emptyMessagePrefix="movements.notifications.EMPTY"
 	[elementPage]="facade.movementsPage()"

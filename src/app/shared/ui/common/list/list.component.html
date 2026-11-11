@@ -73,11 +73,7 @@
 			</sgdf-callout>
 		}
 	} @else if (elementPage(); as page) {
-		<sgdf-list
-			data-test-id="list-elements"
-			[label]="label() ?? (emptyMessagePrefix() + '.title' | transloco)"
-			appearance="text"
-		>
+		<sgdf-list data-test-id="list-elements" [label]="label()" appearance="text">
 			@for (element of page.content; track element.id) {
 				<ng-container [ngTemplateOutlet]="getTemplate('element')" [ngTemplateOutletContext]="{ $implicit: element }" />
 			}

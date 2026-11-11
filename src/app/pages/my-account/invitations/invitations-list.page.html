@@ -7,6 +7,7 @@
 
 <app-list
 	data-test-id="invitations-list-list"
+	[label]="'project-profiles.pages.invitations.title' | transloco"
 	class="mt-(--spacing--block) block"
 	emptyMessagePrefix="project-profiles.notifications.EMPTY"
 	[elementPage]="userProfileFacade.userProjectProfileInvitationsPage()"

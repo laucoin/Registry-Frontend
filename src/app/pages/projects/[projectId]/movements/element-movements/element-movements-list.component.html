@@ -19,6 +19,7 @@
 
 <app-list
 	data-test-id="element-movements-list-list"
+	[label]="movements().title() ?? ('movements.list.title' | transloco)"
 	class="mt-(--spacing--block) block"
 	emptyMessagePrefix="movements.notifications.EMPTY"
 	[elementPage]="movements().page()"

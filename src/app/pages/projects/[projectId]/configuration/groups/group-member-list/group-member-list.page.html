@@ -39,6 +39,7 @@
 
 <app-list
 	data-test-id="group-member-list-list"
+	[label]="group()?.name ?? ('groups.list.title' | transloco)"
 	class="mt-(--spacing--block) block"
 	emptyMessagePrefix="participants.notifications.EMPTY"
 	[elementPage]="facade.groupMembersPage()"

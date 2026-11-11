@@ -14,6 +14,7 @@
 
 <app-list
 	data-test-id="projects-list-list"
+	[label]="'projects.list.title' | transloco"
 	class="mt-(--spacing--block) block"
 	emptyMessagePrefix="projects.notifications.EMPTY"
 	[elementPage]="facade.projectsPage()"
