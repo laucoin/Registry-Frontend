@@ -5,7 +5,7 @@ import { ListHarness } from '@shared/ui/common/list/testing/list.harness';
 
 /**
  * Objectif: Pilote la page des invitations de l'utilisateur dans les tests.
- * Périmètre: Donne la liste partagée, lit et saisit le texte recherché, et suit les actions de l'état vide.
+ * Périmètre: Donne la liste partagée, lit et saisit le texte recherché, lit le titre de l'état vide et suit ses actions.
  * Limites: Ne pilote ni la date de recherche ni le tri, ni les lignes de profil (harnesses de leurs composants).
  */
 export class InvitationsListHarness extends ComponentHarness {
@@ -30,6 +30,10 @@ export class InvitationsListHarness extends ComponentHarness {
 
 	public async emptyShown(): Promise<boolean> {
 		return (await this.emptyCallout()) !== null;
+	}
+
+	public async emptyTitle(): Promise<string | undefined> {
+		return (await this.emptyCallout())?.getProperty<string>('title');
 	}
 
 	public async createProject(): Promise<void> {

@@ -9,7 +9,7 @@
 	data-test-id="invitations-list-list"
 	[label]="'project-profiles.pages.invitations.title' | transloco"
 	class="mt-(--spacing--block) block"
-	emptyMessagePrefix="project-profiles.notifications.EMPTY"
+	emptyMessagePrefix="project-profiles.notifications.EMPTY-INVITATION"
 	[elementPage]="userProfileFacade.userProjectProfileInvitationsPage()"
 	[error]="userProfileFacade.userProjectProfileInvitationsPageError()"
 	[loading]="userProfileFacade.userProjectProfileInvitationsPageLoading()"
@@ -52,7 +52,7 @@
 		<sgdf-callout
 			data-test-id="invitations-list-empty-callout"
 			variant="neutral"
-			[title]="'project-profiles.notifications.EMPTY-INVITATION.message' | transloco"
+			[title]="'project-profiles.notifications.EMPTY-INVITATION.title' | transloco"
 		>
 			<div class="flex flex-col items-start gap-(--spacing--in-block)">
 				<span>{{ 'project-profiles.empty-invitation' | transloco }}</span>

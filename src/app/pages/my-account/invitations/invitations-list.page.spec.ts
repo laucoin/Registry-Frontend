@@ -149,6 +149,17 @@ describe('InvitationsListPage', () => {
 		]);
 	});
 
+	it('titles the empty state after the invitations', async () => {
+		// Arrange
+		const harness = await create();
+
+		// Act
+		const title = await harness.emptyTitle();
+
+		// Assert
+		expect(title).toBe('project-profiles.notifications.EMPTY-INVITATION.title');
+	});
+
 	it.each([
 		{
 			name: 'create a project',
