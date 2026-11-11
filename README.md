@@ -35,9 +35,9 @@ Il faut installer un environnement Node. Il y a deux possibilités.
 #### Node Version Management (recommandé)
 
 1. Install [NVM](https://github.com/nvm-sh/nvm#installing-and-updating)
-2. Installer ensuite Node (`^26`, la CI tourne sur Node 26 LTS)
+2. Installer ensuite Node (`>=26`, la CI tourne sur Node 26 LTS)
    ```shell
-   nvm install <version>
+   nvm install
    ```
 
 #### Installation classique
