@@ -1,6 +1,6 @@
 /**
  * Objectif: Complète l'environnement jsdom utilisé par les tests unitaires.
- * Périmètre: Écarte les avertissements de jsdom sur les feuilles de style des web components qu'il ne sait pas analyser, donne aux custom elements associés aux formulaires de @sgdf/ui les membres d'ElementInternals que jsdom n'a pas, aux éléments de dialogue les méthodes qui les ouvrent et les ferment, la liste d'animations que lisent les web components et un `ResizeObserver` qui n'observe rien.
+ * Périmètre: Écarte les avertissements de jsdom sur les feuilles de style des web components qu'il ne sait pas analyser, donne aux custom elements associés aux formulaires de @sgdf/ui les membres d'ElementInternals que jsdom n'a pas, aux éléments de dialogue les méthodes qui les ouvrent et les ferment, la liste d'animations que lisent les web components, un `ResizeObserver` qui n'observe rien et les storages de jsdom que le `localStorage` natif de Node 25+, indéfini sans `--localstorage-file`, masque.
  * Limites: Simples substituts ; chaque élément est valide, rien n'est validé ni soumis et un dialogue n'est pas affiché dans la top layer.
  */
 interface JsdomErrorEmitter {
@@ -15,6 +15,14 @@ jsdomConsole?.removeAllListeners('jsdomError');
 jsdomConsole?.on('jsdomError', (error: Error & { type?: string }): void => {
 	if (error.type !== 'css-parsing') console.error(error);
 });
+
+const jsdomWindow: Window | undefined = (globalThis as { jsdom?: { window: Window } }).jsdom?.window;
+
+if (jsdomWindow) {
+	for (const name of ['localStorage', 'sessionStorage'] as const) {
+		Object.defineProperty(globalThis, name, { value: jsdomWindow[name], configurable: true, writable: true });
+	}
+}
 
 const attachInternals: typeof HTMLElement.prototype.attachInternals = HTMLElement.prototype.attachInternals;
 
