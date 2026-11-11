@@ -1,0 +1,69 @@
+<sgdf-table class="h-full [&::part(grid)]:h-full [&::part(grid)]:table-fixed" appearance="soft">
+	<sgdf-table-row class="h-px">
+		<sgdf-table-cell header class="flex items-center gap-1">
+			<sgdf-icon [name]="icon()" library="solid" />
+			<h2 data-test-id="project-overview-card-title" class="text-sm font-semibold uppercase">
+				{{ translationPrefix() + '.title' | transloco }}
+			</h2>
+			@if (total() !== undefined) {
+				<sgdf-tag
+					data-test-id="project-overview-card-total"
+					class="ml-auto"
+					size="small"
+					variant="info"
+					appearance="soft"
+				>
+					{{ translationPrefix() + '.total' | transloco: { count: total() } }}
+				</sgdf-tag>
+			}
+		</sgdf-table-cell>
+	</sgdf-table-row>
+
+	<sgdf-table-row>
+		<sgdf-table-cell class="h-full p-0 align-top">
+			<div class="flex h-full flex-col sm:flex-row">
+				@for (stat of stats(); track stat.labelKey) {
+					@if (!$first) {
+						<sgdf-divider class="m-0 sm:hidden" appearance="soft" />
+						<sgdf-divider class="h-auto shrink-0 self-stretch max-sm:hidden" appearance="soft" orientation="vertical" />
+					}
+					<div data-test-id="project-overview-card-stat" class="flex min-w-0 flex-1 flex-col items-start gap-1 p-4">
+						<span data-test-id="project-overview-card-stat-label" class="text-xs uppercase">{{
+							translationPrefix() + '.' + stat.labelKey | transloco
+						}}</span>
+						<strong data-test-id="project-overview-card-stat-value" class="text-3xl font-bold">{{
+							stat.value ?? '–'
+						}}</strong>
+					</div>
+				}
+			</div>
+		</sgdf-table-cell>
+	</sgdf-table-row>
+
+	@if (lastRefresh()) {
+		<sgdf-table-row class="h-px">
+			<sgdf-table-cell data-test-id="project-overview-card-last-refresh" class="align-bottom text-xs opacity-80">
+				{{
+					'global.date-and-time-format.last-refresh'
+						| transloco: { datetime: lastRefresh() | dateFormat: DateFormatTypeEnum.DATETIME }
+				}}
+			</sgdf-table-cell>
+		</sgdf-table-row>
+	}
+
+	@if (showLink()) {
+		<sgdf-table-row class="h-px">
+			<sgdf-table-cell class="align-bottom">
+				<sgdf-button
+					data-test-id="project-overview-card-see-all-button"
+					block
+					size="small"
+					appearance="text"
+					[routerLink]="link()"
+				>
+					{{ translationPrefix() + '.seeAll' | transloco }}
+				</sgdf-button>
+			</sgdf-table-cell>
+		</sgdf-table-row>
+	}
+</sgdf-table>

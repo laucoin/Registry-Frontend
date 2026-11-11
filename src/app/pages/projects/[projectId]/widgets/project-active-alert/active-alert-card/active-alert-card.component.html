@@ -1,0 +1,48 @@
+<sgdf-callout
+	data-test-id="active-alert-card-callout"
+	class="w-full [&::part(base)]:h-full [&::part(content)]:flex [&::part(content)]:self-stretch [&::part(content)]:flex-1 [&::part(content)]:flex-col [&::part(message)]:flex [&::part(message)]:flex-1 [&::part(message)]:flex-col"
+	[variant]="card().variant"
+	[title]="untitled() ? ('projectHome.activeAlert.untitled' | transloco) : card().alert.title"
+>
+	@if (untitled()) {
+		<span data-test-id="active-alert-card-untitled" slot="title" class="untitled font-normal italic">{{
+			'projectHome.activeAlert.untitled' | transloco
+		}}</span>
+	}
+	<p data-test-id="active-alert-card-age">
+		{{ card().alert.criticality?.label }}
+		@if (card().age; as age) {
+			@if (card().alert.criticality?.label) {
+				·
+			}
+			{{ age | intervalFormat: 'global.date-and-time-format' : true }}
+		}
+	</p>
+	@if (card().alert.lastCommunication; as last) {
+		<p data-test-id="active-alert-card-last-communication" class="line-clamp-3" [title]="last.message ?? ''">
+			{{
+				'projectHome.activeAlert.lastCommunication'
+					| transloco: { date: (last.dateTime | dateFormat: DateFormatTypeEnum.DATETIME) }
+			}}
+			@if (last.message) {
+				· {{ last.message }}
+			}
+		</p>
+	}
+	@if (canCommunicate()) {
+		<sgdf-button
+			data-test-id="active-alert-card-communicate-button"
+			class="mt-auto self-start"
+			size="small"
+			appearance="outlined"
+			[variant]="card().variant"
+			(click)="communicate.emit()"
+		>
+			<sgdf-icon slot="prefix" name="comments" library="regular" />
+			{{ 'projectHome.communicate' | transloco }}
+			<span class="sr-only"
+				>({{ untitled() ? ('projectHome.activeAlert.untitled' | transloco) : card().alert.title }})</span
+			>
+		</sgdf-button>
+	}
+</sgdf-callout>

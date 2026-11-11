@@ -1,0 +1,62 @@
+<div class="flex flex-col gap-3">
+	<sgdf-select
+		data-test-id="registered-vehicles-fields-vehicle-select"
+		with-search
+		without-filter
+		with-reset-on-select
+		[label]="'movements.form.vehicles.search' | transloco"
+		[attr.no-results-label]="'movements.form.vehicles.empty-search' | transloco"
+		(sgdf-show)="search('')"
+		(sgdf-search)="search($any($event).detail.query)"
+		(change)="choose($event)"
+	>
+		@for (option of options(); track option.value.id) {
+			<sgdf-option [value]="option.value.id">{{ option.label }}</sgdf-option>
+		}
+	</sgdf-select>
+	<h2 class="section-title">
+		{{ 'movements.form.vehicles.selected' | pluralTranslation: rows() | transloco }}
+	</h2>
+	@for (item of vehicles(); track $index) {
+		@let row = rows()[$index];
+		<div
+			data-test-id="registered-vehicles-fields-vehicle-item"
+			[attr.data-index]="$index"
+			class="grid items-start gap-3 md:grid-cols-[1fr_1fr_auto]"
+		>
+			<div class="flex items-center gap-2">
+				<span data-test-id="registered-vehicles-fields-vehicle-label">{{ row.label }}</span>
+				@if (row.warning; as warning) {
+					<sgdf-tag data-test-id="registered-vehicles-fields-warning-tag" variant="warning">
+						{{ warning | transloco }}
+					</sgdf-tag>
+				}
+			</div>
+			<sgdf-select
+				data-test-id="registered-vehicles-fields-driver-select"
+				required
+				[label]="'movements.form.driver.title' | transloco"
+				[attr.no-results-label]="'movements.form.driver.empty' | transloco"
+				[value]="row.driverId"
+				[appFieldError]="item.driver"
+				translationPrefix="movements.form.error.driver"
+				(change)="chooseDriver($index, $event)"
+			>
+				@for (driver of drivers(); track driver.value.id) {
+					<sgdf-option [value]="driver.value.id">{{ driver.label }}</sgdf-option>
+				}
+			</sgdf-select>
+			<sgdf-icon-button
+				data-test-id="registered-vehicles-fields-remove-button"
+				name="xmark"
+				library="solid"
+				[attr.label]="'global.actions.remove' | transloco"
+				(click)="remove($index)"
+			/>
+		</div>
+	} @empty {
+		<p data-test-id="registered-vehicles-fields-empty" class="m-0 text-sm">
+			{{ 'movements.form.vehicles.empty' | transloco }}
+		</p>
+	}
+</div>

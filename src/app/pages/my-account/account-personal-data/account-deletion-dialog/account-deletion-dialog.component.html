@@ -1,0 +1,50 @@
+<sgdf-dialog
+	data-test-id="account-deletion-dialog-modal"
+	light-dismiss
+	[open]="open()"
+	[title]="'myAccount.personalData.delete.confirmation.title' | transloco"
+	(sgdf-hide)="closed($event)"
+>
+	@let phrase = 'myAccount.personalData.delete.confirmation.phrase' | transloco;
+	<!-- Le dialogue redéfinit --spacing, sur lequel repose l'échelle de Tailwind : des valeurs fixes gardent les espacements lisibles -->
+	<div class="flex flex-col items-start gap-[0.75rem] text-left">
+		<p class="m-0">{{ 'myAccount.personalData.delete.confirmation.intro' | transloco }}</p>
+		<p class="m-0 font-semibold">{{ 'myAccount.personalData.delete.confirmation.listIntro' | transloco }}</p>
+		<ul class="m-0 list-disc pl-[1.5rem]">
+			<li>{{ 'myAccount.personalData.delete.confirmation.items.profile' | transloco }}</li>
+			<li>{{ 'myAccount.personalData.delete.confirmation.items.access' | transloco }}</li>
+		</ul>
+		<p class="m-0 font-semibold">{{ 'myAccount.personalData.delete.confirmation.irreversible' | transloco }}</p>
+		<p class="m-0">
+			{{ 'myAccount.personalData.delete.confirmation.scope' | transloco: { organization: organization } }}
+		</p>
+		<p class="m-0">{{ 'myAccount.personalData.delete.confirmation.reconnect' | transloco }}</p>
+		<sgdf-input
+			data-test-id="account-deletion-dialog-type-to-confirm-input"
+			class="w-full"
+			[label]="'myAccount.personalData.delete.confirmation.typeToConfirm' | transloco: { phrase: phrase }"
+			[value]="confirmationText()"
+			(input)="confirmationText.set(EventHelper.valueOf($event))"
+		/>
+	</div>
+	<sgdf-button
+		data-test-id="account-deletion-dialog-cancel-button"
+		slot="footer"
+		variant="neutral"
+		appearance="outlined"
+		(click)="open.set(false)"
+	>
+		{{ 'myAccount.personalData.delete.confirmation.cancel' | transloco }}
+	</sgdf-button>
+	<sgdf-button
+		data-test-id="account-deletion-dialog-accept-button"
+		slot="footer"
+		variant="danger"
+		appearance="solid"
+		[disabled]="!phraseTyped(phrase)"
+		(click)="accept()"
+	>
+		<sgdf-icon slot="prefix" name="trash" library="solid" />
+		{{ 'myAccount.personalData.delete.confirmation.accept' | transloco }}
+	</sgdf-button>
+</sgdf-dialog>

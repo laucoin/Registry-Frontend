@@ -1,0 +1,44 @@
+<form
+	data-test-id="vehicles-search-fields-search-form"
+	class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
+	(submit)="$event.preventDefault()"
+>
+	<sgdf-input
+		data-test-id="vehicles-search-fields-q-input"
+		enterkeyhint="search"
+		(keydown.enter)="searched.emit()"
+		(focusout)="searched.emit()"
+		appSgdfField
+		[label]="'vehicles.search-and-filter.text' | transloco"
+		[formField]="form().q"
+	/>
+	<sgdf-date-time-picker
+		data-test-id="vehicles-search-fields-at-picker"
+		appSgdfField
+		with-time
+		[label]="'vehicles.search-and-filter.datetime' | transloco"
+		[formField]="form().at"
+	/>
+	<sgdf-select
+		data-test-id="vehicles-search-fields-status-select"
+		appSgdfField
+		[label]="'vehicles.search-and-filter.availability' | transloco"
+		[formField]="form().status"
+	>
+		@for (item of facade.presencesStatusMetadata(); track item.label) {
+			<sgdf-option [value]="item.value ?? ''">{{ item.label }}</sgdf-option>
+		}
+	</sgdf-select>
+	<sgdf-select
+		*appIfProjectAuthority="hiddenAuthority"
+		data-test-id="vehicles-search-fields-is-visible-select"
+		appSgdfField
+		[label]="'vehicles.search-and-filter.visibility' | transloco"
+		[formField]="form().isVisible"
+	>
+		@for (item of facade.visibilitiesMetadata(); track item.label) {
+			<sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+		}
+	</sgdf-select>
+	<app-sort-fields [sortBy]="form().sortBy" [sortDirection]="form().sortDirection" [fields]="sortFields" />
+</form>

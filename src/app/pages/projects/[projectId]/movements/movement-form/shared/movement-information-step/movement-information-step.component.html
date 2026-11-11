@@ -1,0 +1,50 @@
+<form
+	novalidate
+	data-test-id="movement-information-step-form"
+	class="mt-4"
+	(submit)="$event.preventDefault(); next.emit()"
+>
+	<sgdf-card>
+		<div class="grid gap-3 md:grid-cols-2">
+			<sgdf-date-time-picker
+				data-test-id="movement-information-step-date-time-picker"
+				appSgdfField
+				with-time
+				required
+				[label]="'movements.form.datetime' | transloco"
+				[formField]="form().dateTime"
+				[appFieldError]="form().dateTime"
+				translationPrefix="movements.form.error.datetime"
+			/>
+			<sgdf-select
+				data-test-id="movement-information-step-type-select"
+				appSgdfField
+				required
+				[label]="'movements.form.type' | transloco"
+				[placeholder]="'movements.form.placeholder.type' | transloco"
+				[formField]="form().type"
+				[appFieldError]="form().type"
+				translationPrefix="movements.form.error.type"
+				(change)="changeType($event)"
+			>
+				@for (type of types(); track type.value) {
+					<sgdf-option [value]="type.value">{{ type.label }}</sgdf-option>
+				}
+			</sgdf-select>
+		</div>
+	</sgdf-card>
+	<div class="flex items-center justify-between pt-4">
+		<sgdf-button
+			data-test-id="movement-information-step-cancel-button"
+			variant="neutral"
+			appearance="text"
+			(click)="cancelled.emit()"
+		>
+			{{ 'global.actions.cancel' | transloco }}
+		</sgdf-button>
+		<sgdf-button data-test-id="movement-information-step-next-submit" variant="primary" appearance="outlined" submit>
+			{{ 'global.actions.next' | transloco }}
+			<sgdf-icon slot="suffix" class="max-sm:hidden" name="arrow-right" library="solid" />
+		</sgdf-button>
+	</div>
+</form>

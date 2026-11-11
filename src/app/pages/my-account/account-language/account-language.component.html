@@ -1,0 +1,40 @@
+<app-account-preference icon="language" titleKey="myAccount.language.title" hintKey="myAccount.language.hint">
+	@if (availableLanguages.length <= 1) {
+		<p data-test-id="account-language-only" class="m-0">
+			{{ 'myAccount.language.only' | transloco: { language: 'myAccount.language.' + currentLanguage() | transloco } }}
+		</p>
+	} @else if (availableLanguages.length === 2) {
+		<sgdf-radio-group
+			data-test-id="account-language-options-group"
+			appearance="segmented"
+			orientation="horizontal"
+			without-label
+			[label]="'myAccount.language.choose' | transloco"
+			[value]="currentLanguage()"
+			[disabled]="pendingLanguage() !== undefined"
+			(change)="select($event)"
+		>
+			@for (language of availableLanguages; track language) {
+				<sgdf-radio data-test-id="account-language-option-radio" [value]="language">
+					{{ 'myAccount.language.' + language | transloco }}
+				</sgdf-radio>
+			}
+		</sgdf-radio-group>
+	} @else {
+		<sgdf-select
+			data-test-id="account-language-select"
+			appearance="outlined"
+			without-label
+			[label]="'myAccount.language.title' | transloco"
+			[value]="currentLanguage()"
+			[disabled]="pendingLanguage() !== undefined"
+			(change)="select($event)"
+		>
+			@for (language of availableLanguages; track language) {
+				<sgdf-option data-test-id="account-language-option" [value]="language">
+					{{ 'myAccount.language.' + language | transloco }}
+				</sgdf-option>
+			}
+		</sgdf-select>
+	}
+</app-account-preference>

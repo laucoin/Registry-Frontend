@@ -1,0 +1,25 @@
+<div class="flex flex-col gap-1">
+	<span class="font-semibold" aria-hidden="true">{{ 'alerts.form.title' | transloco }}</span>
+	<div class="flex items-center gap-2">
+		<sgdf-input
+			data-test-id="communication-new-alert-field-title-input"
+			class="min-w-0 flex-1"
+			appSgdfField
+			without-label
+			[label]="'alerts.form.title' | transloco"
+			[placeholder]="'alerts.form.placeholder.title' | transloco"
+			[formField]="field()"
+			[appFieldError]="field()"
+			translationPrefix="alerts.form.error.title"
+			(keydown.enter)="submitted.emit()"
+		/>
+		<sgdf-icon-button
+			data-test-id="communication-new-alert-field-remove-button"
+			name="xmark"
+			library="solid"
+			variant="danger"
+			[label]="'communications.form.actions.remove-alert' | transloco"
+			(click)="removed.emit()"
+		/>
+	</div>
+</div>

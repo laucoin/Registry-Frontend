@@ -1,0 +1,13 @@
+<sgdf-stepper linear [active]="'step-' + active()" [label]="label()">
+	<sgdf-step data-test-id="project-form-stepper-information-step" name="step-1" [completed]="active() > 1">{{
+		'projects.form.subtitle.information' | transloco
+	}}</sgdf-step>
+	<sgdf-step data-test-id="project-form-stepper-options-step" name="step-2" [completed]="active() > 2">{{
+		'projects.form.subtitle.option' | pluralTranslation: options() | transloco
+	}}</sgdf-step>
+	@if (withInvitation()) {
+		<sgdf-step data-test-id="project-form-stepper-invitation-step" name="step-3">{{
+			'projects.form.subtitle.invitation' | transloco
+		}}</sgdf-step>
+	}
+</sgdf-stepper>

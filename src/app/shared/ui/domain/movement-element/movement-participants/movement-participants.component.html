@@ -1,0 +1,68 @@
+@let type = movement().type.value;
+<sgdf-tab-group data-test-id="movement-participants-tabs">
+	<sgdf-tab data-test-id="movement-participants-all-tab" panel="all"
+		>{{ 'global.people.all' | transloco }} ({{ movement().content.length }})</sgdf-tab
+	>
+	@if (adults().length > 0) {
+		<sgdf-tab data-test-id="movement-participants-adults-tab" panel="adults"
+			>{{ 'global.people.major' | pluralTranslation: adults() | transloco }} ({{ adults().length }})</sgdf-tab
+		>
+	}
+	@if (children().length > 0) {
+		<sgdf-tab data-test-id="movement-participants-children-tab" panel="children"
+			>{{ 'global.people.minor' | pluralTranslation: children() | transloco }} ({{ children().length }})</sgdf-tab
+		>
+	}
+	@for (pool of pools() | keyvalue; track pool.key) {
+		<sgdf-tab data-test-id="movement-participants-pool-tab" [panel]="'pool-' + pool.key"
+			>{{ pool.key }} ({{ pool.value.length }})</sgdf-tab
+		>
+	}
+	@if (independent().length > 0) {
+		<sgdf-tab data-test-id="movement-participants-independent-tab" panel="independent"
+			>{{ 'global.people.independent' | transloco }} ({{ independent().length }})</sgdf-tab
+		>
+	}
+	<sgdf-tab-panel name="all">
+		<app-movement-people
+			[contents]="movement().content"
+			[type]="type"
+			[canReverse]="canReverse()"
+			(reversed)="reversed.emit($event)"
+		/>
+	</sgdf-tab-panel>
+	<sgdf-tab-panel name="adults">
+		<app-movement-people
+			[contents]="adults()"
+			[type]="type"
+			[canReverse]="canReverse()"
+			(reversed)="reversed.emit($event)"
+		/>
+	</sgdf-tab-panel>
+	<sgdf-tab-panel name="children">
+		<app-movement-people
+			[contents]="children()"
+			[type]="type"
+			[canReverse]="canReverse()"
+			(reversed)="reversed.emit($event)"
+		/>
+	</sgdf-tab-panel>
+	<sgdf-tab-panel name="independent">
+		<app-movement-people
+			[contents]="independent()"
+			[type]="type"
+			[canReverse]="canReverse()"
+			(reversed)="reversed.emit($event)"
+		/>
+	</sgdf-tab-panel>
+	@for (pool of pools() | keyvalue; track pool.key) {
+		<sgdf-tab-panel [name]="'pool-' + pool.key">
+			<app-movement-people
+				[contents]="pool.value"
+				[type]="type"
+				[canReverse]="canReverse()"
+				(reversed)="reversed.emit($event)"
+			/>
+		</sgdf-tab-panel>
+	}
+</sgdf-tab-group>

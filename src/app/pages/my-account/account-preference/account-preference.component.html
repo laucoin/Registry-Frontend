@@ -1,0 +1,20 @@
+<sgdf-table class="h-full [&::part(grid)]:h-full" appearance="soft">
+	<sgdf-table-row>
+		<sgdf-table-cell header class="flex items-center gap-1">
+			<sgdf-icon data-test-id="account-preference-icon" library="solid" [name]="icon()" />
+			<h2 data-test-id="account-preference-title">{{ titleKey() | transloco }}</h2>
+		</sgdf-table-cell>
+	</sgdf-table-row>
+
+	<sgdf-table-row>
+		<sgdf-table-cell row-header>
+			<ng-content />
+		</sgdf-table-cell>
+	</sgdf-table-row>
+
+	<sgdf-table-row class="h-full">
+		<sgdf-table-cell data-test-id="account-preference-hint" class="align-bottom text-sm opacity-80">
+			{{ hintKey() | transloco }}
+		</sgdf-table-cell>
+	</sgdf-table-row>
+</sgdf-table>

@@ -1,0 +1,13 @@
+<sgdf-list appearance="soft" [label]="fullName()">
+	<sgdf-list-item data-test-id="user-element-row">
+		<sgdf-avatar
+			data-test-id="user-element-avatar"
+			slot="start"
+			variant="primary"
+			aria-hidden="true"
+			[initials]="initials()"
+		/>
+		<span data-test-id="user-element-name" class="truncate">{{ fullName() }}</span>
+		<span data-test-id="user-element-email" slot="description" class="truncate">{{ user().email }}</span>
+	</sgdf-list-item>
+</sgdf-list>
