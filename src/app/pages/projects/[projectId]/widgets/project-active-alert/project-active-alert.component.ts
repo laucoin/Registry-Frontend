@@ -2,12 +2,14 @@ import {
 	Component,
 	computed,
 	CUSTOM_ELEMENTS_SCHEMA,
+	DestroyRef,
 	inject,
 	OnInit,
 	Signal,
 	signal,
 	WritableSignal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
@@ -53,7 +55,7 @@ const VARIANTS: Record<AlertCriticalityEnum, SgdfStatusVariant> = {
 
 /**
  * Objectif: Affiche les alertes ouvertes du projet, les plus critiques en premier, avec leur criticité automatique.
- * Périmètre: Charge les premières alertes ouvertes, affiche chacune avec sa criticité, son ancienneté et sa dernière communication, et ouvre les communications d'une alerte dans un tiroir.
+ * Périmètre: Charge les premières alertes ouvertes, affiche chacune avec sa criticité, son ancienneté et sa dernière communication, et ouvre les communications d'une alerte dans un tiroir ; se rafraîchit dès qu'une alerte est créée.
  * Limites: N'affiche que quelques alertes et compte les autres ; lit uniquement les facades du projet sélectionné et des alertes.
  */
 @Component({
@@ -79,6 +81,7 @@ export class ProjectActiveAlertComponent implements OnInit {
 	);
 	private readonly sessionFacade = inject(SessionFacade);
 	protected readonly alertFacade = inject(AlertFacade);
+	private readonly destroyRef = inject(DestroyRef);
 	protected readonly uiFacade = inject(UiFacade);
 
 	protected readonly canCommunicate = this.sessionFacade.selectedProjectHasOption(ProjectOptionEnum.COMMUNICATION);
@@ -99,6 +102,10 @@ export class ProjectActiveAlertComponent implements OnInit {
 
 	public ngOnInit(): void {
 		this.reload();
+		this.alertFacade
+			.handleAlertCreation()
+			.pipe(takeUntilDestroyed(this.destroyRef))
+			.subscribe(() => this.facade.refreshCurrentAlertsPage());
 	}
 
 	protected reload(): void {

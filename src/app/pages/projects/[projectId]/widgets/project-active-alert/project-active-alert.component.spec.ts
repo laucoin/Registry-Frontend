@@ -5,7 +5,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, provideRouter } from '@angular/router';
 
 import { TranslocoTestingModule } from '@jsverse/transloco';
-import { NEVER, Observable } from 'rxjs';
+import { NEVER, Observable, Subject } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import { SessionFacade } from '@core/registry/state/session.facade';
@@ -68,6 +68,7 @@ describe('ProjectActiveAlertComponent', () => {
 	let fetch: Mock<(page: number, size: number) => void>;
 	let refresh: Mock<() => void>;
 	let reloads: (() => void)[];
+	let created: Subject<unknown>;
 
 	function create(): Promise<ProjectActiveAlertHarness> {
 		fixture = TestBed.createComponent(ProjectActiveAlertComponent);
@@ -83,6 +84,7 @@ describe('ProjectActiveAlertComponent', () => {
 		fetch = vi.fn();
 		refresh = vi.fn();
 		reloads = [];
+		created = new Subject<unknown>();
 		vi.stubGlobal(
 			'IntersectionObserver',
 			class {
@@ -134,7 +136,7 @@ describe('ProjectActiveAlertComponent', () => {
 						alertCommunicationsPageLoading: signal(false),
 						alertCommunicationsPageSilentLoading: signal(false),
 						fetchAlertCommunicationsPage: vi.fn(),
-						handleAlertCreation: (): Observable<never> => NEVER,
+						handleAlertCreation: (): Observable<unknown> => created,
 					},
 				},
 				{
@@ -278,6 +280,17 @@ describe('ProjectActiveAlertComponent', () => {
 
 		// Act
 		reloads.forEach((reload) => reload());
+
+		// Assert
+		expect(refresh).toHaveBeenCalledTimes(1);
+	});
+
+	it('refreshes silently as soon as an alert is created', async () => {
+		// Arrange
+		await create();
+
+		// Act
+		created.next(undefined);
 
 		// Assert
 		expect(refresh).toHaveBeenCalledTimes(1);
