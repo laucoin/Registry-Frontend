@@ -1013,6 +1013,7 @@
 			"false": "Not available"
 		},
 		"member": {
+			"zero": "No member",
 			"one": "One member",
 			"few": "{{count}} members"
 		},
