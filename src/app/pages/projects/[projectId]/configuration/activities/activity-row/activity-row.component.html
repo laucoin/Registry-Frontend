@@ -1,0 +1,45 @@
+<sgdf-avatar slot="start" variant="primary" shape="rounded" aria-hidden="true" [initials]="initials()" />
+<span data-test-id="activity-row-name" appEllipsis>{{ activity().name }}</span>
+<span data-test-id="activity-row-description" slot="description" class="flex flex-wrap items-center gap-x-3">
+	@if (activity().duration; as duration) {
+		<span class="inline-flex items-center gap-1">
+			<sgdf-icon name="hourglass-half" library="solid" />
+			{{ duration.label }}
+		</span>
+	}
+	@if (participantsRange(); as range) {
+		<span class="inline-flex items-center gap-1">
+			<sgdf-icon name="users" library="solid" />
+			{{ range }}
+		</span>
+	}
+	@if (activity().startAvailability || activity().endAvailability) {
+		<app-availability-period [start]="activity().startAvailability" [end]="activity().endAvailability" />
+	}
+</span>
+<span slot="end" class="flex flex-wrap items-center gap-2">
+	@if (!activity().visible) {
+		<sgdf-tag data-test-id="activity-row-hidden-tag" appearance="outlined" variant="neutral" pill>
+			{{ 'activities.visible.false' | transloco }}
+		</sgdf-tag>
+	}
+	@if (activity().status; as status) {
+		<sgdf-tag
+			data-test-id="activity-row-status-tag"
+			appearance="soft"
+			pill
+			[variant]="available() ? 'success' : 'info'"
+		>
+			{{ status.label }}
+		</sgdf-tag>
+	}
+	@if (primary(); as action) {
+		<app-element-primary-action [action]="action" />
+	}
+</span>
+<app-element-actions
+	data-test-id="activity-row-actions"
+	slot="actions"
+	[subject]="activity().name"
+	[actions]="menu()"
+/>

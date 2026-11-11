@@ -1,0 +1,60 @@
+<app-widget-card
+	icon="envelope"
+	iconLibrary="regular"
+	[heading]="'home.invitations.title' | transloco"
+	[totalLabel]="
+		total() === undefined
+			? undefined
+			: ('home.invitations.pending' | pluralTranslation: total() | transloco: { count: total() })
+	"
+	[state]="state()"
+	[emptyMessage]="'home.invitations.empty' | transloco"
+	[error]="error()"
+	[retrying]="loading()"
+	(retry)="reload()"
+>
+	<sgdf-list appearance="text" [label]="'home.invitations.title' | transloco">
+		@for (invitation of invitations(); track invitation.id) {
+			<sgdf-list-item data-test-id="home-invitations-row" with-ellipsis [attr.data-id]="invitation.id">
+				<span data-test-id="home-invitations-row-project">{{ invitation.project?.name }}</span>
+				<span data-test-id="home-invitations-row-role" slot="description">{{
+					'home.invitations.invitedAs' | transloco: { role: invitation.role.label }
+				}}</span>
+				<span slot="end" class="flex gap-2">
+					<sgdf-button
+						data-test-id="home-invitations-refuse-button"
+						size="small"
+						appearance="outlined"
+						variant="neutral"
+						(click)="answer(invitation, false)"
+					>
+						{{ 'home.invitations.refuse' | transloco }}
+						<span class="sr-only">({{ invitation.project?.name }})</span>
+					</sgdf-button>
+					<sgdf-button
+						data-test-id="home-invitations-accept-button"
+						size="small"
+						variant="success"
+						(click)="answer(invitation, true)"
+					>
+						{{ 'home.invitations.accept' | transloco }}
+						<span class="sr-only">({{ invitation.project?.name }})</span>
+					</sgdf-button>
+				</span>
+			</sgdf-list-item>
+		}
+	</sgdf-list>
+
+	<sgdf-table-row widget-footer class="h-px">
+		<sgdf-table-cell>
+			<sgdf-button
+				data-test-id="home-invitations-see-all-button"
+				block
+				size="small"
+				appearance="text"
+				[routerLink]="invitationsLink"
+				>{{ 'home.invitations.seeAll' | transloco }}</sgdf-button
+			>
+		</sgdf-table-cell>
+	</sgdf-table-row>
+</app-widget-card>

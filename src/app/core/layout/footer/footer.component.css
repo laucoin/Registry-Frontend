@@ -1,0 +1,12 @@
+sgdf-footer {
+	--content-width: var(--layout--content-width);
+	--padding-inline: var(--spacing--page-gutter);
+}
+
+@media (max-width: 767px) {
+	sgdf-footer a {
+		display: inline-flex;
+		align-items: center;
+		min-block-size: var(--layout--touch-target);
+	}
+}

@@ -1,0 +1,42 @@
+<app-widget-card
+	icon="triangle-exclamation"
+	[heading]="'home.attention.title' | transloco"
+	[totalLabel]="total()?.toString()"
+	[state]="state()"
+	[emptyMessage]="'home.attention.empty' | transloco"
+	[error]="error()"
+	[retrying]="loading()"
+	(retry)="reload()"
+>
+	<sgdf-list appearance="text" [label]="'home.attention.title' | transloco">
+		@for (project of projects(); track project.id) {
+			<sgdf-list-item
+				data-test-id="home-attention-projects-project-link"
+				with-ellipsis
+				[attr.data-id]="project.id"
+				[routerLink]="link(project)"
+			>
+				<sgdf-avatar
+					slot="start"
+					shape="rounded"
+					variant="primary"
+					size="small"
+					aria-hidden="true"
+					[initials]="initials(project)"
+				/>
+				<span data-test-id="home-attention-projects-project-name">{{ project.name }}</span>
+				<span class="sr-only">{{ 'home.attention.open' | transloco: { name: project.name } }}</span>
+				<sgdf-tag
+					data-test-id="home-attention-projects-project-alerts"
+					slot="end"
+					size="small"
+					appearance="soft"
+					[variant]="variant(project)"
+					>{{
+						'home.attention.alerts' | pluralTranslation: alerts(project) | transloco: { count: alerts(project) }
+					}}</sgdf-tag
+				>
+			</sgdf-list-item>
+		}
+	</sgdf-list>
+</app-widget-card>

@@ -1,0 +1,11 @@
+<app-form-dialog
+	submitLabel="global.actions.edit"
+	[title]="title()"
+	[loading]="loading()"
+	[saving]="saving()"
+	[error]="error()"
+	(submitted)="submits = submits + 1"
+	(closed)="closes = closes + 1"
+>
+	<sgdf-select class="inner-field" />
+</app-form-dialog>
