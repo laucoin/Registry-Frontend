@@ -1,0 +1,17 @@
+<app-account-preference icon="rotate" titleKey="myAccount.refresh.title" hintKey="myAccount.refresh.hint">
+	<sgdf-radio-group
+		data-test-id="account-refresh-modes-group"
+		appearance="segmented"
+		[orientation]="uiFacade.tinyScreen() ? 'vertical' : 'horizontal'"
+		without-label
+		[label]="'myAccount.refresh.choose' | transloco"
+		[value]="currentMode()"
+		(change)="select($event)"
+	>
+		@for (choice of choices; track choice.mode) {
+			<sgdf-radio data-test-id="account-refresh-mode-radio" [value]="choice.mode">
+				{{ choice.labelKey | transloco }}
+			</sgdf-radio>
+		}
+	</sgdf-radio-group>
+</app-account-preference>

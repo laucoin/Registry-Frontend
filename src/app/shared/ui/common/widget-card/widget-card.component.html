@@ -1,0 +1,41 @@
+<sgdf-table class="h-full [&::part(grid)]:h-full [&::part(grid)]:table-fixed" appearance="soft">
+	<sgdf-table-row class="h-px">
+		<sgdf-table-cell header class="flex items-center gap-1">
+			<sgdf-icon [attr.name]="icon()" [library]="iconLibrary()" />
+			<h2 data-test-id="widget-card-title" class="text-sm font-semibold uppercase">{{ heading() }}</h2>
+			@if (totalLabel(); as total) {
+				<sgdf-tag data-test-id="widget-card-total" class="ml-auto" size="small" variant="info" appearance="soft">{{
+					total
+				}}</sgdf-tag>
+			}
+		</sgdf-table-cell>
+	</sgdf-table-row>
+
+	<ng-content select="[widget-intro]" />
+
+	<sgdf-table-row>
+		<sgdf-table-cell class="h-full p-0 align-top">
+			@if (error(); as failure) {
+				<app-section-error
+					data-test-id="widget-card-error"
+					[error]="failure"
+					[retrying]="retrying()"
+					(retry)="retry.emit()"
+				/>
+			}
+			@switch (state()) {
+				@case (WidgetStateEnum.LOADING) {
+					<ng-content select="[widget-loading]"><app-skeleton-list [rows]="3" /></ng-content>
+				}
+				@case (WidgetStateEnum.EMPTY) {
+					<p data-test-id="widget-card-empty" class="m-4 text-sm opacity-80">{{ emptyMessage() }}</p>
+				}
+				@case (WidgetStateEnum.CONTENT) {
+					<ng-content />
+				}
+			}
+		</sgdf-table-cell>
+	</sgdf-table-row>
+
+	<ng-content select="[widget-footer]" />
+</sgdf-table>

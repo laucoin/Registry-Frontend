@@ -1,0 +1,12 @@
+<app-widget-card
+	icon="bell"
+	heading="Alerts"
+	emptyMessage="Nothing"
+	[totalLabel]="total()"
+	[state]="state()"
+	[error]="error()"
+	[retrying]="retrying()"
+	(retry)="retries = retries + 1"
+>
+	<p data-test-id="host-content">Content</p>
+</app-widget-card>

@@ -1,0 +1,22 @@
+<sgdf-list
+	data-test-id="skeleton-list-list"
+	aria-busy="true"
+	[appearance]="appearance()"
+	[label]="'global.list.loading' | transloco"
+>
+	@for (row of indexes(); track row) {
+		<sgdf-list-item data-test-id="skeleton-list-row">
+			<sgdf-skeleton class="size-10" slot="start" shape="circle" effect="pulse" />
+			<sgdf-skeleton class="h-4 w-1/2" shape="rounded" effect="pulse" />
+			@if (withDescription()) {
+				<sgdf-skeleton
+					data-test-id="skeleton-list-description"
+					class="h-3 w-2/3"
+					slot="description"
+					shape="rounded"
+					effect="pulse"
+				/>
+			}
+		</sgdf-list-item>
+	}
+</sgdf-list>

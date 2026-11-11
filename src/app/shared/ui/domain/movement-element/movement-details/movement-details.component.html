@@ -1,0 +1,72 @@
+<span data-test-id="movement-details-date" class="inline-flex items-center gap-1">
+	<sgdf-icon name="clock" library="regular" />
+	{{ movement().dateTime | dateFormat: DateFormatTypeEnum.DATETIME }}
+</span>
+@if (total() <= 0) {
+	<sgdf-skeleton
+		data-test-id="movement-details-skeleton"
+		shape="rounded"
+		effect="pulse"
+		class="inline-block h-4 w-40"
+	/>
+} @else if (driver(); as driving) {
+	<sgdf-button
+		data-test-id="movement-details-driver-button"
+		size="small"
+		appearance="text"
+		(click)="participantsOpened.emit()"
+	>
+		<sgdf-icon slot="prefix" name="car" library="solid" />
+		{{ driving.participant.firstName + ' ' + (driving.participant.lastName | uppercase) | truncate: 30 }}
+	</sgdf-button>
+} @else if (firstParticipant(); as first) {
+	<sgdf-button
+		data-test-id="movement-details-participants-button"
+		size="small"
+		appearance="text"
+		(click)="participantsOpened.emit()"
+	>
+		{{
+			'movements.content'
+				| pluralTranslation: total()
+				| transloco
+					: {
+							name: (first.firstName | titlecase) + ' ' + (first.lastName | uppercase) | truncate: 30,
+							total: total(),
+					  }
+		}}
+	</sgdf-button>
+}
+@if (communicationAge(); as age) {
+	<sgdf-tag
+		data-test-id="movement-details-since-communication"
+		size="small"
+		appearance="soft"
+		pill
+		variant="info"
+		[attr.title]="
+			'movements.communication.since-last'
+				| transloco
+					: { elapsed: age.days > 0 ? ('movements.communication.days' | transloco: { count: age.days }) : age.elapsed }
+		"
+	>
+		<sgdf-icon slot="prefix" name="comments" library="regular" />
+		{{ 'movements.communication.last' | transloco }} :
+		@if (age.days > 0) {
+			{{ 'movements.communication.days' | transloco: { count: age.days } }}
+		} @else {
+			{{ age.elapsed }}
+		}
+	</sgdf-tag>
+}
+@if (vehiclesCount() > 0) {
+	<sgdf-button
+		data-test-id="movement-details-vehicles-button"
+		size="small"
+		appearance="text"
+		(click)="vehiclesOpened.emit()"
+	>
+		<sgdf-icon slot="prefix" name="car" library="solid" />
+		{{ 'movements.vehicles-count' | pluralTranslation: vehiclesCount() | transloco: { count: vehiclesCount() } }}
+	</sgdf-button>
+}

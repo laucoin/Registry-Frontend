@@ -1,0 +1,20 @@
+<sgdf-select
+	data-test-id="movement-reason-select-reason-select"
+	with-search
+	without-filter
+	with-clear
+	required
+	[label]="'movements.form.reason.name' | transloco"
+	[placeholder]="'movements.form.placeholder.reason' | transloco"
+	[attr.no-results-label]="'movements.form.reason.empty-search' | transloco"
+	[value]="chosenKey()"
+	[appFieldError]="field()"
+	translationPrefix="movements.form.error.reason"
+	(sgdf-show)="search('')"
+	(sgdf-search)="search($any($event).detail.query)"
+	(change)="choose($event)"
+>
+	@for (option of options(); track reasonKeyOf(option)) {
+		<sgdf-option [value]="reasonKeyOf(option)">{{ option.label }}</sgdf-option>
+	}
+</sgdf-select>

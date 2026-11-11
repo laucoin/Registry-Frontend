@@ -1,0 +1,43 @@
+@if (block().error; as failure) {
+	<app-section-error
+		data-test-id="group-members-panel-members-error"
+		[error]="failure"
+		[retrying]="block().loading || block().silentLoading"
+		(retry)="retried.emit()"
+	/>
+}
+@if (block().loading && !block().element) {
+	<app-skeleton-list [rows]="memberSkeletonRows" />
+} @else if (block().element; as members) {
+	@if (members.content.length === 0) {
+		@if (!block().error) {
+			<p data-test-id="group-members-panel-empty" class="m-0 text-sm opacity-80">
+				{{ 'projectHome.groupStatus.noMembers' | transloco }}
+			</p>
+		}
+	} @else {
+		<sgdf-list appearance="text" [label]="'projectHome.groupStatus.membersOf' | transloco: { name: name() }">
+			@for (row of rows(); track row.id) {
+				<sgdf-list-item
+					data-test-id="member-row"
+					[attr.data-id]="row.id"
+					appMonitoringRow
+					[row]="row"
+					[selectable]="true"
+					[checked]="checkedIds().has(row.id)"
+					(checkedChange)="checkedChange.emit({ ids: [row.id], checked: $event })"
+				/>
+			}
+		</sgdf-list>
+		@if (hasMore()) {
+			<app-load-more
+				data-test-id="group-members-panel-members-load-more"
+				[loadedCount]="members.content.length"
+				[total]="members.totalElements"
+				[loading]="block().silentLoading"
+				[autoLoad]="!block().error"
+				(loadMore)="moreRequested.emit()"
+			/>
+		}
+	}
+}

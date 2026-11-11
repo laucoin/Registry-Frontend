@@ -1,0 +1,77 @@
+<app-widget-card
+	icon="bell"
+	[heading]="'projectHome.activeAlert.title' | transloco"
+	[totalLabel]="
+		total() === undefined
+			? undefined
+			: ('projectHome.activeAlert.total' | pluralTranslation: total() | transloco: { count: total() })
+	"
+	[state]="state()"
+	[emptyMessage]="'projectHome.activeAlert.empty' | transloco"
+	[error]="error()"
+	[retrying]="loading()"
+	(retry)="reload()"
+>
+	@if (alertFacade.alertCriticalityRule(); as rule) {
+		<sgdf-table-row widget-intro class="h-px">
+			<sgdf-table-cell data-test-id="project-active-alert-rule" class="text-sm">{{ rule }}</sgdf-table-cell>
+		</sgdf-table-row>
+	}
+
+	<div widget-loading class="p-3">
+		<span data-test-id="project-active-alert-loading" class="sr-only" role="status">{{
+			'global.list.loading' | transloco
+		}}</span>
+		<div class="flex gap-3 overflow-x-auto">
+			@for (card of skeletonCards; track card) {
+				<sgdf-skeleton class="h-28 w-72 shrink-0" shape="rounded" effect="pulse" aria-hidden="true" />
+			}
+		</div>
+	</div>
+
+	<div class="flex items-stretch gap-3 overflow-x-auto p-3" data-test-id="project-active-alert-cards">
+		@for (card of cards(); track card.alert.id) {
+			<app-active-alert-card
+				data-test-id="project-active-alert-card"
+				[card]="card"
+				[canCommunicate]="canCommunicate()"
+				(communicate)="communicating.set(card.alert)"
+			/>
+		}
+	</div>
+
+	<sgdf-table-row widget-footer class="h-px">
+		<sgdf-table-cell>
+			<sgdf-button
+				block
+				size="small"
+				appearance="text"
+				data-test-id="project-active-alert-link"
+				[routerLink]="alertsLink()"
+			>
+				@if (remaining() > 0) {
+					{{
+						'projectHome.activeAlert.seeRemaining' | pluralTranslation: remaining() | transloco: { count: remaining() }
+					}}
+				} @else {
+					{{ 'projectHome.activeAlert.seeAll' | transloco }}
+				}
+			</sgdf-button>
+		</sgdf-table-cell>
+	</sgdf-table-row>
+</app-widget-card>
+
+<sgdf-drawer
+	data-test-id="project-active-alert-drawer"
+	light-dismiss
+	size="large"
+	[open]="!!communicating()"
+	[placement]="uiFacade.tinyScreen() ? 'bottom' : 'right'"
+	[title]="communicating()?.title ?? ''"
+	(sgdf-hide)="closeCommunications($event)"
+>
+	@if (communicating(); as alert) {
+		<app-alert-communications-list [alert]="alert" />
+		<app-communication-form data-test-id="project-active-alert-form" slot="footer" [initialAlert]="alert" />
+	}
+</sgdf-drawer>

@@ -1,0 +1,39 @@
+<sgdf-page-title
+	data-test-id="element-movements-list-title"
+	[eyebrow]="'projectEyebrow.configuration' | transloco"
+	[lede]="'movements.history-page.subtitle' | transloco"
+>
+	@if (movements().title(); as title) {
+		{{ title }}
+	} @else {
+		<sgdf-skeleton
+			data-test-id="element-movements-list-title-skeleton"
+			effect="pulse"
+			shape="rounded"
+			class="inline-block h-8 w-48"
+		/>
+	}
+</sgdf-page-title>
+
+<ng-content />
+
+<app-list
+	data-test-id="element-movements-list-list"
+	class="mt-(--spacing--block) block"
+	emptyMessagePrefix="movements.notifications.EMPTY"
+	[elementPage]="movements().page()"
+	[error]="movements().pageError()"
+	[loading]="movements().pageLoading()"
+	[loadingMore]="movements().pageSilentLoading()"
+	[activeFilters]="movements().activeFilters()"
+	(updateRequired)="movements().loadBatch($event)"
+	(filtersReset)="movements().resetFilters()"
+>
+	<ng-template appTemplate="search">
+		<app-movements-search-fields [form]="movements().form" />
+	</ng-template>
+
+	<ng-template appTemplate="element" let-movement>
+		<sgdf-list-item data-test-id="movement-row" [attr.data-id]="movement.id" appMovementElement [movement]="movement" />
+	</ng-template>
+</app-list>
