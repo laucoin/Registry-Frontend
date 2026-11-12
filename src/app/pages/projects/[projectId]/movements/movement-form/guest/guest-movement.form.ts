@@ -1,5 +1,5 @@
 import { WritableSignal } from '@angular/core';
-import { applyEach, FieldContext, FieldTree, form, required, SchemaPathTree } from '@angular/forms/signals';
+import { applyEach, disabled, FieldContext, FieldTree, form, required, SchemaPathTree } from '@angular/forms/signals';
 
 import { GuestDto } from '@pages/projects/[projectId]/movements/data/dto/guest.dto';
 import { GuestMovementDto } from '@pages/projects/[projectId]/movements/data/dto/guest-movement.dto';
@@ -128,6 +128,11 @@ export function createGuestMovementForm(
 			when: (ctx: FieldContext<MovementReasonModel | null>) => isArrival(ctx.valueOf(path.information)),
 		});
 		RegistrySchemas.requiredList(path.content.participants, (ctx) => !isArrival(ctx.valueOf(path.information)));
+		// Un invité n'a qu'une arrivée et un départ : seule la date de sa sortie se corrige
+		disabled(path.content.participants, {
+			when: (ctx: FieldContext<MovementContentModel[]>) =>
+				context.editing() && !isArrival(ctx.valueOf(path.information)),
+		});
 		RegistrySchemas.requiredList(path.content.guests, (ctx) => isArrival(ctx.valueOf(path.information)));
 		applyEach(path.content.guests, guestRules);
 	});

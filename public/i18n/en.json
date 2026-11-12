@@ -691,7 +691,8 @@
 				"guest": {
 					"one": "New guest",
 					"few": "New guests",
-					"add": "Add a guest"
+					"add": "Add a guest",
+					"departure-locked": "Only the date of a guest exit can be changed. To change who left, delete this exit and record a new one."
 				},
 				"registered": {
 					"empty": "No person selected",

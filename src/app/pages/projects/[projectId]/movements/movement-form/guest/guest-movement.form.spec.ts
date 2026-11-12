@@ -36,11 +36,11 @@ function modelOf(type: string): GuestMovementFormModel {
 }
 
 describe('guest movement form', () => {
-	function build(initial: GuestMovementFormModel): FieldTree<GuestMovementFormModel> {
+	function build(initial: GuestMovementFormModel, editing = false): FieldTree<GuestMovementFormModel> {
 		const context: MovementFormContext = {
 			project: () => undefined,
 			formatDate: (date: CustomDatetimeModel): string => defined(date.date),
-			editing: () => false,
+			editing: () => editing,
 		};
 		const model = signal(initial);
 		return TestBed.runInInjectionContext(() => createGuestMovementForm(model, context));
@@ -127,6 +127,21 @@ describe('guest movement form', () => {
 
 		// Assert
 		expect(kinds).toEqual([[], ['required'], []]);
+	});
+
+	it('locks the leaving guests only when editing a departure', () => {
+		// Arrange
+		const trees = [
+			build(modelOf(MovementTypeEnum.OUT), true),
+			build(modelOf(MovementTypeEnum.OUT)),
+			build(modelOf(MovementTypeEnum.IN), true),
+		];
+
+		// Act
+		const locked = trees.map((tree) => tree.content.participants().disabled());
+
+		// Assert
+		expect(locked).toEqual([true, false, false]);
 	});
 
 	it('rebuilds the guests of an arrival with their identifiers', () => {

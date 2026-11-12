@@ -691,7 +691,8 @@
 				"guest": {
 					"one": "Nouvel invité",
 					"few": "Nouveaux invités",
-					"add": "Ajouter un invité"
+					"add": "Ajouter un invité",
+					"departure-locked": "Seule la date d’une sortie d’invités peut être modifiée. Pour changer qui est parti, supprime cette sortie et enregistre-en une nouvelle."
 				},
 				"registered": {
 					"empty": "Aucune personne sélectionnée",

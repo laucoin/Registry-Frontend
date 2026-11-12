@@ -51,6 +51,11 @@
 							[appFieldError]="form.content.participants"
 							translationPrefix="movements.form.error.participantContent"
 							[label]="'movements.form.content.registered.search' | transloco"
+							[hint]="
+								form.content.participants().disabled()
+									? ('movements.form.content.guest.departure-locked' | transloco)
+									: undefined
+							"
 							[suggestions]="suggestions()"
 							[expand]="contentOfChoice"
 							[identify]="identifyContent"
