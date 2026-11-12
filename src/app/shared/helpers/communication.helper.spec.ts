@@ -32,7 +32,7 @@ describe('CommunicationHelper', () => {
 		expect(authorId).toBe('u1');
 	});
 
-	it('has no author when neither can be identified', () => {
+	it('attributes a communication without identifiable author to a deleted author, unlike a missing neighbour', () => {
 		// Arrange
 		const communication = {} as CommunicationModel;
 
@@ -40,7 +40,10 @@ describe('CommunicationHelper', () => {
 		const authorId = CommunicationHelper.getAuthorId(communication);
 
 		// Assert
-		expect(authorId).toBeUndefined();
+		expect([authorId, CommunicationHelper.previousAuthorId([communication], 0)]).toEqual([
+			'deleted-author',
+			undefined,
+		]);
 	});
 
 	it('gives the author of the neighbours of a message', () => {
@@ -74,7 +77,7 @@ describe('CommunicationHelper', () => {
 		expect(author).toBeUndefined();
 	});
 
-	it('has no neighbour author without a conversation or beyond its bounds', () => {
+	it('has no neighbour author without a conversation or beyond its bounds, and a deleted one when it is not identifiable', () => {
 		// Arrange
 		const conversation = [{} as CommunicationModel];
 
@@ -86,7 +89,7 @@ describe('CommunicationHelper', () => {
 		// Assert
 		expect(withoutConversation).toBeUndefined();
 		expect(beyondBounds).toBeUndefined();
-		expect(unidentifiedNeighbour).toBeUndefined();
+		expect(unidentifiedNeighbour).toBe('deleted-author');
 	});
 
 	it('lists the communications from the oldest to the latest without altering the page', () => {
