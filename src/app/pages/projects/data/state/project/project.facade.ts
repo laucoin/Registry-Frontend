@@ -164,37 +164,25 @@ export class ProjectFacade extends GenericFacade {
 		);
 	}
 
-	public softDeleteProject(id: string): void {
-		this.api
-			.softDeleteProjectById(id)
-			.pipe(
-				this.trackProjectLoader,
-				notifyOnError(this.uiFacade),
-				tap((project) => this.onCommandSuccess('softDelete', project, true)),
-			)
-			.subscribe();
+	public softDeleteProject(id: string): Observable<ProjectModel> {
+		return this.api.softDeleteProjectById(id).pipe(
+			this.trackProjectLoader,
+			tap((project) => this.onCommandSuccess('softDelete', project, true)),
+		);
 	}
 
-	public restoreProject(id: string): void {
-		this.api
-			.restoreProjectById(id)
-			.pipe(
-				this.trackProjectLoader,
-				notifyOnError(this.uiFacade),
-				tap((project) => this.onCommandSuccess('restore', project, true)),
-			)
-			.subscribe();
+	public restoreProject(id: string): Observable<ProjectModel> {
+		return this.api.restoreProjectById(id).pipe(
+			this.trackProjectLoader,
+			tap((project) => this.onCommandSuccess('restore', project, true)),
+		);
 	}
 
-	public hardDeleteProject(element: ProjectModel): void {
-		this.api
-			.hardDeleteProjectById(element.id)
-			.pipe(
-				this.trackProjectLoader,
-				notifyOnError(this.uiFacade),
-				tap(() => this.onCommandSuccess('hardDelete', element, true)),
-			)
-			.subscribe();
+	public hardDeleteProject(element: ProjectModel): Observable<void> {
+		return this.api.hardDeleteProjectById(element.id).pipe(
+			this.trackProjectLoader,
+			tap(() => this.onCommandSuccess('hardDelete', element, true)),
+		);
 	}
 
 	private readonly trackProjectLoader = <T>(source: Observable<T>): Observable<T> =>

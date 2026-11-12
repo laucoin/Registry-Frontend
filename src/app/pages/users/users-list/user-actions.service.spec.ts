@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 
 import { TranslocoService } from '@jsverse/transloco';
-import { of } from 'rxjs';
+import { EMPTY, Observable, of } from 'rxjs';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import { SessionFacade } from '@core/registry/state/session.facade';
@@ -23,16 +23,18 @@ describe('UserActions', () => {
 	let authorities: WritableSignal<string[]>;
 	let currentUserId: WritableSignal<string>;
 	let facade: Record<string, Mock>;
-	let confirm: Mock<(confirmation: { accept: () => void; acceptSeverity: SeverityEnum; phrase?: string }) => void>;
+	let confirm: Mock<
+		(confirmation: { accept: () => Observable<unknown>; acceptSeverity: SeverityEnum; phrase?: string }) => void
+	>;
 	let navigateByUrl: Mock<(url: string) => Promise<boolean>>;
 
 	beforeEach(() => {
 		authorities = signal(['REGISTRY_USER_U', 'REGISTRY_USER_D']);
 		currentUserId = signal('u1');
 		facade = {
-			blockUser: vi.fn(),
-			unblockUser: vi.fn(),
-			deleteUser: vi.fn(),
+			blockUser: vi.fn(() => EMPTY),
+			unblockUser: vi.fn(() => EMPTY),
+			deleteUser: vi.fn(() => EMPTY),
 			exportUser: vi.fn(() => of(undefined)),
 		};
 		confirm = vi.fn();
@@ -155,7 +157,7 @@ describe('UserActions', () => {
 			// Act
 			action.run();
 			const beforeAccept = facade[call].mock.calls.length;
-			confirm.mock.calls[0][0].accept();
+			confirm.mock.calls[0][0].accept().subscribe();
 
 			// Assert
 			expect(beforeAccept).toBe(0);

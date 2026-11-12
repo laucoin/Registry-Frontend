@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 
 import { TranslocoService } from '@jsverse/transloco';
-import { of } from 'rxjs';
+import { EMPTY, Observable, of } from 'rxjs';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import { SessionFacade } from '@core/registry/state/session.facade';
@@ -41,7 +41,12 @@ describe('ProjectProfileActions', () => {
 	let facade: Record<string, Mock>;
 	let userProfileFacade: { manageProjectInvitationAcceptance: Mock };
 	let confirm: Mock<
-		(confirmation: { accept: () => void; acceptSeverity: SeverityEnum; header: string; phrase?: string }) => void
+		(confirmation: {
+			accept: () => Observable<unknown>;
+			acceptSeverity: SeverityEnum;
+			header: string;
+			phrase?: string;
+		}) => void
 	>;
 	let navigateByUrl: Mock<(url: string) => Promise<boolean>>;
 
@@ -53,7 +58,7 @@ describe('ProjectProfileActions', () => {
 			unblockProjectProfile: vi.fn(() => of(undefined)),
 			deleteProjectProfile: vi.fn(() => of(undefined)),
 		};
-		userProfileFacade = { manageProjectInvitationAcceptance: vi.fn() };
+		userProfileFacade = { manageProjectInvitationAcceptance: vi.fn(() => EMPTY) };
 		confirm = vi.fn();
 		navigateByUrl = vi.fn(() => Promise.resolve(true));
 		TestBed.configureTestingModule({
@@ -177,7 +182,7 @@ describe('ProjectProfileActions', () => {
 		// Act
 		action.run();
 		const beforeAccept = facade[call].mock.calls.length;
-		confirm.mock.calls[0][0].accept();
+		confirm.mock.calls[0][0].accept().subscribe();
 
 		// Assert
 		expect(beforeAccept).toBe(0);
@@ -219,7 +224,7 @@ describe('ProjectProfileActions', () => {
 		// Act
 		actions.manageAcceptance(invitation, status);
 		const beforeAccept = userProfileFacade.manageProjectInvitationAcceptance.mock.calls.length;
-		confirm.mock.calls[0][0].accept();
+		confirm.mock.calls[0][0].accept().subscribe();
 
 		// Assert
 		expect(beforeAccept).toBe(0);

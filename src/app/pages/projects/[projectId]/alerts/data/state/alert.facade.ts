@@ -7,7 +7,6 @@ import { AlertStore } from '@pages/projects/[projectId]/alerts/data/state/alert.
 import { DateHelper } from '@shared/helpers/date.helper';
 import { CommandEvent } from '@shared/helpers/facade/command-event.service';
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade';
-import { notifyOnError } from '@shared/helpers/rx.helper';
 import { SearchParamsHelper } from '@shared/helpers/search/search-params.helper';
 import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper';
 import { AlertDto } from '@shared/models/dto/alert.dto';
@@ -147,31 +146,27 @@ export class AlertFacade extends GenericProjectElementFacade {
 	}
 
 	public softDeleteAlert(id: string): Observable<AlertModel> {
-		return this.api.softDeleteAlertById(this.selectedProjectId(), id).pipe(
-			notifyOnError(this.uiFacade),
-			tap((disabled) => this.onCommandSuccess('softDelete', disabled)),
-		);
+		return this.api
+			.softDeleteAlertById(this.selectedProjectId(), id)
+			.pipe(tap((disabled) => this.onCommandSuccess('softDelete', disabled)));
 	}
 
 	public restoreAlert(id: string): Observable<AlertModel> {
-		return this.api.restoreAlertById(this.selectedProjectId(), id).pipe(
-			notifyOnError(this.uiFacade),
-			tap((enabled) => this.onCommandSuccess('restore', enabled)),
-		);
+		return this.api
+			.restoreAlertById(this.selectedProjectId(), id)
+			.pipe(tap((enabled) => this.onCommandSuccess('restore', enabled)));
 	}
 
 	public hardDeleteAlert(alert: AlertModel): Observable<void> {
-		return this.api.hardDeleteAlertById(undefined, alert.id).pipe(
-			notifyOnError(this.uiFacade),
-			tap(() => this.onCommandSuccess('hardDelete', alert)),
-		);
+		return this.api
+			.hardDeleteAlertById(undefined, alert.id)
+			.pipe(tap(() => this.onCommandSuccess('hardDelete', alert)));
 	}
 
 	public updateAlertStatus(id: string, status: AlertStatusEnum): Observable<AlertModel> {
-		return this.api.updateAlertStatusById(this.selectedProjectId(), id, status).pipe(
-			notifyOnError(this.uiFacade),
-			tap((updated) => this.onCommandSuccess('status', updated)),
-		);
+		return this.api
+			.updateAlertStatusById(this.selectedProjectId(), id, status)
+			.pipe(tap((updated) => this.onCommandSuccess('status', updated)));
 	}
 
 	private onCommandSuccess(command: CommandEvent, alert: AlertModel): void {

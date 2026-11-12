@@ -1,7 +1,7 @@
 import { signal, WritableSignal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import { SessionFacade } from '@core/registry/state/session.facade';
@@ -17,7 +17,7 @@ const alertOf = (status: AlertStatusEnum, visible = true): AlertModel =>
 
 describe('AlertActions', () => {
 	let actions: AlertActions;
-	let confirm: Mock<(prefix: string, element: unknown, severity: unknown, accept: () => void) => void>;
+	let confirm: Mock<(prefix: string, element: unknown, severity: unknown, accept: () => Observable<unknown>) => void>;
 	let updateAlertStatus: Mock;
 	let softDeleteAlert: Mock;
 	let restoreAlert: Mock;
@@ -86,7 +86,7 @@ describe('AlertActions', () => {
 
 		// Act
 		resolve.run();
-		confirm.mock.calls[0][3]();
+		confirm.mock.calls[0][3]().subscribe();
 
 		// Assert
 		expect(confirm.mock.calls[0][0]).toBe('alerts.actions.confirmations.status.RESOLVED');
@@ -113,7 +113,7 @@ describe('AlertActions', () => {
 
 		// Act
 		action.run();
-		confirm.mock.calls[0][3]();
+		confirm.mock.calls[0][3]().subscribe();
 
 		// Assert
 		expect(confirm.mock.calls[0][0]).toBe(`alerts.actions.confirmations.status.${target}`);
@@ -132,7 +132,7 @@ describe('AlertActions', () => {
 
 		// Act
 		action.run();
-		confirm.mock.calls[0][3]();
+		confirm.mock.calls[0][3]().subscribe();
 
 		// Assert
 		expect(call()).toHaveBeenCalledTimes(1);

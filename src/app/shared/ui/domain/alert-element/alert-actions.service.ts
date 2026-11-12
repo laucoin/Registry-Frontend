@@ -39,7 +39,7 @@ export class AlertActions extends ElementActionsBase<AlertModel> {
 			confirmation: {
 				severity: SeverityEnum.INFO,
 				translationKey: `status.${status}`,
-				accept: () => this.run(this.facade.updateAlertStatus(alert.id, status)),
+				accept: () => this.facade.updateAlertStatus(alert.id, status),
 			},
 		};
 	}
@@ -52,7 +52,7 @@ export class AlertActions extends ElementActionsBase<AlertModel> {
 			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_SOFT_DELETE),
 			confirmation: {
 				severity: SeverityEnum.WARNING,
-				accept: () => this.run(this.facade.softDeleteAlert(alert.id)),
+				accept: () => this.facade.softDeleteAlert(alert.id),
 			},
 		};
 	}
@@ -65,7 +65,7 @@ export class AlertActions extends ElementActionsBase<AlertModel> {
 			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_RESTORE),
 			confirmation: {
 				severity: SeverityEnum.INFO,
-				accept: () => this.run(this.facade.restoreAlert(alert.id)),
+				accept: () => this.facade.restoreAlert(alert.id),
 			},
 		};
 	}
@@ -78,7 +78,7 @@ export class AlertActions extends ElementActionsBase<AlertModel> {
 			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_D),
 			confirmation: {
 				severity: SeverityEnum.DANGER,
-				accept: () => this.run(this.facade.hardDeleteAlert(alert)),
+				accept: () => this.facade.hardDeleteAlert(alert),
 			},
 		};
 	}

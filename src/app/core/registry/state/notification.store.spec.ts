@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
 import { TranslocoService } from '@jsverse/transloco';
+import { EMPTY, Observable } from 'rxjs';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { NotificationStore } from '@core/registry/state/notification.store';
@@ -79,7 +80,7 @@ describe('NotificationStore', () => {
 			header: 'h',
 			message: 'm',
 			acceptSeverity: SeverityEnum.DANGER,
-			accept: (): void => undefined,
+			accept: (): Observable<unknown> => EMPTY,
 		};
 		store.confirmations$().subscribe((it) => received.push(it));
 

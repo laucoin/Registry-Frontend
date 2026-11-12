@@ -60,7 +60,7 @@ export class ActivityActions extends ElementActionsBase<ActivityModel> {
 			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_SOFT_DELETE),
 			confirmation: {
 				severity: SeverityEnum.WARNING,
-				accept: () => this.run(this.facade.softDeleteActivity(activity.id)),
+				accept: () => this.facade.softDeleteActivity(activity.id),
 			},
 		};
 	}
@@ -73,7 +73,7 @@ export class ActivityActions extends ElementActionsBase<ActivityModel> {
 			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_RESTORE),
 			confirmation: {
 				severity: SeverityEnum.INFO,
-				accept: () => this.run(this.facade.restoreActivity(activity.id)),
+				accept: () => this.facade.restoreActivity(activity.id),
 			},
 		};
 	}
@@ -86,7 +86,7 @@ export class ActivityActions extends ElementActionsBase<ActivityModel> {
 			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_D),
 			confirmation: {
 				severity: SeverityEnum.DANGER,
-				accept: () => this.run(this.facade.hardDeleteActivity(activity)),
+				accept: () => this.facade.hardDeleteActivity(activity),
 			},
 		};
 	}

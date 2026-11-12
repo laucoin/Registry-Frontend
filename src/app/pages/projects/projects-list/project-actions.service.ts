@@ -1,8 +1,7 @@
-import { DestroyRef, inject, Injectable } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { tap } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
 import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper';
 import { UserProfileFacade } from '@core/registry/state/user-profile.facade';
@@ -27,7 +26,6 @@ export class ProjectActions extends ElementActionsBase<ProjectModel> {
 	private readonly facade = inject(ProjectFacade);
 	private readonly userProfileFacade = inject(UserProfileFacade);
 	private readonly router = inject(Router);
-	private readonly destroyRef = inject(DestroyRef);
 
 	public canJoin(project: ProjectModel): boolean {
 		return CurrentUserHelper.hasAnyProjectAuthority(this.sessionFacade.currentUser(), project.id);
@@ -107,13 +105,7 @@ export class ProjectActions extends ElementActionsBase<ProjectModel> {
 		this.router.navigateByUrl(RouteHelper.withProjectId(route, project.id)).catch((): void => undefined);
 	}
 
-	private createSupportProfile(project: ProjectModel): void {
-		this.userProfileFacade
-			.createSupportProjectProfile(project.id)
-			.pipe(
-				tap(() => this.join(project)),
-				takeUntilDestroyed(this.destroyRef),
-			)
-			.subscribe();
+	private createSupportProfile(project: ProjectModel): Observable<void> {
+		return this.userProfileFacade.createSupportProjectProfile(project.id).pipe(tap(() => this.join(project)));
 	}
 }

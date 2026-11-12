@@ -2,7 +2,7 @@ import { signal, WritableSignal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import { SessionFacade } from '@core/registry/state/session.facade';
@@ -20,7 +20,7 @@ describe('MovementActions', () => {
 	let actions: MovementActions;
 	let authorities: WritableSignal<string[]>;
 	let facade: Record<string, Mock>;
-	let confirm: Mock<(prefix: string, element: unknown, severity: unknown, accept: () => void) => void>;
+	let confirm: Mock<(prefix: string, element: unknown, severity: unknown, accept: () => Observable<unknown>) => void>;
 	let navigateByUrl: Mock;
 
 	const find = (element: MovementModel, id: string): ElementActionModel =>
@@ -90,7 +90,7 @@ describe('MovementActions', () => {
 
 		// Act
 		action.run();
-		confirm.mock.calls[0][3]();
+		confirm.mock.calls[0][3]().subscribe();
 
 		// Assert
 		expect(facade[call]).toHaveBeenCalledWith('x1');
@@ -102,7 +102,7 @@ describe('MovementActions', () => {
 
 		// Act
 		action.run();
-		confirm.mock.calls[0][3]();
+		confirm.mock.calls[0][3]().subscribe();
 
 		// Assert
 		expect(facade['hardDeleteMovement']).toHaveBeenCalledWith(VISIBLE);

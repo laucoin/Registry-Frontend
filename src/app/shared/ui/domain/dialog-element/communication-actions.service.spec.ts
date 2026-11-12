@@ -1,7 +1,7 @@
 import { signal, WritableSignal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import { SessionFacade } from '@core/registry/state/session.facade';
@@ -19,7 +19,7 @@ describe('CommunicationActions', () => {
 	let actions: CommunicationActions;
 	let authorities: WritableSignal<string[]>;
 	let facade: Record<string, Mock>;
-	let confirm: Mock<(prefix: string, element: unknown, severity: unknown, accept: () => void) => void>;
+	let confirm: Mock<(prefix: string, element: unknown, severity: unknown, accept: () => Observable<unknown>) => void>;
 
 	const find = (element: CommunicationModel, id: string): ElementActionModel =>
 		defined(actions.actionsFor(element).find((action) => action.id === id));
@@ -87,7 +87,7 @@ describe('CommunicationActions', () => {
 
 		// Act
 		action.run();
-		confirm.mock.calls[0][3]();
+		confirm.mock.calls[0][3]().subscribe();
 
 		// Assert
 		expect(facade[call]).toHaveBeenCalledWith('x1');
@@ -99,7 +99,7 @@ describe('CommunicationActions', () => {
 
 		// Act
 		action.run();
-		confirm.mock.calls[0][3]();
+		confirm.mock.calls[0][3]().subscribe();
 
 		// Assert
 		expect(facade['hardDeleteCommunication']).toHaveBeenCalledWith(VISIBLE);

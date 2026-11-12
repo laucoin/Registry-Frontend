@@ -5,6 +5,7 @@
 	[title]="pending()?.header ?? ''"
 	(sgdf-hide)="cancel($event)"
 >
+	<app-form-error data-test-id="confirmation-dialog-error" class="mb-3 block text-left" [error]="error()" />
 	<p data-test-id="confirmation-dialog-message" class="m-0 text-left wrap-anywhere">{{ pending()?.message }}</p>
 	@if (pending()?.phrase; as phrase) {
 		<sgdf-input
@@ -29,6 +30,7 @@
 		slot="footer"
 		[variant]="variant()"
 		[disabled]="!phraseTyped()"
+		[loading]="saving()"
 		(click)="confirm()"
 	>
 		{{ 'global.actions.confirm' | transloco }}

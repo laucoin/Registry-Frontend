@@ -4,6 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 
 import { TranslocoTestingModule } from '@jsverse/transloco';
+import { EMPTY, Observable } from 'rxjs';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import { UserProfileFacade } from '@core/registry/state/user-profile.facade';
@@ -56,9 +57,11 @@ describe('HomeInvitationsComponent', () => {
 	let loading: WritableSignal<boolean>;
 	let error: WritableSignal<NotificationModel | undefined>;
 	let fetch: Mock<(page: number, size: number) => void>;
-	let manage: Mock<(id: string, accepted: boolean) => void>;
+	let manage: Mock<(id: string, accepted: boolean) => Observable<unknown>>;
 	let refresh: Mock<() => void>;
-	let confirm: Mock<(prefix: string, element: unknown, severity: SeverityEnum, accept: () => void) => void>;
+	let confirm: Mock<
+		(prefix: string, element: unknown, severity: SeverityEnum, accept: () => Observable<unknown>) => void
+	>;
 
 	async function create(): Promise<HomeInvitationsHarness> {
 		return TestbedHarnessEnvironment.harnessForFixture(
@@ -75,7 +78,7 @@ describe('HomeInvitationsComponent', () => {
 		loading = signal(false);
 		error = signal<NotificationModel | undefined>(undefined);
 		fetch = vi.fn();
-		manage = vi.fn();
+		manage = vi.fn(() => EMPTY);
 		refresh = vi.fn();
 		confirm = vi.fn();
 		TestBed.configureTestingModule({
@@ -193,7 +196,7 @@ describe('HomeInvitationsComponent', () => {
 			// Act
 			await act(harness);
 			const answeredBefore = manage.mock.calls.length;
-			confirm.mock.calls[0][3]();
+			confirm.mock.calls[0][3]().subscribe();
 
 			// Assert
 			expect([confirm.mock.calls[0].slice(0, 3), answeredBefore, manage.mock.calls]).toEqual([

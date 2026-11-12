@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 
 import { TranslocoService } from '@jsverse/transloco';
-import { of } from 'rxjs';
+import { EMPTY, Observable, of } from 'rxjs';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import { SessionFacade } from '@core/registry/state/session.facade';
@@ -24,12 +24,18 @@ describe('ProjectActions', () => {
 	let authorities: WritableSignal<string[]>;
 	let facade: Record<string, Mock>;
 	let userProfileFacade: { createSupportProjectProfile: Mock };
-	let confirm: Mock<(confirmation: { accept: () => void; acceptSeverity: SeverityEnum; phrase?: string }) => void>;
+	let confirm: Mock<
+		(confirmation: { accept: () => Observable<unknown>; acceptSeverity: SeverityEnum; phrase?: string }) => void
+	>;
 	let navigateByUrl: Mock<(url: string) => Promise<boolean>>;
 
 	beforeEach(() => {
 		authorities = signal(['p1_REGISTRY_PROJECT_U', 'p1_REGISTRY_PROJECT_D']);
-		facade = { softDeleteProject: vi.fn(), restoreProject: vi.fn(), hardDeleteProject: vi.fn() };
+		facade = {
+			softDeleteProject: vi.fn(() => EMPTY),
+			restoreProject: vi.fn(() => EMPTY),
+			hardDeleteProject: vi.fn(() => EMPTY),
+		};
 		userProfileFacade = { createSupportProjectProfile: vi.fn(() => of(undefined)) };
 		confirm = vi.fn();
 		navigateByUrl = vi.fn(() => Promise.resolve(true));
@@ -127,7 +133,7 @@ describe('ProjectActions', () => {
 		// Act
 		action.run();
 		const beforeAccept = facade[call].mock.calls.length;
-		confirm.mock.calls[0][0].accept();
+		confirm.mock.calls[0][0].accept().subscribe();
 
 		// Assert
 		expect(beforeAccept).toBe(0);
@@ -185,7 +191,7 @@ describe('ProjectActions', () => {
 		actions.confirmSupportProfile(PROJECT);
 
 		// Act
-		confirm.mock.calls[0][0].accept();
+		confirm.mock.calls[0][0].accept().subscribe();
 
 		// Assert
 		expect(userProfileFacade.createSupportProjectProfile).toHaveBeenCalledWith('p1');

@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
+import { EMPTY, Observable } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SessionFacade } from '@core/registry/state/session.facade';
@@ -9,7 +10,7 @@ import { SeverityEnum } from '@shared/models/enumeration/severity.enum';
 import { ElementActionModel } from '@shared/models/model/element-action.model';
 
 class FakeActions extends ElementActionsBase<{ id: string }> {
-	public command: () => void = vi.fn();
+	public command: () => Observable<unknown> = vi.fn(() => EMPTY);
 	protected readonly translationPrefix: string = 'fake';
 	protected override readonly primaryActionId: string = 'open';
 

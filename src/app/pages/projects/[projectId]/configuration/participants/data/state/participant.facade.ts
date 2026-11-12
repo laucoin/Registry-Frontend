@@ -193,17 +193,15 @@ export class ParticipantFacade extends GenericProjectElementFacade {
 	}
 
 	public softDeleteParticipant(id: string): Observable<ParticipantModel> {
-		return this.api.softDeleteParticipantById(this.selectedProjectId(), id).pipe(
-			notifyOnError(this.uiFacade),
-			tap((disabled) => this.onCommandSuccess('softDelete', disabled)),
-		);
+		return this.api
+			.softDeleteParticipantById(this.selectedProjectId(), id)
+			.pipe(tap((disabled) => this.onCommandSuccess('softDelete', disabled)));
 	}
 
 	public restoreParticipant(id: string): Observable<ParticipantModel> {
-		return this.api.restoreParticipantById(this.selectedProjectId(), id).pipe(
-			notifyOnError(this.uiFacade),
-			tap((enabled) => this.onCommandSuccess('restore', enabled)),
-		);
+		return this.api
+			.restoreParticipantById(this.selectedProjectId(), id)
+			.pipe(tap((enabled) => this.onCommandSuccess('restore', enabled)));
 	}
 
 	public exportParticipant(participant: ParticipantModel): Observable<unknown> {
@@ -214,10 +212,9 @@ export class ParticipantFacade extends GenericProjectElementFacade {
 	}
 
 	public hardDeleteParticipant(participant: ParticipantModel): Observable<void> {
-		return this.api.hardDeleteParticipantById(undefined, participant.id).pipe(
-			notifyOnError(this.uiFacade),
-			tap(() => this.onCommandSuccess('hardDelete', participant)),
-		);
+		return this.api
+			.hardDeleteParticipantById(undefined, participant.id)
+			.pipe(tap(() => this.onCommandSuccess('hardDelete', participant)));
 	}
 
 	private onCommandSuccess(command: CommandEvent, participant: ParticipantModel): void {

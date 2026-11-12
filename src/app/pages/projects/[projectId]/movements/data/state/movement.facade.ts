@@ -210,24 +210,21 @@ export class MovementFacade extends GenericProjectElementFacade {
 	}
 
 	public softDeleteMovement(id: string): Observable<MovementModel> {
-		return this.api.softDeleteMovementById(this.selectedProjectId(), id).pipe(
-			notifyOnError(this.uiFacade),
-			tap((disabled) => this.onCommandSuccess('softDelete', disabled)),
-		);
+		return this.api
+			.softDeleteMovementById(this.selectedProjectId(), id)
+			.pipe(tap((disabled) => this.onCommandSuccess('softDelete', disabled)));
 	}
 
 	public restoreMovement(id: string): Observable<MovementModel> {
-		return this.api.restoreMovementById(this.selectedProjectId(), id).pipe(
-			notifyOnError(this.uiFacade),
-			tap((enabled) => this.onCommandSuccess('restore', enabled)),
-		);
+		return this.api
+			.restoreMovementById(this.selectedProjectId(), id)
+			.pipe(tap((enabled) => this.onCommandSuccess('restore', enabled)));
 	}
 
 	public hardDeleteMovement(movement: MovementModel): Observable<void> {
-		return this.api.hardDeleteMovementById(undefined, movement.id).pipe(
-			notifyOnError(this.uiFacade),
-			tap(() => this.onCommandSuccess('hardDelete', movement)),
-		);
+		return this.api
+			.hardDeleteMovementById(undefined, movement.id)
+			.pipe(tap(() => this.onCommandSuccess('hardDelete', movement)));
 	}
 
 	private onCommandSuccess(command: CommandEvent, movement: MovementModel): void {

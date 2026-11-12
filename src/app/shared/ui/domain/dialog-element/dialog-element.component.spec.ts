@@ -5,6 +5,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { TranslocoTestingModule } from '@jsverse/transloco';
+import { Observable } from 'rxjs';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import { SessionFacade } from '@core/registry/state/session.facade';
@@ -21,7 +22,7 @@ const ELEMENT = { id: 'e1', visible: true, message: 'On my way', dateTime: new D
 
 describe('DialogElementComponent', () => {
 	let fixture: ComponentFixture<DialogElementComponent>;
-	let confirm: Mock<(confirmation: { accept: () => void }) => void>;
+	let confirm: Mock<(confirmation: { accept: () => Observable<unknown> }) => void>;
 	let facade: Record<string, Mock>;
 
 	async function create(element: object, inputs: Record<string, unknown> = {}): Promise<DialogElementHarness> {
@@ -212,7 +213,7 @@ describe('DialogElementComponent', () => {
 
 			// Act
 			await (await harness.actions()).run('hardDelete');
-			defined(confirm.mock.calls[0])[0].accept();
+			defined(confirm.mock.calls[0])[0].accept().subscribe();
 
 			// Assert
 			expect(facade['hardDeleteCommunication']).toHaveBeenCalledTimes(1);

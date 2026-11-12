@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 
 import { TranslocoService } from '@jsverse/transloco';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import { SessionFacade } from '@core/registry/state/session.facade';
@@ -24,7 +24,7 @@ describe('ParticipantActions', () => {
 	let authorities: WritableSignal<string[]>;
 	let facade: Record<string, Mock>;
 	let groupFacade: { removeMemberFromGroup: Mock };
-	let confirm: Mock<(confirmation: { accept: () => void; acceptSeverity: SeverityEnum }) => void>;
+	let confirm: Mock<(confirmation: { accept: () => Observable<unknown>; acceptSeverity: SeverityEnum }) => void>;
 	let navigateByUrl: Mock<(url: string) => Promise<boolean>>;
 
 	beforeEach(() => {
@@ -189,7 +189,7 @@ describe('ParticipantActions', () => {
 			// Act
 			action.run();
 			const beforeAccept = facade[call].mock.calls.length;
-			confirm.mock.calls[0][0].accept();
+			confirm.mock.calls[0][0].accept().subscribe();
 
 			// Assert
 			expect(beforeAccept).toBe(0);
@@ -216,7 +216,7 @@ describe('ParticipantActions', () => {
 
 		// Act
 		action.run();
-		confirm.mock.calls[0][0].accept();
+		confirm.mock.calls[0][0].accept().subscribe();
 
 		// Assert
 		expect(action.disabled).toBe(false);
@@ -265,7 +265,7 @@ describe('ParticipantActions', () => {
 		action.run();
 
 		// Act
-		confirm.mock.calls[0][0].accept();
+		confirm.mock.calls[0][0].accept().subscribe();
 
 		// Assert
 		expect(groupFacade.removeMemberFromGroup).not.toHaveBeenCalled();

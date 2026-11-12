@@ -49,7 +49,7 @@ export class MovementActions extends ElementActionsBase<MovementModel> {
 			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_SOFT_DELETE),
 			confirmation: {
 				severity: SeverityEnum.WARNING,
-				accept: () => this.run(this.facade.softDeleteMovement(movement.id)),
+				accept: () => this.facade.softDeleteMovement(movement.id),
 			},
 		};
 	}
@@ -62,7 +62,7 @@ export class MovementActions extends ElementActionsBase<MovementModel> {
 			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_RESTORE),
 			confirmation: {
 				severity: SeverityEnum.INFO,
-				accept: () => this.run(this.facade.restoreMovement(movement.id)),
+				accept: () => this.facade.restoreMovement(movement.id),
 			},
 		};
 	}
@@ -75,7 +75,7 @@ export class MovementActions extends ElementActionsBase<MovementModel> {
 			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_D),
 			confirmation: {
 				severity: SeverityEnum.DANGER,
-				accept: () => this.run(this.facade.hardDeleteMovement(movement)),
+				accept: () => this.facade.hardDeleteMovement(movement),
 			},
 		};
 	}

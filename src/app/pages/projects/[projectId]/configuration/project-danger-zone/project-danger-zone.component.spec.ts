@@ -3,6 +3,7 @@ import { signal, WritableSignal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
 import { TranslocoTestingModule } from '@jsverse/transloco';
+import { EMPTY } from 'rxjs';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import { SessionFacade } from '@core/registry/state/session.facade';
@@ -43,7 +44,11 @@ describe('ProjectDangerZoneComponent', () => {
 		selectedProject = signal(PROJECT);
 		currentUser = signal(userWith(...ALL));
 		confirm = vi.fn();
-		projectFacade = { softDeleteProject: vi.fn(), restoreProject: vi.fn(), hardDeleteProject: vi.fn() };
+		projectFacade = {
+			softDeleteProject: vi.fn(() => EMPTY),
+			restoreProject: vi.fn(() => EMPTY),
+			hardDeleteProject: vi.fn(() => EMPTY),
+		};
 		TestBed.configureTestingModule({
 			imports: [TranslocoTestingModule.forRoot({ langs: { fr: {} }, translocoConfig: { defaultLang: 'fr' } })],
 			providers: [
@@ -152,7 +157,7 @@ describe('ProjectDangerZoneComponent', () => {
 		await harness.run(command);
 
 		// Act
-		confirm.mock.calls[0][3]();
+		confirm.mock.calls[0][3]().subscribe();
 
 		// Assert
 		expect([confirm.mock.calls[0].slice(0, 3), confirm.mock.calls[0][4], projectFacade[action].mock.calls]).toEqual(

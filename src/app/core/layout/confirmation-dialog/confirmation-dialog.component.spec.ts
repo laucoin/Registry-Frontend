@@ -1,9 +1,10 @@
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
 import { TranslocoTestingModule } from '@jsverse/transloco';
-import { Subject } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import { ConfirmationDialogComponent } from '@core/layout/confirmation-dialog/confirmation-dialog.component';
@@ -12,10 +13,11 @@ import { UiFacade } from '@core/registry/state/ui.facade';
 import { byTestId } from '@shared/helpers/testing/harness/test-id';
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum';
 import { ConfirmationModel } from '@shared/models/model/confirmation.model';
+import { ErrorModel } from '@shared/models/model/error.model';
 
 describe('ConfirmationDialogComponent', () => {
 	let requests: Subject<ConfirmationModel>;
-	let accept: Mock<() => void>;
+	let accept: Mock<() => Observable<unknown>>;
 
 	const request = (acceptSeverity: SeverityEnum): ConfirmationModel => ({
 		header: 'Delete',
@@ -38,7 +40,7 @@ describe('ConfirmationDialogComponent', () => {
 	beforeEach(() => {
 		TestBed.resetTestingModule();
 		requests = new Subject<ConfirmationModel>();
-		accept = vi.fn();
+		accept = vi.fn(() => of(undefined));
 	});
 
 	it('stays closed until a confirmation is requested, then shows it', async () => {
@@ -91,7 +93,7 @@ describe('ConfirmationDialogComponent', () => {
 	it('replaces the pending confirmation by a new one without running the first', async () => {
 		// Arrange
 		const dialog = await create();
-		const first: Mock<() => void> = vi.fn();
+		const first: Mock<() => Observable<unknown>> = vi.fn(() => of(undefined));
 		requests.next({ ...request(SeverityEnum.DANGER), header: 'First', accept: first });
 
 		// Act
@@ -188,5 +190,121 @@ describe('ConfirmationDialogComponent', () => {
 
 		// Assert
 		expect(await dialog.title()).toBe('Delete');
+	});
+
+	it('shows the progress on the confirm button while the command runs, then closes once it succeeds', async () => {
+		// Arrange
+		const dialog = await create();
+		const outcome = new Subject<void>();
+		accept.mockReturnValue(outcome);
+		requests.next(request(SeverityEnum.DANGER));
+
+		// Act
+		await dialog.confirm();
+		const savingWhileRunning = await dialog.saving();
+		const titleWhileRunning = await dialog.title();
+		outcome.complete();
+
+		// Assert
+		expect(savingWhileRunning).toBe(true);
+		expect(titleWhileRunning).toBe('Delete');
+		expect(await dialog.saving()).toBe(false);
+		expect(await dialog.title()).toBe('');
+	});
+
+	it('stays open with the message of the backend inside when the command fails', async () => {
+		// Arrange
+		const dialog = await create();
+		const outcome = new Subject<void>();
+		accept.mockReturnValue(outcome);
+		requests.next(request(SeverityEnum.DANGER));
+
+		// Act
+		await dialog.confirm();
+		outcome.error(new ErrorModel(new HttpErrorResponse({ status: 409, error: { detail: 'Still in use' } })));
+
+		// Assert
+		expect(await dialog.title()).toBe('Delete');
+		expect(await dialog.saving()).toBe(false);
+		expect(await dialog.errorText()).toContain('Still in use');
+	});
+
+	it('clears the failure when the command is sent again', async () => {
+		// Arrange
+		const dialog = await create();
+		const failed = new Subject<void>();
+		accept.mockReturnValueOnce(failed).mockReturnValueOnce(new Subject<void>());
+		requests.next(request(SeverityEnum.DANGER));
+		await dialog.confirm();
+		failed.error(new ErrorModel(new HttpErrorResponse({ status: 409, error: { detail: 'Still in use' } })));
+
+		// Act
+		await dialog.confirm();
+
+		// Assert
+		expect(accept).toHaveBeenCalledTimes(2);
+		expect(await dialog.errorShown()).toBe(false);
+	});
+
+	it('forgets the failure when the dialog is closed', async () => {
+		// Arrange
+		const dialog = await create();
+		const failed = new Subject<void>();
+		accept.mockReturnValueOnce(failed);
+		requests.next(request(SeverityEnum.DANGER));
+		await dialog.confirm();
+		failed.error(new ErrorModel(new HttpErrorResponse({ status: 409, error: { detail: 'Still in use' } })));
+
+		// Act
+		await dialog.cancel();
+		requests.next(request(SeverityEnum.DANGER));
+
+		// Assert
+		expect(await dialog.errorShown()).toBe(false);
+	});
+
+	it('cancels the running command when the dialog is closed', async () => {
+		// Arrange
+		const dialog = await create();
+		const outcome = new Subject<void>();
+		accept.mockReturnValue(outcome);
+		requests.next(request(SeverityEnum.DANGER));
+		await dialog.confirm();
+
+		// Act
+		await dialog.cancel();
+
+		// Assert
+		expect(outcome.observed).toBe(false);
+		expect(await dialog.title()).toBe('');
+	});
+
+	it('runs the command once when confirmed again while it runs', async () => {
+		// Arrange
+		const dialog = await create();
+		accept.mockReturnValue(new Subject<void>());
+		requests.next(request(SeverityEnum.DANGER));
+
+		// Act
+		await dialog.confirm();
+		await dialog.confirm();
+
+		// Assert
+		expect(accept).toHaveBeenCalledTimes(1);
+	});
+
+	it('cancels the running command when the dialog is destroyed', async () => {
+		// Arrange
+		const dialog = await create();
+		const outcome = new Subject<void>();
+		accept.mockReturnValue(outcome);
+		requests.next(request(SeverityEnum.DANGER));
+		await dialog.confirm();
+
+		// Act
+		fixture.destroy();
+
+		// Assert
+		expect(outcome.observed).toBe(false);
 	});
 });

@@ -249,15 +249,16 @@ describe('AlertFacade', () => {
 		expect(findAlertStatistics).not.toHaveBeenCalled();
 	});
 
-	it('reports a failed command once and does not reload the alerts', () => {
+	it('hands a failed command to the confirmation instead of a toast, without reloading the alerts', () => {
 		// Arrange
 		softDeleteAlertById.mockReturnValue(failing(ERROR_503));
+		const received: unknown[] = [];
 
 		// Act
-		facade.softDeleteAlert('al1').subscribe({ error: (): void => undefined });
+		facade.softDeleteAlert('al1').subscribe({ error: (error: unknown) => received.push(error) });
 
 		// Assert
-		expect(notify).toHaveBeenCalledTimes(1);
+		expect([received, notify.mock.calls]).toEqual([[ERROR_503], []]);
 		expect(findAlerts).not.toHaveBeenCalled();
 	});
 

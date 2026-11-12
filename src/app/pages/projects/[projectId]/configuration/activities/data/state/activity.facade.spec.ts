@@ -151,21 +151,16 @@ describe('ActivityFacade', () => {
 		expect(received).toBe(ERROR_503);
 	});
 
-	it('notifies a failed command instead of rethrowing it', () => {
+	it('hands a failed command to the confirmation instead of a toast', () => {
 		// Arrange
 		softDeleteActivityById.mockReturnValue(failing(ERROR_500));
-		let completed = false;
+		const received: unknown[] = [];
 
 		// Act
-		facade.softDeleteActivity('a1').subscribe({
-			complete: () => {
-				completed = true;
-			},
-		});
+		facade.softDeleteActivity('a1').subscribe({ error: (error: unknown) => received.push(error) });
 
 		// Assert
-		expect(notify).toHaveBeenCalledWith(expect.objectContaining({ summary: 'Title' }));
-		expect(completed).toBe(true);
+		expect([received, notify.mock.calls]).toEqual([[ERROR_500], []]);
 	});
 
 	it('announces the deletion on the command channel', () => {

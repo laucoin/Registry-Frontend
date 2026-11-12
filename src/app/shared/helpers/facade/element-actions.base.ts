@@ -18,7 +18,12 @@ interface ElementActionBaseSpec {
 
 type ElementActionCommand =
 	| {
-			confirmation: { severity: SeverityEnum; accept: () => void; translationKey?: string; typed?: boolean };
+			confirmation: {
+				severity: SeverityEnum;
+				accept: () => Observable<unknown>;
+				translationKey?: string;
+				typed?: boolean;
+			};
 			run?: undefined;
 	  }
 	| { confirmation?: undefined; run: () => void };
@@ -28,7 +33,7 @@ export type ElementActionSpec = ElementActionBaseSpec & ElementActionCommand;
 /**
  * Objectif: Base des services qui indiquent les commandes offertes par un élément de liste.
  * Périmètre: Transforme les spécifications d'action d'un élément en actions de menu, garde celles affichées et activées par la configuration, désactive les non autorisées, place la confirmation devant les commandes qui en ont besoin et donne aux sous-classes la vérification d'autorité de projet et l'exécuteur de commande.
- * Limites: Abstrait ; les commandes qu'il exécute signalent elles-mêmes leurs échecs via la facade ; chaque domaine dit quelles actions existent, qui peut les exécuter et ce qu'elles font, et peut passer un contexte (comme le groupe dans lequel un membre est listé). Le backend vérifie toujours chaque commande.
+ * Limites: Abstrait ; une commande confirmée renvoie sa requête au dialogue de confirmation, qui en affiche l'échec, les autres signalent elles-mêmes leurs échecs via la facade ; chaque domaine dit quelles actions existent, qui peut les exécuter et ce qu'elles font, et peut passer un contexte (comme le groupe dans lequel un membre est listé). Le backend vérifie toujours chaque commande.
  */
 export abstract class ElementActionsBase<T, C = void> {
 	protected readonly confirmation = inject(ElementConfirmationService);

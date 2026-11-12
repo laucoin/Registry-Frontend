@@ -76,14 +76,10 @@ export class UserProfileFacade {
 		this.store.updateInvitationsPageSearchParams({ ...next, resetSearch: true });
 	}
 
-	public manageProjectInvitationAcceptance(id: string, accepted: boolean): void {
-		this.userProjectProfileApi
+	public manageProjectInvitationAcceptance(id: string, accepted: boolean): Observable<UserInvitationModel> {
+		return this.userProjectProfileApi
 			.manageUserProjectProfileAcceptance(id, accepted)
-			.pipe(
-				tap((profile) => this.onInvitationManaged(profile)),
-				catchError((error: ErrorModel) => this.reportError$(error)),
-			)
-			.subscribe();
+			.pipe(tap((profile) => this.onInvitationManaged(profile)));
 	}
 
 	public toggleProjectFavorite(profile: UserInvitationModel): void {
@@ -107,7 +103,6 @@ export class UserProfileFacade {
 			this.userProjectProfileApi.createSupportProjectProfile(projectId).pipe(
 				tap((project) => this.onSupportProfileCreated(project)),
 				switchMap(() => this.sessionFacade.fetchCurrentUser()),
-				catchError((error: ErrorModel): Observable<void> => this.reportError$(error)),
 			),
 		);
 	}

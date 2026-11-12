@@ -143,21 +143,16 @@ describe('VehicleFacade', () => {
 		expect(received).toBe(ERROR_503);
 	});
 
-	it('notifies a failed enable instead of rethrowing it', () => {
+	it('hands a failed enable to the confirmation instead of a toast', () => {
 		// Arrange
 		restoreVehicleById.mockReturnValue(failing(ERROR_500));
-		let completed = false;
+		const received: unknown[] = [];
 
 		// Act
-		facade.restoreVehicle('v1').subscribe({
-			complete: () => {
-				completed = true;
-			},
-		});
+		facade.restoreVehicle('v1').subscribe({ error: (error: unknown) => received.push(error) });
 
 		// Assert
-		expect(notify).toHaveBeenCalledWith(expect.objectContaining({ summary: 'Title' }));
-		expect(completed).toBe(true);
+		expect([received, notify.mock.calls]).toEqual([[ERROR_500], []]);
 	});
 
 	it('reloads every shown batch of the movements of a vehicle in one request', () => {

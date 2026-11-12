@@ -180,7 +180,7 @@ describe('UserProfileFacade', () => {
 			// Arrange
 
 			// Act
-			facade.manageProjectInvitationAcceptance('pp1', true);
+			facade.manageProjectInvitationAcceptance('pp1', true).subscribe();
 
 			// Assert
 			expect(manageAcceptance).toHaveBeenCalledWith('pp1', true);
@@ -191,15 +191,18 @@ describe('UserProfileFacade', () => {
 			expect(findProfilesPage).toHaveBeenCalledTimes(1);
 		});
 
-		it('notifies the failure of an invitation answer', () => {
+		it('hands a failed invitation answer to the confirmation instead of a toast', () => {
 			// Arrange
 			manageAcceptance.mockReturnValue(failing(FAILURE));
+			const received: unknown[] = [];
 
 			// Act
-			facade.manageProjectInvitationAcceptance('pp1', false);
+			facade
+				.manageProjectInvitationAcceptance('pp1', false)
+				.subscribe({ error: (error: unknown) => received.push(error) });
 
 			// Assert
-			expect(notify).toHaveBeenCalledWith(expect.objectContaining({ summary: 'Title' }));
+			expect([received, notify.mock.calls]).toEqual([[FAILURE], []]);
 			expect(fetchCurrentUser).not.toHaveBeenCalled();
 		});
 
@@ -277,15 +280,16 @@ describe('UserProfileFacade', () => {
 			expect(completed).toBe(true);
 		});
 
-		it('toasts a 503 when creating a support profile fails', () => {
+		it('hands a failed support profile creation to the confirmation instead of a toast', () => {
 			// Arrange
 			createSupport.mockReturnValue(failing(UNAVAILABLE));
+			const received: unknown[] = [];
 
 			// Act
-			facade.createSupportProjectProfile('p1').subscribe();
+			facade.createSupportProjectProfile('p1').subscribe({ error: (error: unknown) => received.push(error) });
 
 			// Assert
-			expect(notify).toHaveBeenCalledWith(expect.objectContaining({ sticky: true }));
+			expect([received, notify.mock.calls]).toEqual([[UNAVAILABLE], []]);
 		});
 	});
 });

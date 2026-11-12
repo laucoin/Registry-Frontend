@@ -143,24 +143,21 @@ export class VehicleFacade extends GenericProjectElementFacade {
 	}
 
 	public softDeleteVehicle(id: string): Observable<VehicleModel> {
-		return this.api.softDeleteVehicleById(this.selectedProjectId(), id).pipe(
-			notifyOnError(this.uiFacade),
-			tap((disabled) => this.onCommandSuccess('softDelete', disabled)),
-		);
+		return this.api
+			.softDeleteVehicleById(this.selectedProjectId(), id)
+			.pipe(tap((disabled) => this.onCommandSuccess('softDelete', disabled)));
 	}
 
 	public restoreVehicle(id: string): Observable<VehicleModel> {
-		return this.api.restoreVehicleById(this.selectedProjectId(), id).pipe(
-			notifyOnError(this.uiFacade),
-			tap((enabled) => this.onCommandSuccess('restore', enabled)),
-		);
+		return this.api
+			.restoreVehicleById(this.selectedProjectId(), id)
+			.pipe(tap((enabled) => this.onCommandSuccess('restore', enabled)));
 	}
 
 	public hardDeleteVehicle(vehicle: VehicleModel): Observable<void> {
-		return this.api.hardDeleteVehicleById(undefined, vehicle.id).pipe(
-			notifyOnError(this.uiFacade),
-			tap(() => this.onCommandSuccess('hardDelete', vehicle)),
-		);
+		return this.api
+			.hardDeleteVehicleById(undefined, vehicle.id)
+			.pipe(tap(() => this.onCommandSuccess('hardDelete', vehicle)));
 	}
 
 	private onCommandSuccess(command: string, vehicle: VehicleModel): void {

@@ -32,7 +32,7 @@ const ALERT = {
 
 describe('AlertElementComponent', () => {
 	let fixture: ComponentFixture<AlertElementComponent>;
-	let confirm: Mock<(confirmation: { accept: () => void }) => void>;
+	let confirm: Mock<(confirmation: { accept: () => Observable<unknown> }) => void>;
 	let facade: Record<string, Mock>;
 
 	async function create(alert: object, inputs: Record<string, unknown> = {}): Promise<AlertElementHarness> {
@@ -196,7 +196,7 @@ describe('AlertElementComponent', () => {
 
 			// Act
 			await (await harness.actions()).run('hardDelete');
-			defined(confirm.mock.calls[0])[0].accept();
+			defined(confirm.mock.calls[0])[0].accept().subscribe();
 
 			// Assert
 			expect(facade['hardDeleteAlert']).toHaveBeenCalledTimes(1);

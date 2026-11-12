@@ -84,7 +84,7 @@ export class ProjectProfileActions extends ElementActionsBase<ListedProfileModel
 			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_SOFT_DELETE),
 			confirmation: {
 				severity: SeverityEnum.WARNING,
-				accept: () => this.run(this.facade.blockProjectProfile(profile as ProjectProfileModel)),
+				accept: () => this.facade.blockProjectProfile(profile as ProjectProfileModel),
 			},
 		};
 	}
@@ -97,7 +97,7 @@ export class ProjectProfileActions extends ElementActionsBase<ListedProfileModel
 			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_RESTORE),
 			confirmation: {
 				severity: SeverityEnum.INFO,
-				accept: () => this.run(this.facade.unblockProjectProfile(profile as ProjectProfileModel)),
+				accept: () => this.facade.unblockProjectProfile(profile as ProjectProfileModel),
 			},
 		};
 	}
@@ -110,7 +110,7 @@ export class ProjectProfileActions extends ElementActionsBase<ListedProfileModel
 			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_D),
 			confirmation: {
 				severity: SeverityEnum.DANGER,
-				accept: () => this.run(this.facade.deleteProjectProfile(profile)),
+				accept: () => this.facade.deleteProjectProfile(profile),
 				translationKey: own ? 'delete-own' : 'delete',
 				typed: own,
 			},

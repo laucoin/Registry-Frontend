@@ -60,7 +60,7 @@ export class GroupActions extends ElementActionsBase<GroupModel> {
 			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_SOFT_DELETE),
 			confirmation: {
 				severity: SeverityEnum.WARNING,
-				accept: () => this.run(this.facade.softDeleteGroup(group.id)),
+				accept: () => this.facade.softDeleteGroup(group.id),
 			},
 		};
 	}
@@ -73,7 +73,7 @@ export class GroupActions extends ElementActionsBase<GroupModel> {
 			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_RESTORE),
 			confirmation: {
 				severity: SeverityEnum.INFO,
-				accept: () => this.run(this.facade.restoreGroup(group.id)),
+				accept: () => this.facade.restoreGroup(group.id),
 			},
 		};
 	}
@@ -86,7 +86,7 @@ export class GroupActions extends ElementActionsBase<GroupModel> {
 			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_D),
 			confirmation: {
 				severity: SeverityEnum.DANGER,
-				accept: () => this.run(this.facade.hardDeleteGroup(group)),
+				accept: () => this.facade.hardDeleteGroup(group),
 			},
 		};
 	}

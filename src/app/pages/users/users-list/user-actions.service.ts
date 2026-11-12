@@ -58,7 +58,7 @@ export class UserActions extends ElementActionsBase<UserModel> {
 			icon: 'file-export',
 			shown: others,
 			allowed: this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_R),
-			confirmation: { severity: SeverityEnum.INFO, accept: () => this.run(this.facade.exportUser(user)) },
+			confirmation: { severity: SeverityEnum.INFO, accept: () => this.facade.exportUser(user) },
 		};
 	}
 

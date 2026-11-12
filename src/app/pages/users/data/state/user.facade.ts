@@ -104,44 +104,31 @@ export class UserFacade extends GenericFacade {
 		);
 	}
 
-	public blockUser(id: string): void {
-		this.api
-			.blockUserById(id)
-			.pipe(
-				this.trackUserLoader,
-				notifyOnError(this.uiFacade),
-				tap((user) => this.onCommandSuccess('block', user)),
-			)
-			.subscribe();
-	}
-
-	public unblockUser(id: string): void {
-		this.api
-			.unblockUserById(id)
-			.pipe(
-				this.trackUserLoader,
-				notifyOnError(this.uiFacade),
-				tap((user) => this.onCommandSuccess('unblock', user)),
-			)
-			.subscribe();
-	}
-
-	public exportUser(user: UserModel): Observable<unknown> {
-		return this.api.exportUserById(user.id).pipe(
-			notifyOnError(this.uiFacade),
-			tap((data) => this.browser.downloadJson(data, `registry-user-${user.id}.json`)),
+	public blockUser(id: string): Observable<UserModel> {
+		return this.api.blockUserById(id).pipe(
+			this.trackUserLoader,
+			tap((user) => this.onCommandSuccess('block', user)),
 		);
 	}
 
-	public deleteUser(user: UserModel): void {
-		this.api
-			.deleteUserById(user.id)
-			.pipe(
-				this.trackUserLoader,
-				notifyOnError(this.uiFacade),
-				tap(() => this.onCommandSuccess('delete', user)),
-			)
-			.subscribe();
+	public unblockUser(id: string): Observable<UserModel> {
+		return this.api.unblockUserById(id).pipe(
+			this.trackUserLoader,
+			tap((user) => this.onCommandSuccess('unblock', user)),
+		);
+	}
+
+	public exportUser(user: UserModel): Observable<unknown> {
+		return this.api
+			.exportUserById(user.id)
+			.pipe(tap((data) => this.browser.downloadJson(data, `registry-user-${user.id}.json`)));
+	}
+
+	public deleteUser(user: UserModel): Observable<void> {
+		return this.api.deleteUserById(user.id).pipe(
+			this.trackUserLoader,
+			tap(() => this.onCommandSuccess('delete', user)),
+		);
 	}
 
 	private readonly trackUserLoader = <T>(source: Observable<T>): Observable<T> =>

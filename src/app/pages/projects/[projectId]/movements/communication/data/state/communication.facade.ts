@@ -10,7 +10,6 @@ import { CommandEvent } from '@shared/helpers/facade/command-event.service';
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade';
 import { MovementHelper } from '@shared/helpers/movement.helper';
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe';
-import { notifyOnError } from '@shared/helpers/rx.helper';
 import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper';
 import { CommunicationDto } from '@shared/models/dto/communication.dto';
 import { DateFormatTypeEnum } from '@shared/models/enumeration/date-format-type.enum';
@@ -91,24 +90,21 @@ export class CommunicationFacade extends GenericProjectElementFacade {
 	}
 
 	public softDeleteCommunication(id: string): Observable<CommunicationModel> {
-		return this.api.softDeleteCommunicationById(this.selectedProjectId(), id).pipe(
-			notifyOnError(this.uiFacade),
-			tap((disabled) => this.onCommandSuccess('softDelete', disabled)),
-		);
+		return this.api
+			.softDeleteCommunicationById(this.selectedProjectId(), id)
+			.pipe(tap((disabled) => this.onCommandSuccess('softDelete', disabled)));
 	}
 
 	public restoreCommunication(id: string): Observable<CommunicationModel> {
-		return this.api.restoreCommunicationById(this.selectedProjectId(), id).pipe(
-			notifyOnError(this.uiFacade),
-			tap((enabled) => this.onCommandSuccess('restore', enabled)),
-		);
+		return this.api
+			.restoreCommunicationById(this.selectedProjectId(), id)
+			.pipe(tap((enabled) => this.onCommandSuccess('restore', enabled)));
 	}
 
 	public hardDeleteCommunication(communication: CommunicationModel): Observable<void> {
-		return this.api.hardDeleteCommunicationById(undefined, communication.id).pipe(
-			notifyOnError(this.uiFacade),
-			tap(() => this.onCommandSuccess('hardDelete', communication)),
-		);
+		return this.api
+			.hardDeleteCommunicationById(undefined, communication.id)
+			.pipe(tap(() => this.onCommandSuccess('hardDelete', communication)));
 	}
 
 	// Créer ou modifier une communication est silencieux (le formulaire se réinitialise de lui-même) ; les autres commandes notifient.

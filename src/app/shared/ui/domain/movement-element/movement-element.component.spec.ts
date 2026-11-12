@@ -32,7 +32,7 @@ import { movementOf } from '@shared/ui/domain/movement-element/testing/movement-
 
 describe('MovementElementComponent', () => {
 	let fixture: ComponentFixture<MovementElementComponent>;
-	let confirm: Mock<(confirmation: { accept: () => void }) => void>;
+	let confirm: Mock<(confirmation: { accept: () => Observable<unknown> }) => void>;
 	let movementFacade: Record<string, Mock>;
 	let canCreate: WritableSignal<boolean>;
 	let openReverse: Mock<(movement: MovementModel, contents?: unknown[]) => void>;
@@ -183,7 +183,7 @@ describe('MovementElementComponent', () => {
 
 			// Act
 			await (await harness.actions()).run('hardDelete');
-			defined(confirm.mock.calls[0])[0].accept();
+			defined(confirm.mock.calls[0])[0].accept().subscribe();
 
 			// Assert
 			expect(movementFacade['hardDeleteMovement']).toHaveBeenCalledTimes(1);

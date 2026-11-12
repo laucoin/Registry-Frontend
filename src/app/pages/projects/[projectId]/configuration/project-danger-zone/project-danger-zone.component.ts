@@ -2,6 +2,7 @@ import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, Signal } from '@an
 
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
 import type { SgdfActionAppearance, SgdfStatusVariant } from '@sgdf/ui';
+import { Observable } from 'rxjs';
 
 import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper';
 import { SessionFacade } from '@core/registry/state/session.facade';
@@ -32,7 +33,7 @@ interface DangerCommand {
 	severity: SeverityEnum;
 	typed: boolean;
 	available: (project: ProjectModel) => boolean;
-	accept: (project: ProjectModel) => void;
+	accept: (project: ProjectModel) => Observable<unknown>;
 }
 
 /**

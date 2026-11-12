@@ -1,6 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { EMPTY, Observable } from 'rxjs';
+
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum';
 import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/data/state/group.facade';
 import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade';
@@ -65,7 +67,7 @@ export class ParticipantActions extends ElementActionsBase<ParticipantModel, str
 			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_SOFT_DELETE),
 			confirmation: {
 				severity: SeverityEnum.WARNING,
-				accept: () => this.run(this.facade.softDeleteParticipant(participant.id)),
+				accept: () => this.facade.softDeleteParticipant(participant.id),
 			},
 		};
 	}
@@ -78,7 +80,7 @@ export class ParticipantActions extends ElementActionsBase<ParticipantModel, str
 			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_RESTORE),
 			confirmation: {
 				severity: SeverityEnum.INFO,
-				accept: () => this.run(this.facade.restoreParticipant(participant.id)),
+				accept: () => this.facade.restoreParticipant(participant.id),
 			},
 		};
 	}
@@ -96,9 +98,9 @@ export class ParticipantActions extends ElementActionsBase<ParticipantModel, str
 		};
 	}
 
-	private removeMember(participant: ParticipantModel, groupId?: string): void {
-		if (!this.groupFacade || GenericHelper.isNull(groupId)) return;
-		this.run(this.groupFacade.removeMemberFromGroup(groupId, participant));
+	private removeMember(participant: ParticipantModel, groupId?: string): Observable<void> {
+		if (!this.groupFacade || GenericHelper.isNull(groupId)) return EMPTY;
+		return this.groupFacade.removeMemberFromGroup(groupId, participant);
 	}
 
 	private exportSpec(participant: ParticipantModel): ElementActionSpec {
@@ -125,7 +127,7 @@ export class ParticipantActions extends ElementActionsBase<ParticipantModel, str
 			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_D),
 			confirmation: {
 				severity: SeverityEnum.DANGER,
-				accept: () => this.run(this.facade.hardDeleteParticipant(participant)),
+				accept: () => this.facade.hardDeleteParticipant(participant),
 			},
 		};
 	}

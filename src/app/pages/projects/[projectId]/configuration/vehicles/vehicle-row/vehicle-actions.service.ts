@@ -60,7 +60,7 @@ export class VehicleActions extends ElementActionsBase<VehicleModel> {
 			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_SOFT_DELETE),
 			confirmation: {
 				severity: SeverityEnum.WARNING,
-				accept: () => this.run(this.facade.softDeleteVehicle(vehicle.id)),
+				accept: () => this.facade.softDeleteVehicle(vehicle.id),
 			},
 		};
 	}
@@ -73,7 +73,7 @@ export class VehicleActions extends ElementActionsBase<VehicleModel> {
 			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_RESTORE),
 			confirmation: {
 				severity: SeverityEnum.INFO,
-				accept: () => this.run(this.facade.restoreVehicle(vehicle.id)),
+				accept: () => this.facade.restoreVehicle(vehicle.id),
 			},
 		};
 	}
@@ -86,7 +86,7 @@ export class VehicleActions extends ElementActionsBase<VehicleModel> {
 			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_D),
 			confirmation: {
 				severity: SeverityEnum.DANGER,
-				accept: () => this.run(this.facade.hardDeleteVehicle(vehicle)),
+				accept: () => this.facade.hardDeleteVehicle(vehicle),
 			},
 		};
 	}

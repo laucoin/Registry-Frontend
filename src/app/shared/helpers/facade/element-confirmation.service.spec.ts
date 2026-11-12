@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
 import { TranslocoService } from '@jsverse/transloco';
+import { EMPTY, Observable } from 'rxjs';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import { UiFacade } from '@core/registry/state/ui.facade';
@@ -31,7 +32,7 @@ describe('ElementConfirmationService', () => {
 
 	it('asks the UI for a confirmation built from the translations of the element', () => {
 		// Arrange
-		const accept: () => void = vi.fn();
+		const accept: () => Observable<unknown> = vi.fn(() => EMPTY);
 
 		// Act
 		service.confirm('users.actions.confirmations.delete', { name: 'Ada' }, SeverityEnum.DANGER, accept);
@@ -47,7 +48,7 @@ describe('ElementConfirmationService', () => {
 
 	it('adds the phrase to type when the confirmation is a typed one', () => {
 		// Arrange
-		const accept: () => void = vi.fn();
+		const accept: () => Observable<unknown> = vi.fn(() => EMPTY);
 
 		// Act
 		service.confirm('users.actions.confirmations.delete', { name: 'Ada' }, SeverityEnum.DANGER, accept, true);

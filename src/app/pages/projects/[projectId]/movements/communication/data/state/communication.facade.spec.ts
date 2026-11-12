@@ -146,7 +146,7 @@ describe('CommunicationFacade', () => {
 		);
 	});
 
-	it('notifies a failed deletion and announces nothing', () => {
+	it('hands a failed deletion to the confirmation instead of a toast, and announces nothing', () => {
 		// Arrange
 		api['hardDeleteCommunicationById'].mockReturnValue(failing(ERROR_500));
 		const received: unknown[] = [];
@@ -156,7 +156,7 @@ describe('CommunicationFacade', () => {
 		facade.hardDeleteCommunication({ id: 'c1' } as CommunicationModel).subscribe({ error: (): void => undefined });
 
 		// Assert
-		expect(notify).toHaveBeenCalledWith(expect.objectContaining({ summary: 'Title' }));
+		expect(notify).not.toHaveBeenCalled();
 		expect(received).toEqual([]);
 	});
 

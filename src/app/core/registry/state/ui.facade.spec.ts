@@ -2,7 +2,7 @@ import { Provider, signal, WritableSignal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
 import { TranslocoService } from '@jsverse/transloco';
-import { Subject } from 'rxjs';
+import { EMPTY, Observable, Subject } from 'rxjs';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import { BrowserService } from '@core/browser/browser.service';
@@ -200,7 +200,7 @@ describe('UiFacade', () => {
 			header: 'h',
 			message: 'm',
 			acceptSeverity: SeverityEnum.WARNING,
-			accept: (): void => undefined,
+			accept: (): Observable<unknown> => EMPTY,
 		};
 		facade.confirmation.subscribe((it) => requested.push(it));
 

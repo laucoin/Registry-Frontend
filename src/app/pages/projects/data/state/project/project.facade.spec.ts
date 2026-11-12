@@ -260,7 +260,7 @@ describe('ProjectFacade', () => {
 		softDeleteProjectById.mockReturnValue(of({ id: 'p1', name: 'Camp' } as ProjectModel));
 
 		// Act
-		facade.softDeleteProject('p1');
+		facade.softDeleteProject('p1').subscribe();
 
 		// Assert
 		expect(notify).toHaveBeenCalledWith(
@@ -275,7 +275,7 @@ describe('ProjectFacade', () => {
 		softDeleteProjectById.mockReturnValue(of({ id: 'p1', name: 'Camp' } as ProjectModel));
 
 		// Act
-		facade.softDeleteProject('p1');
+		facade.softDeleteProject('p1').subscribe();
 
 		// Assert
 		expect(findProjects).toHaveBeenCalledWith(0, 20, expect.anything());
@@ -298,7 +298,7 @@ describe('ProjectFacade', () => {
 		api['restoreProjectById'].mockReturnValue(of({ id: 'p1', name: 'Camp' } as ProjectModel));
 
 		// Act
-		facade.restoreProject('p1');
+		facade.restoreProject('p1').subscribe();
 
 		// Assert
 		expect(refreshCurrentProject).toHaveBeenCalledTimes(1);
@@ -313,7 +313,7 @@ describe('ProjectFacade', () => {
 		api['restoreProjectById'].mockReturnValue(of({ id: 'p1', name: 'Camp' } as ProjectModel));
 
 		// Act
-		facade.restoreProject('p1');
+		facade.restoreProject('p1').subscribe();
 
 		// Assert
 		expect(refreshCurrentProject).not.toHaveBeenCalled();
@@ -332,8 +332,8 @@ describe('ProjectFacade', () => {
 			api['hardDeleteProjectById'].mockReturnValue(of(undefined));
 
 			// Act
-			if (command === 'softDelete') facade.softDeleteProject('p1');
-			else facade.hardDeleteProject(project);
+			if (command === 'softDelete') facade.softDeleteProject('p1').subscribe();
+			else facade.hardDeleteProject(project).subscribe();
 
 			// Assert
 			expect(navigateByUrl).toHaveBeenCalledTimes(1);
@@ -347,23 +347,26 @@ describe('ProjectFacade', () => {
 		api['hardDeleteProjectById'].mockReturnValue(of(undefined));
 
 		// Act
-		facade.hardDeleteProject({ id: 'p1', name: 'Camp' } as ProjectModel);
+		facade.hardDeleteProject({ id: 'p1', name: 'Camp' } as ProjectModel).subscribe();
 		await Promise.resolve();
 
 		// Assert
 		expect(notify).toHaveBeenCalledTimes(1);
 	});
 
-	it('does not reload the page when a deletion fails', () => {
+	it('hands a failed deletion to the confirmation instead of a toast, without reloading the page', () => {
 		// Arrange
 		api['hardDeleteProjectById'].mockReturnValue(failing(ERROR_500));
+		const received: unknown[] = [];
 
 		// Act
-		facade.hardDeleteProject({ id: 'p1' } as ProjectModel);
+		facade
+			.hardDeleteProject({ id: 'p1' } as ProjectModel)
+			.subscribe({ error: (error: unknown) => received.push(error) });
 
 		// Assert
 		expect(findProjects).not.toHaveBeenCalled();
-		expect(notify).toHaveBeenCalledWith(expect.objectContaining({ summary: 'Title' }));
+		expect([received, notify.mock.calls]).toEqual([[ERROR_500], []]);
 	});
 
 	it('loads the project options and refreshes the shown batches in one request', () => {

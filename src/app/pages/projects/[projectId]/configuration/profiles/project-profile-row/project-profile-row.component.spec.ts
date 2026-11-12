@@ -5,6 +5,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 
 import { TranslocoTestingModule } from '@jsverse/transloco';
+import { EMPTY } from 'rxjs';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import { SessionFacade } from '@core/registry/state/session.facade';
@@ -71,7 +72,7 @@ describe('ProjectProfileRowComponent', () => {
 	beforeEach(() => {
 		selectedProject = signal(undefined);
 		toggleProjectFavorite = vi.fn();
-		manageProjectInvitationAcceptance = vi.fn();
+		manageProjectInvitationAcceptance = vi.fn(() => EMPTY);
 		confirm = vi.fn();
 		TestBed.configureTestingModule({
 			imports: [TranslocoTestingModule.forRoot({ langs: { fr: {} }, translocoConfig: { defaultLang: 'fr' } })],
@@ -222,7 +223,7 @@ describe('ProjectProfileRowComponent', () => {
 
 		// Act
 		await harness.answer(answer);
-		confirm.mock.calls[0][0].accept();
+		confirm.mock.calls[0][0].accept().subscribe();
 
 		// Assert
 		expect([answers, manageProjectInvitationAcceptance.mock.calls]).toEqual([

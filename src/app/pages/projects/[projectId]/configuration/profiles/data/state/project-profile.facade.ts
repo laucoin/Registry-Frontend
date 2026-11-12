@@ -172,24 +172,21 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
 	}
 
 	public blockProjectProfile(profile: ProjectProfileModel): Observable<ProjectProfileModel> {
-		return this.api.blockProjectProfileById(this.selectedProjectId(), profile.id).pipe(
-			notifyOnError(this.uiFacade),
-			tap(() => this.onCommandSuccess('block', profile)),
-		);
+		return this.api
+			.blockProjectProfileById(this.selectedProjectId(), profile.id)
+			.pipe(tap(() => this.onCommandSuccess('block', profile)));
 	}
 
 	public unblockProjectProfile(profile: ProjectProfileModel): Observable<ProjectProfileModel> {
-		return this.api.unblockProjectProfileById(this.selectedProjectId(), profile.id).pipe(
-			notifyOnError(this.uiFacade),
-			tap(() => this.onCommandSuccess('unblock', profile)),
-		);
+		return this.api
+			.unblockProjectProfileById(this.selectedProjectId(), profile.id)
+			.pipe(tap(() => this.onCommandSuccess('unblock', profile)));
 	}
 
 	public deleteProjectProfile(profile: ListedProfileModel): Observable<void> {
-		return this.api.deleteProjectProfileById(undefined, profile.id).pipe(
-			notifyOnError(this.uiFacade),
-			tap(() => this.onCommandSuccess('delete', profile)),
-		);
+		return this.api
+			.deleteProjectProfileById(undefined, profile.id)
+			.pipe(tap(() => this.onCommandSuccess('delete', profile)));
 	}
 
 	private onCommandSuccess(command: CommandEvent, profile: ListedProfileModel): void {

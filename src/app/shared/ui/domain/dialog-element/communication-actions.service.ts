@@ -44,7 +44,7 @@ export class CommunicationActions extends ElementActionsBase<CommunicationModel>
 			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_SOFT_DELETE),
 			confirmation: {
 				severity: SeverityEnum.WARNING,
-				accept: () => this.run(this.facade.softDeleteCommunication(communication.id)),
+				accept: () => this.facade.softDeleteCommunication(communication.id),
 			},
 		};
 	}
@@ -57,7 +57,7 @@ export class CommunicationActions extends ElementActionsBase<CommunicationModel>
 			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_RESTORE),
 			confirmation: {
 				severity: SeverityEnum.INFO,
-				accept: () => this.run(this.facade.restoreCommunication(communication.id)),
+				accept: () => this.facade.restoreCommunication(communication.id),
 			},
 		};
 	}
@@ -70,7 +70,7 @@ export class CommunicationActions extends ElementActionsBase<CommunicationModel>
 			allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_D),
 			confirmation: {
 				severity: SeverityEnum.DANGER,
-				accept: () => this.run(this.facade.hardDeleteCommunication(communication)),
+				accept: () => this.facade.hardDeleteCommunication(communication),
 			},
 		};
 	}

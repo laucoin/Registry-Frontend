@@ -111,7 +111,7 @@ describe('UserFacade', () => {
 		blockUserById.mockReturnValue(of({ id: 'u1', firstName: 'Ada', lastName: 'L' } as UserModel));
 
 		// Act
-		facade.blockUser('u1');
+		facade.blockUser('u1').subscribe();
 
 		// Assert
 		expect(notify).toHaveBeenCalledWith(expect.objectContaining({ summary: 'users.notifications.block.title' }));
@@ -119,15 +119,16 @@ describe('UserFacade', () => {
 		expect(facade.userLoading()).toBe(false);
 	});
 
-	it('does not refresh when the command fails', () => {
+	it('hands a failed command to the confirmation instead of a toast, without refreshing', () => {
 		// Arrange
 		blockUserById.mockReturnValue(failing(ERROR_500));
+		const received: unknown[] = [];
 
 		// Act
-		facade.blockUser('u1');
+		facade.blockUser('u1').subscribe({ error: (error: unknown) => received.push(error) });
 
 		// Assert
-		expect(notify).toHaveBeenCalledWith(expect.objectContaining({ summary: 'Title' }));
+		expect([received, notify.mock.calls]).toEqual([[ERROR_500], []]);
 		expect(findUsers).not.toHaveBeenCalled();
 		expect(facade.userLoading()).toBe(false);
 	});
@@ -154,7 +155,7 @@ describe('UserFacade', () => {
 		deleteUserById.mockReturnValue(of(undefined));
 
 		// Act
-		facade.deleteUser({ id: 'u1', firstName: 'Ada', lastName: 'L' } as UserModel);
+		facade.deleteUser({ id: 'u1', firstName: 'Ada', lastName: 'L' } as UserModel).subscribe();
 
 		// Assert
 		expect(notify).toHaveBeenCalledWith(expect.objectContaining({ summary: 'users.notifications.delete.title' }));
@@ -177,7 +178,7 @@ describe('UserFacade', () => {
 		expect(downloadJson).toHaveBeenCalledWith(data, 'registry-user-u1.json');
 	});
 
-	it('notifies the failure of an export without downloading', () => {
+	it('hands a failed export to the confirmation instead of a toast, without downloading', () => {
 		// Arrange
 		exportUserById.mockReturnValue(failing(ERROR_500));
 		const downloadJson: MockInstance = vi
@@ -189,7 +190,7 @@ describe('UserFacade', () => {
 
 		// Assert
 		expect(downloadJson).not.toHaveBeenCalled();
-		expect(notify).toHaveBeenCalledTimes(1);
+		expect(notify).not.toHaveBeenCalled();
 	});
 
 	it('exposes the failure of the user fetch', () => {
@@ -208,7 +209,7 @@ describe('UserFacade', () => {
 		unblockUserById.mockReturnValue(of({ id: 'u1', firstName: 'Ada', lastName: 'L' } as UserModel));
 
 		// Act
-		facade.unblockUser('u1');
+		facade.unblockUser('u1').subscribe();
 
 		// Assert
 		expect(notify).toHaveBeenCalledWith(expect.objectContaining({ summary: 'users.notifications.unblock.title' }));

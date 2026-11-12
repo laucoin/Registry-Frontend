@@ -1,10 +1,11 @@
 import { ComponentHarness } from '@angular/cdk/testing';
 
 import { byTestId, typeInto } from '@shared/helpers/testing/harness/test-id';
+import { FormErrorHarness } from '@shared/ui/common/form-error/testing/form-error.harness';
 
 /**
  * Objectif: Pilote le dialogue de confirmation dans les tests.
- * Périmètre: Lit l'état du dialogue (ouverture, titre, variante, message, phrase attendue) et le confirme, l'annule ou le ferme.
+ * Périmètre: Lit l'état du dialogue (ouverture, titre, variante, message, phrase attendue, chargement, erreur) et le confirme, l'annule ou le ferme.
  * Limites: Ne simule pas la top layer ni le focus du dialogue natif.
  */
 export class ConfirmationDialogHarness extends ComponentHarness {
@@ -15,6 +16,7 @@ export class ConfirmationDialogHarness extends ComponentHarness {
 	private readonly phraseInput = this.locatorForOptional(byTestId('confirmation-dialog-phrase-input'));
 	private readonly cancelButton = this.locatorFor(byTestId('confirmation-dialog-cancel-button'));
 	private readonly confirmButton = this.locatorFor(byTestId('confirmation-dialog-confirm-button'));
+	private readonly formError = this.locatorFor(FormErrorHarness);
 
 	public async isOpen(): Promise<boolean> {
 		return (await this.dialog()).getProperty<boolean>('open');
@@ -47,6 +49,18 @@ export class ConfirmationDialogHarness extends ComponentHarness {
 
 	public async canConfirm(): Promise<boolean> {
 		return !(await (await this.confirmButton()).getProperty<boolean>('disabled'));
+	}
+
+	public async saving(): Promise<boolean> {
+		return (await this.confirmButton()).getProperty<boolean>('loading');
+	}
+
+	public async errorShown(): Promise<boolean> {
+		return (await this.formError()).shown();
+	}
+
+	public async errorText(): Promise<string | undefined> {
+		return (await this.formError()).text();
 	}
 
 	public async confirm(): Promise<void> {

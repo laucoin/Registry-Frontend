@@ -139,24 +139,21 @@ export class GroupFacade extends GenericProjectElementFacade {
 	}
 
 	public softDeleteGroup(id: string): Observable<GroupModel> {
-		return this.api.softDeleteGroupById(this.selectedProjectId(), id).pipe(
-			notifyOnError(this.uiFacade),
-			tap((disabled) => this.onCommandSuccess('softDelete', disabled)),
-		);
+		return this.api
+			.softDeleteGroupById(this.selectedProjectId(), id)
+			.pipe(tap((disabled) => this.onCommandSuccess('softDelete', disabled)));
 	}
 
 	public restoreGroup(id: string): Observable<GroupModel> {
-		return this.api.restoreGroupById(this.selectedProjectId(), id).pipe(
-			notifyOnError(this.uiFacade),
-			tap((enabled) => this.onCommandSuccess('restore', enabled)),
-		);
+		return this.api
+			.restoreGroupById(this.selectedProjectId(), id)
+			.pipe(tap((enabled) => this.onCommandSuccess('restore', enabled)));
 	}
 
 	public hardDeleteGroup(group: GroupModel): Observable<void> {
-		return this.api.hardDeleteGroupById(undefined, group.id).pipe(
-			notifyOnError(this.uiFacade),
-			tap(() => this.onCommandSuccess('hardDelete', group)),
-		);
+		return this.api
+			.hardDeleteGroupById(undefined, group.id)
+			.pipe(tap(() => this.onCommandSuccess('hardDelete', group)));
 	}
 
 	private onCommandSuccess(command: CommandEvent, group: GroupModel): void {
@@ -176,10 +173,9 @@ export class GroupFacade extends GenericProjectElementFacade {
 	}
 
 	public removeMemberFromGroup(id: string, participant: ParticipantModel): Observable<void> {
-		return this.api.removeMemberFromGroupById(this.selectedProjectId(), id, participant.id).pipe(
-			notifyOnError(this.uiFacade),
-			tap(() => this.onMemberRemoved(id, participant)),
-		);
+		return this.api
+			.removeMemberFromGroupById(this.selectedProjectId(), id, participant.id)
+			.pipe(tap(() => this.onMemberRemoved(id, participant)));
 	}
 
 	private onMembersAdded(id: string, memberIds: string[], response: AddedGroupMembersModel): void {
