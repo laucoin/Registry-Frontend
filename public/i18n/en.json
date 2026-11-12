@@ -883,7 +883,11 @@
 			},
 			"user": {
 				"title": "User",
-				"empty-search": "No user found"
+				"empty-search": "No user found",
+				"hint": {
+					"clear-only": "Only a project administrator or coordinator can change the linked user; you can only remove your own link.",
+					"locked": "Only a project administrator or coordinator can change the linked user."
+				}
 			},
 			"firstname": "First name",
 			"previous-first-name": "The former first name “{{firstName}}” was replaced by that of the linked user.",

@@ -4,7 +4,8 @@ import { byTestId } from '@shared/helpers/testing/harness/test-id';
 
 /**
  * Objectif: Pilote le choix de l'utilisateur lié à un participant dans les tests.
- * Périmètre: Lit les options et la valeur choisie ; ouvre la liste, cherche et choisit un utilisateur.
+ * Périmètre: Lit les options, la valeur choisie, le texte d'aide et l'état désactivé ; ouvre la liste, cherche et choisit
+ * un utilisateur.
  * Limites: Aucune.
  */
 export class ParticipantUserSelectHarness extends ComponentHarness {
@@ -21,6 +22,14 @@ export class ParticipantUserSelectHarness extends ComponentHarness {
 
 	public async value(): Promise<string> {
 		return (await (await this.select()).getProperty<string | null>('value')) ?? '';
+	}
+
+	public async hint(): Promise<string> {
+		return (await (await this.select()).getProperty<string | null>('hint')) ?? '';
+	}
+
+	public async disabled(): Promise<boolean> {
+		return (await (await this.select()).getProperty<boolean | null>('disabled')) ?? false;
 	}
 
 	public async open(): Promise<void> {

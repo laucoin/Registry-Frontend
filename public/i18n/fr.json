@@ -883,7 +883,11 @@
 			},
 			"user": {
 				"title": "Utilisateur",
-				"empty-search": "Aucun utilisateur trouvé"
+				"empty-search": "Aucun utilisateur trouvé",
+				"hint": {
+					"clear-only": "Seul un administrateur ou un coordinateur du projet peut modifier l’utilisateur lié ; tu peux seulement retirer ton propre lien.",
+					"locked": "Seul un administrateur ou un coordinateur du projet peut modifier l’utilisateur lié."
+				}
 			},
 			"firstname": "Prénom",
 			"previous-first-name": "L’ancien prénom “{{firstName}}” a été remplacé par celui de l’utilisateur lié.",

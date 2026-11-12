@@ -24,6 +24,7 @@ import { UserHelper } from '@shared/helpers/user.helper';
 import { GroupMapper } from '@shared/mappers/group.mapper';
 import { ParticipantMapper } from '@shared/mappers/participant.mapper';
 import { UserMapper } from '@shared/mappers/user.mapper';
+import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum';
 import { GroupModel } from '@shared/models/model/group.model';
 import { ParticipantModel } from '@shared/models/model/participant.model';
 
@@ -194,6 +195,85 @@ describe('ParticipantFormComponent', () => {
 
 			// Assert
 			expect(back).toHaveBeenCalledTimes(1);
+		});
+	});
+
+	describe('with the user link restricted', () => {
+		const HISTORY = `p1_${ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_HISTORY_R}`;
+
+		function signedIn(id: string, authorities: string[]): void {
+			TestBed.overrideProvider(SessionFacade, {
+				useValue: { selectedProject: signal({ id: 'p1' }), currentUser: signal({ id, authorities }) },
+			});
+		}
+
+		it.each([
+			{
+				name: 'lets a holder of the participant history change the link',
+				me: 'me',
+				authorities: [HISTORY],
+				id: 'pa1',
+				view: ['', false],
+			},
+			{
+				name: 'lets anyone link a user to a new participant',
+				me: 'me',
+				authorities: [],
+				id: undefined,
+				view: ['', false],
+			},
+			{
+				name: 'only lets the linked user remove its own link',
+				me: 'u1',
+				authorities: [],
+				id: 'pa1',
+				view: ['fr.participants.form.user.hint.clear-only', false],
+			},
+			{
+				name: 'locks the link of another user',
+				me: 'me',
+				authorities: [],
+				id: 'pa1',
+				view: ['fr.participants.form.user.hint.locked', true],
+			},
+		])('$name', async ({ me, authorities, id, view }) => {
+			// Arrange
+			facade['fetchParticipant'] = vi.fn(() => of(LINKED));
+			signedIn(me, authorities);
+			const user = defined(await (await create(id)).user());
+
+			// Act
+			const shown = [await user.hint(), await user.disabled()];
+
+			// Assert
+			expect(shown).toEqual(view);
+		});
+
+		it('saves a participant without its link once the linked user removed it', async () => {
+			// Arrange
+			facade['fetchParticipant'] = vi.fn(() => of(LINKED));
+			signedIn('u1', []);
+			const harness = await create('pa1');
+			await defined(await harness.user()).choose('');
+
+			// Act
+			await harness.submit();
+
+			// Assert
+			expect(calls('updateParticipant')[0][1]).toEqual(expect.objectContaining({ userId: undefined }));
+		});
+
+		it('keeps the locked link when saving', async () => {
+			// Arrange
+			facade['fetchParticipant'] = vi.fn(() => of(LINKED));
+			signedIn('me', []);
+			const harness = await create('pa1');
+
+			// Act
+			await harness.submit();
+
+			// Assert
+			expect(calls('updateParticipant')[0][1]).toEqual(expect.objectContaining({ userId: 'u1' }));
 		});
 	});
 

@@ -14,6 +14,7 @@ import { FormField } from '@angular/forms/signals';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Observable } from 'rxjs';
 
+import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper';
 import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade';
 import {
 	createParticipantForm,
@@ -29,6 +30,8 @@ import { GroupHelper } from '@shared/helpers/group.helper';
 import { FormButtonPipe } from '@shared/helpers/pipe/form-button.pipe';
 import { FormTitlePipe } from '@shared/helpers/pipe/form-title.pipe';
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe';
+import { ParticipantUserLinkModeEnum } from '@shared/models/enumeration/participant-user-link-mode.enum';
+import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum';
 import { GroupModel } from '@shared/models/model/group.model';
 import { ParticipantModel } from '@shared/models/model/participant.model';
 import { SelectOptionModel } from '@shared/models/model/select-option.model';
@@ -46,7 +49,8 @@ import '@sgdf/ui/input';
 /**
  * Objectif: Formulaire de création ou d'édition d'un participant, routé ou posé dans un panneau.
  * Périmètre: Lie l'utilisateur lié, l'identité, la date de naissance, la période de présence et les groupes au
- * formulaire, rappelle le nom remplacé par celui de l'utilisateur lié et soumet via la facade.
+ * formulaire, rappelle le nom remplacé par celui de l'utilisateur lié et soumet via la facade. En édition, seul le
+ * détenteur de l'historique des participants change l'utilisateur lié ; les autres ne peuvent que retirer leur propre lien.
  * Limites: Ne détient aucun état de domaine. Dans un panneau (`redirect` faux), le groupe par défaut remplace le choix
  * de l'utilisateur, de la période et des groupes, et la fin de saisie est signalée au lieu de naviguer.
  */
@@ -89,6 +93,7 @@ export class ParticipantFormComponent extends BaseElementFormComponent<Participa
 	protected readonly lastNameHint = computed(() =>
 		this.replacedName(this.previousLastName(), this.model().lastName, 'participants.form.previous-last-name'),
 	);
+	protected readonly userLinkMode = computed(() => this.userLinkModeOf(this.element()));
 
 	constructor() {
 		super();
@@ -149,6 +154,25 @@ export class ParticipantFormComponent extends BaseElementFormComponent<Participa
 	private rememberNames(user: SelectOptionModel<UserModel> | null): void {
 		if (user?.value.firstName) this.previousFirstName.set(this.model().firstName);
 		if (user?.value.lastName) this.previousLastName.set(this.model().lastName);
+	}
+
+	private userLinkModeOf(participant: ParticipantModel | undefined): ParticipantUserLinkModeEnum {
+		if (!participant || this.canChangeAnyUserLink()) return ParticipantUserLinkModeEnum.EDITABLE;
+		return this.isLinkedToCurrentUser(participant)
+			? ParticipantUserLinkModeEnum.CLEAR_ONLY
+			: ParticipantUserLinkModeEnum.LOCKED;
+	}
+
+	private canChangeAnyUserLink(): boolean {
+		return CurrentUserHelper.hasProjectAuthority(
+			this.sessionFacade.currentUser(),
+			this.sessionFacade.selectedProject()?.id,
+			ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_HISTORY_R,
+		);
+	}
+
+	private isLinkedToCurrentUser(participant: ParticipantModel): boolean {
+		return participant.user !== undefined && participant.user.id === this.sessionFacade.currentUser()?.id;
 	}
 
 	private replacedName(previous: string | undefined, current: string, key: string): string {

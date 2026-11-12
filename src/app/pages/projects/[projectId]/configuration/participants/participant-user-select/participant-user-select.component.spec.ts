@@ -8,6 +8,7 @@ import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade';
 import { ParticipantUserSelectComponent } from '@pages/projects/[projectId]/configuration/participants/participant-user-select/participant-user-select.component';
 import { ParticipantUserSelectHarness } from '@pages/projects/[projectId]/configuration/participants/participant-user-select/testing/participant-user-select.harness';
+import { ParticipantUserLinkModeEnum } from '@shared/models/enumeration/participant-user-link-mode.enum';
 import { SelectOptionModel } from '@shared/models/model/select-option.model';
 import { UserModel } from '@shared/models/model/user.model';
 
@@ -19,6 +20,7 @@ const item = (id: string): SelectOptionModel<UserModel> => ({ label: id, value: 
 })
 class HostComponent {
 	public readonly user = signal<SelectOptionModel<UserModel> | null>(null);
+	public readonly mode = signal(ParticipantUserLinkModeEnum.EDITABLE);
 	public readonly chosen: (SelectOptionModel<UserModel> | null)[] = [];
 }
 
@@ -27,9 +29,13 @@ describe('ParticipantUserSelectComponent', () => {
 	let searched: WritableSignal<SelectOptionModel<UserModel>[]>;
 	let search: Mock<(query: string) => void>;
 
-	async function create(user: SelectOptionModel<UserModel> | null = null): Promise<ParticipantUserSelectHarness> {
+	async function create(
+		user: SelectOptionModel<UserModel> | null = null,
+		mode: ParticipantUserLinkModeEnum = ParticipantUserLinkModeEnum.EDITABLE,
+	): Promise<ParticipantUserSelectHarness> {
 		fixture = TestBed.createComponent(HostComponent);
 		fixture.componentInstance.user.set(user);
+		fixture.componentInstance.mode.set(mode);
 		return TestbedHarnessEnvironment.loader(fixture).getHarness(ParticipantUserSelectHarness);
 	}
 
@@ -87,5 +93,44 @@ describe('ParticipantUserSelectComponent', () => {
 
 		// Assert
 		expect(fixture.componentInstance.chosen).toEqual([expected]);
+	});
+
+	it.each([
+		{
+			name: 'leaves an editable link enabled and unexplained',
+			mode: ParticipantUserLinkModeEnum.EDITABLE,
+			view: ['', false],
+		},
+		{
+			name: 'explains that only the own link can be removed',
+			mode: ParticipantUserLinkModeEnum.CLEAR_ONLY,
+			view: ['fr.participants.form.user.hint.clear-only', false],
+		},
+		{
+			name: 'disables and explains a locked link',
+			mode: ParticipantUserLinkModeEnum.LOCKED,
+			view: ['fr.participants.form.user.hint.locked', true],
+		},
+	])('$name', async ({ mode, view }) => {
+		// Arrange
+		const harness = await create(item('u9'), mode);
+
+		// Act
+		const shown = [await harness.hint(), await harness.disabled()];
+
+		// Assert
+		expect(shown).toEqual(view);
+	});
+
+	it('does not search the users when only the own link can be removed', async () => {
+		// Arrange
+		const harness = await create(item('u9'), ParticipantUserLinkModeEnum.CLEAR_ONLY);
+
+		// Act
+		await harness.open();
+		await harness.search('gra');
+
+		// Assert
+		expect(search).not.toHaveBeenCalled();
 	});
 });

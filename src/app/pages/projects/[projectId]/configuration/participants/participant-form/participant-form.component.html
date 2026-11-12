@@ -18,7 +18,11 @@
 		<sgdf-card>
 			<div class="flex flex-col gap-3">
 				@if (!defaultGroup()) {
-					<app-participant-user-select [user]="model().user" (chosen)="handleUserSelection($event)" />
+					<app-participant-user-select
+						[user]="model().user"
+						[mode]="userLinkMode()"
+						(chosen)="handleUserSelection($event)"
+					/>
 					<sgdf-divider />
 				}
 				<div class="grid gap-3 md:grid-cols-2">

@@ -6,6 +6,8 @@
 	[label]="'participants.form.user.title' | transloco"
 	[placeholder]="'participants.form.placeholder.user' | transloco"
 	[attr.no-results-label]="'participants.form.user.empty-search' | transloco"
+	[hint]="hint() | transloco"
+	[disabled]="locked()"
 	[value]="user()?.value?.id ?? ''"
 	(sgdf-show)="search('')"
 	(sgdf-search)="search($any($event).detail.query)"
