@@ -4,7 +4,7 @@ import { byTestId } from '@shared/helpers/testing/harness/test-id';
 
 /**
  * Objectif: Pilote la page de connexion dans les tests.
- * Périmètre: Lit le titre, l'état du bouton de connexion, les liens légaux et l'affichage de la photo ; lance la
+ * Périmètre: Lit le titre, l'état du bouton de connexion, les liens légaux et de support, et l'affichage de la photo ; lance la
  * connexion et signale le chargement de la photo.
  * Limites: Ne lit pas les textes de présentation.
  */
@@ -15,6 +15,7 @@ export class LoginHarness extends ComponentHarness {
 	private readonly submitButton = this.locatorFor(byTestId('login-submit-button'));
 	private readonly termsLink = this.locatorFor(byTestId('login-terms-link'));
 	private readonly privacyLink = this.locatorFor(byTestId('login-privacy-link'));
+	private readonly supportLink = this.locatorForOptional(byTestId('login-support-link'));
 	private readonly heroPhoto = this.locatorFor(byTestId('login-hero-photo'));
 
 	public async title(): Promise<string> {
@@ -38,6 +39,11 @@ export class LoginHarness extends ComponentHarness {
 			(await this.termsLink()).getAttribute('href'),
 			(await this.privacyLink()).getAttribute('href'),
 		]);
+	}
+
+	/** L'adresse du lien vers le support, absent quand aucune n'est configurée. */
+	public async supportLinkHref(): Promise<string | null | undefined> {
+		return (await this.supportLink())?.getAttribute('href');
 	}
 
 	public async heroPhotoShown(): Promise<boolean> {

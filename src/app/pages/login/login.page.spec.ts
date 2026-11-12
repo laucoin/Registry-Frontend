@@ -20,7 +20,7 @@ describe('LoginPage', () => {
 	beforeEach(() => {
 		login = vi.fn();
 		RegistryConfig.config = {
-			application: { name: 'Registry', organization: 'Org' },
+			application: { name: 'Registry', organization: 'Org', support: {} },
 		} as typeof RegistryConfig.config;
 		TestBed.configureTestingModule({
 			imports: [TranslocoTestingModule.forRoot({ langs: { fr: {} }, translocoConfig: { defaultLang: 'fr' } })],
@@ -37,6 +37,27 @@ describe('LoginPage', () => {
 
 		// Assert
 		expect(shown).toEqual(['fr.login.title', ['/terms', '/privacy']]);
+	});
+
+	it.each([
+		{
+			name: 'links to the support when it is configured',
+			support: { issuesUrl: 'https://support.test' },
+			expected: 'https://support.test',
+		},
+		{ name: 'has no support link when none is configured', support: {}, expected: undefined },
+	])('$name', async ({ support, expected }) => {
+		// Arrange
+		RegistryConfig.config = {
+			application: { name: 'Registry', organization: 'Org', support },
+		} as typeof RegistryConfig.config;
+		const harness = await create();
+
+		// Act
+		const href = await harness.supportLinkHref();
+
+		// Assert
+		expect(href).toBe(expected);
 	});
 
 	it('offers to sign in while nothing is in progress', async () => {
