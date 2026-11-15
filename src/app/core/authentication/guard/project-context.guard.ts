@@ -21,7 +21,7 @@ interface GuardContext {
 
 /**
  * Objectif: Sélectionne le projet du paramètre de route `:projectId` pour les routes qui en dépendent.
- * Périmètre: Vérifie que l'utilisateur a une autorité sur le projet et le charge, et répond « projet introuvable » avant de rediriger vers la liste des projets quand il n'existe pas, que l'utilisateur n'a aucun droit dessus ou qu'il ne peut pas être chargé : le message ne dit jamais lequel.
+ * Périmètre: Vérifie que l'utilisateur a une autorité sur le projet et le charge, et répond « projet introuvable » avant de rediriger vers la liste des projets quand il n'existe pas, qu'il est supprimé, que l'utilisateur n'a aucun droit dessus ou qu'il ne peut pas être chargé : le message ne dit jamais lequel.
  * Limites: Simple aide à l'usage ; le backend revérifie l'accès, et le guard de désactivation ne fait que vider la sélection.
  */
 export const projectContextGuard: CanActivateFn = (route) => {
@@ -50,7 +50,7 @@ function resolveAccess(
 	return context.sessionFacade.setCurrentProject(projectId).pipe(
 		take(1),
 		map((): boolean | UrlTree =>
-			GenericHelper.isNull(context.sessionFacade.selectedProject()) ? redirectToProjects(context) : true,
+			context.sessionFacade.selectedProject()?.visible ? true : redirectToProjects(context),
 		),
 	);
 }

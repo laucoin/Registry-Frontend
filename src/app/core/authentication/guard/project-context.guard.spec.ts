@@ -40,7 +40,7 @@ describe('projectContextGuard', () => {
 		selectedProject = signal<ProjectModel | undefined>(undefined);
 		currentUser$ = new Subject<CurrentUserModel>();
 		setCurrentProject = vi.fn(() => {
-			selectedProject.set({ id: 'p1' } as ProjectModel);
+			selectedProject.set({ id: 'p1', visible: true } as ProjectModel);
 			return of(undefined);
 		});
 		notify = vi.fn();
@@ -107,6 +107,24 @@ describe('projectContextGuard', () => {
 		// Assert
 		expect(await result).toBe(PROJECTS_TREE);
 		expect(notify).toHaveBeenCalledTimes(1);
+	});
+
+	it('redirects to the projects list with a project-not-found error when the project is deleted', async () => {
+		// Arrange
+		setCurrentProject.mockImplementation(() => {
+			selectedProject.set({ id: 'p1', visible: false } as ProjectModel);
+			return of(undefined);
+		});
+		const result = firstValueFrom(run('p1'));
+
+		// Act
+		currentUser$.next({ authorities: ['p1_REGISTRY_PROJECT_R'] } as CurrentUserModel);
+
+		// Assert
+		expect(await result).toBe(PROJECTS_TREE);
+		expect(notify).toHaveBeenCalledWith(
+			expect.objectContaining({ summary: 'projects.notifications.NOT_FOUND.title' }),
+		);
 	});
 
 	it('answers project not found when the project could not be loaded', async () => {

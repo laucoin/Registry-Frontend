@@ -25,7 +25,7 @@ describe('HomeStore', () => {
 		store = TestBed.inject(HomeStore);
 	});
 
-	it('asks for the favorite projects sorted by name', () => {
+	it('asks for the visible favorite projects sorted by name', () => {
 		// Arrange
 		const request = { page: 0, size: 5 };
 
@@ -33,7 +33,11 @@ describe('HomeStore', () => {
 		store.fetchFavorites(request);
 
 		// Assert
-		expect(findProjects).toHaveBeenCalledWith(0, 5, expect.objectContaining({ isFavorite: true, sort: 'name' }));
+		expect(findProjects).toHaveBeenCalledWith(
+			0,
+			5,
+			expect.objectContaining({ isVisible: true, isFavorite: true, sort: 'name' }),
+		);
 		expect(store.favorites.element()?.content).toHaveLength(1);
 	});
 

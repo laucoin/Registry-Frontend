@@ -24,6 +24,7 @@ const baseParams: ProjectPageParamsModel = {
 const defaultHomeStore: HomeStoreModel = {
 	favorites: PageStateHelper.initial<ProjectPageParamsModel, ProjectModel>({
 		...baseParams,
+		isVisible: true,
 		isFavorite: true,
 		sort: 'name',
 	}),
