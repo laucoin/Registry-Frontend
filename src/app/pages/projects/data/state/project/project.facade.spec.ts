@@ -188,7 +188,7 @@ describe('ProjectFacade', () => {
 		expect(labels).toEqual(expected);
 	});
 
-	it('remembers the created project, notifies and reloads the current user', () => {
+	it('remembers the created project and reloads the current user without a toast', () => {
 		// Arrange
 		createProject.mockReturnValue(of({ id: 'p1', name: 'Camp' } as ProjectModel));
 
@@ -197,9 +197,7 @@ describe('ProjectFacade', () => {
 
 		// Assert
 		expect(facade.createdProjectId()).toBe('p1');
-		expect(notify).toHaveBeenCalledWith(
-			expect.objectContaining({ summary: 'projects.notifications.create.title' }),
-		);
+		expect(notify).not.toHaveBeenCalled();
 		expect(fetchCurrentUser).toHaveBeenCalledTimes(1);
 	});
 

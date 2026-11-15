@@ -387,10 +387,6 @@
 				"title": "+ Profil support créé",
 				"message": "Le profil support a été créé pour le projet, il est disponible jusqu’à {{end}}."
 			},
-			"create": {
-				"title": "+ Projet créé",
-				"message": "Le projet “{{name}}” a été créé."
-			},
 			"edit": {
 				"title": "✏️ Projet modifié",
 				"message": "Le projet “{{name}}” a été modifié."

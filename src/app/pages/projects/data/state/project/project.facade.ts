@@ -193,7 +193,7 @@ export class ProjectFacade extends GenericFacade {
 
 	private onProjectCreated(created: ProjectModel): void {
 		this.store.setCreatedProjectId(created.id);
-		this.onCommandSuccess('create', created);
+		this.refreshAfterCommand('create', created);
 	}
 
 	private onProjectUpdated(updated: ProjectModel): void {
@@ -212,7 +212,10 @@ export class ProjectFacade extends GenericFacade {
 				{ name: project.name },
 			),
 		);
+		this.refreshAfterCommand(command, project, refreshUser);
+	}
 
+	private refreshAfterCommand(command: string, project: ProjectModel, refreshUser = false): void {
 		if (refreshUser) {
 			this.sessionFacade.fetchCurrentUser();
 		}
