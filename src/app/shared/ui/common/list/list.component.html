@@ -7,8 +7,8 @@
 						| transloco: { datetime: page.lastRefresh | dateFormat: DateFormatTypeEnum.DATETIME }
 				}}
 			</small>
-		} @else {
-			<sgdf-skeleton class="w-48 h-4" effect="pulse" shape="rounded" />
+		} @else if (!error()) {
+			<sgdf-skeleton data-test-id="list-last-refresh-skeleton" class="w-48 h-4" effect="pulse" shape="rounded" />
 		}
 		@if (getTemplate('creation'); as creation) {
 			<ng-container [ngTemplateOutlet]="creation" />

@@ -15,6 +15,7 @@ export class ListHarness extends ComponentHarness {
 	public static readonly hostSelector = 'app-list';
 
 	private readonly lastRefresh = this.locatorForOptional(byTestId('list-last-refresh'));
+	private readonly lastRefreshSkeleton = this.locatorForOptional(byTestId('list-last-refresh-skeleton'));
 	private readonly searchItem = this.locatorForOptional(byTestId('list-search-item'));
 	private readonly filtersTag = this.locatorForOptional(byTestId('list-active-filters-tag'));
 	private readonly noResultCallout = this.locatorForOptional(byTestId('list-no-result-callout'));
@@ -28,6 +29,10 @@ export class ListHarness extends ComponentHarness {
 
 	public async lastRefreshText(): Promise<string | undefined> {
 		return (await this.lastRefresh())?.text();
+	}
+
+	public async lastRefreshLoading(): Promise<boolean> {
+		return (await this.lastRefreshSkeleton()) !== null;
 	}
 
 	public async searchExpanded(): Promise<boolean | undefined> {

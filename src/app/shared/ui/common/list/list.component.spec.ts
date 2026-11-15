@@ -96,7 +96,21 @@ describe('ListComponent', () => {
 
 		// Assert
 		expect(await defined(await list.skeleton()).rowCount()).toBe(6);
+		expect(await list.lastRefreshLoading()).toBe(true);
 		expect(await page.itemTexts()).toEqual([]);
+	});
+
+	it('shows only the failure, without loading placeholders, when the first batch failed', async () => {
+		// Arrange
+		host.error.set({ summary: 'Oops' });
+
+		// Act
+		const { list } = await harnesses();
+
+		// Assert
+		expect(await defined(await list.error()).title()).toBe('Oops');
+		expect(await list.lastRefreshLoading()).toBe(false);
+		expect(await list.skeleton()).toBeNull();
 	});
 
 	it('renders every element of the page with the element template, under the date of the last refresh', async () => {
