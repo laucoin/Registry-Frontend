@@ -46,7 +46,7 @@
 	}
 </sgdf-page-title>
 
-<section class="grid grid-cols-1 items-start gap-(--spacing--block) lg:grid-cols-12">
+<section class="mt-(--spacing--block) grid grid-cols-1 items-start gap-(--spacing--block) lg:grid-cols-12">
 	<app-project-participant-overview [class]="hasVehicleOption() ? 'lg:col-span-5 block' : 'lg:col-span-6 block'" />
 	@if (hasVehicleOption()) {
 		<app-project-vehicle-overview class="lg:col-span-3 block" />

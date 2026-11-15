@@ -4,7 +4,7 @@
 	</div>
 } @else {
 	@if (title() && showTitle()) {
-		<sgdf-page-title data-test-id="form-title" [title]="title()" />
+		<sgdf-page-title data-test-id="form-title" class="mb-(--spacing--block)" [title]="title()" />
 	}
 	<app-form-error data-test-id="form-error" [error]="error()" />
 	<ng-content />
