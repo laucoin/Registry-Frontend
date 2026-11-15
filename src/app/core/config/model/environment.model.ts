@@ -2,7 +2,8 @@ export interface EnvironmentModel {
 	production: boolean;
 	backend: {
 		url: string;
-		noAuthPaths: string[];
+		noRefreshPaths: string[];
+		credentialFreePaths: string[];
 	};
 	hosting: {
 		providerName: string | null;

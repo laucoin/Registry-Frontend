@@ -67,7 +67,7 @@ describe('update requests with a precondition', () => {
 	beforeEach(() => {
 		RegistryConfig.environment = {
 			production: false,
-			backend: { url: 'http://backend.test', noAuthPaths: [] },
+			backend: { url: 'http://backend.test', noRefreshPaths: [], credentialFreePaths: [] },
 			hosting: { providerName: null, providerAddress: null },
 		};
 		TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });

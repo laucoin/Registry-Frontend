@@ -22,7 +22,6 @@ import { ErrorModel } from '@shared/models/model/error.model';
 const CSRF_TOKEN_HEADER = 'X-XSRF-TOKEN';
 const ACCEPT_LANGUAGE_HEADER = 'Accept-Language';
 const REFRESH_PATH = '/token/refresh';
-const CREDENTIAL_FREE_PATHS = ['/api/v2/metadata/'];
 let csrfToken: string | undefined;
 
 let refreshTokenInProgress$: Observable<void> | null = null;
@@ -107,7 +106,9 @@ function authenticate(req: HttpRequest<unknown>, sessionFacade: SessionFacade, l
 }
 
 function isCredentialFree(url: string): boolean {
-	return CREDENTIAL_FREE_PATHS.some((path) => url.startsWith(`${RegistryConfig.environment.backend.url}${path}`));
+	return RegistryConfig.environment.backend.credentialFreePaths.some((path) =>
+		url.startsWith(`${RegistryConfig.environment.backend.url}${path}`),
+	);
 }
 
 function withCsrfToken(req: HttpRequest<unknown>): HttpRequest<unknown> {
@@ -117,7 +118,7 @@ function withCsrfToken(req: HttpRequest<unknown>): HttpRequest<unknown> {
 function handleError(error: HttpErrorResponse, context: InterceptionContext): Observable<HttpEvent<unknown>> {
 	if (context.authenticatedRequest.withCredentials) captureCsrfToken(error.headers);
 
-	if (error.status === 401 && isNoAuthPath(context.request.url)) {
+	if (error.status === 401 && isNoRefreshPath(context.request.url)) {
 		// L'échec du rafraîchissement envoie déjà l'utilisateur vers la connexion dans refreshAccessToken.
 		if (!context.request.url.includes(REFRESH_PATH)) context.sessionFacade.redirectToLogin();
 		return throwError(() => new ErrorModel(error));
@@ -142,8 +143,8 @@ function replay(context: InterceptionContext): Observable<HttpEvent<unknown>> {
 	);
 }
 
-function isNoAuthPath(url: string): boolean {
-	return RegistryConfig.environment.backend.noAuthPaths.some((noAuthPath) => url.includes(noAuthPath));
+function isNoRefreshPath(url: string): boolean {
+	return RegistryConfig.environment.backend.noRefreshPaths.some((noRefreshPath) => url.includes(noRefreshPath));
 }
 
 function toBackendError(error: HttpErrorResponse, translateService: TranslocoService): ErrorModel {

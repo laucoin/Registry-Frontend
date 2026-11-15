@@ -92,7 +92,7 @@ describe('BaseFormComponent', () => {
 		navigate = vi.fn(() => Promise.resolve(true));
 		RegistryConfig.environment = {
 			production: false,
-			backend: { url: 'http://backend.test', noAuthPaths: [] },
+			backend: { url: 'http://backend.test', noRefreshPaths: [], credentialFreePaths: [] },
 			hosting: { providerName: null, providerAddress: null },
 		};
 		RegistryConfig.config = { notification: { duration: {} } } as unknown as ConfigModel;

@@ -29,7 +29,7 @@ describe('backendHandler', () => {
 	beforeEach(() => {
 		RegistryConfig.environment = {
 			production: false,
-			backend: { url: BACKEND_URL, noAuthPaths: [REFRESH_PATH] },
+			backend: { url: BACKEND_URL, noRefreshPaths: [REFRESH_PATH], credentialFreePaths: ['/api/v2/metadata/'] },
 			hosting: { providerName: null, providerAddress: null },
 		};
 		redirectToLogin = vi.fn();
@@ -218,7 +218,7 @@ describe('backendHandler', () => {
 	it('redirects to the sign-in without refreshing when a public authentication endpoint answers 401', () => {
 		// Arrange
 		const tokenPath = '/api/v2/authentication/token';
-		RegistryConfig.environment.backend.noAuthPaths = [tokenPath, REFRESH_PATH];
+		RegistryConfig.environment.backend.noRefreshPaths = [tokenPath, REFRESH_PATH];
 		let failure: ErrorModel | undefined;
 
 		// Act

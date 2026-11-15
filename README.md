@@ -101,11 +101,15 @@ corepack enable pnpm
    	"production": "<true-for-non-local>",
    	"backend": {
    		"url": "<backend-url>",
-   		"noAuthPaths": [
+   		"noRefreshPaths": [
    			"/api/v2/authentication/login/uri",
    			"/api/v2/authentication/logout/uri",
    			"/api/v2/authentication/token",
    			"/api/v2/authentication/token/refresh"
+   		],
+   		"credentialFreePaths": [
+   			"/api/v2/metadata/",
+   			"/api/v2/authentication/login/uri"
    		]
    	}
    }

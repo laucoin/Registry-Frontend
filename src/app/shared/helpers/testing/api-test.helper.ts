@@ -43,7 +43,7 @@ export function describeApi<A>(label: string, type: Type<A>, cases: ApiCase<A>[]
 function configureApiTesting(): void {
 	RegistryConfig.environment = {
 		production: false,
-		backend: { url: BACKEND_URL, noAuthPaths: [] },
+		backend: { url: BACKEND_URL, noRefreshPaths: [], credentialFreePaths: [] },
 		hosting: { providerName: null, providerAddress: null },
 	};
 	TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });

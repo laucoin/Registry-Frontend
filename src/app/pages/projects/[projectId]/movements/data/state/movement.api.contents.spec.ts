@@ -16,7 +16,7 @@ describe('MovementApi contents batching', () => {
 	beforeEach(() => {
 		RegistryConfig.environment = {
 			production: false,
-			backend: { url: 'http://backend.test', noAuthPaths: [] },
+			backend: { url: 'http://backend.test', noRefreshPaths: [], credentialFreePaths: [] },
 			hosting: { providerName: null, providerAddress: null },
 		};
 		TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });

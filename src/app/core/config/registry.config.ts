@@ -41,7 +41,7 @@ const FALLBACK_CONFIG: ConfigModel = {
 
 const FALLBACK_ENVIRONMENT: EnvironmentModel = {
 	production: true,
-	backend: { url: 'about:blank', noAuthPaths: [] },
+	backend: { url: 'about:blank', noRefreshPaths: [], credentialFreePaths: [] },
 	hosting: { providerName: null, providerAddress: null },
 };
 
