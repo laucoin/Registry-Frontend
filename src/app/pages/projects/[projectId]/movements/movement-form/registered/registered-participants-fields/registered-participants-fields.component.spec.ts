@@ -148,4 +148,22 @@ describe('RegisteredParticipantsFieldsComponent', () => {
 			['Already in', undefined],
 		]);
 	});
+
+	it('keeps a participant whose pool name is empty out of any group', async () => {
+		// Arrange
+		const harness = await create();
+		const field = await harness.field();
+
+		// Act
+		fixture.componentInstance.model.update((model) => ({
+			...model,
+			content: {
+				...model.content,
+				participants: [{ poolName: '', participant: participant('ada'), vehicle: undefined }],
+			},
+		}));
+
+		// Assert
+		expect([await field.groups(), (await field.selection()).length]).toEqual([[], 1]);
+	});
 });

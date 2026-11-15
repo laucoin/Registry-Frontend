@@ -52,7 +52,7 @@ export class RegisteredParticipantsFieldsComponent {
 	protected readonly contentOfChoice = contentOfChoice;
 	protected readonly identifyContent: (content: MovementContentModel) => string = (content) => content.participant.id;
 	protected readonly groupOfContent: (content: MovementContentModel) => string | undefined = (content) =>
-		content.poolName;
+		content.poolName || undefined;
 	protected readonly contentLabel: (content: MovementContentModel) => SelectOptionModel<ParticipantModel> = (
 		content,
 	) => ParticipantHelper.toSelectItem(content.participant);
