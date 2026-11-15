@@ -1,0 +1,40 @@
+@if (facade.activityStatisticsError(); as failure) {
+	<app-section-error
+		data-test-id="activity-statistics-error"
+		class="md:col-span-3"
+		[error]="failure"
+		[retrying]="facade.activityStatisticsLoading()"
+		(retry)="retry.emit()"
+	/>
+} @else {
+	<sgdf-stat
+		data-test-id="activity-statistics-participation-stat"
+		[loading]="facade.activityStatisticsLoading()"
+		[title]="'activities.statistics.participation.title' | transloco"
+		[hint]="participationHint() | transloco: participationParams()"
+	>
+		@if (rate() !== undefined) {
+			<sgdf-format-number type="percent" [value]="rate()" />
+		}
+	</sgdf-stat>
+	<sgdf-stat
+		data-test-id="activity-statistics-movement-stat"
+		[loading]="facade.activityStatisticsLoading()"
+		[title]="'activities.statistics.movement.title' | transloco"
+		[hint]="movementHint() | transloco"
+	>
+		@if (movementDuration(); as duration) {
+			<sgdf-format-duration [value]="duration" />
+		}
+	</sgdf-stat>
+	<sgdf-stat
+		data-test-id="activity-statistics-man-stat"
+		[loading]="facade.activityStatisticsLoading()"
+		[title]="'activities.statistics.man.title' | transloco"
+		[hint]="manHint() | transloco"
+	>
+		@if (manDuration(); as duration) {
+			<sgdf-format-duration [value]="duration" />
+		}
+	</sgdf-stat>
+}

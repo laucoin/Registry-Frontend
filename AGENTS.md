@@ -1,214 +1,176 @@
-# Instructions for AI Agents — Spec-Driven Development & Stacked PRs
+# AGENTS.md - Development Guidelines for Angular CSR Project
 
-## 1. Project Context & Documentation Resolution
+This document outlines the strict guidelines, architecture rules, and conventions for AI agents and developers working
+on this Angular Client-Side Rendering (CSR) project.
 
-- **Target Project:** Registry
-- **Scope:** Frontend
-- **Target Repository:** `Registry-Frontend` (Angular 22 SPA). Specifications live in a **separate repository** — the
-  documentation hub (`documentation/registry/`). Spec commits never land here; code commits never land there.
-- **Default Documentation URL:** `https://doc.laucoin.fr/registry`
+The architecture, security, QA, techlead, designer, test and git standards live in the skills of `.claude/skills/`,
+which are the source of truth for them. This document does not repeat them: it points to the skill and keeps only the
+rules specific to this project.
 
-### Agent Rule for Doc Resolution:
+---
 
-Before implementing any feature or reading a specification:
+## 1. Language & Communication
 
-1. Check if a local path (e.g., `documentation/registry`) or specific URL was supplied in the user's prompt.
-2. If unspecified, ask the user before proceeding:
-   > *"Should I fetch the specification from the default URL (`https://doc.laucoin.fr/registry`) or a local path?"*
-
-### Where the frontend specs live:
-
-| Source                                                      | What it holds                                                                                                                                                                                                    |
-|-------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `functional/roles-and-permissions.md`                       | The authorization model the UI **mirrors** — the two permission planes, roles, the access matrices, the per-project option gating that the route guards reproduce                                                |
-| `functional/features/*.md`                                  | Per-feature rules + BDD/Gherkin scenarios: `projects`, `project-profiles`, `participants`, `groups`, `movements`, `vehicles`, `activities`, `communications`, `alerts`, `users`, `preferences`, `data-retention` |
-| `functional/domain-model.md`, `personas.md`, `workflows.md` | Business vocabulary, actors, end-to-end journeys                                                                                                                                                                 |
-| `technical/frontend.md`                                     | The frontend engineering spec — stack, app shape, routing, guards, the component→facade→action→state→service flow, browser auth, runtime config, a11y/UX conventions, build & delivery                           |
-| `technical/architecture.md`                                 | The frontend section and the end-to-end request flow                                                                                                                                                             |
-| `technical/security.md`                                     | What the frontend does and **does not** enforce                                                                                                                                                                  |
-| `technical/api-reference.md`                                | Every `/api/v1` endpoint the services call, with its required permission and the list-query grammar                                                                                                              |
-| `technical/getting-started.md`                              | Running the SPA locally, including the two `public/settings/` JSON files                                                                                                                                         |
-| `technical/adr/`                                            | ADRs **007, 008, 009, 012** govern the frontend (001–006, 011 are backend-scoped — ignore them here)                                                                                                             |
-
-## 2. Communication Style & Behavioral Rules
-
-- **Absolute Conciseness:** Direct, factual, no pleasantries or theoretical ramblings.
-- **Simplicity:** No academic or unnecessarily complex jargon. Explain actions in 1–2 simple sentences.
+- **User Interaction:** All direct communication, questions, and validations with the user **must** be conducted in
+  **French**. Be concise and factual: no pleasantries, 1–2 simple sentences per explanation, except when a decision is
+  requested (see below). Review reports (`code-review` and its sub-skills) are also written in French.
+- **Interactive mode first:** always prefer the interactive mode (`AskUserQuestion`) over a free-text question or a
+  silent assumption whenever a decision belongs to the user (design choice, scope, naming, trade-off, ambiguous
+  request, documentation update). Each question must carry enough context to decide without re-reading the code:
+  what is at stake, the relevant code or spec reference (`file:line`), 2–4 options each with its consequences and
+  trade-offs, and a recommended option placed first. Group related decisions in a single call. Do not ask when a
+  convention of this document or the existing code already settles the point. The limit of two questions of
+  `peer-review` only applies to the dialogue of that review.
+- **Detailed questions (exception to the brevity rule):** assume the user has lost the context (after `/clear`, a task
+  switch or a long session). Every interactive question is therefore self-contained and detailed, never a terse label:
+  1. **Situation:** recall the starting point (current behaviour, what was already done, files with `file:line`).
+  2. **Stakes:** why a decision is needed now and what it unblocks.
+  3. **Options:** for each one, state concretely what changes, what is kept or lost, the risks and the follow-up work.
+  4. **Recommendation:** first option, with the reason for the choice.
+     Use `preview` to compare before/after. A question the user must reject to ask for clarification is a failed question.
+- **Code & Comments:** All source code, variable names, functions, and commit messages **must** be written in
+  **US English**. Comments (inline comments and JSDoc blocks) and the project's markdown documentation **must** be
+  written in **French**.
 - **Strict Scope:** Address only the requested task. Do not refactor surrounding code or fix unrelated items.
-- **Language:** Reply to the user in their language; every file written to the repository (code, comments, commit
-  messages) is **English only**. No user-facing string is ever hardcoded — it goes through `@ngx-translate` (`en`,
-  `fr`).
 
-## 3. Spec-Driven Development (SDD) Protocol
+---
 
-Strict separation must be maintained between documentation/specs and implementation code — and here they are literally
-different repositories.
+## 2. Tech Stack
 
-### Phase 1: Specification (VitePress — the documentation hub)
+- **Framework:** Angular (latest version configured for **Client-Side Rendering - CSR**).
+- **Reactivity & State:** Strictly use **Angular Signals** (including `@ngrx/signals` `signalStore`, `input()`,
+  `output()`, etc.). The modern Angular primitives are listed in `architecture-review` §3.
+- **Design System:** `@sgdf/ui` (Web Awesome based web components). Check first what it provides, act on its
+  components only through their documented surfaces, and keep tokens and theming as specified in `techlead-review` §4.
+- **Styling:** Tailwind CSS v4 utility classes in templates (default breakpoints) for the layout of the components among
+  themselves, native CSS for the remaining component styles. Bootstrap is not used.
+- **`@sgdf/ui` ownership:** the developer owns the library (source: https://gitlab.com/sgdf/projets-benevoles/sgdf-ui) and can change it. No override,
+  workaround or custom fallback in this project: a need the library does not cover is reported as a change to make in
+  the `@sgdf/ui` repository (https://gitlab.com/sgdf/projets-benevoles/sgdf-ui) (rules in `techlead-review` §4 and `designer-review` §4).
 
-- Create or update specifications in `documentation/registry/` (functional first, then technical — never draft technical
-  before the functional spec and `roles-and-permissions.md` baseline are settled).
-- Slice specifications into the **smallest testable features**. For this SPA that means, per screen / domain area:
-    - `Step 1: DTOs, view models & enums in shared/util-model + the domain data/ service (HTTP calls)` — matched to the
-      `api-reference.md` contract and list-query grammar.
-    -
-    `Step 2: NGXS state + actions + facade + selectSignal wiring + per-route provider + the profile-switch reset-cascade entry`.
-    -
-    `Step 3: One route + its guard(s) + the list or form component (OnPush, async pipe, server-side pagination, debounced search), every string via @ngx-translate`.
-    - Each option-gated route (`vehicleOptionGuard`, `activityOptionGuard`, `alertOptionGuard`), each new guard, and
-      each reusable `shared/util-ui` component is its own step.
-- **FORBIDDEN:** Do not touch `Registry-Frontend` source or `.vitepress/config.*` during this phase.
+---
 
-### Phase 2: Implementation via GitHub PR Stacks (`Registry-Frontend`)
+## 3. Architecture & Project Structure
 
-- Base implementation **exclusively** on the validated specification step fetched from the resolved documentation
-  source.
-- Deliver every single implementation step as an isolated GitHub PR stacked on the previous step's branch.
-- **FORBIDDEN:** Do not modify documentation files during code implementation steps.
+The three-pillar layout (`core/`, `pages/`, `shared/`), the isolation rules and their documented exceptions, the
+placement of domains, the core facades, the `api → store → facade` data flow (`@ngrx/signals`), the store scoping, the
+DTO mappers, the single HTTP interceptor and the performance rules are specified in `architecture-review`. Project
+specifics not covered there:
 
-## 4. Git Strategy & GitHub Stacked PRs Execution
+- **`shared/ui/domain/`** (cards and forms of the business entities) is reworked with the `@sgdf/ui` migration: do not
+  add new `shared` to `pages` imports elsewhere.
 
-Each PR must represent the **smallest testable feature** to ensure fast, hazard-free code reviews. All branch/PR
-commands below run inside `Registry-Frontend`.
+---
 
-1. **Stack Branching:** For step $N$, create branch `feat/<feature>/0N-<step-name>` branching from `0N-1` (or `main` for
-   step 1).
-2. **Atomic Implementation:** Implement ONLY the scope of the smallest testable feature for step $N$.
-3. **MANDATORY Pre-PR Testing & Verification:**
-    - There is **no unit-test runner** in this repo (`skipTests` is on, no `test` script). The gates are:
-        - `pnpm run lint` — must pass with zero errors (`no-explicit-any` and missing explicit return types are errors).
-        - `pnpm run build --configuration=production` — must succeed within the bundle budgets (initial bundle ≤ 500 kB,
-          component stylesheet ≤ 2 kB, or the build warns).
-        - Manual verification of the feature against a **running backend** (`pnpm start`), following the relevant BDD
-          scenario end to end.
-    - End-to-end regression coverage is the `Registry-E2E` project's responsibility, not this repo's — flag when a
-      change needs an E2E update.
-    - Do NOT proceed if lint fails, the production build breaks a budget, or the feature cannot be verified against the
-      backend.
-4. **GitHub PR Creation:**
-    - Open/create the Pull Request targeting base branch `feat/<feature>/0N-1` (using
-      `gh pr create --base feat/<feature>/0N-1`).
-5. **Confirmation to Continue:** Stop and ask the user for validation before moving to step $N+1$.
+## 4. Abstraction & Environment Configuration
 
-## 5. Requirement Validation & Internal Documentation / README Updates
+- **Environment Agnostic (CSR):** no environment-specific parameter is hardcoded or compiled into the bundle; runtime
+  configuration is loaded as specified in `cybersecurity-review` §3.
+- **Browser access:** `window`, `document`, `location` and `navigator` are reached only through `BrowserService`
+  (`core/browser/browser.service.ts`); storage goes through the storage helpers (`cybersecurity-review` §1 and §3).
 
-Before marking any task or PR step as complete:
+---
 
-1. **Validation Against Specification:**
-    - Explicitly verify the code matches every functional and technical requirement for the feature — the guard (s) and
-      option gates match the `roles-and-permissions.md` matrix, the service calls match the `api-reference.md` contract
-      (paths, `camelCase` params, `pageNumber`/`pageSize` bounds), errors are surfaced per the interceptor rules, and
-      every string is translated.
-    - Re-check accessibility (semantic HTML, keyboard + visible focus, accessible names, WCAG AA contrast in both
-      themes, `prefers-reduced-motion`) and the UX feedback rules (loading indicator, disabled-while-in-flight,
-      success/error toast, empty state).
-    - Ensure zero regressions: `pnpm run lint` clean, production build within budget.
+## 5. Coding Standards, Quality & Best Practices
 
-2. **README.md & Internal Doc Synchronization:**
-    - Update `README.md` and the placeholder `public/settings/*.json` samples whenever a config key, a consumed API, an
-      enabled UI action, a route, or a dependency changes.
-    - The `README.md` MUST include an exhaustive **"How to install and use it? ⚙️"** section detailing:
-        - Prerequisites & runtime versions (Node.js 24 LTS — `^24.15`; pnpm 11).
-        - The two runtime config files (`public/settings/env.json`, `public/settings/config.json`) — every key with
-          defaults and descriptions.
-        - Local setup & installation steps (`pnpm install`, create the settings files, `pnpm start` with the backend
-          running).
-        - Build, serve, lint, and verification commands.
+- **Formatting & Linting:** Strictly adhere to project linting rules (`ESLint`, Prettier, etc.).
+- **Standards by skill:** the function metrics, AST rules, imports, typing, naming, dead code and design system rules
+  are in `techlead-review`; the accessibility, UX states (loading, error, empty), lists, mobile-first and SEO rules in
+  `designer-review`; the test ids (`data-test-id`) and test quality in `qa-review`; the security rules in
+  `cybersecurity-review`; the structure, data flow and invariants of the data layer in `architecture-review`.
+- **Error Handling:** the strategy (backend title and message shown as is, generic frontend message otherwise) is in
+  `designer-review` §1. A feature may instead be log-only, but only when this has been **defined with the developer**
+  before implementation (reporting rules in `cybersecurity-review` §4).
 
-## 6. Smallest Testable Feature Sizing Limits
+---
 
-- **Scope Rule:** Keep diffs strictly confined to the single testable feature — aim for minimal file changes and under
-  **100 lines** where possible, excluding README/doc sync and generated boilerplate. One NGXS slice (state + actions +
-  selectors + facade) is a lot of files for a little behaviour — that is expected, but do not fold two slices into one
-  step.
-- **Atomic Commits:** Format `<type>(<scope>): [Step N] <short summary>`. `type` ∈
-  `feat, fix, chore, docs, style, refactor, perf, test`. Commits **must** follow Conventional Commits — semantic-release
-  derives the version, changelog, and tag from them (ADR 009); a non-conventional message produces a wrong or missing
-  release.
-- If a step includes multiple testable behaviors (e.g. a new route **and** a new reusable `util-ui` component), stop
-  immediately and split it into separate stacked sub-branches/PRs.
-- Style conventions: **4-space indent, single quotes, spaces inside array and object brackets.**
+## 6. Skills (mandatory routing)
 
-## 7. Adjustments & Error Recovery
+When a request matches a skill, **load and follow it before doing anything else**. Do not improvise the procedure.
 
-- **Misunderstanding / Bug:** Stop immediately. Do not stack patch commits on a broken PR. Explain the issue in 1
-  sentence to allow a `git reset`.
-- **Scope Change / Unforeseen Case:** Update the specification documentation in the hub FIRST. Do not code until the
-  spec commit is created.
-- **Cosmetic / UI Tweaks:** Keep modifications localized strictly to the relevant visual component within the active
-  branch. A restyle that belongs in the PrimeNG preset goes in `config.json`, not in component SCSS.
+| Request                                                               | Skill                 |
+| --------------------------------------------------------------------- | --------------------- |
+| Review a diff, file or branch; "review", "check my change"            | `code-review`         |
+| Add, write, extend or fix tests                                       | `test`                |
+| Create a commit, plan commit scopes                                   | `git-commit`          |
+| Create a local branch                                                 | `git-branch-creation` |
+| Create an issue (explicit request, or branch without a ticket number) | `git-issue-creation`  |
 
-## 8. Project Commands
+`code-review` orchestrates `architecture-review`, `cybersecurity-review`, `qa-review`, `techlead-review`,
+`designer-review` and `peer-review`: each of them can also be requested alone. `code-review` and `test` run **only**
+before a commit or when the user asks for them; never automatically after an edit. Before each commit, the scored
+categories of `code-review` must reach 100/100 (scale and re-check loop defined in the skill), and the new code must be
+covered by tests.
 
-- **Local Specs Preview:** `pnpm dev` — run in the **documentation hub repo**, not in `Registry-Frontend`.
-- **Tests:** none configured. `pnpm run lint` is the only in-repo automated gate; regression E2E lives in the
-  `Registry-E2E` project.
-- **Serve locally:** `pnpm install` then `pnpm start` — `ng serve` on `http://localhost:4200`, requires the backend
-  running.
-- **Build / Verification:** `pnpm run build --configuration=production` → `dist/browser` (output hashing + bundle
-  budgets enforced).
-- **Lint:** `pnpm run lint` (ESLint + angular-eslint).
+---
 
-### Runtime configuration (never compiled in, never committed — placeholders only)
+## 7. Build, Tests & Commands
 
-| File                          | Holds                                                                                                                                                                                                                                                                           |
-|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `public/settings/env.json`    | `production` flag; `backend.url`; `backend.noAuthPaths` (the four `/api/v1/authentication/*` paths that skip the token)                                                                                                                                                         |
-| `public/settings/config.json` | `defaultLanguage` + `languages` (`en`, `fr`); the full PrimeNG preset passed to `definePreset(Lara, …)` — semantic palette, separate light & dark schemes, per-component overrides; logo paths per theme and size; enabled element actions; per-severity notification durations |
+- **Gate and commands:** `pnpm lint`, `pnpm build` and `pnpm test:coverage` are the pre-commit authority, as defined in
+  `git-commit` §5. `pnpm test` is the faster inner loop.
+- **Coverage:** `pnpm test:coverage` measures the whole `src/app` and enforces the thresholds of `angular.json`
+  (`test` §2). Test writing conventions are in the `test` skill.
 
-Both files are fetched (cache-busted) **before Angular bootstraps** and mounted into the nginx container per
-environment. A missing or malformed file is logged and the app continues with whatever loaded — startup is not blocked
-(ADR 007).
+## 8. Documentation (doc.laucoin.fr)
 
-## 9. Project Invariants
+- Reference: https://doc.laucoin.fr/registry
+- Rule: The agent must always ask the user if documentation updates are relevant for any given feature or change, and
+  where the documentation is located before attempting any updates.
+- Separation: never modify documentation during code steps, never touch frontend source during a specification step.
+  A scope change or unforeseen case means updating the specification **first**.
+- Conflict/Missing: If a user request, or a specification fetched from the documentation hub during spec-driven
+  development, would require violating a rule in this document, stop before implementing it. Do not silently comply with
+  the request, and do not silently ignore the spec. Propose one of two paths to the user: update this document to
+  reflect the new rule, or adjust the request/spec to fit the existing rule. Proceed only once the user has picked one.
 
-Non-negotiable constraints from the ADRs and the "accepted risks" notes — a change must not silently violate any of
-these:
+## 9. Comments Policy
 
-- **The frontend enforces nothing.** Guards (`authGuard`, `selectedProfileGuard`, `vehicleOptionGuard`,
-  `activityOptionGuard`, `alertOptionGuard`) and any permission-driven UI exist for usability only — the backend
-  re-checks every condition on every request. Never treat a guard, a hidden button, or a client-side role check as a
-  security control. (`technical/security.md`, `technical/frontend.md`)
-- **Standalone components only** — no `NgModule`. Angular 22.
-- **The facade is the only surface components touch.** Component → Facade → `dispatch(Action)` → `@Action` handler →
-  Service (HTTP); state read back as Signals via `selectSignal`. Components do no HTTP, no business logic, and no state
-  mutation outside an `@Action` handler. (ADR 008)
-- **Feature state is provided per route**, code-split with its lazy subtree — never registered globally. Adding a
-  feature state means wiring it into the **profile-switch reset cascade**; a forgotten dependency is a stale-state bug.
-  The root `RegistryState` owns only the cross-cutting concerns (token, current user, selected project, theme, network
-  status, screen width, global loader/error, notification queue). (ADR 008)
-- **No environment value is compiled into the bundle.** Backend URL, production flag, theme, logos, languages, enabled
-  actions and notification durations all come from runtime `settings/env.json` + `settings/config.json`; the repo ships
-  **placeholders only** and those concrete files are never committed. (ADR 007)
-- **Theming is data, not code.** The entire PrimeNG preset lives in `config.json`; re-skinning a deployment is a JSON
-  change, never a rebuild. Light and dark palettes are defined **separately**; dark mode is selected by a `.dark-mod`
-  class from the user's stored `SYSTEM`/`LIGHT`/`DARK` preference, not a media query. (ADR 012)
-- **Bootstrap is contract-first with the backend for auth**, but the backend brokers the OIDC exchanges — the SPA only
-  orchestrates redirects and holds the result. Tokens live in **session storage** (per-tab, cleared on tab close), never
-  `localStorage`.
-- **One HTTP interceptor** owns everything that touches the backend and ignores every other host: it attaches the
-  `Bearer` token and `Accept-Language`, refreshes once on `401` and replays transparently (or starts login with no
-  token), turns `0 / 502 / 503` into a full-page "service unavailable" state, and everything else into a typed
-  `ErrorModel` toast. Do not scatter this logic into services.
-- **No user-facing string outside `@ngx-translate`.** New reusable UI belongs in `shared/util-ui`, not reinvented per
-  screen.
-- **TypeScript strictness is enforced as errors** — `no-explicit-any` and missing explicit return types fail the lint
-  gate.
-- **The production build enforces bundle budgets** — an initial bundle over 500 kB or a component stylesheet over 2 kB
-  is a budget violation, not a nuisance.
-- **The nginx image runs unprivileged on port 8080** and ships **no `Content-Security-Policy` header** — a known,
-  accepted gap. Do not assume CSP protects the app; do not add inline-script patterns that would only be safe under a
-  CSP.
-- **`pnpm run lint` is the only in-repo automated gate.** There is no unit-test runner; end-to-end coverage is the
-  separate `Registry-E2E` project. A change that needs regression coverage needs an E2E ticket, not a new test here.
-- **PrimeNG 22 is pinned to Angular 22.** The library's release cadence dictates the frontend's; styling goes through
-  the preset's override structure — a design that fights the library is expensive. Bootstrap contributes **its grid
-  only**, no Bootstrap components.
-- **semantic-release → GHCR, retain last 5**, driven by Conventional Commits. (ADR 009)
+- No Superfluous Comments: Keep comments synthetic, modern, and state-of-the-art.
+- Prohibitions: Do not write comments about migrations, past states, or changelogs.
+- Future Actions: Any comment referring to future tasks or technical debt must be explicitly marked as // TODO:.
+- Permission Required: The agent must always ask the user for permission before adding any comment to the code.
+- Pre-approved exceptions (standing, no need to ask each time; every other comment still requires permission):
+  - **File-level header:** the `Objectif | Périmètre | Limites` block above non-trivial units, with the format and the
+    units concerned defined in `techlead-review` §5.
+  - **AAA markers:** the `// Arrange`, `// Act` and `// Assert` comments of the tests, as required by the `test` skill.
 
-## 10. Developer Instructions (Manual — Preserved on Regeneration)
+## 10. Git & Version Control
 
-Ad hoc rules a developer has added directly to this file — process or behavioral preferences with no spec page to derive
-them from. On regeneration, copy this section verbatim; never rewrite, prune, or re-derive its contents.
+- **Commits:** the agent may commit, in Conventional Commits format, `type` ∈ `feat, fix, chore, docs, style, refactor,
+perf, test` (semantic-release derives versions from them). Message format, atomicity, scope check against the
+  branch ticket and the pre-commit gate: `git-commit`. Branch creation: `git-branch-creation`.
+- **The git remote is read-only:** no write action on it (push, creating or editing a pull request or release, editing
+  or commenting an issue, etc.). Reads (fetch, viewing pull requests and issues) are allowed. **Exception:** creating
+  an issue through `git-issue-creation`, only after the explicit validation of the user (`gh issue create` is in the
+  `ask` list of `.claude/settings.json`). The other write actions are denied in `.claude/settings.json`.
+- **Scopes** are planned and agreed with the user before development begins, broken down into the smallest
+  functionally testable increments.
+- **Work-in-progress gate:** while a complete, testable feature is implemented but uncommitted, refuse any new unrelated
+  feature; only fixes, review feedback and adjustments to the pending feature are allowed. Local commits on the current
+  branch are enough: the developer decides when to push and open the PR, and may ask the agent to keep working on the
+  same branch meanwhile.
+- **Misunderstanding / bug:** stop immediately, never stack patch commits on a broken change. Explain the issue in one
+  sentence so the user can `git reset`.
 
-- [None yet]
+## 11. Non-Negotiable Technical Invariants
+
+- The frontend enforces nothing. Guards and permission-driven UI exist for usability only — the backend re-checks every
+  condition on every request. Never treat a guard or a hidden control as a security boundary.
+- Permissions, not roles: the UI reads authorities, never the role name. **Documented exception:** on the project home
+  page, the birthdays and the participants to regularize are neither loaded nor shown unless the user's role on the
+  project is `PROJECT_ADMINISTRATOR` or `PROJECT_COORDINATOR` (`ProjectRoleEnum`, `ProjectHomePage.canSeeProfileWidgets`).
+  Do not add other role checks without agreeing on a new exception with the user.
+- Pure Client-Side Execution (CSR): the browser globals and the storage are encapsulated as defined in §4, which keeps
+  the code cleanly unit testable.
+- Static Web Serving (CSR): Production output is hosted as pure static assets (e.g. NGINX / Caddy). Ensure web server
+  fallback rules (URL rewriting to index.html) are configured for HTML5 client-side routing.
+- Hardening headers (including a CSP) are set in `nginx.conf`. The CSP must stay as strict as the app allows: no
+  `unsafe-eval`, and any loosening must be justified and agreed with the user first. `style-src 'unsafe-inline'` is
+  currently present in `nginx.conf` (Angular and `@sgdf/ui` inject styles at runtime); the goal is to remove it, as a
+  separate task.
+- semantic-release drives versioning/changelog/tags from Conventional Commits — a non-conventional commit message
+  produces a wrong or missing release.
+- Invariants specified in a skill, to keep in mind: `rxMethod` pipes swallow their own errors and the single HTTP
+  interceptor with the refresh exclusion (`architecture-review` §2), the runtime configuration (`cybersecurity-review`
+  §3), the theming through `data-sgdf-mode` via `BrowserService` (`techlead-review` §4) and the lazy-loading pagination
+  without page numbers (`designer-review` §1).

@@ -1,0 +1,34 @@
+<sgdf-list appearance="text" [label]="'movements.content-layer-title' | pluralTranslation: contents() | transloco">
+	@for (content of contents(); track content.participant.id) {
+		<sgdf-list-item data-test-id="movement-people-row" [attr.data-id]="content.participant.id">
+			<sgdf-avatar slot="start" variant="primary" aria-hidden="true">
+				<sgdf-icon slot="icon" [name]="content.vehicle ? 'car' : 'user'" library="solid" />
+			</sgdf-avatar>
+			<span data-test-id="movement-people-name">{{
+				(content.participant.firstName | titlecase) + ' ' + (content.participant.lastName | uppercase)
+			}}</span>
+			@if (content.vehicle) {
+				<sgdf-tag data-test-id="movement-people-vehicle" slot="description" appearance="outlined" pill>{{
+					VehicleHelper.toSelectItem(content.vehicle).label
+				}}</sgdf-tag>
+			}
+			@if (canReverse()) {
+				<sgdf-button
+					data-test-id="movement-people-reverse-button"
+					slot="end"
+					size="small"
+					variant="primary"
+					appearance="outlined"
+					(click)="reversed.emit([content])"
+				>
+					<sgdf-icon
+						slot="prefix"
+						[name]="type() === MovementTypeEnum.OUT ? 'arrow-down' : 'arrow-up'"
+						library="solid"
+					/>
+					{{ 'movements.reverse.' + type() | transloco }}
+				</sgdf-button>
+			}
+		</sgdf-list-item>
+	}
+</sgdf-list>

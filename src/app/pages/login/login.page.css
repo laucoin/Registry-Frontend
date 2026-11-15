@@ -1,0 +1,27 @@
+:host {
+	display: block;
+}
+
+.login-hero {
+	background: linear-gradient(
+		160deg,
+		var(--sgdf-color-bleu-institutionnel-600) 0%,
+		var(--sgdf-color-bleu-institutionnel-800) 45%,
+		var(--sgdf-color-bleu-institutionnel-950) 100%
+	);
+}
+
+.login-hero__scrim {
+	background:
+		radial-gradient(
+			circle at 20% 15%,
+			color-mix(in srgb, var(--sgdf-color-white) 10%, transparent),
+			transparent 40%
+		),
+		linear-gradient(
+			to top,
+			color-mix(in srgb, var(--sgdf-color-bleu-institutionnel-950) 88%, transparent) 0%,
+			color-mix(in srgb, var(--sgdf-color-bleu-institutionnel-900) 45%, transparent) 28%,
+			transparent 55%
+		);
+}

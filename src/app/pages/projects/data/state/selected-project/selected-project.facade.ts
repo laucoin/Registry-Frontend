@@ -1,0 +1,188 @@
+import { inject, Injectable, Signal } from '@angular/core';
+
+import { SessionFacade } from '@core/registry/state/session.facade';
+import { SelectedProjectStore } from '@pages/projects/data/state/selected-project/selected-project.store';
+import { GenericFacade } from '@shared/helpers/facade/generic.facade';
+import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper';
+import { AlertModel } from '@shared/models/model/alert.model';
+import { MovementModel } from '@shared/models/model/movement.model';
+import { NotificationModel } from '@shared/models/model/notification.model';
+import { PageModel } from '@shared/models/model/page.model';
+import { ParticipantModel } from '@shared/models/model/participant.model';
+import { ProjectStatusModel } from '@shared/models/model/project-status.model';
+import { VehicleStatusModel } from '@shared/models/model/vehicle-status.model';
+
+/**
+ * Objectif: Point d'entrée public du domaine du projet sélectionné pour les pages, composants et guards.
+ * Périmètre: Expose le store du projet sélectionné sous forme de signals, relaie ses requêtes et exécute les commandes du projet sélectionné avec leurs notifications.
+ * Limites: Ne détient aucun état propre et ne construit aucune requête HTTP lui-même.
+ */
+@Injectable()
+export class SelectedProjectFacade extends GenericFacade {
+	private readonly sessionFacade = inject(SessionFacade);
+	private readonly store: InstanceType<typeof SelectedProjectStore> = inject(SelectedProjectStore);
+
+	public readonly participantsStatus: Signal<ProjectStatusModel | undefined> = this.store.participantsStatus.element;
+
+	public readonly vehiclesStatus: Signal<VehicleStatusModel | undefined> = this.store.vehiclesStatus.element;
+
+	public readonly participantsBirthdays = this.store.birthdays.element;
+
+	public readonly participantsBirthdaysLoading = this.store.birthdays.loading;
+
+	public readonly participantsBirthdaysError: Signal<NotificationModel | undefined> = this.store.birthdays.error;
+
+	public readonly currentMovementsPageWithoutActivityLoading = this.store.currentWithoutActivity.loading;
+
+	public readonly currentMovementsPageWithoutActivitySilentLoading = this.store.currentWithoutActivity.silentLoading;
+
+	public readonly currentMovementsPageWithoutActivityError: Signal<NotificationModel | undefined> =
+		this.store.currentWithoutActivity.error;
+
+	public readonly currentMovementsPageWithoutActivity: Signal<PageModel<MovementModel> | undefined> =
+		this.store.currentWithoutActivity.element;
+
+	public readonly currentMovementsPageWithActivityLoading = this.store.currentWithActivity.loading;
+
+	public readonly currentMovementsPageWithActivitySilentLoading = this.store.currentWithActivity.silentLoading;
+
+	public readonly currentMovementsPageWithActivityError: Signal<NotificationModel | undefined> =
+		this.store.currentWithActivity.error;
+
+	public readonly currentMovementsPageWithActivity: Signal<PageModel<MovementModel> | undefined> =
+		this.store.currentWithActivity.element;
+
+	public readonly plannedArrivals = this.store.arrivals.element;
+
+	public readonly plannedArrivalsLoading = this.store.arrivals.loading;
+
+	public readonly plannedArrivalsError: Signal<NotificationModel | undefined> = this.store.arrivals.error;
+
+	public readonly plannedDepartures = this.store.departures.element;
+
+	public readonly plannedDeparturesLoading = this.store.departures.loading;
+
+	public readonly plannedDeparturesError: Signal<NotificationModel | undefined> = this.store.departures.error;
+
+	public readonly overdueParticipantsPage: Signal<PageModel<ParticipantModel> | undefined> =
+		this.store.overdue.element;
+
+	public readonly overdueParticipantsPageLoading = this.store.overdue.loading;
+
+	public readonly overdueParticipantsPageError: Signal<NotificationModel | undefined> = this.store.overdue.error;
+
+	public readonly overdueParticipantsListPage: Signal<PageModel<ParticipantModel> | undefined> =
+		this.store.overdueList.element;
+
+	public readonly overdueParticipantsListLoading = this.store.overdueList.loading;
+
+	public readonly overdueParticipantsListSilentLoading = this.store.overdueList.silentLoading;
+
+	public readonly overdueParticipantsListError: Signal<NotificationModel | undefined> = this.store.overdueList.error;
+
+	public readonly currentAlertsPageLoading = this.store.alerts.loading;
+
+	public readonly currentAlertsPageError: Signal<NotificationModel | undefined> = this.store.alerts.error;
+
+	public readonly currentAlertsPage: Signal<PageModel<AlertModel> | undefined> = this.store.alerts.element;
+
+	public fetchOverdueParticipantsPage(page: number | undefined, size: number | undefined): void {
+		this.store.fetchOverduePage({ projectId: this.selectedProjectId(), page: page, size: size });
+	}
+
+	public fetchOverdueParticipantsListPage(page: number | undefined, size: number | undefined): void {
+		this.store.fetchOverdueListPage({ projectId: this.selectedProjectId(), page: page, size: size });
+	}
+
+	public fetchPlannedArrivals(): void {
+		this.store.fetchPlannedArrivals(this.selectedProjectId());
+	}
+
+	public fetchPlannedDepartures(): void {
+		this.store.fetchPlannedDepartures(this.selectedProjectId());
+	}
+
+	public fetchParticipantsStatus(): void {
+		this.store.fetchParticipantsStatus(this.selectedProjectId());
+	}
+
+	public fetchParticipantsBirthdays(): void {
+		this.store.fetchParticipantsBirthdays(this.selectedProjectId());
+	}
+
+	public fetchVehiclesStatus(): void {
+		this.store.fetchVehiclesStatus(this.selectedProjectId());
+	}
+
+	public fetchCurrentMovementsPageWithoutActivity(page: number | undefined, size: number | undefined): void {
+		this.store.fetchCurrentMovementsPageWithoutActivity({
+			projectId: this.selectedProjectId(),
+			page: page,
+			size: size,
+		});
+	}
+
+	public fetchCurrentMovementsPageWithActivity(page: number | undefined, size: number | undefined): void {
+		this.store.fetchCurrentMovementsPageWithActivity({
+			projectId: this.selectedProjectId(),
+			page: page,
+			size: size,
+		});
+	}
+
+	public fetchCurrentAlertsPage(page: number | undefined, size: number | undefined): void {
+		this.store.fetchCurrentAlertsPage({ projectId: this.selectedProjectId(), page: page, size: size });
+	}
+
+	public refreshParticipantsStatus(): void {
+		this.store.refreshParticipantsStatus(this.selectedProjectId());
+	}
+
+	public refreshVehiclesStatus(): void {
+		this.store.refreshVehiclesStatus(this.selectedProjectId());
+	}
+
+	public refreshPlannedArrivals(): void {
+		this.store.refreshPlannedArrivals(this.selectedProjectId());
+	}
+
+	public refreshPlannedDepartures(): void {
+		this.store.refreshPlannedDepartures(this.selectedProjectId());
+	}
+
+	public refreshParticipantsBirthdays(): void {
+		this.store.refreshParticipantsBirthdays(this.selectedProjectId());
+	}
+
+	public refreshOverdueParticipantsPage(): void {
+		this.store.refreshOverduePage({
+			projectId: this.selectedProjectId(),
+			...CumulativePageHelper.reloadRequest(this.overdueParticipantsPage()),
+		});
+	}
+
+	public refreshCurrentAlertsPage(): void {
+		this.store.refreshCurrentAlertsPage({
+			projectId: this.selectedProjectId(),
+			...CumulativePageHelper.reloadRequest(this.currentAlertsPage()),
+		});
+	}
+
+	public refreshCurrentMovementsPageWithoutActivity(): void {
+		this.store.refreshCurrentMovementsPageWithoutActivity({
+			projectId: this.selectedProjectId(),
+			...CumulativePageHelper.reloadRequest(this.currentMovementsPageWithoutActivity()),
+		});
+	}
+
+	public refreshCurrentMovementsPageWithActivity(): void {
+		this.store.refreshCurrentMovementsPageWithActivity({
+			projectId: this.selectedProjectId(),
+			...CumulativePageHelper.reloadRequest(this.currentMovementsPageWithActivity()),
+		});
+	}
+
+	private get selectedProjectId(): Signal<string | undefined> {
+		return this.sessionFacade.currentProjectId;
+	}
+}

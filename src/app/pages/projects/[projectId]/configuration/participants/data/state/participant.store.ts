@@ -1,0 +1,148 @@
+import { inject } from '@angular/core';
+
+import { signalStore, withHooks, withMethods, withState } from '@ngrx/signals';
+
+import { ErrorReporter } from '@core/registry/state/error-reporter';
+import { MetadataApi } from '@core/registry/state/metadata.api';
+import { ParticipantPageParamsModel } from '@pages/projects/[projectId]/configuration/participants/data/model/participant-page-params.model';
+import { ParticipantStoreModel } from '@pages/projects/[projectId]/configuration/participants/data/model/participant-store.model';
+import { ParticipantApi } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.api';
+import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api';
+import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper';
+import { refreshOnLanguageChange } from '@shared/helpers/store/language-refresh';
+import { PageStateHelper } from '@shared/helpers/store/page-state.helper';
+import {
+	contentsRequester,
+	elementFetcher,
+	metadataFetcher,
+	movementContentsFetcher,
+	pageFetcher,
+	paramsUpdater,
+	silentElementFetcher,
+	withEmptyOption,
+} from '@shared/helpers/store/paged-store.methods';
+import { withProfileScope } from '@shared/helpers/store/with-profile-scope.feature';
+import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum';
+import { GroupModel } from '@shared/models/model/group.model';
+import { MovementModel } from '@shared/models/model/movement.model';
+import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model';
+import { ParticipantModel } from '@shared/models/model/participant.model';
+import { SelectOptionModel } from '@shared/models/model/select-option.model';
+import { UserModel } from '@shared/models/model/user.model';
+
+interface ParticipantsPageRequest extends CumulativePageRequest {
+	projectId: string | undefined;
+}
+
+interface ParticipantMovementsPageRequest extends ParticipantsPageRequest {
+	id: string;
+}
+
+interface ParticipantTimelineRequest {
+	projectId: string | undefined;
+	id: string;
+}
+
+interface SearchRequest {
+	projectId: string | undefined;
+	q: string | undefined;
+}
+
+const defaultParticipantStore: ParticipantStoreModel = {
+	sectionErrors: {},
+	participants: PageStateHelper.initial<ParticipantPageParamsModel, ParticipantModel>({
+		resetSearch: false,
+		q: undefined,
+		isVisible: undefined,
+		status: undefined,
+		sort: undefined,
+	}),
+	movements: PageStateHelper.initial<MovementPageParamsModel, MovementModel>({
+		resetSearch: false,
+		isCurrent: false,
+		isVisible: undefined,
+		hasActivity: undefined,
+		type: undefined,
+		from: undefined,
+		to: undefined,
+		sort: undefined,
+	}),
+	timeline: { element: undefined, loading: false, error: undefined },
+	metadata: {
+		searchedUsers: [],
+		searchedGroups: [],
+		presencesStatus: [],
+		visibilities: [
+			{ label: '-', value: undefined },
+			{ label: 'participants.visible.true', value: true },
+			{ label: 'participants.visible.false', value: false },
+		],
+	},
+};
+
+/**
+ * Objectif: Détient l'état des participants.
+ * Périmètre: Possède les données des pages et ressources de participants avec leurs drapeaux de chargement et d'erreur, et les récupère via l'api des participants.
+ * Limites: Atteint via la facade des participants ; ne formate pas les données et ne notifie pas l'utilisateur du résultat des commandes.
+ */
+export const ParticipantStore = signalStore(
+	withState<ParticipantStoreModel>(defaultParticipantStore),
+	withProfileScope<ParticipantStoreModel>(defaultParticipantStore, (current): Partial<ParticipantStoreModel> => ({
+		metadata: { ...defaultParticipantStore.metadata, presencesStatus: current.metadata.presencesStatus },
+	})),
+	withMethods((store, api = inject(ParticipantApi), metadataApi = inject(MetadataApi)) => ({
+		fetchPresencesStatus: metadataFetcher<
+			ParticipantStoreModel,
+			'presencesStatus',
+			void,
+			SelectOptionModel<PresenceStatusEnum>[]
+		>(store, 'presencesStatus', () => metadataApi.getPresencesStatus(), withEmptyOption),
+		searchUsers: metadataFetcher<ParticipantStoreModel, 'searchedUsers', SearchRequest, UserModel[]>(
+			store,
+			'searchedUsers',
+			(request) => api.searchUsers(request.projectId, request.q),
+		),
+		searchGroups: metadataFetcher<ParticipantStoreModel, 'searchedGroups', SearchRequest, GroupModel[]>(
+			store,
+			'searchedGroups',
+			(request) => api.searchGroups(request.projectId, request.q),
+		),
+	})),
+	withMethods((store, api = inject(ParticipantApi), errors = inject(ErrorReporter)) => ({
+		fetchParticipantsPage: pageFetcher(
+			store,
+			'participants',
+			(request: ParticipantsPageRequest, params) =>
+				api.findParticipants(request.projectId, request.page, request.size, params),
+			errors,
+			{ merge: CumulativePageHelper.merge },
+		),
+		updateParticipantsPageSearchParams: paramsUpdater(store, 'participants'),
+	})),
+	withMethods((store, movementApi = inject(MovementApi)) => ({
+		updateParticipantMovementsPageSearchParams: paramsUpdater(store, 'movements'),
+		fetchParticipantMovementsContents: movementContentsFetcher(store, movementApi),
+	})),
+	withMethods((store, api = inject(ParticipantApi), errors = inject(ErrorReporter)) => ({
+		fetchParticipantMovementsPage: pageFetcher(
+			store,
+			'movements',
+			(request: ParticipantMovementsPageRequest, params) =>
+				api.findParticipantMovements(request.projectId, request.id, request.page, request.size, params),
+			errors,
+			{
+				merge: CumulativePageHelper.merge,
+				after: contentsRequester(store.fetchParticipantMovementsContents),
+			},
+		),
+		fetchParticipantTimeline: elementFetcher(store, 'timeline', (request: ParticipantTimelineRequest) =>
+			api.findParticipantTimeline(request.projectId, request.id),
+		),
+		reloadParticipantTimeline: silentElementFetcher(store, 'timeline', (request: ParticipantTimelineRequest) =>
+			api.findParticipantTimeline(request.projectId, request.id),
+		),
+	})),
+	withHooks({
+		onInit: (store) => refreshOnLanguageChange(store.fetchPresencesStatus),
+	}),
+);

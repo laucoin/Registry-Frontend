@@ -1,0 +1,13 @@
+<app-element-movements-list [movements]="movements">
+	<app-presence-timeline
+		data-test-id="participant-movements-list-timeline"
+		class="mt-(--spacing--block) block"
+		[planned]="facade.participantTimeline()?.planned ?? []"
+		[actual]="facade.participantTimeline()?.actual ?? []"
+		[projectBegin]="session.selectedProject()?.begin"
+		[projectEnd]="session.selectedProject()?.end"
+		[loading]="facade.participantTimelineLoading()"
+		[error]="facade.participantTimelineError()"
+		(retry)="movements.retryDetails()"
+	/>
+</app-element-movements-list>

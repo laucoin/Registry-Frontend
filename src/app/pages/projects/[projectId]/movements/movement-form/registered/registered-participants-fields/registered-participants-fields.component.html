@@ -1,0 +1,30 @@
+<h2 class="section-title">
+	{{ 'movements.form.content.registered' | pluralTranslation: selected() | transloco }}
+</h2>
+<sgdf-switch
+	data-test-id="registered-participants-fields-all-switch"
+	class="mb-2"
+	[checked]="all()"
+	(change)="toggleAll($event)"
+>
+	{{ 'movements.form.content.registered.all' | transloco }}
+</sgdf-switch>
+<app-select-elements-field
+	data-test-id="registered-participants-fields-participants-field"
+	[formField]="participants()"
+	[appFieldError]="participants()"
+	translationPrefix="movements.form.error.participantContent"
+	[label]="'movements.form.content.registered.search' | transloco"
+	[suggestions]="suggestions()"
+	[expand]="contentOfChoice"
+	[identify]="identifyContent"
+	[groupOf]="groupOfContent"
+	[groupLabel]="groupLabel"
+	[ungroupedLabel]="'movements.form.content.registered.individual' | transloco"
+	[warningOf]="warningOf"
+	[selectItemBuilder]="contentLabel"
+	[selectionLabel]="'movements.form.content.registered.selected' | pluralTranslation: selected() | transloco"
+	[emptyMessage]="'movements.form.content.registered.empty-search' | transloco"
+	[emptySelectionMessage]="'movements.form.content.registered.empty' | transloco"
+	(handleSearch)="search($event)"
+/>

@@ -1,0 +1,30 @@
+<sgdf-dialog
+	data-test-id="overdue-participants-dialog-modal"
+	light-dismiss
+	[open]="open()"
+	[title]="'projectHome.participantRegularization.title' | transloco"
+	(sgdf-show)="opening($event)"
+	(sgdf-hide)="closed($event)"
+>
+	@if (open()) {
+		<app-list
+			data-test-id="overdue-participants-dialog-list"
+			emptyMessagePrefix="projectHome.participantRegularization.dialogEmpty"
+			[label]="'projectHome.participantRegularization.title' | transloco"
+			[elementPage]="facade.overdueParticipantsListPage()"
+			[error]="facade.overdueParticipantsListError()"
+			[loading]="facade.overdueParticipantsListLoading()"
+			[loadingMore]="facade.overdueParticipantsListSilentLoading()"
+			(updateRequired)="loadBatch($event)"
+		>
+			<ng-template appTemplate="element" let-participant>
+				<sgdf-list-item
+					data-test-id="participant-row"
+					[attr.data-id]="participant.id"
+					appRegularizationRow
+					[participant]="participant"
+				/>
+			</ng-template>
+		</app-list>
+	}
+</sgdf-dialog>

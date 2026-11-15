@@ -1,0 +1,35 @@
+<section
+	data-test-id="alerts-statistics-section"
+	class="grid grid-cols-1 gap-(--spacing--in-block-large) md:grid-cols-2"
+>
+	@if (facade.alertStatisticsError(); as failure) {
+		<app-section-error
+			data-test-id="alerts-statistics-error"
+			class="md:col-span-2"
+			[error]="failure"
+			[retrying]="facade.alertStatisticsLoading()"
+			(retry)="facade.fetchAlertStatistics()"
+		/>
+	} @else {
+		<sgdf-stat
+			data-test-id="alerts-statistics-resolution-stat"
+			[loading]="facade.alertStatisticsLoading()"
+			[title]="'alerts.statistics.resolution.title' | transloco"
+			[hint]="resolutionHint() | transloco"
+		>
+			@if (resolutionDuration(); as duration) {
+				<sgdf-format-duration [value]="duration" />
+			}
+		</sgdf-stat>
+		<sgdf-stat
+			data-test-id="alerts-statistics-rate-stat"
+			[loading]="facade.alertStatisticsLoading()"
+			[title]="'alerts.statistics.rate.title' | transloco"
+			[hint]="rateHint() | transloco: rateHintParams()"
+		>
+			@if (rate() !== undefined) {
+				<sgdf-format-number type="percent" [value]="rate()" />
+			}
+		</sgdf-stat>
+	}
+</section>

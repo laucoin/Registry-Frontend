@@ -1,0 +1,54 @@
+<div
+	data-test-id="dialog-element-message"
+	class="message"
+	[class.own]="authorIsCurrentUser()"
+	[class.grouped]="!firstAuthorMessage()"
+>
+	@if (!authorIsCurrentUser()) {
+		<div class="avatar" aria-hidden="true">
+			@if (firstAuthorMessage()) {
+				<sgdf-avatar data-test-id="dialog-element-avatar" size="small" variant="primary">
+					<sgdf-icon slot="icon" name="user" library="solid" />
+				</sgdf-avatar>
+			}
+		</div>
+	}
+	<div class="bubble" [class.first]="firstAuthorMessage()" [class.hidden-message]="!communication().visible">
+		@if (!communication().visible) {
+			<span data-test-id="dialog-element-hidden" class="hidden-badge">
+				<sgdf-icon name="eye-slash" library="solid" aria-hidden="true" />
+				{{ 'communications.hidden' | transloco }}
+			</span>
+		}
+		@if (firstAuthorMessage() && !authorIsCurrentUser()) {
+			<div data-test-id="dialog-element-author" class="author">{{ authorName() }}</div>
+		}
+		@if (communication().alert; as alert) {
+			@if (alertVisible()) {
+				<blockquote class="quote">
+					<div data-test-id="dialog-element-alert-title" class="quote-title" [class.untitled]="alertTitleBlank()">
+						{{ alertTitleBlank() ? ('alerts.untitled' | transloco) : alert.title }}
+					</div>
+					<sgdf-tag
+						data-test-id="dialog-element-alert-status"
+						size="small"
+						appearance="soft"
+						pill
+						[variant]="alertVariant()"
+						>{{ alert.status.label }}</sgdf-tag
+					>
+				</blockquote>
+			}
+		}
+		<div data-test-id="dialog-element-content" class="content">{{ communication().message }}</div>
+		<div class="meta">
+			@if (updated()) {
+				<span data-test-id="dialog-element-updated">({{ 'global.updated' | transloco }})</span>
+			}
+			<time data-test-id="dialog-element-time" [attr.datetime]="communication().dateTime">{{
+				communication().dateTime | dateFormat: DateFormatTypeEnum.DATETIME
+			}}</time>
+			<app-element-actions data-test-id="dialog-element-actions" [subject]="authorName()" [actions]="actions()" />
+		</div>
+	</div>
+</div>

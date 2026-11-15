@@ -1,0 +1,70 @@
+import { Routes } from '@angular/router';
+
+import { authGuard } from '@core/authentication/guard/auth.guard';
+import { userAuthorityGuard } from '@core/authentication/guard/user-authority.guard';
+import { MainComponent } from '@core/layout/main/main.component';
+import { RegistryRouteEnum } from '@core/routing/registry-route.enum';
+import { RouteSeoModel, SEO_DATA_KEY } from '@core/seo/route-seo.model';
+import { UserAuthorityEnum } from '@shared/models/enumeration/user-authority.enum';
+
+/**
+ * Objectif: Déclare les routes de premier niveau de l'application.
+ * Périmètre: Charge chaque page paresseusement et applique le guard d'authentification aux espaces connectés.
+ * Limites: Ne détient aucune logique de navigation ; les guards et les pages la possèdent.
+ */
+export const routes: Routes = [
+	{
+		path: RegistryRouteEnum.LOGIN,
+		title: 'seo.login.title',
+		data: { [SEO_DATA_KEY]: { descriptionKey: 'seo.login.description' } satisfies RouteSeoModel },
+		loadComponent: () => import('@pages/login/login.page').then((m) => m.LoginPage),
+	},
+	{
+		path: RegistryRouteEnum.AUTH_CALLBACK,
+		title: 'seo.authCallback',
+		loadComponent: () => import('@pages/auth/callback/auth-callback.page').then((m) => m.AuthCallbackPage),
+	},
+	{
+		path: '',
+		component: MainComponent,
+		children: [
+			{
+				path: '',
+				pathMatch: 'full',
+				loadChildren: () => import('@pages/home/home.routes').then((m) => m.homeRoutes),
+				canActivate: [authGuard],
+			},
+			{
+				path: RegistryRouteEnum.MY_ACCOUNT,
+				loadChildren: () => import('@pages/my-account/my-account.routes').then((m) => m.myAccountRoutes),
+				canActivate: [authGuard],
+			},
+			{
+				path: RegistryRouteEnum.PROJECTS,
+				loadChildren: () => import('@pages/projects/project.routes').then((m) => m.projectRoutes),
+				canActivate: [authGuard],
+			},
+			{
+				path: RegistryRouteEnum.USERS,
+				loadChildren: () => import('@pages/users/user.routes').then((m) => m.userRoutes),
+				canActivate: [authGuard, userAuthorityGuard(UserAuthorityEnum.REGISTRY_USER_R)],
+			},
+			{
+				path: RegistryRouteEnum.PRIVACY,
+				title: 'seo.privacy.title',
+				data: { [SEO_DATA_KEY]: { descriptionKey: 'seo.privacy.description' } satisfies RouteSeoModel },
+				loadComponent: () => import('@pages/privacy/privacy.page').then((m) => m.PrivacyPage),
+			},
+			{
+				path: RegistryRouteEnum.TERMS,
+				title: 'seo.terms.title',
+				data: { [SEO_DATA_KEY]: { descriptionKey: 'seo.terms.description' } satisfies RouteSeoModel },
+				loadComponent: () => import('@pages/terms/terms.page').then((m) => m.TermsPage),
+			},
+			{
+				path: '**',
+				redirectTo: '',
+			},
+		],
+	},
+];

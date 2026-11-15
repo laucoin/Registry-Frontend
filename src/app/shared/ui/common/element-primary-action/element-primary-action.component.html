@@ -1,0 +1,11 @@
+<sgdf-button
+	data-test-id="element-primary-action-button"
+	size="small"
+	appearance="outlined"
+	variant="primary"
+	[attr.aria-disabled]="action().disabled"
+	(click)="run()"
+>
+	<sgdf-icon slot="prefix" [name]="action().icon" library="solid" />
+	{{ action().label | transloco }}
+</sgdf-button>

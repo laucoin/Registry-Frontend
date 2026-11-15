@@ -1,0 +1,35 @@
+:host {
+	display: block;
+	width: 100%;
+}
+
+.legal-doc {
+	width: 100%;
+	line-height: 1.6;
+}
+
+.legal-doc p,
+.legal-doc li {
+	margin: 0 0 var(--sgdf-spacing-small);
+	text-align: justify;
+}
+
+.legal-doc ul {
+	margin: 0 0 var(--sgdf-spacing-medium);
+	padding-left: var(--sgdf-spacing-large);
+	list-style: disc;
+}
+
+.legal-doc section {
+	margin-top: var(--sgdf-spacing-x-large);
+}
+
+.legal-doc h2 {
+	margin: 0 0 var(--sgdf-spacing-small);
+	font-size: var(--sgdf-text-lg);
+	font-weight: var(--sgdf-font-weight-semibold);
+}
+
+.legal-doc a {
+	text-decoration: underline;
+}

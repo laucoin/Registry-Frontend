@@ -1,0 +1,35 @@
+<div class="flex justify-end">
+	<sgdf-checkbox
+		data-test-id="project-options-fields-select-all-checkbox"
+		[checked]="allSelected() === true"
+		[indeterminate]="allSelected() === undefined"
+		(change)="selectAll($event)"
+	>
+		{{ 'projects.options.select-all' | transloco }}
+	</sgdf-checkbox>
+</div>
+<sgdf-divider />
+@let missingPreRequired = form()().getError('preRequiredOptions');
+@for (option of options(); track option.value) {
+	<sgdf-switch
+		data-test-id="project-options-fields-option-switch"
+		appSgdfField
+		class="py-2"
+		[formField]="form()[option.value]"
+		[attr.error]="
+			$any(missingPreRequired)?.for === option.label
+				? ('projects.form.error.options.preRequiredOptions' | transloco: missingPreRequired)
+				: null
+		"
+	>
+		<span class="flex items-center gap-2">
+			<sgdf-icon [name]="option.value | optionIcon" library="solid" />
+			<span
+				>{{ option.ask }} <b>({{ option.label }})</b></span
+			>
+		</span>
+	</sgdf-switch>
+	@if (!$last) {
+		<sgdf-divider appearance="soft" />
+	}
+}

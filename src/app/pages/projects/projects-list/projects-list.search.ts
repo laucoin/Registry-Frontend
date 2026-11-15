@@ -1,0 +1,53 @@
+import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice';
+import { formatSort, parseSort, SortFields } from '@shared/helpers/search/sort-query';
+
+export const PROJECTS_SORT_FIELDS: readonly string[] = ['name', 'begin', 'end'];
+
+interface ProjectsListSearch {
+	q: string | undefined;
+	at: Date | undefined;
+	isVisible: boolean | undefined;
+	isFavorite: boolean | undefined;
+	withProfile: boolean | undefined;
+	sort: string | undefined;
+}
+
+export interface ProjectsListSearchModel extends SortFields {
+	q: string;
+	at: Date | null;
+	isVisible: BooleanChoice;
+	isFavorite: BooleanChoice;
+	withProfile: BooleanChoice;
+}
+
+/**
+ * Objectif: Convertit les paramètres de recherche de la liste des projets en valeurs liées au formulaire de recherche.
+ * Périmètre: Remplit les paramètres vides avec les valeurs par défaut du formulaire.
+ * Limites: Ne valide pas les paramètres.
+ */
+export function toProjectsListSearchModel(params: ProjectsListSearch): ProjectsListSearchModel {
+	return {
+		q: params.q ?? '',
+		at: params.at ?? null,
+		isVisible: toBooleanChoice(params.isVisible),
+		isFavorite: toBooleanChoice(params.isFavorite),
+		withProfile: toBooleanChoice(params.withProfile),
+		...parseSort(params.sort, PROJECTS_SORT_FIELDS),
+	};
+}
+
+/**
+ * Objectif: Convertit les valeurs du formulaire de recherche en paramètres de recherche de la liste des projets.
+ * Périmètre: Transforme les valeurs vides du formulaire en paramètres undefined.
+ * Limites: Ne valide pas les valeurs du formulaire.
+ */
+export function toProjectsListSearchParams(model: ProjectsListSearchModel): ProjectsListSearch {
+	return {
+		q: model.q === '' ? undefined : model.q,
+		at: model.at ?? undefined,
+		isVisible: fromBooleanChoice(model.isVisible),
+		isFavorite: fromBooleanChoice(model.isFavorite),
+		withProfile: fromBooleanChoice(model.withProfile),
+		sort: formatSort(model),
+	};
+}

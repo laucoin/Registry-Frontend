@@ -1,0 +1,61 @@
+import { Injectable } from '@angular/core';
+
+import { map, Observable } from 'rxjs';
+
+import { GenericApi } from '@shared/helpers/api/generic.api';
+import { AlertCriticalityMetadataMapper } from '@shared/mappers/alert-criticality-metadata.mapper';
+import { FeaturesMapper } from '@shared/mappers/features.mapper';
+import { AlertCriticalityMetadataResponseDto } from '@shared/models/dto/response/alert-criticality-metadata.response.dto';
+import { FeaturesResponseDto } from '@shared/models/dto/response/features.response.dto';
+import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum';
+import { MovementTypeEnum } from '@shared/models/enumeration/movement-type.enum';
+import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum';
+import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum';
+import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum';
+import { AlertCriticalityMetadataModel } from '@shared/models/model/alert-criticality-metadata.model';
+import { FeaturesModel } from '@shared/models/model/features.model';
+import { SelectOptionModel } from '@shared/models/model/select-option.model';
+
+/**
+ * Objectif: Envoie les requêtes HTTP du domaine des métadonnées.
+ * Périmètre: Construit les urls et les paramètres de requête et renvoie les réponses du backend.
+ * Limites: Ne détient aucun état et ne gère aucune erreur ; les stores et les facades le font.
+ */
+@Injectable({
+	providedIn: 'root',
+})
+export class MetadataApi extends GenericApi {
+	constructor() {
+		super('/api/v2/metadata');
+	}
+
+	public getPresencesStatus(): Observable<SelectOptionModel<PresenceStatusEnum>[]> {
+		return this.http.get<SelectOptionModel<PresenceStatusEnum>[]>(`${this.baseUrl}/presences/status`);
+	}
+
+	public getProfilesStatus(): Observable<SelectOptionModel<ProfileStatusEnum>[]> {
+		return this.http.get<SelectOptionModel<ProfileStatusEnum>[]>(`${this.baseUrl}/profiles/status`);
+	}
+
+	public getMovementsTypes(): Observable<SelectOptionModel<MovementTypeEnum>[]> {
+		return this.http.get<SelectOptionModel<MovementTypeEnum>[]>(`${this.baseUrl}/movements/types`);
+	}
+
+	public getParticipantsTypes(): Observable<SelectOptionModel<ParticipantTypeEnum>[]> {
+		return this.http.get<SelectOptionModel<ParticipantTypeEnum>[]>(`${this.baseUrl}/participants/types`);
+	}
+
+	public getAlertCriticality(): Observable<AlertCriticalityMetadataModel> {
+		return this.http
+			.get<AlertCriticalityMetadataResponseDto>(`${this.baseUrl}/alerts/criticality`)
+			.pipe(map(AlertCriticalityMetadataMapper.toModel));
+	}
+
+	public getAlertsStatus(): Observable<SelectOptionModel<AlertStatusEnum>[]> {
+		return this.http.get<SelectOptionModel<AlertStatusEnum>[]>(`${this.baseUrl}/alerts/status`);
+	}
+
+	public getFeatures(): Observable<FeaturesModel> {
+		return this.http.get<FeaturesResponseDto>(`${this.baseUrl}/features`).pipe(map(FeaturesMapper.toModel));
+	}
+}

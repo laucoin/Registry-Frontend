@@ -1,0 +1,468 @@
+import { ElementRef } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+
+import { afterEach, beforeEach, describe, expect, it, Mock, MockInstance, vi } from 'vitest';
+
+import { BrowserService } from '@core/browser/browser.service';
+import { defined } from '@shared/helpers/testing/defined';
+import { ThemeEnum } from '@shared/models/enumeration/theme.enum';
+
+interface FakeQuery {
+	matches: boolean;
+	addEventListener: (type: string, listener: () => void) => void;
+}
+
+describe('BrowserService', () => {
+	let service: BrowserService;
+	const originalMatchMedia: typeof window.matchMedia | undefined = window.matchMedia;
+
+	beforeEach(() => {
+		service = TestBed.inject(BrowserService);
+	});
+
+	afterEach(() => {
+		window.matchMedia = originalMatchMedia as typeof window.matchMedia;
+		document.documentElement.className = '';
+		document.documentElement.removeAttribute('lang');
+		document.body.innerHTML = '';
+		vi.useRealTimers();
+	});
+
+	it('redirects the window to the given url', () => {
+		// Arrange
+		const target = '#redirected';
+
+		// Act
+		service.redirect(target);
+
+		// Assert
+		expect(location.hash).toBe(target);
+	});
+
+	it('downloads the content as a named JSON file', () => {
+		// Arrange
+		const createObjectURL: Mock = vi.fn(() => 'blob:test');
+		const revokeObjectURL: Mock = vi.fn();
+		vi.stubGlobal('URL', { createObjectURL, revokeObjectURL });
+		const click: Mock = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
+
+		vi.useFakeTimers();
+
+		// Act
+		service.downloadJson({ a: 1 }, 'data.json');
+		vi.runAllTimers();
+		vi.useRealTimers();
+
+		// Assert
+		expect(createObjectURL).toHaveBeenCalledOnce();
+		expect(click).toHaveBeenCalledOnce();
+		expect(revokeObjectURL).toHaveBeenCalledWith('blob:test');
+		click.mockRestore();
+		vi.unstubAllGlobals();
+	});
+
+	it('returns the native element of an element reference', () => {
+		// Arrange
+		const element: HTMLDivElement = document.createElement('div');
+
+		// Act
+		const result: HTMLDivElement = service.elementOf(new ElementRef(element));
+
+		// Assert
+		expect(result).toBe(element);
+	});
+
+	it('reloads the page', () => {
+		// Arrange
+		const reload: Mock = vi.fn();
+		vi.stubGlobal('location', { reload });
+
+		// Act
+		service.reload();
+
+		// Assert
+		expect(reload).toHaveBeenCalledOnce();
+		vi.unstubAllGlobals();
+	});
+
+	it('exposes the current location', () => {
+		// Arrange
+		const expectedOrigin = window.location.origin;
+
+		// Act
+		const origin = service.origin;
+
+		// Assert
+		expect(origin).toBe(expectedOrigin);
+		expect(service.pathname).toBe(window.location.pathname);
+		expect(service.host).toBe(window.location.host);
+	});
+
+	it('exposes the viewport, the network state and the preferred languages', () => {
+		// Arrange
+		const expectedWidth = window.innerWidth;
+
+		// Act
+		const width = service.viewportWidth;
+
+		// Assert
+		expect(width).toBe(expectedWidth);
+		expect(service.online).toBe(navigator.onLine);
+		expect(service.preferredLanguages).toBe(navigator.languages);
+	});
+
+	it.each([
+		[ThemeEnum.DARK, 'dark'],
+		[ThemeEnum.LIGHT, 'light'],
+		[ThemeEnum.SYSTEM, null],
+	])('applies the %s theme on the root element', (theme, expected) => {
+		// Arrange
+		document.documentElement.setAttribute('data-sgdf-mode', 'dark');
+
+		// Act
+		service.setRootTheme(theme);
+
+		// Assert
+		expect(document.documentElement.getAttribute('data-sgdf-mode')).toBe(expected);
+	});
+
+	it('sets the language of the root element', () => {
+		// Arrange
+		const language = 'fr';
+
+		// Act
+		service.setRootLanguage(language);
+
+		// Assert
+		expect(document.documentElement.lang).toBe('fr');
+	});
+
+	it('reports the dark system theme when the light scheme does not match', () => {
+		// Arrange
+		const query: FakeQuery = { matches: false, addEventListener: (): void => undefined };
+		window.matchMedia = ((): FakeQuery => query) as unknown as typeof window.matchMedia;
+		const fresh = new BrowserService();
+
+		// Act
+		const theme = fresh.systemTheme;
+
+		// Assert
+		expect(theme).toBe(ThemeEnum.DARK);
+	});
+
+	it('falls back to the light theme when the browser cannot tell the color scheme', () => {
+		// Arrange
+		window.matchMedia = undefined as unknown as typeof window.matchMedia;
+		const fresh = new BrowserService();
+
+		// Act
+		const theme = fresh.systemTheme;
+
+		// Assert
+		expect(theme).toBe(ThemeEnum.LIGHT);
+	});
+
+	it('highlights an element by its data value then removes the highlight', () => {
+		// Arrange
+		vi.useFakeTimers();
+		document.body.innerHTML = '<div data-value="42"></div>';
+		const element = defined(document.querySelector('[data-value="42"]'));
+
+		// Act
+		service.highlightByDataValue('42');
+		const highlighted = element.classList.contains('highlight');
+		vi.advanceTimersByTime(1000);
+
+		// Assert
+		expect(highlighted).toBe(true);
+		expect(element.classList.contains('highlight')).toBe(false);
+	});
+
+	it('highlights only the element inside the given root', () => {
+		// Arrange
+		vi.useFakeTimers();
+		document.body.innerHTML = '<div id="a"><i data-value="42"></i></div><div id="b"><i data-value="42"></i></div>';
+		const inside = defined(document.querySelector('#b [data-value="42"]'));
+		const outside = defined(document.querySelector('#a [data-value="42"]'));
+
+		// Act
+		service.highlightByDataValue('42', defined(document.querySelector('#b')));
+
+		// Assert
+		expect(inside.classList.contains('highlight')).toBe(true);
+		expect(outside.classList.contains('highlight')).toBe(false);
+	});
+
+	it('highlights an element whose data value holds selector characters', () => {
+		// Arrange
+		vi.useFakeTimers();
+		document.body.innerHTML = '<div id="target"></div>';
+		const element = defined(document.querySelector('#target'));
+		element.setAttribute('data-value', 'a"b]c');
+
+		// Act
+		service.highlightByDataValue('a"b]c');
+
+		// Assert
+		expect(element.classList.contains('highlight')).toBe(true);
+	});
+
+	it('exposes the path, the query and the hash of the current location', () => {
+		// Arrange
+		history.replaceState(null, '', '/projects/42?tab=1#top');
+
+		// Act
+		const relativeUrl = service.relativeUrl;
+
+		// Assert
+		expect(relativeUrl).toBe('/projects/42?tab=1#top');
+	});
+
+	it('ignores a highlight request for a missing element', () => {
+		// Arrange
+		document.body.innerHTML = '';
+
+		// Act
+		const call: () => void = () => service.highlightByDataValue('missing');
+
+		// Assert
+		expect(call).not.toThrow();
+	});
+
+	it('reports the viewport width each time the window is resized', () => {
+		// Arrange
+		const listener: (width: number) => void = vi.fn();
+		service.onViewportResize(listener);
+
+		// Act
+		window.dispatchEvent(new Event('resize'));
+
+		// Assert
+		expect(listener).toHaveBeenCalledWith(window.innerWidth);
+	});
+
+	it('stops reporting the viewport width once the listener is removed', () => {
+		// Arrange
+		const listener: (width: number) => void = vi.fn();
+		const stop = service.onViewportResize(listener);
+
+		// Act
+		stop();
+		window.dispatchEvent(new Event('resize'));
+
+		// Assert
+		expect(listener).not.toHaveBeenCalled();
+	});
+
+	it('writes then reads a cookie', () => {
+		// Arrange
+		const name = 'registry-test';
+
+		// Act
+		service.writeCookie(name, 'dark mode', 60);
+
+		// Assert
+		expect(service.readCookie(name)).toBe('dark mode');
+	});
+
+	it('reads nothing when the cookie does not exist', () => {
+		// Arrange
+		const name = 'registry-missing';
+
+		// Act
+		const value = service.readCookie(name);
+
+		// Assert
+		expect(value).toBeUndefined();
+	});
+
+	it('replaces the canonical link of the document', () => {
+		// Arrange
+		service.setCanonicalLink('https://registry.test/login');
+
+		// Act
+		service.setCanonicalLink('https://registry.test/terms');
+
+		// Assert
+		const links = document.head.querySelectorAll('link[rel="canonical"]');
+		expect(links).toHaveLength(1);
+		expect(links[0].getAttribute('href')).toBe('https://registry.test/terms');
+	});
+
+	it('removes the canonical link when no url is given', () => {
+		// Arrange
+		service.setCanonicalLink('https://registry.test/login');
+
+		// Act
+		service.setCanonicalLink(undefined);
+
+		// Assert
+		expect(document.head.querySelector('link[rel="canonical"]')).toBeNull();
+	});
+
+	it('tells an Apple platform from the user agent', () => {
+		// Arrange
+		const userAgent: MockInstance = vi.spyOn(navigator, 'userAgent', 'get');
+		userAgent
+			.mockReturnValueOnce('Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0)')
+			.mockReturnValueOnce('Mozilla/5.0 (X11; Linux x86_64)');
+
+		// Act
+		const apple = service.isApplePlatform;
+		const other = service.isApplePlatform;
+
+		// Assert
+		expect(apple).toBe(true);
+		expect(other).toBe(false);
+		userAgent.mockRestore();
+	});
+
+	it('exposes the history state', () => {
+		// Arrange
+		history.replaceState({ movementPrefill: 'x' }, '');
+
+		// Act
+		const state = service.historyState;
+
+		// Assert
+		expect(state).toEqual({ movementPrefill: 'x' });
+		history.replaceState(null, '');
+	});
+
+	it('reports whether any observed entry intersects and stops on disconnect', () => {
+		// Arrange
+		const observe: Mock = vi.fn();
+		const disconnect: Mock = vi.fn();
+		let callback: IntersectionObserverCallback = (): void => undefined;
+		vi.stubGlobal(
+			'IntersectionObserver',
+			class {
+				constructor(cb: IntersectionObserverCallback) {
+					callback = cb;
+				}
+				public observe: Mock = observe;
+				public disconnect: Mock = disconnect;
+			},
+		);
+		const listener: Mock<(intersecting: boolean) => void> = vi.fn();
+		const element: HTMLElement = document.createElement('div');
+
+		// Act
+		const stop = service.watchIntersection(element, listener);
+		callback(
+			[{ isIntersecting: false }, { isIntersecting: true }] as IntersectionObserverEntry[],
+			{} as IntersectionObserver,
+		);
+		stop();
+
+		// Assert
+		expect(observe).toHaveBeenCalledWith(element);
+		expect(listener).toHaveBeenCalledWith(true);
+		expect(disconnect).toHaveBeenCalledTimes(1);
+		vi.unstubAllGlobals();
+	});
+
+	it('watches nothing when intersection observation is unsupported', () => {
+		// Arrange
+		vi.stubGlobal('IntersectionObserver', undefined);
+		const listener: Mock<(intersecting: boolean) => void> = vi.fn();
+
+		// Act
+		const stop = service.watchIntersection(document.createElement('div'), listener);
+		stop();
+
+		// Assert
+		expect(listener).not.toHaveBeenCalled();
+		vi.unstubAllGlobals();
+	});
+
+	it.each([
+		['hidden', false],
+		['visible', true],
+	] as const)('reports the page as visible when the document is %s: %s', (state, expected) => {
+		// Arrange
+		const visibility: MockInstance = vi.spyOn(document, 'visibilityState', 'get').mockReturnValue(state);
+
+		// Act
+		const visible = service.pageVisible;
+
+		// Assert
+		expect(visible).toBe(expected);
+		visibility.mockRestore();
+	});
+
+	it('reports each visibility change until the listener is removed', () => {
+		// Arrange
+		const listener: Mock<(visible: boolean) => void> = vi.fn();
+		const stop = service.onVisibilityChange(listener);
+
+		// Act
+		document.dispatchEvent(new Event('visibilitychange'));
+		stop();
+		document.dispatchEvent(new Event('visibilitychange'));
+
+		// Assert
+		expect(listener).toHaveBeenCalledTimes(1);
+	});
+
+	it('reports the last entry of an observed element and disconnects on stop', () => {
+		// Arrange
+		let callback: IntersectionObserverCallback = (): void => undefined;
+		const disconnect: Mock = vi.fn();
+		vi.stubGlobal(
+			'IntersectionObserver',
+			class {
+				constructor(cb: IntersectionObserverCallback) {
+					callback = cb;
+				}
+				public observe: Mock = vi.fn();
+				public disconnect: Mock = disconnect;
+			},
+		);
+		const listener: Mock<(visible: boolean) => void> = vi.fn();
+
+		// Act
+		const stop = service.observeIntersection(document.createElement('div'), listener);
+		callback(
+			[{ isIntersecting: true }, { isIntersecting: false }] as IntersectionObserverEntry[],
+			{} as IntersectionObserver,
+		);
+		stop();
+
+		// Assert
+		expect(listener).toHaveBeenCalledWith(false);
+		expect(disconnect).toHaveBeenCalledTimes(1);
+		vi.unstubAllGlobals();
+	});
+
+	it('assumes the element visible when intersection observation is unsupported', () => {
+		// Arrange
+		vi.stubGlobal('IntersectionObserver', undefined);
+		const listener: Mock<(visible: boolean) => void> = vi.fn();
+
+		// Act
+		const stop = service.observeIntersection(document.createElement('div'), listener);
+		stop();
+
+		// Assert
+		expect(listener).toHaveBeenCalledWith(true);
+		vi.unstubAllGlobals();
+	});
+
+	it('marks the cookie secure on an https page only', () => {
+		// Arrange
+		const cookie: MockInstance = vi.spyOn(document, 'cookie', 'set');
+		vi.stubGlobal('location', { protocol: 'https:' });
+
+		// Act
+		service.writeCookie('lang', 'fr', 60);
+		vi.stubGlobal('location', { protocol: 'http:' });
+		service.writeCookie('lang', 'fr', 60);
+
+		// Assert
+		expect(cookie.mock.calls[0][0]).toContain('; Secure');
+		expect(cookie.mock.calls[1][0]).not.toContain('Secure');
+		vi.unstubAllGlobals();
+		cookie.mockRestore();
+	});
+});

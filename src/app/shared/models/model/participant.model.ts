@@ -1,0 +1,22 @@
+import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum';
+import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum';
+import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model';
+import { GenericModel } from '@shared/models/model/generic.model';
+import { GroupModel } from '@shared/models/model/group.model';
+import { SelectOptionModel } from '@shared/models/model/select-option.model';
+import { UserModel } from '@shared/models/model/user.model';
+
+export interface ParticipantModel extends GenericModel {
+	firstName: string;
+	lastName: string;
+	birthday: string;
+	major: boolean;
+	type: SelectOptionModel<ParticipantTypeEnum>;
+	groups: GroupModel[] | undefined;
+	status: SelectOptionModel<PresenceStatusEnum>;
+	startAvailability: CustomDatetimeModel | undefined;
+	endAvailability: CustomDatetimeModel | undefined;
+	effectiveArrival: Date | undefined;
+	effectiveDeparture: Date | undefined;
+	user: UserModel | undefined;
+}

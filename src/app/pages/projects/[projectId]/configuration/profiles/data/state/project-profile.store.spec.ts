@@ -1,0 +1,229 @@
+import { TestBed } from '@angular/core/testing';
+
+import { TranslocoService } from '@jsverse/transloco';
+import { of, Subject } from 'rxjs';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+
+import { ErrorReporter } from '@core/registry/state/error-reporter';
+import { MetadataApi } from '@core/registry/state/metadata.api';
+import { ProjectProfileApi } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.api';
+import { ProjectProfileStore } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.store';
+import { ProfileResetService } from '@shared/helpers/store/profile-reset.service';
+import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures';
+import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum';
+import { ProjectProfileModel } from '@shared/models/model/project-profile.model';
+import { UserModel } from '@shared/models/model/user.model';
+
+describe('ProjectProfileStore', () => {
+	let store: InstanceType<typeof ProjectProfileStore>;
+	let findProjectProfiles: Mock<ProjectProfileApi['findProjectProfiles']>;
+	let searchUsers: Mock<ProjectProfileApi['searchUsers']>;
+	let getAssignableProjectProfileRoles: Mock<ProjectProfileApi['getAssignableProjectProfileRoles']>;
+	let getProfilesStatus: Mock<MetadataApi['getProfilesStatus']>;
+	let getFeatures: Mock<MetadataApi['getFeatures']>;
+	let notify: Mock<(message: unknown) => void>;
+	let langChanges: Subject<string>;
+
+	beforeEach(() => {
+		findProjectProfiles = vi.fn();
+		searchUsers = vi.fn();
+		getAssignableProjectProfileRoles = vi.fn();
+		getProfilesStatus = vi.fn(() => of([{ label: 'Invited', value: ProfileStatusEnum.INVITED }]));
+		getFeatures = vi.fn();
+		notify = vi.fn();
+		langChanges = new Subject<string>();
+		TestBed.configureTestingModule({
+			providers: [
+				ProjectProfileStore,
+				{
+					provide: ProjectProfileApi,
+					useValue: { findProjectProfiles, searchUsers, getAssignableProjectProfileRoles },
+				},
+				{ provide: MetadataApi, useValue: { getProfilesStatus, getFeatures } },
+				{ provide: ErrorReporter, useValue: { notify } },
+				{ provide: TranslocoService, useValue: { langChanges$: langChanges.asObservable() } },
+			],
+		});
+		store = TestBed.inject(ProjectProfileStore);
+	});
+
+	it('leaves the blocked status out of the status options', () => {
+		// Arrange
+		getProfilesStatus.mockReturnValue(
+			of([
+				{ label: 'Invited', value: ProfileStatusEnum.INVITED },
+				{ label: 'Blocked', value: ProfileStatusEnum.BLOCKED },
+			]),
+		);
+
+		// Act
+		langChanges.next('fr');
+
+		// Assert
+		expect(store.metadata.status().map((item: { value: unknown }): unknown => item.value)).toEqual([
+			undefined,
+			ProfileStatusEnum.INVITED,
+		]);
+	});
+
+	it('loads the profile statuses on init with an empty option first', () => {
+		// Arrange
+		const expectedFirst: unknown = { label: '-', value: undefined };
+
+		// Act
+		const statuses: unknown[] = store.metadata.status();
+
+		// Assert
+		expect(statuses[0]).toEqual(expectedFirst);
+		expect(statuses).toHaveLength(2);
+	});
+
+	it('reloads the statuses when the language changes but not on the initial language', () => {
+		// Arrange
+		langChanges.next('fr');
+		const callsAfterInitial = getProfilesStatus.mock.calls.length;
+
+		// Act
+		langChanges.next('en');
+
+		// Assert
+		expect(callsAfterInitial).toBe(1);
+		expect(getProfilesStatus).toHaveBeenCalledTimes(2);
+	});
+
+	it('stores the fetched profiles page', () => {
+		// Arrange
+		findProjectProfiles.mockReturnValue(of(pageOf<ProjectProfileModel>([{ id: 'pp1' } as ProjectProfileModel])));
+
+		// Act
+		store.fetchProjectProfilesPage({ projectId: 'p1', page: 0, size: 10 });
+
+		// Assert
+		expect(store.projectProfiles.element()?.content).toHaveLength(1);
+		expect(store.projectProfiles.loading()).toBe(false);
+	});
+
+	it('appends the next batch to the profiles already shown', () => {
+		// Arrange
+		findProjectProfiles
+			.mockReturnValueOnce(
+				of({ ...pageOf<ProjectProfileModel>([{ id: 'pp1' } as ProjectProfileModel]), size: 1, totalPages: 2 }),
+			)
+			.mockReturnValueOnce(
+				of({
+					...pageOf<ProjectProfileModel>([{ id: 'pp2' } as ProjectProfileModel], 1),
+					size: 1,
+					totalPages: 2,
+				}),
+			);
+		store.fetchProjectProfilesPage({ projectId: 'p1', page: 0, size: 1 });
+
+		// Act
+		store.fetchProjectProfilesPage({ projectId: 'p1', page: 1, size: 1 });
+
+		// Assert
+		expect(store.projectProfiles.element()?.content.map((profile) => profile.id)).toEqual(['pp1', 'pp2']);
+	});
+
+	it('keeps a failed profiles fetch in the profiles block', () => {
+		// Arrange
+		findProjectProfiles.mockReturnValue(failing(ERROR_500));
+
+		// Act
+		store.fetchProjectProfilesPage({ projectId: 'p1', page: 0, size: 10 });
+
+		// Assert
+		expect(store.projectProfiles.error()?.summary).toBe('Title');
+	});
+
+	it('keeps a 503 failure in its block', () => {
+		// Arrange
+		findProjectProfiles.mockReturnValue(failing(ERROR_503));
+
+		// Act
+		store.fetchProjectProfilesPage({ projectId: 'p1', page: 0, size: 10 });
+
+		// Assert
+		expect(store.projectProfiles.error()).toBeDefined();
+	});
+
+	it('keeps the searched users as found', () => {
+		// Arrange
+		searchUsers.mockReturnValue(of([{ id: 'u1', email: 'a@b.c', firstName: 'Ada', lastName: 'L' } as UserModel]));
+
+		// Act
+		store.searchUsers({ projectId: 'p1', q: 'ada' });
+
+		// Assert
+		expect(store.metadata.searched()).toEqual([expect.objectContaining({ id: 'u1', email: 'a@b.c' })]);
+	});
+
+	it('stores the assignable roles of the project', () => {
+		// Arrange
+		getAssignableProjectProfileRoles.mockReturnValue(of([{ label: 'Chief', value: 'CHIEF' }]));
+
+		// Act
+		store.fetchAssignableRoles('p1');
+
+		// Assert
+		expect(getAssignableProjectProfileRoles).toHaveBeenCalledWith('p1');
+		expect(store.metadata.roles()).toEqual([{ label: 'Chief', value: 'CHIEF' }]);
+	});
+
+	it('keeps a failed role fetch in the section error and keeps the previous roles', () => {
+		// Arrange
+		getAssignableProjectProfileRoles.mockReturnValueOnce(of([{ label: 'Chief', value: 'CHIEF' }]));
+		getAssignableProjectProfileRoles.mockReturnValueOnce(failing(ERROR_500));
+		store.fetchAssignableRoles('p1');
+
+		// Act
+		store.fetchAssignableRoles('p1');
+
+		// Assert
+		expect(store.sectionErrors()['metadata.roles']?.summary).toBe('Title');
+		expect(store.metadata.roles()).toHaveLength(1);
+	});
+
+	it('keeps the invitation by email disabled until the features are fetched', () => {
+		// Arrange & Act
+		const enabled = store.metadata.features.inviteByEmail();
+
+		// Assert
+		expect(enabled).toBe(false);
+	});
+
+	it('stores the enabled features', () => {
+		// Arrange
+		getFeatures.mockReturnValue(of({ inviteByEmail: true }));
+
+		// Act
+		store.fetchFeatures();
+
+		// Assert
+		expect(store.metadata.features()).toEqual({ inviteByEmail: true });
+	});
+
+	it('keeps a failed features fetch in the section error and keeps the invitation by email disabled', () => {
+		// Arrange
+		getFeatures.mockReturnValue(failing(ERROR_500));
+
+		// Act
+		store.fetchFeatures();
+
+		// Assert
+		expect(store.sectionErrors()['metadata.features']?.summary).toBe('Title');
+		expect(store.metadata.features.inviteByEmail()).toBe(false);
+	});
+
+	it('keeps the statuses but forgets the profiles when the active profile changes', () => {
+		// Arrange
+		findProjectProfiles.mockReturnValue(of(pageOf<ProjectProfileModel>([{ id: 'pp1' } as ProjectProfileModel], 1)));
+		store.fetchProjectProfilesPage({ projectId: 'p1', page: 0, size: 10 });
+
+		// Act
+		TestBed.inject(ProfileResetService).resetAll();
+
+		// Assert
+		expect([store.projectProfiles.element(), store.metadata.status().length]).toEqual([undefined, 2]);
+	});
+});

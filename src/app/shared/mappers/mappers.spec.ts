@@ -1,0 +1,691 @@
+import { describe, expect, it } from 'vitest';
+
+import {
+	HISTORY,
+	PARTICIPANT_DTO,
+	PLANNED_MOVEMENT_DTO,
+	PROJECT_DTO,
+	USER_DTO,
+	WHEN,
+} from '@shared/helpers/testing/response-fixtures';
+import { ActivityMapper } from '@shared/mappers/activity.mapper';
+import { ActivityStatisticsMapper } from '@shared/mappers/activity-statistics.mapper';
+import { AddedGroupMembersMapper } from '@shared/mappers/added-group-members.mapper';
+import { AlertMapper } from '@shared/mappers/alert.mapper';
+import { AlertCriticalityMetadataMapper } from '@shared/mappers/alert-criticality-metadata.mapper';
+import { AlertStatisticsMapper } from '@shared/mappers/alert-statistics.mapper';
+import { CommunicationMapper } from '@shared/mappers/communication.mapper';
+import { CurrentUserMapper } from '@shared/mappers/current-user.mapper';
+import { FeaturesMapper } from '@shared/mappers/features.mapper';
+import { GroupMapper } from '@shared/mappers/group.mapper';
+import { HistoryMapper } from '@shared/mappers/history.mapper';
+import { MovementMapper } from '@shared/mappers/movement.mapper';
+import { PageMapper } from '@shared/mappers/page.mapper';
+import { PairMapper } from '@shared/mappers/pair.mapper';
+import { ParticipantMapper } from '@shared/mappers/participant.mapper';
+import { ParticipantTimelineMapper } from '@shared/mappers/participant-timeline.mapper';
+import { PlannedMovementMapper } from '@shared/mappers/planned-movement.mapper';
+import { ProjectMapper } from '@shared/mappers/project.mapper';
+import { ProjectProfileMapper } from '@shared/mappers/project-profile.mapper';
+import { TimelineMapper } from '@shared/mappers/timeline.mapper';
+import { UserMapper } from '@shared/mappers/user.mapper';
+import { UserInvitationMapper } from '@shared/mappers/user-invitation.mapper';
+import { VehicleMapper } from '@shared/mappers/vehicle.mapper';
+import { VehicleTimelineMapper } from '@shared/mappers/vehicle-timeline.mapper';
+import { ActivityResponseDto } from '@shared/models/dto/response/activity.response.dto';
+import { AlertResponseDto } from '@shared/models/dto/response/alert.response.dto';
+import { AlertCriticalityMetadataResponseDto } from '@shared/models/dto/response/alert-criticality-metadata.response.dto';
+import { CommunicationResponseDto } from '@shared/models/dto/response/communication.response.dto';
+import { CurrentUserResponseDto } from '@shared/models/dto/response/current-user.response.dto';
+import { FeaturesResponseDto } from '@shared/models/dto/response/features.response.dto';
+import { GroupResponseDto } from '@shared/models/dto/response/group.response.dto';
+import { MovementResponseDto } from '@shared/models/dto/response/movement.response.dto';
+import { PageResponseDto } from '@shared/models/dto/response/page.response.dto';
+import { ParticipantResponseDto } from '@shared/models/dto/response/participant.response.dto';
+import { PlannedMovementResponseDto } from '@shared/models/dto/response/planned-movement.response.dto';
+import { ProjectResponseDto } from '@shared/models/dto/response/project.response.dto';
+import { ProjectProfileResponseDto } from '@shared/models/dto/response/project-profile.response.dto';
+import { UserResponseDto } from '@shared/models/dto/response/user.response.dto';
+import { UserInvitationResponseDto } from '@shared/models/dto/response/user-invitation.response.dto';
+import { VehicleResponseDto } from '@shared/models/dto/response/vehicle.response.dto';
+import { MovementReasonKindEnum } from '@shared/models/enumeration/movement-reason-kind.enum';
+
+const USER = USER_DTO;
+const PROJECT = PROJECT_DTO;
+const PARTICIPANT = PARTICIPANT_DTO;
+
+describe('mappers', () => {
+	it('copies the generic fields and the history of a user', () => {
+		// Arrange
+		const dto = USER;
+
+		// Act
+		const model = UserMapper.toModel(dto);
+
+		// Assert
+		expect(model).toEqual(dto);
+		expect(model).not.toBe(dto);
+		expect(model.creation?.user?.email).toBe('ada@x.test');
+		expect(model.lastEdition?.user?.email).toBe('ada@x.test');
+	});
+
+	it('maps the preferences of a current user with its authorities', () => {
+		// Arrange
+		const dto: CurrentUserResponseDto = {
+			...USER,
+			authorities: ['A', 'B'],
+			preferences: { userId: 'u1', theme: 'DARK', language: 'fr', refreshMode: 'NORMAL' },
+		};
+
+		// Act
+		const model = CurrentUserMapper.toModel(dto);
+
+		// Assert
+		expect(model.authorities).toEqual(['A', 'B']);
+		expect(model.preferences).toEqual({ userId: 'u1', theme: 'DARK', language: 'fr', refreshMode: 'NORMAL' });
+		expect(model.email).toBe('g@x.test');
+	});
+
+	it('maps a project profile with its user and project id', () => {
+		// Arrange
+		const dto: ProjectProfileResponseDto = {
+			id: 'pp1',
+			visible: true,
+			creation: HISTORY,
+			lastEdition: HISTORY,
+			projectId: 'p1',
+			user: USER,
+			role: { label: 'Chief', value: 'CHIEF' },
+			availabilityStatus: { label: 'x', value: 'AVAILABLE' as never },
+			status: { label: 'y', value: 'ACCEPTED' as never },
+			startAccess: undefined,
+			endAccess: { date: '2026-02-01', time: '10:00:00' },
+		};
+
+		// Act
+		const model = ProjectProfileMapper.toModel(dto);
+
+		// Assert
+		expect(model.user.email).toBe('g@x.test');
+		expect(model.projectId).toBe('p1');
+		expect(model.endAccess).toEqual({ date: '2026-02-01', time: '10:00:00' });
+	});
+
+	it('maps a participant with its groups and its user', () => {
+		// Arrange
+		const group: GroupResponseDto = {
+			id: 'g1',
+			visible: true,
+			creation: HISTORY,
+			lastEdition: HISTORY,
+			name: 'Wolves',
+			status: undefined,
+			startAvailability: undefined,
+			endAvailability: undefined,
+			membersCount: 1,
+			insideMembersCount: 1,
+			outsideMembersCount: 0,
+			members: undefined,
+		};
+		const dto: ParticipantResponseDto = { ...PARTICIPANT, groups: [group] };
+
+		// Act
+		const model = ParticipantMapper.toModel(dto);
+
+		// Assert
+		expect([model.groups?.[0].name, model.user?.firstName]).toEqual(['Wolves', 'Grace']);
+	});
+
+	it('leaves the groups and the user of a participant undefined when absent', () => {
+		// Arrange
+		const dto: ParticipantResponseDto = { ...PARTICIPANT, user: undefined };
+
+		// Act
+		const model = ParticipantMapper.toModel(dto);
+
+		// Assert
+		expect([model.groups, model.user]).toEqual([undefined, undefined]);
+	});
+
+	it('maps a group with its members', () => {
+		// Arrange
+		const dto: GroupResponseDto = {
+			id: 'g1',
+			visible: true,
+			creation: HISTORY,
+			lastEdition: HISTORY,
+			name: 'Wolves',
+			status: undefined,
+			startAvailability: undefined,
+			endAvailability: undefined,
+			membersCount: 1,
+			insideMembersCount: 1,
+			outsideMembersCount: 0,
+			members: [PARTICIPANT],
+		};
+
+		// Act
+		const model = GroupMapper.toModel(dto);
+
+		// Assert
+		expect(model.members).toHaveLength(1);
+		expect(model.members?.[0].firstName).toBe('A');
+	});
+
+	it('maps a vehicle and an activity field by field', () => {
+		// Arrange
+		const vehicle: VehicleResponseDto = {
+			id: 'v1',
+			visible: true,
+			creation: HISTORY,
+			lastEdition: HISTORY,
+			licensePlate: 'AB-123',
+			brand: 'Ford',
+			model: 'T',
+			status: { label: 'In', value: 'IN' as never },
+			startAvailability: undefined,
+			endAvailability: undefined,
+		};
+		const activity: ActivityResponseDto = {
+			id: 'a1',
+			visible: true,
+			creation: HISTORY,
+			lastEdition: HISTORY,
+			name: 'Hike',
+			status: undefined,
+			description: 'd',
+			duration: { label: '2h', value: 'PT2H' },
+			allowedParticipants: { lower: 1, upper: 5 },
+			startAvailability: undefined,
+			endAvailability: undefined,
+		};
+
+		// Act
+		const vehicleModel = VehicleMapper.toModel(vehicle);
+		const activityModel = ActivityMapper.toModel(activity);
+
+		// Assert
+		expect(vehicleModel.licensePlate).toBe('AB-123');
+		expect(activityModel.allowedParticipants).toEqual({ lower: 1, upper: 5 });
+	});
+
+	it('maps a movement with its content, reason and linked activity', () => {
+		// Arrange
+		const activity: ActivityResponseDto = {
+			id: 'a1',
+			visible: true,
+			creation: HISTORY,
+			lastEdition: HISTORY,
+			name: 'Hike',
+			status: undefined,
+			description: undefined,
+			duration: undefined,
+			allowedParticipants: undefined,
+			startAvailability: undefined,
+			endAvailability: undefined,
+		};
+		const dto: MovementResponseDto = {
+			id: 'm1',
+			visible: true,
+			creation: HISTORY,
+			lastEdition: HISTORY,
+			dateTime: WHEN,
+			type: { label: 'In', value: 'IN' as never },
+			reason: { label: 'Arrival', value: 'r1', kind: MovementReasonKindEnum.REASON },
+			lastCommunicationDateTime: WHEN,
+			activity: { label: 'Hike', value: activity },
+			contentType: 'REGISTERED' as never,
+			content: [{ poolName: 'car 1', participant: PARTICIPANT, vehicle: undefined }],
+		};
+
+		// Act
+		const model = MovementMapper.toModel(dto);
+
+		// Assert
+		expect(model.content[0].participant.firstName).toBe('A');
+		expect(model.content[0].vehicle).toBeUndefined();
+		expect(model.reason?.kind).toBe(MovementReasonKindEnum.REASON);
+		expect(model.lastCommunicationDateTime).toBe(WHEN);
+		expect(model.activity?.value.name).toBe('Hike');
+		expect(model.activity?.label).toBe('Hike');
+	});
+
+	it('maps an alert with its communications, each pointing back to a movement', () => {
+		// Arrange
+		const movement: MovementResponseDto = {
+			id: 'm1',
+			visible: true,
+			creation: HISTORY,
+			lastEdition: HISTORY,
+			dateTime: WHEN,
+			type: { label: 'In', value: 'IN' as never },
+			reason: undefined,
+			lastCommunicationDateTime: undefined,
+			activity: undefined,
+			contentType: 'GUEST' as never,
+			content: [],
+		};
+		const communication: CommunicationResponseDto = {
+			id: 'c1',
+			visible: true,
+			creation: HISTORY,
+			lastEdition: HISTORY,
+			dateTime: WHEN,
+			message: 'hello',
+			movement,
+			alert: undefined,
+		};
+		const dto: AlertResponseDto = {
+			id: 'al1',
+			visible: true,
+			creation: HISTORY,
+			lastEdition: HISTORY,
+			dateTime: WHEN,
+			title: 'Fire',
+			status: { label: 'In progress', value: 'IN_PROGRESS' as never },
+			communications: [communication],
+			criticality: { label: 'High', value: 'HIGH' as never },
+			lastCommunication: { dateTime: WHEN, message: 'hello' },
+		};
+
+		// Act
+		const model = AlertMapper.toModel(dto);
+		const communicationModel = CommunicationMapper.toModel(communication);
+
+		// Assert
+		expect(model.communications?.[0].message).toBe('hello');
+		expect(model.criticality?.value).toBe('HIGH');
+		expect(model.lastCommunication?.message).toBe('hello');
+		expect(model.communications?.[0].movement?.contentType).toBe('GUEST');
+		expect(communicationModel.alert).toBeUndefined();
+	});
+
+	it('maps the statistics of the alerts and turns the missing values into undefined', () => {
+		// Arrange
+		const empty: ReturnType<typeof AlertStatisticsMapper.toModel> = {
+			resolvedCount: 0,
+			canceledCount: 0,
+			averageResolutionSeconds: undefined,
+			realAlertRate: undefined,
+		};
+
+		// Act
+		const mapped = AlertStatisticsMapper.toModel({
+			resolvedCount: 0,
+			canceledCount: 0,
+			averageResolutionSeconds: null,
+			realAlertRate: null,
+		});
+
+		// Assert
+		expect(mapped).toEqual(empty);
+		expect(
+			AlertStatisticsMapper.toModel({
+				resolvedCount: 3,
+				canceledCount: 1,
+				averageResolutionSeconds: 60,
+				realAlertRate: 0.75,
+			}).realAlertRate,
+		).toBe(0.75);
+	});
+
+	it('maps a planned range with open bounds and an outing with real dates', () => {
+		// Arrange
+		const outing = {
+			start: new Date(WHEN),
+			end: new Date(WHEN),
+			ongoing: true,
+		};
+
+		// Act
+		const range = TimelineMapper.toRange({
+			start: { date: '2026-07-03', time: undefined },
+			end: null,
+		});
+
+		// Assert
+		expect(range).toEqual({ start: { date: '2026-07-03', time: undefined }, end: undefined });
+		expect(TimelineMapper.toOuting(outing)).toEqual(outing);
+		expect(TimelineMapper.toOuting(outing).start).toBeInstanceOf(Date);
+	});
+
+	it('maps the timeline of a participant with its planned ranges and its outings', () => {
+		// Arrange
+		const dto: Parameters<typeof ParticipantTimelineMapper.toModel>[0] = {
+			planned: [{ start: null, end: null }],
+			actual: [{ start: new Date(WHEN), end: new Date(WHEN), ongoing: false }],
+		};
+
+		// Act
+		const model = ParticipantTimelineMapper.toModel(dto);
+
+		// Assert
+		expect(model.planned).toEqual([{ start: undefined, end: undefined }]);
+		expect(model.actual).toHaveLength(1);
+		expect(model.actual[0].ongoing).toBe(false);
+	});
+
+	it('maps the timeline of a vehicle with its time out and its usage rate, which can be missing', () => {
+		// Arrange
+		const dto: Parameters<typeof VehicleTimelineMapper.toModel>[0] = {
+			planned: [],
+			actual: [{ start: new Date(WHEN), end: new Date(WHEN), ongoing: true }],
+			outSeconds: 3600,
+			usageRate: 0.25,
+		};
+
+		// Act
+		const model = VehicleTimelineMapper.toModel(dto);
+
+		// Assert
+		expect(model.outSeconds).toBe(3600);
+		expect(model.usageRate).toBe(0.25);
+		expect(model.actual[0].ongoing).toBe(true);
+		expect(VehicleTimelineMapper.toModel({ ...dto, usageRate: null }).usageRate).toBeUndefined();
+	});
+
+	it('maps the statistics of an activity and turns the missing rate into undefined', () => {
+		// Arrange
+		const dto: Parameters<typeof ActivityStatisticsMapper.toModel>[0] = {
+			participantCount: 3,
+			projectParticipantCount: 12,
+			participantRate: 0.25,
+			movementSeconds: 3600,
+			manSeconds: 10800,
+		};
+
+		// Act
+		const model = ActivityStatisticsMapper.toModel(dto);
+
+		// Assert
+		expect(model).toEqual(dto);
+		expect(ActivityStatisticsMapper.toModel({ ...dto, participantRate: null }).participantRate).toBeUndefined();
+	});
+
+	it('maps the elements of a page and keeps the paging fields', () => {
+		// Arrange
+		const dto: PageResponseDto<ProjectResponseDto> = {
+			page: 2,
+			size: 10,
+			totalElements: 21,
+			totalPages: 3,
+			hasNext: true,
+			content: [PROJECT],
+			lastRefresh: WHEN,
+		};
+
+		// Act
+		const page = PageMapper.toModel(dto, ProjectMapper.toModel);
+
+		// Assert
+		expect(page.content[0].name).toBe('Camp');
+		expect([page.page, page.size, page.totalElements, page.totalPages, page.hasNext]).toEqual([2, 10, 21, 3, true]);
+		expect(page.lastRefresh).toBe(WHEN);
+	});
+
+	it('maps the value of a pair and keeps its key', () => {
+		// Arrange
+		const dto = { first: 'm1', second: [USER] };
+
+		// Act
+		const pair = PairMapper.toModel(dto, (users) => users.map(UserMapper.toModel));
+
+		// Assert
+		expect(pair.first).toBe('m1');
+		expect(pair.second[0].email).toBe('g@x.test');
+	});
+
+	it('maps a project with the current user profile', () => {
+		// Arrange
+		const profile: ProjectResponseDto['profile'] = {
+			id: 'pp1',
+			visible: true,
+			creation: HISTORY,
+			lastEdition: HISTORY,
+			role: { label: 'Chief', value: 'CHIEF' },
+			availabilityStatus: { label: 'x', value: 'AVAILABLE' as never },
+			status: { label: 'y', value: 'ACCEPTED' as never },
+			startAccess: undefined,
+			endAccess: { date: '2026-02-01', time: '10:00:00' },
+		};
+
+		// Act
+		const model = ProjectMapper.toModel({ ...PROJECT, profile: profile });
+
+		// Assert
+		expect([model.profile?.role.value, model.profile?.endAccess]).toEqual([
+			'CHIEF',
+			{ date: '2026-02-01', time: '10:00:00' },
+		]);
+	});
+
+	it('maps a project without profile when the user has none', () => {
+		// Arrange
+		const dto = PROJECT;
+
+		// Act
+		const model = ProjectMapper.toModel(dto);
+
+		// Assert
+		expect(model.profile).toBeUndefined();
+	});
+
+	it.each([
+		{
+			name: 'maps the resource counts and the favorite flag of a project',
+			dto: PROJECT,
+			expected: [PROJECT.counts, true],
+		},
+		{
+			name: 'leaves the counts and the favorite flag of a project undefined when absent',
+			dto: { ...PROJECT, counts: undefined, favorite: undefined },
+			expected: [undefined, undefined],
+		},
+	])('$name', ({ dto, expected }) => {
+		// Arrange
+		const response: ProjectResponseDto = dto;
+
+		// Act
+		const model = ProjectMapper.toModel(response);
+
+		// Assert
+		expect([model.counts, model.favorite]).toEqual(expected);
+	});
+
+	it.each([
+		{
+			name: 'maps a user invitation with its project summary',
+			project: {
+				id: 'p1',
+				name: 'Camp',
+				begin: { date: '2026-01-01', time: undefined },
+				end: undefined,
+				favorite: true,
+			},
+			expected: ['Camp', true, 'INVITED'],
+		},
+		{
+			name: 'maps a user invitation without project when absent',
+			project: undefined,
+			expected: [undefined, undefined, 'INVITED'],
+		},
+	])('$name', ({ project, expected }) => {
+		// Arrange
+		const dto: UserInvitationResponseDto = {
+			id: 'pp1',
+			visible: true,
+			creation: HISTORY,
+			lastEdition: HISTORY,
+			project: project,
+			role: { label: 'Chief', value: 'CHIEF' },
+			availabilityStatus: { label: 'x', value: 'AVAILABLE' as never },
+			status: { label: 'y', value: 'INVITED' as never },
+			startAccess: undefined,
+			endAccess: undefined,
+		};
+
+		// Act
+		const model = UserInvitationMapper.toModel(dto);
+
+		// Assert
+		expect([model.project?.name, model.project?.favorite, model.status.value]).toEqual(expected);
+	});
+
+	it('maps the light entities nested in a response, which carry no history', () => {
+		// Arrange
+		const lightProject: ProjectResponseDto = { ...PROJECT, creation: undefined, lastEdition: undefined };
+		const lightUser: UserResponseDto = { ...USER, creation: undefined, lastEdition: undefined };
+
+		// Act
+		const project = ProjectMapper.toModel(lightProject);
+		const user = UserMapper.toModel(lightUser);
+
+		// Assert
+		expect([project.creation, project.lastEdition, user.creation, user.lastEdition]).toEqual([
+			undefined,
+			undefined,
+			undefined,
+			undefined,
+		]);
+		expect(project.name).toBe(PROJECT.name);
+	});
+
+	it('maps the effective arrival and departure dates of a participant', () => {
+		// Arrange
+		const departed: ParticipantResponseDto = { ...PARTICIPANT, effectiveDeparture: WHEN };
+
+		// Act
+		const model = ParticipantMapper.toModel(departed);
+		const arrived = ParticipantMapper.toModel(PARTICIPANT);
+
+		// Assert
+		expect([model.effectiveArrival, model.effectiveDeparture]).toEqual([WHEN, WHEN]);
+		expect(arrived.effectiveDeparture).toBeUndefined();
+	});
+
+	it('maps a participant whose groups only carry a name, an id and a visibility', () => {
+		// Arrange
+		const lightGroup: object = { id: 'g1', name: 'Wolves', visible: true };
+		const dto: ParticipantResponseDto = { ...PARTICIPANT, groups: [lightGroup as never] };
+
+		// Act
+		const model = ParticipantMapper.toModel(dto);
+
+		// Assert
+		expect(model.groups?.[0]).toMatchObject({ id: 'g1', name: 'Wolves', creation: undefined });
+	});
+
+	it('maps a planned movement with its reason and its participants', () => {
+		// Arrange
+		const dto: PlannedMovementResponseDto = {
+			...PLANNED_MOVEMENT_DTO,
+			reason: { label: 'Hospital return', value: 'HOSPITAL', kind: MovementReasonKindEnum.REASON },
+		};
+
+		// Act
+		const model = PlannedMovementMapper.toModel(dto);
+
+		// Assert
+		expect(model.poolName).toBe('Wolves');
+		expect(model.plannedAt?.time).toBe('10:32:00+01:00');
+		expect(model.reason?.label).toBe('Hospital return');
+		expect(model.participants[0].id).toBe(PARTICIPANT_DTO.id);
+	});
+
+	it('maps a planned movement without reason', () => {
+		// Arrange
+		const dto: PlannedMovementResponseDto = { ...PLANNED_MOVEMENT_DTO, reason: undefined };
+
+		// Act
+		const model = PlannedMovementMapper.toModel(dto);
+
+		// Assert
+		expect(model.reason).toBeUndefined();
+	});
+
+	it('copies the levels and the rule of the alert criticality metadata', () => {
+		// Arrange
+		const dto: AlertCriticalityMetadataResponseDto = {
+			levels: [
+				{ label: 'Recent', value: 'RECENT' as never },
+				{ label: 'High', value: 'HIGH' as never },
+			],
+			rule: 'Recent under 6 h, high over 18 h',
+		};
+
+		// Act
+		const model = AlertCriticalityMetadataMapper.toModel(dto);
+
+		// Assert
+		expect(model).toEqual(dto);
+		expect(model.levels).not.toBe(undefined);
+	});
+
+	it('copies the enabled features', () => {
+		// Arrange
+		const dto: FeaturesResponseDto = { inviteByEmail: true };
+
+		// Act
+		const model = FeaturesMapper.toModel(dto);
+
+		// Assert
+		expect(model).toEqual({ inviteByEmail: true });
+	});
+
+	it('maps a communication sent on an alert, with no movement', () => {
+		// Arrange
+		const alert: AlertResponseDto = {
+			id: 'al1',
+			visible: true,
+			creation: HISTORY,
+			lastEdition: HISTORY,
+			dateTime: WHEN,
+			title: 'Fire',
+			status: { label: 'In progress', value: 'IN_PROGRESS' as never },
+			communications: undefined,
+			criticality: undefined,
+			lastCommunication: undefined,
+		};
+		const dto: CommunicationResponseDto = {
+			id: 'c1',
+			visible: true,
+			creation: HISTORY,
+			lastEdition: HISTORY,
+			dateTime: WHEN,
+			message: 'hello',
+			movement: undefined,
+			alert,
+		};
+
+		// Act
+		const model = CommunicationMapper.toModel(dto);
+
+		// Assert
+		expect(model.movement).toBeUndefined();
+		expect(model.alert?.title).toBe('Fire');
+		expect(model.alert?.lastCommunication).toBeUndefined();
+	});
+
+	it('maps a history entry whose user is no longer known', () => {
+		// Arrange
+		const dto = { dateTime: WHEN, user: undefined };
+
+		// Act
+		const model = HistoryMapper.toModel(dto);
+
+		// Assert
+		expect(model).toEqual({ dateTime: WHEN, user: undefined });
+	});
+
+	it('copies the added and the refused members of a group', () => {
+		// Arrange
+		const dto = { members: ['pa1'], notAddedMemberIds: ['pa2'] };
+
+		// Act
+		const model = AddedGroupMembersMapper.toModel(dto);
+
+		// Assert
+		expect(model).toEqual({ members: ['pa1'], notAddedMemberIds: ['pa2'] });
+		expect(model.members).not.toBe(dto.members);
+	});
+});

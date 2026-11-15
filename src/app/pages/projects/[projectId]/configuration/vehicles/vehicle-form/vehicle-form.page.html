@@ -1,0 +1,78 @@
+<app-form-dialog
+	data-test-id="vehicle-form-dialog"
+	[title]="
+		'vehicles.form.title'
+			| formTitle: element()
+			| transloco
+				: {
+						registration: element()?.licensePlate,
+						brand: element()?.brand,
+						model: element()?.model,
+				  }
+	"
+	[submitLabel]="element() | formButton"
+	[submitIcon]="element() ? 'pen-to-square' : 'plus'"
+	[loading]="loading()"
+	[saving]="saving()"
+	[error]="error()"
+	(submitted)="submit()"
+	(closed)="navigateToRedirectUri()"
+>
+	<sgdf-input
+		data-test-id="vehicle-form-license-plate-input"
+		appSgdfField
+		required
+		mask="aa-999-aa"
+		[label]="'vehicles.form.license-plate' | transloco"
+		[placeholder]="'vehicles.form.placeholder.license-plate' | transloco"
+		[formField]="form.licensePlate"
+		[appFieldError]="form.licensePlate"
+		translationPrefix="vehicles.form.error.license-plate"
+	/>
+	<div class="grid gap-3 md:grid-cols-2">
+		<sgdf-input
+			data-test-id="vehicle-form-brand-input"
+			appSgdfField
+			required
+			[label]="'vehicles.form.brand' | transloco"
+			[placeholder]="'vehicles.form.placeholder.brand' | transloco"
+			[formField]="form.brand"
+			[appFieldError]="form.brand"
+			translationPrefix="vehicles.form.error.brand"
+		/>
+		<sgdf-input
+			data-test-id="vehicle-form-model-input"
+			appSgdfField
+			required
+			[label]="'vehicles.form.model' | transloco"
+			[placeholder]="'vehicles.form.placeholder.model' | transloco"
+			[formField]="form.model"
+			[appFieldError]="form.model"
+			translationPrefix="vehicles.form.error.model"
+		/>
+	</div>
+	<div class="grid gap-3">
+		<sgdf-date-time-picker
+			data-test-id="vehicle-form-begin-date-time-picker"
+			appSgdfField
+			with-time
+			value-format="separate"
+			[label]="'vehicles.form.begin-datetime' | transloco"
+			[hint]="'vehicles.form.hint.begin-date-time' | transloco"
+			[formField]="form.beginDateTime"
+			[appFieldError]="form.beginDateTime"
+			translationPrefix="vehicles.form.error.begin-datetime"
+		/>
+		<sgdf-date-time-picker
+			data-test-id="vehicle-form-end-date-time-picker"
+			appSgdfField
+			with-time
+			value-format="separate"
+			[label]="'vehicles.form.end-datetime' | transloco"
+			[hint]="'vehicles.form.hint.end-date-time' | transloco"
+			[formField]="form.endDateTime"
+			[appFieldError]="form.endDateTime"
+			translationPrefix="vehicles.form.error.end-datetime"
+		/>
+	</div>
+</app-form-dialog>

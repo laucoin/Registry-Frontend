@@ -1,0 +1,60 @@
+<h2 class="section-title">{{ 'movements.form.content.guest' | pluralTranslation: count() | transloco }}</h2>
+@for (guest of guests(); track $index) {
+	<div data-test-id="guest-list-fields-guest-item" class="flex items-start gap-2">
+		<div class="flex flex-1 flex-col gap-3">
+			<div class="grid gap-3 md:grid-cols-2">
+				<sgdf-input
+					data-test-id="guest-list-fields-first-name-input"
+					appSgdfField
+					required
+					[label]="'participants.form.firstname' | transloco"
+					[placeholder]="'participants.form.placeholder.firstname' | transloco"
+					[formField]="guest.firstName"
+					[appFieldError]="guest.firstName"
+					translationPrefix="participants.form.error.firstname"
+				/>
+				<sgdf-input
+					data-test-id="guest-list-fields-last-name-input"
+					appSgdfField
+					required
+					[label]="'participants.form.lastname' | transloco"
+					[placeholder]="'participants.form.placeholder.lastname' | transloco"
+					[formField]="guest.lastName"
+					[appFieldError]="guest.lastName"
+					translationPrefix="participants.form.error.lastname"
+				/>
+			</div>
+			<sgdf-date-time-picker
+				data-test-id="guest-list-fields-birthday-picker"
+				appSgdfField
+				required
+				[label]="'participants.form.birthday' | transloco"
+				[formField]="guest.birthday"
+				[appFieldError]="guest.birthday"
+				translationPrefix="participants.form.error.birthday"
+			/>
+		</div>
+		<sgdf-icon-button
+			data-test-id="guest-list-fields-remove-button"
+			name="xmark"
+			library="solid"
+			[attr.label]="'global.actions.remove' | transloco"
+			[disabled]="!!guest.id().value()"
+			(click)="remove($index)"
+		/>
+	</div>
+	@if (!$last) {
+		<sgdf-divider />
+	}
+}
+<div class="flex justify-center">
+	<sgdf-button data-test-id="guest-list-fields-add-button" variant="neutral" appearance="outlined" (click)="add()">
+		<sgdf-icon slot="prefix" name="plus" library="solid" />
+		{{ 'movements.form.content.guest.add' | transloco }}
+	</sgdf-button>
+</div>
+<app-field-error
+	data-test-id="guest-list-fields-error"
+	[field]="guests()"
+	translationPrefix="movements.form.error.guestContent"
+/>

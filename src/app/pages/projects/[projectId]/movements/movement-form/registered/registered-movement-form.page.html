@@ -1,0 +1,117 @@
+<app-form
+	data-test-id="registered-movement-form-page"
+	[form]="form"
+	[loading]="loading()"
+	[error]="error()"
+	[title]="titleKey() | transloco: { datetime: element()?.dateTime | dateFormat: DateFormatTypeEnum.DATETIME }"
+>
+	<sgdf-stepper
+		data-test-id="registered-movement-form-stepper"
+		linear
+		[active]="'step-' + activeTab()"
+		[label]="'movements.form.title.information' | transloco"
+	>
+		<sgdf-step name="step-1" [completed]="activeTab() > 1">
+			{{ 'movements.form.title.information' | transloco }}
+		</sgdf-step>
+		<sgdf-step name="step-2" [completed]="activeTab() > 2">{{ 'movements.form.title.content' | transloco }}</sgdf-step>
+		@if (vehicleStep()) {
+			<sgdf-step name="step-3">{{ 'movements.form.title.vehicle' | transloco }}</sgdf-step>
+		}
+	</sgdf-stepper>
+
+	@if (activeTab() === 1) {
+		<app-movement-information-step
+			[form]="form.information"
+			(typeChanged)="handleTypeChange($event)"
+			(next)="nextFromInformation()"
+			(cancelled)="navigateToRedirectUri()"
+		/>
+	} @else if (activeTab() === 2) {
+		<form
+			novalidate
+			data-test-id="registered-movement-form-content-form"
+			class="mt-4"
+			(submit)="$event.preventDefault(); nextFromContent()"
+		>
+			<sgdf-card>
+				<div class="flex flex-col gap-3">
+					@if (reasonRequired()) {
+						<app-movement-reason-select
+							[field]="form.content.reason"
+							[movementType]="model().information.type"
+							[participantType]="participantType"
+						/>
+						<sgdf-divider />
+					}
+					<app-registered-participants-fields
+						[participants]="form.content.participants"
+						[dateTime]="model().information.dateTime"
+						[presence]="presence()"
+					/>
+				</div>
+			</sgdf-card>
+			<div class="flex items-center justify-between pt-4">
+				<sgdf-button
+					data-test-id="registered-movement-form-content-previous-button"
+					variant="neutral"
+					appearance="text"
+					(click)="goTo(1)"
+				>
+					<sgdf-icon slot="prefix" class="max-sm:hidden" name="arrow-left" library="solid" />
+					{{ 'global.actions.previous' | transloco }}
+				</sgdf-button>
+				<sgdf-button
+					data-test-id="registered-movement-form-content-next-submit"
+					variant="primary"
+					submit
+					[loading]="saving()"
+				>
+					@if (vehicleStep()) {
+						{{ 'global.actions.next' | transloco }}
+						<sgdf-icon slot="suffix" class="max-sm:hidden" name="arrow-right" library="solid" />
+					} @else {
+						<sgdf-icon
+							slot="prefix"
+							class="max-sm:hidden"
+							[name]="element() ? 'pen-to-square' : 'plus'"
+							library="solid"
+						/>
+						{{ element() | formButton | transloco }}
+					}
+				</sgdf-button>
+			</div>
+		</form>
+	} @else {
+		<form
+			novalidate
+			data-test-id="registered-movement-form-vehicles-form"
+			class="mt-4"
+			(submit)="$event.preventDefault(); submit()"
+		>
+			<sgdf-card>
+				<app-registered-vehicles-fields [vehicles]="form.vehicles" [drivers]="drivers()" [presence]="presence()" />
+			</sgdf-card>
+			<div class="flex items-center justify-between pt-4">
+				<sgdf-button
+					data-test-id="registered-movement-form-vehicles-previous-button"
+					variant="neutral"
+					appearance="text"
+					(click)="goTo(2)"
+				>
+					<sgdf-icon slot="prefix" class="max-sm:hidden" name="arrow-left" library="solid" />
+					{{ 'global.actions.previous' | transloco }}
+				</sgdf-button>
+				<sgdf-button data-test-id="registered-movement-form-submit" variant="primary" submit [loading]="saving()">
+					<sgdf-icon
+						slot="prefix"
+						class="max-sm:hidden"
+						[name]="element() ? 'pen-to-square' : 'plus'"
+						library="solid"
+					/>
+					{{ element() | formButton | transloco }}
+				</sgdf-button>
+			</div>
+		</form>
+	}
+</app-form>
